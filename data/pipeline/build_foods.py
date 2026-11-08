@@ -74,9 +74,10 @@ def get_zip(name: str, cache: Path, local: str | None) -> Path:
 
 
 def read_csv(zf: zipfile.ZipFile, filename: str):
-    matches = [n for n in zf.namelist() if n.rsplit("/", 1)[-1] == filename]
+    matches = [n for n in zf.namelist() if n.rsplit("/", 1)[-1].lower() == filename]
     if not matches:
-        raise RuntimeError(f"{filename} not found in {zf.filename}")
+        listing = ", ".join(zf.namelist()[:30])
+        raise RuntimeError(f"{filename} not found in {zf.filename}. Archive contains: {listing}")
     with zf.open(matches[0]) as fh:
         yield from csv.DictReader(io.TextIOWrapper(fh, encoding="utf-8-sig"))
 
@@ -186,7 +187,11 @@ def main() -> int:
     fnd = None
     if not args.no_foundation:
         name = Path(args.foundation_zip).name if args.foundation_zip else latest_foundation_name()
-        fnd = Dataset("Foundation", get_zip(name, cache, args.foundation_zip), {"foundation_food"})
+        try:
+            fnd = Dataset("Foundation", get_zip(name, cache, args.foundation_zip), {"foundation_food"})
+        except Exception as err:  # Foundation is an optional enhancement; SR Legacy alone is enough
+            log(f"WARNING: skipping Foundation Foods ({err})")
+            fnd = None
 
     matches, unmatched = [], []
     for food in catalogue:
