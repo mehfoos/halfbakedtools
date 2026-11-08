@@ -17,7 +17,7 @@ Check that each food matched the record you expect. Edit `foods_catalogue.json` 
 | Brown rice (cooked) | – | Rice, brown, long-grain, cooked (Includes foods for USDA's Food Distribution Program) (169704) | 49 |
 | White rice (cooked) | – | Rice, white, long-grain, regular, unenriched, cooked without salt (169757) | 49 |
 | Wholemeal bread | – | Bread, whole-wheat, commercially prepared (172688) | 36 |
-| Wholewheat pasta (cooked) | **no match** | | |
+| Wholewheat pasta (cooked) | – | Pasta, whole-wheat, cooked (Includes foods for USDA's Food Distribution Program) (168910) | 49 |
 | Quinoa (cooked) | – | Quinoa, cooked (168917) | 49 |
 | Pearl barley (cooked) | – | Barley, pearled, cooked (170285) | 49 |
 | Potato (baked, with skin) | – | Potatoes, baked, flesh and skin, without salt (170093) | 49 |
@@ -44,7 +44,7 @@ Check that each food matched the record you expect. Edit `foods_catalogue.json` 
 | Oranges | – | Oranges, raw, all commercial varieties (169097) | 49 |
 | Blueberries (frozen) | – | Blueberries, frozen, unsweetened (Includes foods for USDA's Food Distribution Program) (173950) | 49 |
 | Strawberries | – | Strawberries, raw (167762) | 49 |
-| Raisins | **no match** | | |
+| Raisins | – | Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program) (168165) | 36 |
 | Dried apricots | – | Apricots, dried, sulfured, uncooked (173941) | 49 |
 | Walnuts | – | Nuts, walnuts, english (170187) | 49 |
 | Almonds | – | Nuts, almonds (170567) | 49 |
