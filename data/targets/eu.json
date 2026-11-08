@@ -1,0 +1,17 @@
+{
+ "id": "eu",
+ "name": "EU",
+ "longName": "EU reference values (EFSA)",
+ "status": "planned",
+ "notes": [
+  "EFSA values are being transcribed and checked; not available yet."
+ ],
+ "sources": [
+  {
+   "id": "efsa",
+   "title": "EFSA Dietary Reference Values",
+   "url": "https://www.efsa.europa.eu/en/topics/topic/dietary-reference-values"
+  }
+ ],
+ "profiles": []
+}

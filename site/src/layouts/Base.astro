@@ -1,0 +1,48 @@
+---
+import "../styles/global.css";
+import { site } from "../site.config";
+
+interface Props { title?: string; description?: string; wide?: boolean }
+const { title, description = site.tagline, wide = false } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const pageTitle = title ? `${title} · ${site.name}` : site.name;
+---
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href={base}>
+          <span class="brand-mark" aria-hidden="true">◐</span>
+          <span>{site.name}</span>
+        </a>
+        <nav aria-label="Main">
+          <a href={`${base}tools/nutrient-planner/`}>Nutrient planner</a>
+          <a href={`${base}about/`}>Methods</a>
+          <a href={`${base}privacy/`}>Privacy</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class:list={["wrap", { wide }]}>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>{site.tagline}</p>
+        <p>
+          Open source on <a href={site.repoUrl}>GitHub</a>. No cookies, no tracking.
+          Information only, not medical advice.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
