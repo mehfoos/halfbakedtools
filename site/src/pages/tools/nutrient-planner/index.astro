@@ -1,0 +1,129 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { site } from "../../../site.config";
+const base = import.meta.env.BASE_URL;
+---
+<Base title="Nutrient planner" description="Find a small set of everyday ingredients that together come close to official daily nutrient recommendations." wide>
+  <h1>Nutrient planner</h1>
+  <p class="lede">Choose who you're planning for and how many different ingredients you want. The planner finds combinations of everyday foods that come as close as possible to the official daily recommendations, without going over safe upper limits.</p>
+
+  <div id="planner" data-base={base} data-refresh-url={site.refreshIssueUrl ?? ""} data-methods-url={`${base}about/`}>
+    <noscript><p class="notice">The planner runs in your browser and needs JavaScript.</p></noscript>
+    <p id="loading" class="muted">Loading food data…</p>
+
+    <form id="settings" class="card" hidden>
+      <div class="grid">
+        <label>Recommendations
+          <select name="standard" id="standard"></select>
+        </label>
+        <label>Planning for
+          <select name="profile" id="profile"></select>
+        </label>
+        <label>Diet
+          <select name="diet" id="diet">
+            <option value="vegetarian">Vegetarian (eggs and dairy)</option>
+            <option value="vegan">Vegan</option>
+          </select>
+        </label>
+        <label>Maximum ingredients
+          <input type="number" name="n" id="n" min="1" max="15" step="1" inputmode="numeric" />
+        </label>
+        <label>Options to show
+          <input type="number" name="options" id="options" min="1" max="5" step="1" inputmode="numeric" />
+        </label>
+        <label>Body weight (kg)
+          <input type="number" name="weight" id="weight" min="10" max="300" step="1" inputmode="numeric" />
+          <span class="hint">Used for amino acid targets.</span>
+        </label>
+      </div>
+
+      <fieldset class="energy">
+        <legend>Calories per day</legend>
+        <div class="row">
+          <label>From <input type="number" id="energyLow" min="300" max="6000" step="10" inputmode="numeric" /></label>
+          <label>to <input type="number" id="energyHigh" min="300" max="6000" step="10" inputmode="numeric" /></label>
+          <button type="button" class="link" id="energyReset" hidden>Reset to recommended</button>
+        </div>
+        <p class="hint" id="energyNote"></p>
+        <p class="notice small" id="energyCustom" hidden>Your calorie range differs from the recommended range for this group.</p>
+      </fieldset>
+
+      <details id="targetsBox">
+        <summary>Targets <span class="muted small" id="targetsSummary"></span></summary>
+        <p class="small muted">These are the official values for the group you chose. If your needs are different (for example on medical advice), type your own value; it will be marked as custom.</p>
+        <p class="notice small" id="customBanner" hidden>Some targets are custom and differ from the official recommendations. <button type="button" class="link" id="resetTargets">Reset all to official values</button></p>
+        <div class="table-scroll"><table id="targetsTable"></table></div>
+      </details>
+
+      <details id="foodsBox">
+        <summary>Foods to choose from <span class="muted small" id="foodsSummary"></span></summary>
+        <p class="small muted">Untick anything you don't eat or can't buy.</p>
+        <div id="foodsList" class="foods"></div>
+      </details>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="run">Find combinations</button>
+        <span id="status" class="muted small" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+
+    <section id="results" aria-live="polite"></section>
+
+    <section class="card share" id="share" hidden>
+      <h2 style="margin-top:0">Save or share these settings</h2>
+      <p class="small muted">Your settings are kept in this page's address, so you can bookmark or share it. Nothing is sent to us.</p>
+      <div class="row">
+        <button type="button" id="copyLink">Copy link</button>
+        <button type="button" id="exportBtn">Export settings file</button>
+        <label class="button" for="importFile">Import settings file</label>
+        <input type="file" id="importFile" accept="application/json,.json" hidden />
+      </div>
+      <div class="row">
+        <label class="check"><input type="checkbox" id="rememberBox" /> Remember my settings on this device</label>
+        <button type="button" class="link" id="forgetBtn">Forget</button>
+      </div>
+      <p class="small muted">Off by default. If ticked, settings are saved in this browser only. <a href={`${base}privacy/`}>Privacy</a></p>
+      <p class="small muted" id="dataInfo"></p>
+    </section>
+  </div>
+</Base>
+
+<script>
+  import { start } from "../../../tools/nutrient-planner/ui.ts";
+  start(document.getElementById("planner")!);
+</script>
+
+<style is:global>
+  #planner .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 18px; }
+  #planner label { display: flex; flex-direction: column; gap: 4px; font-size: 0.92rem; }
+  #planner .row { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+  #planner .row label { flex-direction: row; align-items: center; gap: 6px; }
+  #planner .row input[type="number"] { width: 7em; }
+  #planner .hint { font-size: 0.8rem; color: var(--muted); font-weight: 400; margin: 0; }
+  #planner fieldset { border: 1px solid var(--line); border-radius: 8px; margin: 18px 0 0; padding: 10px 14px 12px; }
+  #planner legend { font-weight: 600; padding: 0 4px; }
+  #planner details { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px; }
+  #planner .actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 20px; }
+  #planner .foods { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 4px 16px; }
+  #planner .foods h4 { grid-column: 1 / -1; margin: 12px 0 2px; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  #planner .check { flex-direction: row !important; align-items: center; gap: 8px; font-weight: 400; }
+  #planner td input { width: 6.5em; padding: 4px 6px; }
+  #planner .badge { font-size: 0.7rem; font-weight: 700; padding: 1px 6px; border-radius: 99px; background: var(--warn-soft); color: var(--warn); margin-left: 6px; white-space: nowrap; }
+  #planner .chip { font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+  #planner .chip.met { background: var(--good-soft); color: var(--good); }
+  #planner .chip.short { background: var(--warn-soft); color: var(--warn); }
+  #planner .chip.low { background: var(--bad-soft); color: var(--bad); }
+  #planner .chip.limit { background: var(--surface-2); color: var(--muted); }
+  #planner .bar { height: 6px; background: var(--surface-2); border-radius: 3px; min-width: 60px; overflow: hidden; }
+  #planner .bar > span { display: block; height: 100%; background: var(--good); }
+  #planner .bar > span.short { background: var(--warn); }
+  #planner .bar > span.low { background: var(--bad); }
+  #planner .plan { margin-top: 20px; }
+  #planner .plan h2 { margin-top: 0; }
+  #planner .ingredients { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; padding: 0; list-style: none; margin: 0 0 16px; }
+  #planner .ingredients li { background: var(--surface-2); border-radius: 8px; padding: 8px 12px; }
+  #planner .ingredients strong { display: block; }
+  #planner .score { font-size: 1.05rem; margin-bottom: 12px; }
+  #planner .share { margin-top: 24px; }
+  #planner .share .row { margin-bottom: 10px; }
+</style>

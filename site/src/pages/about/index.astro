@@ -1,0 +1,54 @@
+---
+import Base from "../../layouts/Base.astro";
+import uk from "../../../../data/targets/uk.json";
+import us from "../../../../data/targets/us.json";
+import meta from "../../../../data/meta.json";
+const standards = [uk, us];
+---
+<Base title="Methods and sources">
+  <h1>Methods and sources</h1>
+  <p class="lede">How the nutrient planner works, where its numbers come from, and what it can't tell you.</p>
+
+  <h2>Food composition data</h2>
+  <p>
+    Nutrient values come from <a href="https://fdc.nal.usda.gov/">USDA FoodData Central</a> (public domain):
+    the SR Legacy dataset, with newer Foundation Foods analyses used where a food has been matched to one.
+    A curated list of about 55 cheap, common, UK-available foods is matched to USDA records; the list and the
+    match report live in the repository's <code>data/</code> folder so anyone can check them.
+  </p>
+  <p class="muted small">
+    Current snapshot: {meta.foodsLastUpdated ? `built ${meta.foodsLastUpdated}, ${meta.foodCount} foods` : "not built yet"}.
+    The snapshot is stored in the repository so the site keeps working even if the USDA servers change, and is refreshed every three months.
+  </p>
+
+  <h2>Recommended intakes</h2>
+  {standards.map((s) => (
+    <section>
+      <h3>{s.longName}</h3>
+      <ul class="prose">
+        {s.sources.map((src) => <li><a href={src.url}>{src.title}</a></li>)}
+      </ul>
+      <ul class="prose muted small">{s.notes.map((n) => <li>{n}</li>)}</ul>
+    </section>
+  ))}
+  <p>EU (EFSA) values are planned and will be added once they have been transcribed and checked against EFSA's published reference values.</p>
+
+  <h2>How the planner chooses foods</h2>
+  <p>
+    The planner solves a mixed-integer programme (with the <a href="https://highs.dev/">HiGHS</a> solver, running in your browser).
+    It chooses at most your chosen number of ingredients and an amount of each, in practical steps
+    (10 g, half an egg, a slice of bread), to minimise the total <em>relative</em> shortfall across all
+    minimum targets, so being 20% short of iron counts the same as being 20% short of protein. Upper limits
+    (salt, saturated fat, tolerable upper intake levels) and your calorie range are never exceeded.
+    Further options are found by forbidding most of the ingredients of earlier options.
+  </p>
+
+  <h2>Limitations</h2>
+  <ul class="prose">
+    <li><strong>US food data, UK shops.</strong> Fortification differs between countries (for example US milk usually has added vitamin D; UK milk doesn't), and brands differ. Fortified products should be checked against their labels.</li>
+    <li><strong>Iodine and some other nutrients</strong> are missing from most USDA records, so they are listed as "not assessed" rather than guessed.</li>
+    <li><strong>Absorption isn't modelled yet.</strong> Iron from plants is absorbed less well than iron from meat, ALA omega-3 converts poorly to EPA and DHA, and phytates reduce zinc absorption. These are planned refinements.</li>
+    <li><strong>Amino acid targets</strong> use WHO adult requirements per kg of body weight and are applied to adults only.</li>
+    <li><strong>Reference values are for healthy populations.</strong> If you have a medical condition, are pregnant, or are planning food for a child, check with a doctor, midwife or registered dietitian.</li>
+  </ul>
+</Base>
