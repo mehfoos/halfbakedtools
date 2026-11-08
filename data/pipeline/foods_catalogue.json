@@ -255,9 +255,7 @@
    "group": "Grains",
    "diet": "vegan",
    "include": [
-    "Spaghetti",
-    "whole-wheat",
-    "cooked"
+    "Pasta, whole-wheat, cooked"
    ],
    "exclude": [],
    "unit": "g",
@@ -718,12 +716,9 @@
    "group": "Fruit",
    "diet": "vegan",
    "include": [
-    "Raisins, seedless"
+    "Raisins, dark, seedless"
    ],
-   "exclude": [
-    "chocolate",
-    "golden"
-   ],
+   "exclude": [],
    "unit": "g",
    "unitGrams": 1,
    "step": 5,
