@@ -1,17 +1,6322 @@
 {
  "id": "eu",
  "name": "EU",
- "longName": "EU reference values (EFSA)",
- "status": "planned",
- "notes": [
-  "EFSA values are being transcribed and checked; not available yet."
- ],
+ "longName": "EU Dietary Reference Values (EFSA)",
+ "status": "available",
  "sources": [
   {
    "id": "efsa",
-   "title": "EFSA Dietary Reference Values",
+   "title": "EFSA (2017) Dietary Reference Values for nutrients: summary report and tables",
    "url": "https://www.efsa.europa.eu/en/topics/topic/dietary-reference-values"
+  },
+  {
+   "id": "efsa-gibson",
+   "title": "EFSA reference intakes as tabulated in Gibson, Principles of Nutritional Assessment",
+   "url": "https://nutritionalassessment.org/nrv/appendix/efsa-ri-min.pdf"
+  },
+  {
+   "id": "nasem-dri-ul",
+   "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels",
+   "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"
+  },
+  {
+   "id": "who-2007",
+   "title": "WHO/FAO/UNU (2007) Protein and amino acid requirements in human nutrition, WHO Technical Report Series 935",
+   "url": "https://iris.who.int/handle/10665/43411"
   }
  ],
- "profiles": []
+ "notes": [
+  "Values are population reference intakes (PRI) where EFSA set one, otherwise adequate intakes (AI).",
+  "Adult zinc assumes a moderate phytate intake (600 mg/day); diets rich in wholegrains and pulses have more phytate and need more zinc (up to 16.3 mg for men and 12.7 mg for women).",
+  "Iron for women aged 51+ uses EFSA's post-menopausal value (11 mg) as an age-based approximation.",
+  "Thiamin and niacin are set per unit of energy, so they rise with the calorie range.",
+  "EFSA sets no numeric limit for saturated fat (as low as possible) and had not set sodium values in these tables; US limits are used for safety checks.",
+  "Vitamin A is expressed in retinol equivalents by EFSA and in retinol activity equivalents by USDA food data."
+ ],
+ "profiles": [
+  {
+   "id": "male-1-3",
+   "stage": "male",
+   "group": "1-3",
+   "label": "Male, 1-3 years",
+   "energy": {
+    "kcal": 1088,
+    "low": 979,
+    "high": 1197,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 12,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 63,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 12,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 20,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 0.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 0.6,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 30,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 120,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 1.5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 140,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 4,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 450,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 90,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 200,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 0.5,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 800,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 90,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 4.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 7,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 0.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 170,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 10,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake (100 mg of DHA under age 2)"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 970,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 600,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 1200,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "male-4-6",
+   "stage": "male",
+   "group": "4-6",
+   "label": "Male, 4-6 years",
+   "energy": {
+    "kcal": 1482,
+    "low": 1334,
+    "high": 1630,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 19,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 75,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 9,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 20,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 30,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 650,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 0.7,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 0.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 140,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 1.5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 170,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 4,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 800,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 90,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 440,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 20,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 150,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 5.5,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 12,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 230,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 14,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 870,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 900,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 1500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "male-7-10",
+   "stage": "male",
+   "group": "7-10",
+   "label": "Male, 7-10 years",
+   "energy": {
+    "kcal": 1817,
+    "low": 1635,
+    "high": 1999,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 28,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 75,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 9,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 30,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 45,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 650,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 200,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 2.5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 4,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 800,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 90,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 1.5,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 440,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 1800,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 35,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 150,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 7.4,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 12,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 230,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 16,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 920,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 900,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 1500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "male-11-14",
+   "stage": "male",
+   "group": "11-14",
+   "label": "Male, 11-14 years",
+   "energy": {
+    "kcal": 2500,
+    "low": 2250,
+    "high": 2750,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 45,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 600,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 13,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 45,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1200,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.4,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.4,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 60,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 270,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 3.5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 340,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 1150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 120,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 600,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 2.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 6,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 640,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 2700,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 55,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 280,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 10.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 23,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 5.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 19,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 900,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 1700,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 1800,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "male-15-17",
+   "stage": "male",
+   "group": "15-17",
+   "label": "Male, 15-17 years",
+   "energy": {
+    "kcal": 2500,
+    "low": 2250,
+    "high": 2750,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 60,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 750,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 13,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 65,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 100,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1800,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 80,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 330,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 4.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 1150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 130,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 900,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 9,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 640,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 14.2,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 34,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 8.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 21,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 870,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 2800,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "male-18-24",
+   "stage": "male",
+   "group": "18-24",
+   "label": "Male, 18-24 years",
+   "energy": {
+    "kcal": 2500,
+    "low": 2250,
+    "high": 2750,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 70,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 750,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 13,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 110,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 330,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 4.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 1000,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 11,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 550,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 11.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 10.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 350,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 25,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 830,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "histidine": {
+     "min": {
+      "value": 10,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "isoleucine": {
+     "min": {
+      "value": 20,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "leucine": {
+     "min": {
+      "value": 39,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "lysine": {
+     "min": {
+      "value": 30,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "metCys": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "pheTyr": {
+     "min": {
+      "value": 25,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "threonine": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "tryptophan": {
+     "min": {
+      "value": 4,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "valine": {
+     "min": {
+      "value": 26,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    }
+   }
+  },
+  {
+   "id": "male-25-50",
+   "stage": "male",
+   "group": "25-50",
+   "label": "Male, 25-50 years",
+   "energy": {
+    "kcal": 2500,
+    "low": 2250,
+    "high": 2750,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 70,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 750,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 13,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 110,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 330,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 4.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 950,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 11,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 550,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 11.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 10.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 350,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 25,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 830,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "histidine": {
+     "min": {
+      "value": 10,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "isoleucine": {
+     "min": {
+      "value": 20,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "leucine": {
+     "min": {
+      "value": 39,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "lysine": {
+     "min": {
+      "value": 30,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "metCys": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "pheTyr": {
+     "min": {
+      "value": 25,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "threonine": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "tryptophan": {
+     "min": {
+      "value": 4,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "valine": {
+     "min": {
+      "value": 26,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    }
+   }
+  },
+  {
+   "id": "male-51+",
+   "stage": "male",
+   "group": "51+",
+   "label": "Male, 51+ years",
+   "energy": {
+    "kcal": 2342,
+    "low": 2108,
+    "high": 2576,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 70,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 750,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 13,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 110,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 330,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 4.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 950,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 11,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 550,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 11.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 10.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 350,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 25,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 830,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "histidine": {
+     "min": {
+      "value": 10,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "isoleucine": {
+     "min": {
+      "value": 20,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "leucine": {
+     "min": {
+      "value": 39,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "lysine": {
+     "min": {
+      "value": 30,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "metCys": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "pheTyr": {
+     "min": {
+      "value": 25,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "threonine": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "tryptophan": {
+     "min": {
+      "value": 4,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "valine": {
+     "min": {
+      "value": 26,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    }
+   }
+  },
+  {
+   "id": "female-1-3",
+   "stage": "female",
+   "group": "1-3",
+   "label": "Female, 1-3 years",
+   "energy": {
+    "kcal": 1004,
+    "low": 904,
+    "high": 1104,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 12,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 63,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 12,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 20,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 0.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 0.6,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 30,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 120,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 1.5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 140,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 4,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 450,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 90,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 200,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 0.5,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 800,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 90,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 4.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 7,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 0.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 170,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 10,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake (100 mg of DHA under age 2)"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 970,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 600,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 1200,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "female-4-6",
+   "stage": "female",
+   "group": "4-6",
+   "label": "Female, 4-6 years",
+   "energy": {
+    "kcal": 1378,
+    "low": 1240,
+    "high": 1516,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 19,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 75,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 9,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 20,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 30,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 650,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 0.7,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 0.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 140,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 1.5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 170,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 4,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 800,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 90,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 440,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 20,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 150,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 5.5,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 12,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 230,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 14,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 870,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 900,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 1500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "female-7-10",
+   "stage": "female",
+   "group": "7-10",
+   "label": "Female, 7-10 years",
+   "energy": {
+    "kcal": 1703,
+    "low": 1533,
+    "high": 1873,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 28,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 75,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 9,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 30,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 45,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 650,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 200,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 2.5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 4,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 800,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 90,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 1.5,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 440,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 1800,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 35,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 150,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 7.4,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 12,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 230,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 16,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 920,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 900,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 1500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "female-11-14",
+   "stage": "female",
+   "group": "11-14",
+   "label": "Female, 11-14 years",
+   "energy": {
+    "kcal": 2000,
+    "low": 1800,
+    "high": 2200,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 45,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 600,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 45,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1200,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.4,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.4,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 60,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 270,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 3.5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 340,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 1150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 120,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 600,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 2.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 6,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 640,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 2700,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 55,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 280,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 13,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 10.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 23,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.1,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 5.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 19,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 880,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 1700,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 1800,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "female-15-17",
+   "stage": "female",
+   "group": "15-17",
+   "label": "Female, 15-17 years",
+   "energy": {
+    "kcal": 2000,
+    "low": 1800,
+    "high": 2200,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 60,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 650,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 65,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 90,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1800,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 80,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 330,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 4.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 1150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 130,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 900,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 9,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 640,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 13,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 11.9,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 34,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.1,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 8.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 21,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 840,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 2800,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    }
+   }
+  },
+  {
+   "id": "female-18-24",
+   "stage": "female",
+   "group": "18-24",
+   "label": "Female, 18-24 years",
+   "energy": {
+    "kcal": 2000,
+    "low": 1800,
+    "high": 2200,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 60,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 650,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 95,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 330,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 4.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 1000,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 11,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 550,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 16,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 9.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 10.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 25,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 830,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "histidine": {
+     "min": {
+      "value": 10,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "isoleucine": {
+     "min": {
+      "value": 20,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "leucine": {
+     "min": {
+      "value": 39,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "lysine": {
+     "min": {
+      "value": 30,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "metCys": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "pheTyr": {
+     "min": {
+      "value": 25,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "threonine": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "tryptophan": {
+     "min": {
+      "value": 4,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "valine": {
+     "min": {
+      "value": 26,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    }
+   }
+  },
+  {
+   "id": "female-25-50",
+   "stage": "female",
+   "group": "25-50",
+   "label": "Female, 25-50 years",
+   "energy": {
+    "kcal": 2000,
+    "low": 1800,
+    "high": 2200,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 60,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 650,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 95,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 330,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 4.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 950,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 11,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 550,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 16,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 9.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 10.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 25,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 830,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "histidine": {
+     "min": {
+      "value": 10,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "isoleucine": {
+     "min": {
+      "value": 20,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "leucine": {
+     "min": {
+      "value": 39,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "lysine": {
+     "min": {
+      "value": 30,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "metCys": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "pheTyr": {
+     "min": {
+      "value": 25,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "threonine": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "tryptophan": {
+     "min": {
+      "value": 4,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "valine": {
+     "min": {
+      "value": 26,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    }
+   }
+  },
+  {
+   "id": "female-51+",
+   "stage": "female",
+   "group": "51+",
+   "label": "Female, 51+ years",
+   "energy": {
+    "kcal": 1912,
+    "low": 1721,
+    "high": 2103,
+    "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."
+   },
+   "defaultWeightKg": 60,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 650,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 95,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.6,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 330,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 4.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 400,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 950,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 150,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 11,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 550,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 9.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.3,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 10.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 25,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 250,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 830,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight"
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "histidine": {
+     "min": {
+      "value": 10,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "isoleucine": {
+     "min": {
+      "value": 20,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "leucine": {
+     "min": {
+      "value": 39,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "lysine": {
+     "min": {
+      "value": 30,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "metCys": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "pheTyr": {
+     "min": {
+      "value": 25,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "threonine": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "tryptophan": {
+     "min": {
+      "value": 4,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "valine": {
+     "min": {
+      "value": 26,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    }
+   }
+  },
+  {
+   "id": "pregnancy-18-50",
+   "stage": "pregnancy",
+   "group": "18-50",
+   "label": "Pregnant, 18-50 years",
+   "energy": {
+    "kcal": 2000,
+    "low": 1800,
+    "high": 2400,
+    "note": "Energy needs rise in later pregnancy and while breastfeeding; ask your midwife or doctor."
+   },
+   "defaultWeightKg": 60,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 700,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 105,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 1.9,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.8,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 600,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 4.5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 480,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 950,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 200,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 11,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 550,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 16,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 10.9,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.5,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 10.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 25,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 350,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake (250 mg plus 100-200 mg DHA)"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 830,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight, plus 9 g/day",
+      "extraG": 9
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "histidine": {
+     "min": {
+      "value": 10,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "isoleucine": {
+     "min": {
+      "value": 20,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "leucine": {
+     "min": {
+      "value": 39,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "lysine": {
+     "min": {
+      "value": 30,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "metCys": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "pheTyr": {
+     "min": {
+      "value": 25,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "threonine": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "tryptophan": {
+     "min": {
+      "value": 4,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "valine": {
+     "min": {
+      "value": 26,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    }
+   }
+  },
+  {
+   "id": "lactation-18-50",
+   "stage": "lactation",
+   "group": "18-50",
+   "label": "Breastfeeding, 18-50 years",
+   "energy": {
+    "kcal": 2000,
+    "low": 1800,
+    "high": 2400,
+    "note": "Energy needs rise in later pregnancy and while breastfeeding; ask your midwife or doctor."
+   },
+   "defaultWeightKg": 60,
+   "targets": {
+    "vitaminA": {
+     "min": {
+      "value": 1300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminD": {
+     "min": {
+      "value": 15,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "vitaminE": {
+     "min": {
+      "value": 11,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminK": {
+     "min": {
+      "value": 70,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminC": {
+     "min": {
+      "value": 155,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "riboflavin": {
+     "min": {
+      "value": 2.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB6": {
+     "min": {
+      "value": 1.7,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "folate": {
+     "min": {
+      "value": 500,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "vitaminB12": {
+     "min": {
+      "value": 5.0,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "choline": {
+     "min": {
+      "value": 520,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 3500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 7,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "calcium": {
+     "min": {
+      "value": 950,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 2500,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iodine": {
+     "min": {
+      "value": 200,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 1100,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "manganese": {
+     "min": {
+      "value": 3.0,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 11,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "phosphorus": {
+     "min": {
+      "value": 550,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "potassium": {
+     "min": {
+      "value": 4000,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "selenium": {
+     "min": {
+      "value": 85,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 400,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "iron": {
+     "min": {
+      "value": 16,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 45,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "zinc": {
+     "min": {
+      "value": 12.2,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 40,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "copper": {
+     "min": {
+      "value": 1.5,
+      "basis": "abs",
+      "source": "efsa"
+     },
+     "max": {
+      "value": 10.0,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "magnesium": {
+     "min": {
+      "value": 300,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "fibre": {
+     "min": {
+      "value": 25,
+      "basis": "abs",
+      "source": "efsa"
+     }
+    },
+    "thiamin": {
+     "min": {
+      "value": 0.1,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "0.1 mg per MJ of energy"
+     }
+    },
+    "niacinNE": {
+     "min": {
+      "value": 1.6,
+      "basis": "perMJ",
+      "source": "efsa",
+      "note": "1.6 mg niacin equivalents per MJ of energy"
+     }
+    },
+    "fat": {
+     "max": {
+      "value": 35,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 20-35% of energy"
+     }
+    },
+    "carbohydrate": {
+     "min": {
+      "value": 45,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Reference intake range 45-60% of energy"
+     }
+    },
+    "la": {
+     "min": {
+      "value": 4,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "ala": {
+     "min": {
+      "value": 0.5,
+      "basis": "pctEnergy",
+      "source": "efsa",
+      "note": "Adequate intake"
+     }
+    },
+    "epaDha": {
+     "min": {
+      "value": 350,
+      "basis": "abs",
+      "source": "efsa",
+      "note": "Adequate intake (250 mg plus 100-200 mg DHA)"
+     }
+    },
+    "protein": {
+     "min": {
+      "value": 830,
+      "basis": "perKg",
+      "source": "efsa",
+      "note": "Population reference intake per kg body weight, plus 19 g/day",
+      "extraG": 19
+     }
+    },
+    "retinol": {
+     "max": {
+      "value": 3000,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Tolerable upper intake level"
+     }
+    },
+    "sodium": {
+     "max": {
+      "value": 2300,
+      "basis": "abs",
+      "source": "nasem-dri-ul",
+      "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "histidine": {
+     "min": {
+      "value": 10,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "isoleucine": {
+     "min": {
+      "value": 20,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "leucine": {
+     "min": {
+      "value": 39,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "lysine": {
+     "min": {
+      "value": 30,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "metCys": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "pheTyr": {
+     "min": {
+      "value": 25,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "threonine": {
+     "min": {
+      "value": 15,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "tryptophan": {
+     "min": {
+      "value": 4,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    },
+    "valine": {
+     "min": {
+      "value": 26,
+      "basis": "perKg",
+      "source": "who-2007"
+     }
+    }
+   }
+  }
+ ]
 }

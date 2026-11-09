@@ -2,8 +2,9 @@
 import Base from "../../layouts/Base.astro";
 import uk from "../../../../data/targets/uk.json";
 import us from "../../../../data/targets/us.json";
+import eu from "../../../../data/targets/eu.json";
 import meta from "../../../../data/meta.json";
-const standards = [uk, us];
+const standards = [uk, us, eu];
 ---
 <Base title="Methods and sources" current="about">
   <h1>Methods and sources</h1>
@@ -35,7 +36,11 @@ const standards = [uk, us];
       <ul class="prose muted small">{s.notes.map((n) => <li>{n}</li>)}</ul>
     </section>
   ))}
-  <p>EU (EFSA) values are planned and will be added once they have been transcribed and checked against EFSA's published reference values.</p>
+  <p>
+    The charts can also show the other two standards' targets for the same person (same age, sex, weight and
+    calories) as thin coloured outlines, so you can see where the UK, US and EU agree and where they differ.
+    The planner always optimises against the one standard you choose.
+  </p>
 
   <h2>How the planner chooses foods</h2>
   <p>

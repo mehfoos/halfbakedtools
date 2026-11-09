@@ -89,3 +89,18 @@ test("diet filter: no restriction, vegetarian, vegan", async () => {
   assert.equal(fresh().diet, "none");
   assert.equal(decode("d=veg").diet, "vegetarian");
 });
+
+test("EU targets: per-MJ, per-kg and energy-percentage values convert correctly", async () => {
+  const { resolveTargets } = await import("./solver.ts");
+  const eu = load("eu");
+  const p = pickProfile(eu, "male", 30, "none").profile;
+  assert.equal(p.id, "male-25-50");
+  const nutrients = ["thiamin", "protein", "ala", "epaDha", "iron"].map((key) => ({ key, label: key, unit: "" }));
+  const t = new Map(resolveTargets(p.targets, nutrients, 2500, 70, "eu").map((x) => [x.key, x]));
+  assert.ok(Math.abs(t.get("thiamin")!.min! - 1.046) < 0.01);   // 0.1 mg/MJ x 10.46 MJ
+  assert.ok(Math.abs(t.get("protein")!.min! - 58.1) < 0.1);     // 0.83 g/kg x 70 kg
+  assert.ok(Math.abs(t.get("ala")!.min! - 1.389) < 0.01);       // 0.5% of 2500 kcal / 9
+  assert.equal(t.get("epaDha")!.min, 250);
+  assert.equal(pickProfile(eu, "female", 30, "pregnancy").profile.id, "pregnancy-18-50");
+  assert.equal(pickProfile(eu, "female", 55, "none").profile.targets.iron.min!.value, 11);
+});

@@ -292,18 +292,136 @@ def build_us() -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# EU: EFSA Dietary Reference Values, summary tables (EFSA 2017), as reproduced
+# in Gibson, Principles of Nutritional Assessment (nutritionalassessment.org,
+# appendix tables for EFSA reference intakes). PRI where set, otherwise AI.
+# Groups: 1-3, 4-6, 7-10, 11-14, 15-17, 18-24, 25-50, 51+ (51+ uses the
+# post-menopausal iron value for women, an age proxy).
+# Each row: value per group in that order; (male, female) tuples where they differ.
+# ---------------------------------------------------------------------------
+EU_GROUPS = ["1-3", "4-6", "7-10", "11-14", "15-17", "18-24", "25-50", "51+"]
+EU_ABS = {
+    # vitamins
+    "vitaminA":   ([250, 300, 400, 600, 750, 750, 750, 750], [250, 300, 400, 600, 650, 650, 650, 650]),
+    "vitaminD":   ([15] * 8,),
+    "vitaminE":   ([6, 9, 9, 13, 13, 13, 13, 13], [6, 9, 9, 11, 11, 11, 11, 11]),   # EFSA bands 1-2, 3-9, 10-17, adults
+    "vitaminK":   ([12, 20, 30, 45, 65, 70, 70, 70],),
+    "vitaminC":   ([20, 30, 45, 70, 100, 110, 110, 110], [20, 30, 45, 70, 90, 95, 95, 95]),
+    "riboflavin": ([0.6, 0.7, 1.0, 1.4, 1.6, 1.6, 1.6, 1.6],),
+    "vitaminB6":  ([0.6, 0.7, 1.0, 1.4, 1.7, 1.7, 1.7, 1.7], [0.6, 0.7, 1.0, 1.4, 1.6, 1.6, 1.6, 1.6]),
+    "folate":     ([120, 140, 200, 270, 330, 330, 330, 330],),
+    "vitaminB12": ([1.5, 1.5, 2.5, 3.5, 4.0, 4.0, 4.0, 4.0],),
+    "choline":    ([140, 170, 250, 340, 400, 400, 400, 400],),
+    "pantothenic": ([4, 4, 4, 5, 5, 5, 5, 5],),
+    # minerals
+    "calcium":    ([450, 800, 800, 1150, 1150, 1000, 950, 950],),
+    "iodine":     ([90, 90, 90, 120, 130, 150, 150, 150],),
+    "manganese":  ([0.5, 1.0, 1.5, 2.0, 3.0, 3.0, 3.0, 3.0],),
+    "phosphorus": ([250, 440, 440, 640, 640, 550, 550, 550],),
+    "potassium":  ([800, 1100, 1800, 2700, 3500, 3500, 3500, 3500],),
+    "selenium":   ([15, 20, 35, 55, 70, 70, 70, 70],),
+    "iron":       ([7, 7, 11, 11, 11, 11, 11, 11], [7, 7, 11, 13, 13, 16, 16, 11]),
+    "zinc":       ([4.3, 5.5, 7.4, 10.7, 14.2, 11.7, 11.7, 11.7], [4.3, 5.5, 7.4, 10.7, 11.9, 9.3, 9.3, 9.3]),  # adults at moderate phytate (600 mg/d)
+    "copper":     ([0.7, 1.0, 1.0, 1.3, 1.3, 1.6, 1.6, 1.6], [0.7, 1.0, 1.0, 1.1, 1.1, 1.3, 1.3, 1.3]),      # EFSA bands 1-2, 3-9, 10-17, adults
+    "magnesium":  ([170, 230, 230, 300, 300, 350, 350, 350], [170, 230, 230, 250, 250, 300, 300, 300]),
+    "fibre":      ([10, 14, 16, 19, 21, 25, 25, 25],),
+}
+EU_PREG = {"vitaminA": 700, "vitaminD": 15, "vitaminE": 11, "vitaminK": 70, "vitaminC": 105, "riboflavin": 1.9, "vitaminB6": 1.8,
+           "folate": 600, "vitaminB12": 4.5, "choline": 480, "pantothenic": 5, "calcium": 950, "iodine": 200, "manganese": 3.0,
+           "phosphorus": 550, "potassium": 3500, "selenium": 70, "iron": 16, "zinc": 9.3 + 1.6, "copper": 1.5, "magnesium": 300, "fibre": 25}
+EU_LACT = {**EU_PREG, "vitaminA": 1300, "vitaminC": 155, "riboflavin": 2.0, "vitaminB6": 1.7, "folate": 500, "vitaminB12": 5.0,
+           "choline": 520, "pantothenic": 7, "potassium": 4000, "selenium": 85, "zinc": 9.3 + 2.9}
+# Protein PRI, g per kg body weight per day (group averages of EFSA's yearly values).
+EU_PROTEIN = {"1-3": (0.97, 0.97), "4-6": (0.87, 0.87), "7-10": (0.92, 0.92), "11-14": (0.90, 0.88), "15-17": (0.87, 0.84),
+              "18-24": (0.83, 0.83), "25-50": (0.83, 0.83), "51+": (0.83, 0.83)}
+EU_PROTEIN_EXTRA = {"pregnancy": 9, "lactation": 19}   # g/day added (2nd trimester; first 6 months)
+# Default body weights for children (kg), only used until the person enters their own.
+EU_CHILD_WEIGHT = {"1-3": 12, "4-6": 19, "7-10": 28, "11-14": 45, "15-17": 60}
+EU_TO_US_UL = {"1-3": "1-3", "4-6": "4-8", "7-10": "4-8", "11-14": "9-13", "15-17": "14-18", "18-24": "19-30", "25-50": "31-50", "51+": "51-70"}
+EU_TO_UK_ENERGY = {"1-3": "2-3", "4-6": "4-6", "7-10": "7-10", "11-14": "11-14", "15-17": "15-18", "18-24": "19-64", "25-50": "19-64", "51+": "65-74"}
+
+
+def eu_targets(sex: str, g: str, stage: str) -> dict:
+    t: dict = {}
+    if stage in ("pregnancy", "lactation"):
+        for k, v in (EU_PREG if stage == "pregnancy" else EU_LACT).items():
+            put(t, k, "min", round(v, 2), "abs", "efsa")
+    else:
+        i = EU_GROUPS.index(g)
+        for k, rows in EU_ABS.items():
+            row = rows[0] if sex == "male" or len(rows) == 1 else rows[1]
+            put(t, k, "min", row[i], "abs", "efsa")
+    put(t, "thiamin", "min", 0.1, "perMJ", "efsa", "0.1 mg per MJ of energy")
+    put(t, "niacinNE", "min", 1.6, "perMJ", "efsa", "1.6 mg niacin equivalents per MJ of energy")
+    put(t, "fat", "max", 35, "pctEnergy", "efsa", "Reference intake range 20-35% of energy")
+    put(t, "carbohydrate", "min", 45, "pctEnergy", "efsa", "Reference intake range 45-60% of energy")
+    put(t, "la", "min", 4, "pctEnergy", "efsa", "Adequate intake")
+    put(t, "ala", "min", 0.5, "pctEnergy", "efsa", "Adequate intake")
+    put(t, "epaDha", "min", 350 if stage in ("pregnancy", "lactation") else 250, "abs", "efsa",
+        "Adequate intake" + (" (250 mg plus 100-200 mg DHA)" if stage in ("pregnancy", "lactation")
+                             else " (100 mg of DHA under age 2)" if g == "1-3" else ""))
+    side = sex if stage not in ("pregnancy", "lactation") else "female"
+    pk = EU_PROTEIN["25-50" if stage in ("pregnancy", "lactation") else g][0 if side == "male" else 1]
+    put(t, "protein", "min", round(pk * 1000), "perKg", "efsa", "Population reference intake per kg body weight"
+        + (f", plus {EU_PROTEIN_EXTRA[stage]} g/day" if stage in EU_PROTEIN_EXTRA else ""))
+    if stage in EU_PROTEIN_EXTRA:
+        t["protein"]["min"]["extraG"] = EU_PROTEIN_EXTRA[stage]
+    # EFSA sets no numeric limit for saturated fat ("as low as possible") or salt in these tables, so the
+    # US tolerable upper intake levels and sodium risk-reduction intake are borrowed, as for the UK.
+    add_us_uls(t, EU_TO_US_UL["25-50" if stage in ("pregnancy", "lactation") else g], stage if stage in ("pregnancy", "lactation") else sex, "nasem-dri-ul")
+    if g in ("18-24", "25-50", "51+") or stage in ("pregnancy", "lactation"):
+        add_aa(t)
+    return t
+
+
+def build_eu() -> dict:
+    profiles = []
+    for sex in ("male", "female"):
+        for g in EU_GROUPS:
+            ukg = EU_TO_UK_ENERGY[g]
+            col = UK_COLS.index(ukg)
+            kcal = UK["energy"][0 if sex == "male" else 1][col]
+            profiles.append({
+                "id": f"{sex}-{g}", "stage": sex, "group": g, "label": f"{sex.title()}, {g} years",
+                "energy": {"kcal": kcal, "low": round(kcal * 0.9), "high": round(kcal * 1.1),
+                           "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."},
+                "defaultWeightKg": EU_CHILD_WEIGHT.get(g, 70 if sex == "male" else 60),
+                "targets": eu_targets(sex, g, sex),
+            })
+    for stage in ("pregnancy", "lactation"):
+        profiles.append({
+            "id": f"{stage}-18-50", "stage": stage, "group": "18-50", "label": f"{'Pregnant' if stage == 'pregnancy' else 'Breastfeeding'}, 18-50 years",
+            "energy": {"kcal": 2000, "low": 1800, "high": 2400,
+                       "note": "Energy needs rise in later pregnancy and while breastfeeding; ask your midwife or doctor."},
+            "defaultWeightKg": 60, "targets": eu_targets("female", "25-50", stage),
+        })
+    return {
+        "id": "eu", "name": "EU", "longName": "EU Dietary Reference Values (EFSA)", "status": "available",
+        "sources": [
+            {"id": "efsa", "title": "EFSA (2017) Dietary Reference Values for nutrients: summary report and tables", "url": "https://www.efsa.europa.eu/en/topics/topic/dietary-reference-values"},
+            {"id": "efsa-gibson", "title": "EFSA reference intakes as tabulated in Gibson, Principles of Nutritional Assessment", "url": "https://nutritionalassessment.org/nrv/appendix/efsa-ri-min.pdf"},
+            {"id": "nasem-dri-ul", "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels", "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"},
+            WHO_AA_SOURCE,
+        ],
+        "notes": [
+            "Values are population reference intakes (PRI) where EFSA set one, otherwise adequate intakes (AI).",
+            "Adult zinc assumes a moderate phytate intake (600 mg/day); diets rich in wholegrains and pulses have more phytate and need more zinc (up to 16.3 mg for men and 12.7 mg for women).",
+            "Iron for women aged 51+ uses EFSA's post-menopausal value (11 mg) as an age-based approximation.",
+            "Thiamin and niacin are set per unit of energy, so they rise with the calorie range.",
+            "EFSA sets no numeric limit for saturated fat (as low as possible) and had not set sodium values in these tables; US limits are used for safety checks.",
+            "Vitamin A is expressed in retinol equivalents by EFSA and in retinol activity equivalents by USDA food data.",
+        ],
+        "profiles": profiles,
+    }
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    for data in (build_uk(), build_us()):
+    for data in (build_uk(), build_us(), build_eu()):
         (OUT / f"{data['id']}.json").write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n")
-    (OUT / "eu.json").write_text(json.dumps({
-        "id": "eu", "name": "EU", "longName": "EU reference values (EFSA)", "status": "planned",
-        "notes": ["EFSA values are being transcribed and checked; not available yet."],
-        "sources": [{"id": "efsa", "title": "EFSA Dietary Reference Values", "url": "https://www.efsa.europa.eu/en/topics/topic/dietary-reference-values"}],
-        "profiles": [],
-    }, indent=1) + "\n")
     (OUT / "index.json").write_text(json.dumps({"standards": ["uk", "us", "eu"]}, indent=1) + "\n")
-    print("Wrote targets for uk, us (eu planned)")
+    print("Wrote targets for uk, us, eu")
 
 
 if __name__ == "__main__":

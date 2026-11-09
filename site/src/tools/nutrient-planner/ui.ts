@@ -4,7 +4,7 @@ import { resolveTargets, splitAssessable, describeAmount, type Plan, type Resolv
 import { pickProfile, isAdult, type Standard } from "./profiles.ts";
 import { unpack, isOn, setOn, dietOk, matches, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
 import { GROUPS, ORDER, SHORT_LABEL, analyse, totals, type Report, type Row } from "./analysis.ts";
-import { radarSvg, scaleMax, type Axis } from "./radar.ts";
+import { radarSvg, scaleMax, type Axis, type Overlay } from "./radar.ts";
 import { decode, encode, exportFile, forget, fresh, importFile, loadRemembered, remember, DEFAULTS, type Settings } from "./state.ts";
 
 const NHS_VITD = "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/";
@@ -309,9 +309,34 @@ export async function start(root: HTMLElement) {
     rows.map((r) => `<tr><td>${esc(r.label)}${r.custom ? '<span class="badge">custom</span>' : ""}</td><td class="num">${fmt(r.value)} <span class="muted">${esc(r.unit)}</span></td><td class="num muted">${target(r)}</td><td>${chip(r)}</td></tr>`).join("")
   }</tbody></table></div>`;
 
+  // ---------- other standards' targets, for comparison on the charts
+  const OVERLAY_STYLE: Record<string, { color: string; dash: string }> = {
+    uk: { color: "#0b7a75", dash: "6 3" }, us: { color: "#c25e00", dash: "2 3" }, eu: { color: "#7a2e8e", dash: "8 3 2 3" },
+  };
+  const others = () => standards.filter((x) => x.status === "available" && x.id !== std().id);
+  const overlays = (): Overlay[] => (s.compare ? others().map((x) => ({ id: x.id, label: x.name, ...OVERLAY_STYLE[x.id] })) : []);
+  function otherTargets() {
+    const b = band(), mid = (b.low + b.high) / 2;
+    return others().map((x) => {
+      const p = pickProfile(x, s.sex, s.age, s.life).profile;
+      const t = new Map(resolveTargets(p.targets, data.nutrients, mid, weight(), x.id).map((r) => [r.key, r]));
+      return { id: x.id, targets: t, energyMid: (p.energy.low + p.energy.high) / 2 };
+    });
+  }
+  function withOthers(axis: Axis, key: string, main: number | undefined, bound: "min" | "max", cmp: ReturnType<typeof otherTargets>): Axis {
+    if (!main) return axis;
+    const o: Record<string, number> = {};
+    for (const c of cmp) {
+      const v = key === "energy" ? c.energyMid : c.targets.get(key)?.[bound];
+      if (v !== undefined && v > 0) o[c.id] = (v / main) * 100;
+    }
+    return { ...axis, others: o };
+  }
+
   function axesFor(rep: Report, keys: string[]): Axis[] {
+    const cmp = otherTargets();
     return keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined)
-      .map((r) => ({ label: SHORT_LABEL[r.key] ?? r.label, pct: r.pctOfMin!, kind: "min" as const, ok: r.status === "met", detail: `${fmt(r.value)} of ${fmt(r.min)} ${r.unit}` }));
+      .map((r) => withOthers({ label: SHORT_LABEL[r.key] ?? r.label, pct: r.pctOfMin!, kind: "min" as const, ok: r.status === "met", detail: `${fmt(r.value)} of ${fmt(r.min)} ${r.unit}` }, r.key, r.min, "min", cmp));
   }
 
   // Overview laid out like a UK/EU nutrition label (Regulation 1169/2011): energy, fat, saturates,
@@ -320,15 +345,16 @@ export async function start(root: HTMLElement) {
   const ADULT_RI: Record<string, number> = { fat: 70, satfat: 20, carbohydrate: 260, sugars: 90, protein: 50, salt: 6 };
   function overviewAxes(rep: Report): Axis[] {
     const b = band();
+    const cmp = otherTargets();
     const e = rep.energy, mid = (b.low + b.high) / 2;
-    const axes: Axis[] = [{ label: "Energy", pct: (e / mid) * 100, kind: "range", ok: e >= b.low && e <= b.high,
-      detail: `${fmt(e)} kcal; target range ${fmt(b.low)}–${fmt(b.high)}` }];
+    const axes: Axis[] = [withOthers({ label: "Energy", pct: (e / mid) * 100, kind: "range", ok: e >= b.low && e <= b.high,
+      detail: `${fmt(e)} kcal; target range ${fmt(b.low)}–${fmt(b.high)}` }, "energy", mid, "min", cmp)];
     const add = (key: string, label: string) => {
       let r = rep.byKey.get(key);
       if (key === "salt" && r?.max === undefined && rep.byKey.get("sodium")?.max !== undefined) { r = rep.byKey.get("sodium"); label = "Sodium"; }
       if (!r || r.status === "unassessed") return;
-      if (r.min !== undefined && r.min > 0) axes.push({ label, pct: r.pctOfMin!, kind: "min", ok: r.status === "met", detail: `${fmt(r.value)} of at least ${fmt(r.min)} ${r.unit}` });
-      else if (r.max !== undefined && r.max > 0) axes.push({ label, pct: (r.value / r.max) * 100, kind: "max", ok: r.value <= r.max * 1.001, detail: `${fmt(r.value)} of at most ${fmt(r.max)} ${r.unit}` });
+      if (r.min !== undefined && r.min > 0) axes.push(withOthers({ label, pct: r.pctOfMin!, kind: "min", ok: r.status === "met", detail: `${fmt(r.value)} of at least ${fmt(r.min)} ${r.unit}` }, r.key, r.min, "min", cmp));
+      else if (r.max !== undefined && r.max > 0) axes.push(withOthers({ label, pct: (r.value / r.max) * 100, kind: "max", ok: r.value <= r.max * 1.001, detail: `${fmt(r.value)} of at most ${fmt(r.max)} ${r.unit}` }, r.key, r.max, "max", cmp));
       else if (ADULT_RI[key] && isAdult(s.age)) axes.push({ label, pct: (r.value / ADULT_RI[key]) * 100, kind: "ref", detail: `${fmt(r.value)} g; label reference intake ${ADULT_RI[key]} g for an adult` });
     };
     add("fat", "Fat"); add("satfat", "Saturates"); add("carbohydrate", "Carbs"); add("sugars", "Sugars");
@@ -347,12 +373,14 @@ export async function start(root: HTMLElement) {
       && !["fat", "satfat", "salt", "sodium"].includes(r.key) && (r.pctOfMax ?? 0) >= 80);
     return `<div class="side sans">
       <ul class="legend">
-        <li><span class="sw ring"></span> Target (100%)</li>
+        <li><span class="sw ring"></span> ${esc(std().name)} target (100%), used for planning</li>
+        ${others().map((x) => `<li class="cmp-only"><span class="sw line" style="border-top-color:${OVERLAY_STYLE[x.id].color};border-top-style:${x.id === "us" ? "dotted" : "dashed"}"></span> ${esc(x.name)} target for the same person</li>`).join("")}
         <li><span class="sw dot good"></span> Goal met</li>
         <li><span class="sw dot bad"></span> Goal not met</li>
         <li><span class="sw dot ref"></span> Reference only</li>
       </ul>
       <p class="small muted">≥ aim for at least the target · ≤ stay at or below it.</p>
+      <p class="small"><label><input type="checkbox" class="cmp-toggle" ${s.compare ? "checked" : ""} /> Show ${others().map((x) => esc(x.name)).join(" and ")} targets too</label></p>
       ${groups ? `<h4>Vitamins, minerals and protein building blocks</h4><ul class="groups">${groups}</ul><p class="small muted">Open each section below for its own chart.</p>` : ""}
       ${close.length ? `<h4>Close to a safety limit</h4>${close.map((r) => `<div class="limit ${r.status === "over" ? "over" : ""}">${esc(r.label)}: <b>${fmt(r.value)}</b> of max ${fmt(r.max)} ${esc(r.unit)}<div class="lbar"><span style="width:${Math.min(100, r.pctOfMax ?? 0).toFixed(0)}%"></span></div></div>`).join("")}` : ""}
     </div>`;
@@ -363,9 +391,9 @@ export async function start(root: HTMLElement) {
     const out: string[] = [];
     if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (<a href="${NHS_VITD}">NHS</a>).`);
     if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products${s.diet === "none" ? "" : ", so a fortified food or supplement may be needed"} (<a href="${NHS_VEGAN}">NHS</a>).`);
-    if ((rep.byKey.get("epaDha")?.value ?? 0) < 250) out.push(s.diet === "none"
+    if ((rep.byKey.get("epaDha")?.value ?? 0) < 250 && rep.byKey.get("epaDha")?.min === undefined) out.push(s.diet === "none"
       ? `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish such as salmon, mackerel and sardines; the NHS advises at least one portion of oily fish a week. Plant omega-3 (ALA) converts to them poorly.`
-      : `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish; plant omega-3 (ALA) converts to them poorly. There's no official target, but an algae-based supplement is the vegetarian and vegan source.`);
+      : `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish; plant omega-3 (ALA) converts to them poorly. The UK and US set no target; EFSA (EU) advises 250 mg a day. An algae-based supplement is the vegetarian and vegan source.`);
     if (rep.unassessed.some((r) => r.key === "iodine")) out.push(`<b>Iodine</b> isn't in the food database, so it isn't checked. Milk and yoghurt are the main UK sources; if you use plant drinks, choose one with added iodine (<a href="${BDA_IODINE}">BDA</a>).`);
     return out.length ? `<div class="notice small">${out.map((x) => `<p>${x}</p>`).join("")}</div>` : "";
   }
@@ -378,8 +406,8 @@ export async function start(root: HTMLElement) {
     if (axes.length < 3) return "";
     const id = `c${++uid}`;
     charts.set(id, { axes, title, zoom: false });
-    const canZoom = scaleMax(axes) > 150;
-    return `<figure class="chart" data-chart="${id}">${radarSvg(axes, { title })}${canZoom ? `<figcaption><button type="button" class="link small" data-zoom="${id}">Zoom to target</button></figcaption>` : ""}</figure>`;
+    const canZoom = scaleMax(axes, 150, overlays()) > 150;
+    return `<figure class="chart" data-chart="${id}">${radarSvg(axes, { title, overlays: overlays() })}${canZoom ? `<figcaption><button type="button" class="link small" data-zoom="${id}">Zoom to target</button></figcaption>` : ""}</figure>`;
   }
   root.addEventListener("click", (e) => {
     const b = (e.target as HTMLElement).closest("button[data-zoom]") as HTMLButtonElement | null;
@@ -388,8 +416,21 @@ export async function start(root: HTMLElement) {
     const fig = b.closest("figure");
     if (!c || !fig) return;
     c.zoom = !c.zoom;
-    fig.querySelector("svg")!.outerHTML = radarSvg(c.axes, { title: c.title, zoom: c.zoom });
+    fig.querySelector("svg")!.outerHTML = radarSvg(c.axes, { title: c.title, zoom: c.zoom, overlays: overlays() });
     b.textContent = c.zoom ? "Show full scale" : "Zoom to target";
+  });
+  // Showing or hiding the other standards redraws every chart on the page.
+  root.addEventListener("change", (e) => {
+    const t = e.target as HTMLInputElement;
+    if (!t.classList.contains("cmp-toggle")) return;
+    s.compare = t.checked;
+    save();
+    root.classList.toggle("no-compare", !s.compare);
+    $$<HTMLInputElement>(root, ".cmp-toggle").forEach((x) => (x.checked = s.compare));
+    for (const fig of $$(root, "figure[data-chart]")) {
+      const c = charts.get(fig.dataset.chart!);
+      if (c) fig.querySelector("svg")!.outerHTML = radarSvg(c.axes, { title: c.title, zoom: c.zoom, overlays: overlays() });
+    }
   });
   function contribSection(items: Item[], keys: string[], what: string) {
     const id = `k${++uid}`;
@@ -429,6 +470,7 @@ export async function start(root: HTMLElement) {
     const detail = (id: string) => {
       const g = GROUPS.find((x) => x.id === id)!;
       const rows = rep.rows.filter((r) => g.keys.includes(r.key) && (r.min !== undefined || r.max !== undefined || id === "fats"));
+      if (id === "fats" && !rows.some((r) => r.min !== undefined)) return "";
       if (!rows.length) return id === "amino" ? `<details><summary>${esc(g.title)}</summary><div class="details-body"><p class="small sans">Amino acid targets are given for adults only.</p></div></details>` : "";
       const axes = axesFor(rep, g.keys);
       const met = rows.filter((r) => r.status === "met").length, mins = rows.filter((r) => r.pctOfMin !== undefined).length;
@@ -445,7 +487,7 @@ export async function start(root: HTMLElement) {
       <div class="charts">${chart(overviewAxes(rep), "Overview: energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt as a share of target")}${sideHtml(rep)}</div>
       ${contribSection(items, ["energy", "fat", "satfat", "carbohydrate", "sugars", "fibre", "protein", "salt"], "energy, fat, carbs, fibre, protein and salt")}
       ${noticesHtml(rep)}
-      ${detail("vitamins")}${detail("minerals")}${detail("amino")}
+      ${detail("vitamins")}${detail("minerals")}${detail("amino")}${detail("fats")}
       <details><summary>All values <span class="summary-note">including fats and values without targets</span></summary><div class="details-body">${tableHtml(rep.rows.filter((r) => r.key !== "energy"))}</div></details>`;
   }
 
@@ -645,6 +687,7 @@ export async function start(root: HTMLElement) {
     + `<a href="${esc(root.dataset.methodsUrl)}">Methods and sources</a>`;
 
   function init() {
+    root.classList.toggle("no-compare", !s.compare);
     nIn.value = String(s.n);
     optIn.value = String(s.options);
     renderYou();

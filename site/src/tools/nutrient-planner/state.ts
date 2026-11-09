@@ -22,12 +22,13 @@ export type Settings = {
   overrides: Record<string, Override>;
   mode: "suggest" | "build";
   builder: BuilderItem[];
+  compare: boolean;               // show the other standards' targets on the charts
 };
 
 export const DEFAULTS: Settings = {
   sex: "female", age: 35, weight: null, diet: "none", standard: "uk", life: "none",
   n: 6, options: 3, energyLow: null, energyHigh: null, base: "common", toggled: [], overrides: {},
-  mode: "suggest", builder: [],
+  mode: "suggest", builder: [], compare: true,
 };
 
 export const fresh = (): Settings => ({ ...DEFAULTS, toggled: [], overrides: {}, builder: [] });
@@ -58,6 +59,7 @@ export function encode(s: Settings): string {
   if (s.toggled.length) p.set("x", s.toggled.join("."));
   if (Object.keys(s.overrides).length) p.set("t", toB64(JSON.stringify(s.overrides)));
   if (s.mode === "build") p.set("mode", "build");
+  if (!s.compare) p.set("cmp", "0");
   if (s.builder.length) p.set("b", s.builder.map((b) => `${b.id}~${Math.round(b.grams * 10) / 10}`).join("_"));
   return p.toString();
 }
@@ -96,6 +98,7 @@ export function decode(query: string): Settings {
     } catch { /* ignore a damaged link */ }
   }
   if (p.get("mode") === "build") s.mode = "build";
+  if (p.get("cmp") === "0") s.compare = false;
   if (p.get("b")) {
     for (const part of p.get("b")!.split("_")) {
       const [id, g] = part.split("~");

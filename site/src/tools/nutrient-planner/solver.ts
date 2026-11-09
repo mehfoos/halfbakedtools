@@ -16,7 +16,7 @@
 // Several distinct options are found by re-solving with "no-good" cuts that
 // forbid reusing most of an earlier option's ingredients.
 
-export type Bound = { value: number; basis: "abs" | "pctEnergy" | "perKg"; source: string; note?: string };
+export type Bound = { value: number; basis: "abs" | "pctEnergy" | "perKg" | "perMJ"; source: string; note?: string; extraG?: number };
 export type TargetSpec = { min?: Bound; max?: Bound };
 export type NutrientDef = { key: string; label: string; unit: string };
 export type Food = {
@@ -34,7 +34,7 @@ export type ResolvedTarget = {
 
 export type Override = { min?: number | null; max?: number | null };
 
-export const KCAL_PER_G: Record<string, number> = { fat: 9, satfat: 9, carbohydrate: 4, protein: 4 };
+export const KCAL_PER_G: Record<string, number> = { fat: 9, satfat: 9, la: 9, ala: 9, carbohydrate: 4, protein: 4 };
 
 /** Turn a profile's target specs into absolute daily numbers. */
 export function resolveTargets(
@@ -49,7 +49,8 @@ export function resolveTargets(
   const out: ResolvedTarget[] = [];
   const toAbs = (key: string, b: Bound) => {
     if (b.basis === "abs") return b.value;
-    if (b.basis === "perKg") return (b.value * weightKg) / 1000; // mg/kg -> g/day
+    if (b.basis === "perKg") return (b.value * weightKg) / 1000 + (b.extraG ?? 0); // mg/kg -> g/day
+    if (b.basis === "perMJ") return b.value * energyKcal * 0.004184;              // per MJ of energy
     // PHE converts carbohydrate energy at 3.75 kcal/g; others use 4.
     const perG = key === "carbohydrate" && standardId === "uk" ? 3.75 : KCAL_PER_G[key] ?? 4;
     return (energyKcal * b.value) / 100 / perG;
