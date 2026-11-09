@@ -30,6 +30,11 @@ const standards = [uk, us, eu];
   {standards.map((s) => (
     <section>
       <h3>{s.longName}</h3>
+      <p class="small">
+        {s.verified?.checked
+          ? <><strong>Checked</strong> line by line against the original document ({s.verified.against}) on {s.verified.date}.</>
+          : <><strong>Not yet checked</strong> against the original document. {s.verified?.against}.</>}
+      </p>
       <ul class="prose">
         {s.sources.map((src) => <li><a href={src.url}>{src.title}</a></li>)}
       </ul>
@@ -69,9 +74,11 @@ const standards = [uk, us, eu];
   </p>
 
   <h2>Limitations</h2>
+  <p>The results are estimates. Please treat them as a starting point for thinking about your food, not as a precise measurement.</p>
   <ul class="prose">
+    <li><strong>Borrowed safety limits.</strong> The UK and EU tables used here don't give a complete set of upper limits, so the US tolerable upper intake levels are used for safety checks in every standard. Those US values come from the NCBI copy of the US tables, which hasn't yet been re-checked against the original document.</li>
     <li><strong>US food data, UK shops.</strong> Fortification differs between countries (for example US milk usually has added vitamin D; UK milk doesn't), and brands differ. Fortified products should be checked against their labels.</li>
-    <li><strong>Iodine and some other nutrients</strong> are missing from most USDA records, so they are listed as "not assessed" rather than guessed.</li>
+    <li><strong>Iodine and some other nutrients</strong> are missing from most USDA records, so they are listed as "not checked" rather than guessed. Where a food has no value for a nutrient, it counts as zero, which can understate the total.</li>
     <li><strong>Absorption isn't modelled yet.</strong> Iron from plants is absorbed less well than iron from meat, ALA omega-3 converts poorly to EPA and DHA, and phytates reduce zinc absorption. These are planned refinements.</li>
     <li><strong>Amino acid targets</strong> use WHO adult requirements per kg of body weight and are applied to adults only.</li>
     <li><strong>Reference values are for healthy populations.</strong> If you have a medical condition, are pregnant, or are planning food for a child, check with a doctor, midwife or registered dietitian.</li>

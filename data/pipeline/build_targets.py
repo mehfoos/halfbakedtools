@@ -82,14 +82,16 @@ UK_MAX = {"salt"}  # "less than" values
 # Energy-percentage rules stated in the PHE notes (fat <=35%E, saturates <=11%E,
 # carbohydrate >=50%E); the table gives them from age 4 (fat) / 2 (carbohydrate).
 UK_PCT = [
-    ("fat", "max", 35, {"4-6", "7-10", "11-14", "15-18", "19-50", "51-64", "65-74", "75+"}),
-    ("satfat", "max", 11, {"4-6", "7-10", "11-14", "15-18", "19-50", "51-64", "65-74", "75+"}),
-    ("carbohydrate", "min", 50, {"2-3", "4-6", "7-10", "11-14", "15-18", "19-50", "51-64", "65-74", "75+"}),
+    ("fat", "max", 35, {"4", "5-6", "7-10", "11-14", "15-18", "19-50", "51-64", "65-74", "75+"}),
+    ("satfat", "max", 11, {"4", "5-6", "7-10", "11-14", "15-18", "19-50", "51-64", "65-74", "75+"}),
+    ("carbohydrate", "min", 50, {"2-3", "4", "5-6", "7-10", "11-14", "15-18", "19-50", "51-64", "65-74", "75+"}),
 ]
-UK_GROUPS = ["1", "2-3", "4-6", "7-10", "11-14", "15-18", "19-50", "51-64", "65-74", "75+"]
+# "4-6" is split because PHE gives fibre as 15 g at age 4 and 20 g at ages 5-6 (Table 1, page 6).
+UK_GROUPS = ["1", "2-3", "4", "5-6", "7-10", "11-14", "15-18", "19-50", "51-64", "65-74", "75+"]
+UK_COL_FOR = {"4": "4-6", "5-6": "4-6", "19-50": "19-64", "51-64": "19-64"}
 # Which US group's safety limits to borrow for each UK group (the lower/younger
 # where bands overlap, to stay conservative).
-UK_TO_US_UL = {"1": "1-3", "2-3": "1-3", "4-6": "4-8", "7-10": "4-8", "11-14": "9-13", "15-18": "14-18",
+UK_TO_US_UL = {"1": "1-3", "2-3": "1-3", "4": "4-8", "5-6": "4-8", "7-10": "4-8", "11-14": "9-13", "15-18": "14-18",
                "19-50": "19-30", "51-64": "51-70", "65-74": "71+", "75+": "71+"}
 
 # ---------------------------------------------------------------------------
@@ -206,13 +208,15 @@ def build_uk() -> dict:
     profiles = []
     for sex in ("male", "female"):
         for g in UK_GROUPS:
-            col = UK_COLS.index("19-64") if g in ("19-50", "51-64") else UK_COLS.index(g)
+            col = UK_COLS.index(UK_COL_FOR.get(g, g))
             t = {}
             for key, rows in UK.items():
                 row = rows[0] if sex == "male" or len(rows) == 1 else rows[1]
                 v = row[col]
                 if key == "iron" and sex == "female" and g == "51-64":
                     v = 8.7  # PHE: 8.7 mg for women aged 50-64
+                if key == "fibre" and g == "5-6":
+                    v = 20  # PHE Table 1: 20 g for 5-6 year olds
                 if v is None or key == "energy":
                     continue
                 put(t, key, "max" if key in UK_MAX else "min", v, "abs", "phe-2016")
@@ -234,8 +238,9 @@ def build_uk() -> dict:
     return {
         "id": "uk", "name": "UK", "longName": "UK government dietary recommendations",
         "status": "available",
+        "verified": {"checked": True, "date": "2026-11-09", "against": "Public Health England (2016) Government Dietary Recommendations PDF, Tables 1-6 (pages 6-11)"},
         "sources": [
-            {"id": "phe-2016", "title": "Public Health England (2016) Government Dietary Recommendations", "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf"},
+            {"id": "phe-2016", "title": "Public Health England (2016) Government Dietary Recommendations, Tables 1-6", "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf"},
             {"id": "nasem-dri-ul", "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels (the UK has no complete set)", "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"},
             WHO_AA_SOURCE,
         ],
@@ -278,6 +283,7 @@ def build_us() -> dict:
     return {
         "id": "us", "name": "US", "longName": "US Dietary Reference Intakes (National Academies)",
         "status": "available",
+        "verified": {"checked": False, "against": "Read from the NCBI Bookshelf copy of the National Academies summary tables; not yet re-checked line by line against the original document"},
         "sources": [
             {"id": "nasem-dri", "title": "National Academies (2019) Dietary Reference Intakes summary tables, Appendix J of DRIs for Sodium and Potassium", "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"},
             {"id": "dga-2020", "title": "Dietary Guidelines for Americans 2020-2025, estimated calorie needs (via MSD Manual)", "url": "https://www.merckmanuals.com/home/multimedia/table/estimated-number-of-calories-needed-based-on-age-sex-and-activity-level"},
@@ -332,12 +338,32 @@ EU_PREG = {"vitaminA": 700, "vitaminD": 15, "vitaminE": 11, "vitaminK": 70, "vit
            "phosphorus": 550, "potassium": 3500, "selenium": 70, "iron": 16, "zinc": 9.3 + 1.6, "copper": 1.5, "magnesium": 300, "fibre": 25}
 EU_LACT = {**EU_PREG, "vitaminA": 1300, "vitaminC": 155, "riboflavin": 2.0, "vitaminB6": 1.7, "folate": 500, "vitaminB12": 5.0,
            "choline": 520, "pantothenic": 7, "potassium": 4000, "selenium": 85, "zinc": 9.3 + 2.9}
-# Protein PRI, g per kg body weight per day (group averages of EFSA's yearly values).
-EU_PROTEIN = {"1-3": (0.97, 0.97), "4-6": (0.87, 0.87), "7-10": (0.92, 0.92), "11-14": (0.90, 0.88), "15-17": (0.87, 0.84),
-              "18-24": (0.83, 0.83), "25-50": (0.83, 0.83), "51+": (0.83, 0.83)}
+# Protein PRI, g per kg body weight per day, by year of age (EFSA 2017, Table 3, page 24).
+EU_PROTEIN_AGE = {
+    "male":   {1: 1.14, 2: 0.97, 3: 0.90, 4: 0.86, 5: 0.85, 6: 0.89, 7: 0.91, 8: 0.92, 9: 0.92, 10: 0.91,
+               11: 0.91, 12: 0.90, 13: 0.90, 14: 0.89, 15: 0.88, 16: 0.87, 17: 0.86},
+    "female": {1: 1.14, 2: 0.97, 3: 0.90, 4: 0.86, 5: 0.85, 6: 0.89, 7: 0.91, 8: 0.92, 9: 0.92, 10: 0.91,
+               11: 0.90, 12: 0.89, 13: 0.88, 14: 0.87, 15: 0.85, 16: 0.84, 17: 0.83},
+}
+EU_PROTEIN_ADULT = 0.83
+# Nutrients whose EFSA age bands differ from the planner's; looked up by exact age.
+# Vitamin E (Tables 9/11, pages 72/74): 1-2 y 6, 3-9 y 9, 10-17 y 13 (M) / 11 (F).
+# Copper and magnesium (Tables 5/7, pages 45/47): 1-2, 3-9, 10-17 years.
+# Iron, girls (Table 7): 7-11 y 11, 12-14 y 13, 15-17 y 13.
+def _bands(spec):  # [(from, to, value)] -> {age: value}
+    return {a: v for lo, hi, v in spec for a in range(lo, hi + 1)}
+EU_BY_AGE = {
+    "vitaminE":  {"male": _bands([(1, 2, 6), (3, 9, 9), (10, 17, 13)]), "female": _bands([(1, 2, 6), (3, 9, 9), (10, 17, 11)])},
+    "copper":    {"male": _bands([(1, 2, 0.7), (3, 9, 1.0), (10, 17, 1.3)]), "female": _bands([(1, 2, 0.7), (3, 9, 1.0), (10, 17, 1.1)])},
+    "magnesium": {"male": _bands([(1, 2, 170), (3, 9, 230), (10, 17, 300)]), "female": _bands([(1, 2, 170), (3, 9, 230), (10, 17, 250)])},
+    "iron":      {"female": _bands([(1, 6, 7), (7, 11, 11), (12, 17, 13)])},
+}
+# Total fat reference intake (upper end, % energy): 35-40% at ages 1-3, 20-35% from 4 (Table 2, page 23).
+EU_FAT_MAX = {"1-3": 40}
 EU_PROTEIN_EXTRA = {"pregnancy": 9, "lactation": 19}   # g/day added (2nd trimester; first 6 months)
-# Default body weights for children (kg), only used until the person enters their own.
-EU_CHILD_WEIGHT = {"1-3": 12, "4-6": 19, "7-10": 28, "11-14": 45, "15-17": 60}
+# EFSA reference body weights (Table 17, page 91), used as the default weight until the person enters theirs.
+REF_WEIGHT = {"1-3": (12.2, 11.5), "4-6": (19.2, 18.7), "7-10": (29.0, 28.4), "11-14": (44.0, 45.1), "15-17": (64.1, 56.4),
+              "adult": (68.1, 58.5), "pregnant": (None, 70.5)}
 EU_TO_US_UL = {"1-3": "1-3", "4-6": "4-8", "7-10": "4-8", "11-14": "9-13", "15-17": "14-18", "18-24": "19-30", "25-50": "31-50", "51+": "51-70"}
 EU_TO_UK_ENERGY = {"1-3": "2-3", "4-6": "4-6", "7-10": "7-10", "11-14": "11-14", "15-17": "15-18", "18-24": "19-64", "25-50": "19-64", "51+": "65-74"}
 
@@ -354,19 +380,23 @@ def eu_targets(sex: str, g: str, stage: str) -> dict:
             put(t, k, "min", row[i], "abs", "efsa")
     put(t, "thiamin", "min", 0.1, "perMJ", "efsa", "0.1 mg per MJ of energy")
     put(t, "niacinNE", "min", 1.6, "perMJ", "efsa", "1.6 mg niacin equivalents per MJ of energy")
-    put(t, "fat", "max", 35, "pctEnergy", "efsa", "Reference intake range 20-35% of energy")
+    put(t, "fat", "max", EU_FAT_MAX.get(g, 35), "pctEnergy", "efsa", "Reference intake range " + ("35-40" if g in EU_FAT_MAX else "20-35") + "% of energy")
+    if stage not in ("pregnancy", "lactation") and g in ("1-3", "4-6", "7-10", "11-14", "15-17"):
+        for k, by_sex in EU_BY_AGE.items():
+            if sex in by_sex:
+                t[k]["min"]["byAge"] = {str(a): v for a, v in by_sex[sex].items()}
     put(t, "carbohydrate", "min", 45, "pctEnergy", "efsa", "Reference intake range 45-60% of energy")
     put(t, "la", "min", 4, "pctEnergy", "efsa", "Adequate intake")
     put(t, "ala", "min", 0.5, "pctEnergy", "efsa", "Adequate intake")
     put(t, "epaDha", "min", 350 if stage in ("pregnancy", "lactation") else 250, "abs", "efsa",
         "Adequate intake" + (" (250 mg plus 100-200 mg DHA)" if stage in ("pregnancy", "lactation")
                              else " (100 mg of DHA under age 2)" if g == "1-3" else ""))
-    side = sex if stage not in ("pregnancy", "lactation") else "female"
-    pk = EU_PROTEIN["25-50" if stage in ("pregnancy", "lactation") else g][0 if side == "male" else 1]
-    put(t, "protein", "min", round(pk * 1000), "perKg", "efsa", "Population reference intake per kg body weight"
-        + (f", plus {EU_PROTEIN_EXTRA[stage]} g/day" if stage in EU_PROTEIN_EXTRA else ""))
+    put(t, "protein", "min", round(EU_PROTEIN_ADULT * 1000), "perKg", "efsa", "Population reference intake per kg body weight"
+        + (f", plus {EU_PROTEIN_EXTRA[stage]} g/day ({'second trimester' if stage == 'pregnancy' else 'first 6 months'})" if stage in EU_PROTEIN_EXTRA else ""))
     if stage in EU_PROTEIN_EXTRA:
         t["protein"]["min"]["extraG"] = EU_PROTEIN_EXTRA[stage]
+    elif g in ("1-3", "4-6", "7-10", "11-14", "15-17"):
+        t["protein"]["min"]["byAge"] = {str(a): round(v * 1000) for a, v in EU_PROTEIN_AGE[sex].items()}
     # EFSA sets no numeric limit for saturated fat ("as low as possible") or salt in these tables, so the
     # US tolerable upper intake levels and sodium risk-reduction intake are borrowed, as for the UK.
     add_us_uls(t, EU_TO_US_UL["25-50" if stage in ("pregnancy", "lactation") else g], stage if stage in ("pregnancy", "lactation") else sex, "nasem-dri-ul")
@@ -386,7 +416,7 @@ def build_eu() -> dict:
                 "id": f"{sex}-{g}", "stage": sex, "group": g, "label": f"{sex.title()}, {g} years",
                 "energy": {"kcal": kcal, "low": round(kcal * 0.9), "high": round(kcal * 1.1),
                            "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."},
-                "defaultWeightKg": EU_CHILD_WEIGHT.get(g, 70 if sex == "male" else 60),
+                "defaultWeightKg": REF_WEIGHT.get(g, REF_WEIGHT["adult"])[0 if sex == "male" else 1],
                 "targets": eu_targets(sex, g, sex),
             })
     for stage in ("pregnancy", "lactation"):
@@ -394,18 +424,21 @@ def build_eu() -> dict:
             "id": f"{stage}-18-50", "stage": stage, "group": "18-50", "label": f"{'Pregnant' if stage == 'pregnancy' else 'Breastfeeding'}, 18-50 years",
             "energy": {"kcal": 2000, "low": 1800, "high": 2400,
                        "note": "Energy needs rise in later pregnancy and while breastfeeding; ask your midwife or doctor."},
-            "defaultWeightKg": 60, "targets": eu_targets("female", "25-50", stage),
+            "defaultWeightKg": 70.5 if stage == "pregnancy" else 58.5, "targets": eu_targets("female", "25-50", stage),
         })
     return {
         "id": "eu", "name": "EU", "longName": "EU Dietary Reference Values (EFSA)", "status": "available",
+        "verified": {"checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 2, 3, 5, 7, 9, 11 and 17"},
         "sources": [
-            {"id": "efsa", "title": "EFSA (2017) Dietary Reference Values for nutrients: summary report and tables", "url": "https://www.efsa.europa.eu/en/topics/topic/dietary-reference-values"},
-            {"id": "efsa-gibson", "title": "EFSA reference intakes as tabulated in Gibson, Principles of Nutritional Assessment", "url": "https://nutritionalassessment.org/nrv/appendix/efsa-ri-min.pdf"},
+            {"id": "efsa", "title": "EFSA (2017) Dietary Reference Values for nutrients: Summary report. EFSA supporting publication 2017:e15121", "url": "https://doi.org/10.2903/sp.efsa.2017.e15121"},
             {"id": "nasem-dri-ul", "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels", "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"},
             WHO_AA_SOURCE,
         ],
         "notes": [
-            "Values are population reference intakes (PRI) where EFSA set one, otherwise adequate intakes (AI).",
+            "Values are population reference intakes (PRI) where EFSA set one, otherwise adequate intakes (AI), from the EFSA 2017 summary report (Tables 2, 3, 5, 7, 9 and 11).",
+            "For children, protein, vitamin E, copper, magnesium and girls' iron follow EFSA's exact age bands; protein uses EFSA's value for each year of age.",
+            "Pregnancy protein uses EFSA's second-trimester increase (+9 g/day; it is +1 g in the first and +28 g in the third). Breastfeeding uses the first-6-months increase (+19 g/day).",
+            "EFSA gives no separate fibre or carbohydrate values for pregnancy and breastfeeding; adult values are used.",
             "Adult zinc assumes a moderate phytate intake (600 mg/day); diets rich in wholegrains and pulses have more phytate and need more zinc (up to 16.3 mg for men and 12.7 mg for women).",
             "Iron for women aged 51+ uses EFSA's post-menopausal value (11 mg) as an age-based approximation.",
             "Thiamin and niacin are set per unit of energy, so they rise with the calorie range.",

@@ -104,3 +104,25 @@ test("EU targets: per-MJ, per-kg and energy-percentage values convert correctly"
   assert.equal(pickProfile(eu, "female", 30, "pregnancy").profile.id, "pregnancy-18-50");
   assert.equal(pickProfile(eu, "female", 55, "none").profile.targets.iron.min!.value, 11);
 });
+
+test("EU exact age bands and per-year protein (EFSA 2017 Tables 3, 7, 9, 11)", async () => {
+  const { resolveTargets } = await import("./solver.ts");
+  const { refWeight } = await import("./profiles.ts");
+  const eu = load("eu");
+  const nutrients = ["iron", "vitaminE", "protein", "fat"].map((key) => ({ key, label: key, unit: "" }));
+  const at = (sex: "male" | "female", age: number, w: number) =>
+    new Map(resolveTargets(pickProfile(eu, sex, age, "none").profile.targets, nutrients, 2000, w, "eu", {}, age).map((x) => [x.key, x]));
+  assert.equal(at("female", 11, 45).get("iron")!.min, 11);       // girls 7-11 y: 11 mg
+  assert.equal(at("female", 12, 45).get("iron")!.min, 13);       // girls 12-14 y: 13 mg
+  assert.equal(at("male", 10, 29).get("vitaminE")!.min, 13);     // 10-17 y: 13 mg (boys)
+  assert.equal(at("male", 9, 29).get("vitaminE")!.min, 9);       // 3-9 y: 9 mg
+  assert.ok(Math.abs(at("male", 1, 12.2).get("protein")!.min! - 1.14 * 12.2) < 0.01);
+  assert.ok(Math.abs(at("male", 2, 12.2).get("fat")!.max! - (2000 * 0.40) / 9) < 0.01); // 35-40% at 1-3 y
+  assert.equal(refWeight("female", 30), 58.5);
+  assert.equal(refWeight("male", 16), 64.1);
+});
+
+test("UK fibre: 15 g at age 4, 20 g at ages 5-6 (PHE 2016 Table 1)", () => {
+  assert.equal(pickProfile(uk, "male", 4, "none").profile.targets.fibre.min!.value, 15);
+  assert.equal(pickProfile(uk, "male", 5, "none").profile.targets.fibre.min!.value, 20);
+});

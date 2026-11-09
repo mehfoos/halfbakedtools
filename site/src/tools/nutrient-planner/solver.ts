@@ -16,7 +16,8 @@
 // Several distinct options are found by re-solving with "no-good" cuts that
 // forbid reusing most of an earlier option's ingredients.
 
-export type Bound = { value: number; basis: "abs" | "pctEnergy" | "perKg" | "perMJ"; source: string; note?: string; extraG?: number };
+export type Bound = { value: number; basis: "abs" | "pctEnergy" | "perKg" | "perMJ"; source: string; note?: string; extraG?: number;
+  byAge?: Record<string, number> };   // exact value for a given whole year of age, where the source sets one
 export type TargetSpec = { min?: Bound; max?: Bound };
 export type NutrientDef = { key: string; label: string; unit: string };
 export type Food = {
@@ -44,16 +45,18 @@ export function resolveTargets(
   weightKg: number,
   standardId: string,
   overrides: Record<string, Override> = {},
+  age?: number,
 ): ResolvedTarget[] {
   const byKey = new Map(nutrients.map((n) => [n.key, n]));
   const out: ResolvedTarget[] = [];
   const toAbs = (key: string, b: Bound) => {
-    if (b.basis === "abs") return b.value;
-    if (b.basis === "perKg") return (b.value * weightKg) / 1000 + (b.extraG ?? 0); // mg/kg -> g/day
-    if (b.basis === "perMJ") return b.value * energyKcal * 0.004184;              // per MJ of energy
+    const v = age !== undefined && b.byAge?.[String(Math.floor(age))] !== undefined ? b.byAge[String(Math.floor(age))] : b.value;
+    if (b.basis === "abs") return v;
+    if (b.basis === "perKg") return (v * weightKg) / 1000 + (b.extraG ?? 0); // mg/kg -> g/day
+    if (b.basis === "perMJ") return v * energyKcal * 0.004184;              // per MJ of energy
     // PHE converts carbohydrate energy at 3.75 kcal/g; others use 4.
     const perG = key === "carbohydrate" && standardId === "uk" ? 3.75 : KCAL_PER_G[key] ?? 4;
-    return (energyKcal * b.value) / 100 / perG;
+    return (energyKcal * v) / 100 / perG;
   };
   for (const [key, spec] of Object.entries(specs)) {
     const def = byKey.get(key);
