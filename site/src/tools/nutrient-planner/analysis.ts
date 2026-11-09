@@ -7,7 +7,7 @@ export const GROUPS: { id: string; title: string; keys: string[] }[] = [
   { id: "vitamins", title: "Vitamins", keys: ["vitaminA", "vitaminD", "vitaminE", "vitaminK", "vitaminC", "thiamin", "riboflavin", "niacinNE", "pantothenic", "vitaminB6", "folate", "vitaminB12", "choline", "retinol", "vitaminD2", "vitaminD3"] },
   { id: "minerals", title: "Minerals", keys: ["calcium", "iron", "magnesium", "phosphorus", "potassium", "zinc", "copper", "manganese", "selenium", "iodine"] },
   { id: "amino", title: "Essential amino acids (protein building blocks)", keys: ["histidine", "isoleucine", "leucine", "lysine", "metCys", "pheTyr", "threonine", "tryptophan", "valine"] },
-  { id: "fats", title: "Fatty acids", keys: ["la", "ala", "epaDha"] },
+  { id: "fats", title: "Essential fats (omega-3 and omega-6)", keys: ["la", "ala", "epaDha"] },
 ];
 export const ORDER = GROUPS.flatMap((g) => g.keys);
 export const SHORT_LABEL: Record<string, string> = {
