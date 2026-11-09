@@ -11,6 +11,7 @@ export type Standard = {
   id: string; name: string; longName: string; status: string;
   sources: { id: string; title: string; url: string }[];
   notes: string[]; profiles: Profile[];
+  verified?: { checked: boolean; date?: string; against: string };
 };
 
 export type Sex = "female" | "male";
@@ -51,3 +52,16 @@ export function pickProfile(std: Standard, sex: Sex, age: number, life: LifeStag
 }
 
 export const isAdult = (age: number) => age >= 19;
+
+/**
+ * Default body weight (kg) until the person enters their own: EFSA reference body weights
+ * (EFSA 2017 summary report, Table 17, page 91), used for every standard.
+ */
+const REF: [number, number, number, number][] = [ // [fromAge, toAge, male, female]
+  [1, 3, 12.2, 11.5], [4, 6, 19.2, 18.7], [7, 10, 29.0, 28.4], [11, 14, 44.0, 45.1], [15, 17, 64.1, 56.4], [18, 200, 68.1, 58.5],
+];
+export function refWeight(sex: Sex, age: number, life: LifeStage = "none") {
+  if (life === "pregnancy" && age >= 18) return 70.5;
+  const row = REF.find(([lo, hi]) => age >= lo && age < hi + 1) ?? REF[REF.length - 1];
+  return sex === "male" ? row[2] : row[3];
+}

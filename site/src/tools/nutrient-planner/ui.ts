@@ -1,7 +1,7 @@
 // Nutrient planner user interface. Everything runs in the browser; the only
 // network requests are for the site's own data files.
 import { resolveTargets, splitAssessable, describeAmount, type Plan, type ResolvedTarget } from "./solver.ts";
-import { pickProfile, isAdult, type Standard } from "./profiles.ts";
+import { pickProfile, isAdult, refWeight, type Standard } from "./profiles.ts";
 import { unpack, isOn, setOn, dietOk, matches, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
 import { GROUPS, ORDER, SHORT_LABEL, analyse, totals, type Report, type Row } from "./analysis.ts";
 import { radarSvg, scaleMax, type Axis, type Overlay } from "./radar.ts";
@@ -22,6 +22,7 @@ export const fmt = (v: number | undefined) => {
   return Number(v.toPrecision(2)).toString();
 };
 type Item = { food: PlannerFood; grams: number };
+const CAVEAT = `<p class="small muted sans caveat">These are estimates. They use average food composition, mostly from US data, so real foods vary with brand, variety and cooking. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).</p>`;
 const $ = <T extends HTMLElement = HTMLElement>(root: ParentNode, sel: string) => root.querySelector(sel) as T;
 const $$ = <T extends HTMLElement = HTMLElement>(root: ParentNode, sel: string) => Array.from(root.querySelectorAll(sel)) as T[];
 
@@ -63,12 +64,12 @@ export async function start(root: HTMLElement) {
   const std = () => standards.find((x) => x.id === s.standard && x.status === "available") ?? standards[0];
   const pick = () => pickProfile(std(), s.sex, s.age, s.life);
   const profile = () => pick().profile;
-  const defaultWeight = () => (isAdult(s.age) ? (s.sex === "male" ? 70 : 60) : profile().defaultWeightKg);
+  const defaultWeight = () => refWeight(s.sex, s.age, s.life);
   const weight = () => s.weight ?? defaultWeight();
   const band = () => ({ low: s.energyLow ?? profile().energy.low, high: s.energyHigh ?? profile().energy.high });
   const resolve = (withOverrides: boolean) => {
     const b = band();
-    return resolveTargets(profile().targets, data.nutrients, (b.low + b.high) / 2, weight(), std().id, withOverrides ? s.overrides : {})
+    return resolveTargets(profile().targets, data.nutrients, (b.low + b.high) / 2, weight(), std().id, withOverrides ? s.overrides : {}, s.age)
       .sort((a, z) => ORDER.indexOf(a.key) - ORDER.indexOf(z.key));
   };
   const dietFoods = () => data.foods.filter((f) => dietOk(f, s.diet));
@@ -100,7 +101,10 @@ export async function start(root: HTMLElement) {
     $(root, "#profileLine").innerHTML =
       `Targets: <b>${esc(std().name)}</b> recommendations for <b>${esc(p.profile.label.toLowerCase().replace(/(\d)-(\d)/, "$1–$2"))}</b> · ${b.low.toLocaleString("en-GB")}–${b.high.toLocaleString("en-GB")} kcal a day`
       + (p.note ? ` <span class="muted">(${esc(p.note)})</span>` : "");
-    $(root, "#sourceLine").innerHTML = `Source: <a href="${esc(src.url)}">${esc(src.title)}</a>. ${std().sources.length > 1 ? `Also: ${std().sources.slice(1).map((x) => `<a href="${esc(x.url)}">${esc(x.title)}</a>`).join("; ")}.` : ""}`;
+    const v = std().verified;
+    $(root, "#sourceLine").innerHTML = `Source: <a href="${esc(src.url)}">${esc(src.title)}</a>. ${std().sources.length > 1 ? `Also: ${std().sources.slice(1).map((x) => `<a href="${esc(x.url)}">${esc(x.title)}</a>`).join("; ")}.` : ""}`
+      + (v ? `<br>${v.checked ? `<b>Checked</b> against the original document (${esc(v.against)}) on ${esc(new Date(v.date + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }))}.` : `<b>Not yet checked against the original document.</b> ${esc(v.against)}.`}` : "");
+    $(root, "#unverified").hidden = !!v?.checked;
     $<HTMLInputElement>(root, "#energyLow").value = String(b.low);
     $<HTMLInputElement>(root, "#energyHigh").value = String(b.high);
     $(root, "#energyNote").textContent = `Recommended: ${profile().energy.low.toLocaleString("en-GB")}–${profile().energy.high.toLocaleString("en-GB")} kcal. ${profile().energy.note}`;
@@ -319,7 +323,7 @@ export async function start(root: HTMLElement) {
     const b = band(), mid = (b.low + b.high) / 2;
     return others().map((x) => {
       const p = pickProfile(x, s.sex, s.age, s.life).profile;
-      const t = new Map(resolveTargets(p.targets, data.nutrients, mid, weight(), x.id).map((r) => [r.key, r]));
+      const t = new Map(resolveTargets(p.targets, data.nutrients, mid, weight(), x.id, {}, s.age).map((r) => [r.key, r]));
       return { id: x.id, targets: t, energyMid: (p.energy.low + p.energy.high) / 2 };
     });
   }
@@ -464,7 +468,7 @@ export async function start(root: HTMLElement) {
   function reportHtml(rep: Report, items: Item[]) {
     const shortTxt = rep.shortfalls.length
       ? `Short on ${rep.shortfalls.slice(0, 5).map((r) => `${esc(r.label)} (${Math.round(r.pctOfMin!)}%)`).join(", ")}${rep.shortfalls.length > 5 ? ` and ${rep.shortfalls.length - 5} more` : ""}.`
-      : "Every assessed minimum is met.";
+      : "Every checked minimum is met.";
     const over = rep.rows.filter((r) => r.status === "over");
     const custom = rep.rows.some((r) => r.custom) || s.energyLow !== null || s.energyHigh !== null;
     const detail = (id: string) => {
@@ -480,7 +484,8 @@ export async function start(root: HTMLElement) {
         ${tableHtml(rows)}
         ${contribSection(items, g.keys, g.id === "amino" ? "these amino acids" : `these ${g.title.toLowerCase()}`)}</div></details>`;
     };
-    return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> nutrient targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}
+    const notChecked = rep.unassessed.length ? ` Not checked (no food data): ${rep.unassessed.map((r) => esc(r.label)).join(", ")}.` : "";
+    return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> checked targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}${notChecked}
         ${over.length ? ` <span class="chip over">Over the limit for ${over.map((r) => esc(r.label)).join(", ")}</span>` : ""}</p>
       ${custom ? `<p class="small muted sans">Using some custom targets.</p>` : ""}
       <h4 class="chart-title">At a glance <span class="muted small">(laid out like a food label)</span></h4>
@@ -518,7 +523,7 @@ export async function start(root: HTMLElement) {
     worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
     runBtn.disabled = true;
     lastPlans = [];
-    results.innerHTML = "";
+    results.innerHTML = CAVEAT;
     status.textContent = `Finding option 1 of ${s.options}…`;
     worker.onmessage = (m) => {
       const d = m.data;
@@ -585,7 +590,7 @@ export async function start(root: HTMLElement) {
     renderBuilderResult(items);
   }
   function renderBuilderResult(items = s.builder.map((b) => ({ food: foodById.get(b.id)!, grams: b.grams })).filter((x) => x.food)) {
-    builderResult.innerHTML = items.length ? `<article class="result"><h3><span>Your day</span></h3>${reportHtml(report(items), items)}</article>` : "";
+    builderResult.innerHTML = items.length ? `${CAVEAT}<article class="result"><h3><span>Your day</span></h3>${reportHtml(report(items), items)}</article>` : "";
   }
   builderList.addEventListener("input", (e) => {
     const inp = e.target as HTMLInputElement;

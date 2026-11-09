@@ -3,9 +3,9 @@ import Base from "../../../layouts/Base.astro";
 import { site } from "../../../site.config";
 const base = import.meta.env.BASE_URL;
 ---
-<Base title="Nutrient planner" current="nutrient-planner" description="Find a handful of everyday foods that together cover a day's recommended nutrients, or build your own day and see how it measures up.">
+<Base title="Nutrient planner" current="nutrient-planner" description="Find a handful of everyday foods that together come close to a day's recommended nutrients, or build your own day and see how it measures up.">
   <h1>Nutrient planner</h1>
-  <p class="lede">Find a handful of everyday foods that together cover a day's recommended nutrients, or build your own day and see how it measures up.</p>
+  <p class="lede">Find a handful of everyday foods that together come close to a day's recommended nutrients, or build your own day and see how it measures up.</p>
 
   <div id="planner" data-base={base} data-refresh-url={site.refreshIssueUrl ?? ""} data-methods-url={`${base}about/`} data-privacy-url={`${base}privacy/`}>
     <noscript><p class="notice">The planner runs in your browser and needs JavaScript.</p></noscript>
@@ -27,6 +27,7 @@ const base = import.meta.env.BASE_URL;
           <label class="field">Weight <span><input id="weight" type="number" min="10" max="300" step="1" inputmode="numeric" /> kg</span></label>
         </div>
         <p class="profile-line sans" id="profileLine"></p>
+        <p class="notice small" id="unverified" hidden>These recommendations haven't yet been checked line by line against the original document. Treat them with extra caution, or switch to UK or EU in "Fine-tune targets".</p>
 
         <details id="tuneBox">
           <summary>Fine-tune targets <span class="summary-note" id="tuneNote"></span></summary>

@@ -3,6 +3,10 @@
  "name": "US",
  "longName": "US Dietary Reference Intakes (National Academies)",
  "status": "available",
+ "verified": {
+  "checked": false,
+  "against": "Read from the NCBI Bookshelf copy of the National Academies summary tables; not yet re-checked line by line against the original document"
+ },
  "sources": [
   {
    "id": "nasem-dri",
