@@ -6,7 +6,7 @@ Open, evolving tools for life's questions, with the evidence shown. Live at **ht
 
 | Tool | What it does |
 |---|---|
-| [Nutrient planner](site/src/tools/nutrient-planner/) | Picks a small number of everyday ingredients, with amounts, that together come as close as possible to UK or US daily nutrient recommendations without exceeding upper limits. Runs entirely in the browser. |
+| [Nutrient planner](site/src/tools/nutrient-planner/) | Suggests a small number of everyday foods, with amounts, that together meet UK or US daily nutrient recommendations without exceeding upper limits, or lets you build your own day; radar charts for macronutrients, vitamins, minerals and amino acids. ~1,700 foods. Runs entirely in the browser. |
 
 ## Repository layout
 
@@ -20,7 +20,8 @@ data/
   pipeline/                Python scripts (standard library only)
     build_foods.py         downloads USDA data, builds data/foods/foods.json
     build_targets.py       reference intakes transcribed from official tables
-    foods_catalogue.json   the curated food list and how each matches USDA records
+    foods_catalogue.json   the curated common foods and how each matches USDA records
+    auto_foods.py          rules for adding the other USDA foods (categories, UK names, portion caps)
     nutrients.json         nutrient keys ↔ USDA nutrient ids
   foods/                   generated food snapshot + match report
   targets/                 generated UK / US (EU planned) targets
@@ -40,6 +41,7 @@ cd site && npm ci && npm test && npm run dev
 ## Data and licences
 
 - Code: MIT (see `LICENSE`).
+- Fonts: Averia Serif Libre and Averia Sans Libre, SIL Open Font Licence (`site/src/assets/fonts/OFL.txt`).
 - Food composition: [USDA FoodData Central](https://fdc.nal.usda.gov/), public domain.
 - UK recommendations: Public Health England (2016) *Government Dietary Recommendations*, Open Government Licence v3.0.
 - US recommendations: National Academies Dietary Reference Intakes summary tables.

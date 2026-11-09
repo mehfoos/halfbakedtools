@@ -1,228 +1,551 @@
 // Nutrient planner user interface. Everything runs in the browser; the only
 // network requests are for the site's own data files.
-import {
-  resolveTargets, splitAssessable,
-  type Food, type NutrientDef, type Plan, type ResolvedTarget, type TargetSpec,
-} from "./solver.ts";
-import { DEFAULTS, decode, encode, exportFile, forget, importFile, loadRemembered, remember, type Settings } from "./state.ts";
+import { resolveTargets, splitAssessable, describeAmount, type Plan, type ResolvedTarget } from "./solver.ts";
+import { pickProfile, isAdult, type Standard } from "./profiles.ts";
+import { unpack, isOn, setOn, dietOk, matches, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
+import { GROUPS, ORDER, SHORT_LABEL, analyse, totals, type Report, type Row } from "./analysis.ts";
+import { radarSvg, type Axis } from "./radar.ts";
+import { decode, encode, exportFile, forget, fresh, importFile, loadRemembered, remember, DEFAULTS, type Settings } from "./state.ts";
 
-type Profile = {
-  id: string; stage: string; group: string; label: string;
-  energy: { kcal: number; low: number; high: number; note: string };
-  defaultWeightKg: number;
-  targets: Record<string, TargetSpec>;
-};
-type Standard = {
-  id: string; name: string; longName: string; status: string;
-  sources: { id: string; title: string; url: string }[];
-  notes: string[]; profiles: Profile[];
-};
-type FoodsFile = { missing?: boolean; generated?: string; foods: Food[]; nutrients: NutrientDef[] };
-
-const STAGE_LABELS: Record<string, string> = {
-  child: "Children", male: "Males", female: "Females", pregnancy: "Pregnancy", lactation: "Breastfeeding",
-};
 const NHS_VITD = "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/";
 const NHS_VEGAN = "https://www.nhs.uk/live-well/eat-well/how-to-eat-a-balanced-diet/the-vegan-diet/";
+const BDA_IODINE = "https://www.bda.uk.com/resource/iodine.html";
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
-const fmt = (v: number | undefined) => {
+export const fmt = (v: number | undefined) => {
   if (v === undefined || !Number.isFinite(v)) return "–";
   const a = Math.abs(v);
   if (a >= 100) return Math.round(v).toLocaleString("en-GB");
   if (a >= 10) return v.toFixed(1).replace(/\.0$/, "");
   if (a >= 1) return v.toFixed(2).replace(/0$/, "").replace(/\.0$/, "");
+  if (a === 0) return "0";
   return Number(v.toPrecision(2)).toString();
 };
-const $ = <T extends HTMLElement>(root: ParentNode, sel: string) => root.querySelector(sel) as T;
+const $ = <T extends HTMLElement = HTMLElement>(root: ParentNode, sel: string) => root.querySelector(sel) as T;
+const $$ = <T extends HTMLElement = HTMLElement>(root: ParentNode, sel: string) => Array.from(root.querySelectorAll(sel)) as T[];
 
 export async function start(root: HTMLElement) {
   const base = root.dataset.base ?? "/";
   const loading = $(root, "#loading");
-  let foodsFile: FoodsFile;
+
+  // ---------- data
+  let data: FoodsData;
   const standards: Standard[] = [];
-  let meta: Record<string, unknown> = {};
   try {
     const get = (f: string) => fetch(`${base}data/${f}`).then((r) => { if (!r.ok) throw new Error(f); return r.json(); });
-    [foodsFile, meta] = await Promise.all([get("foods.json"), get("meta.json")]);
-    for (const id of ["uk", "us", "eu"]) standards.push(await get(`targets-${id}.json`));
+    const [raw, ...stds] = await Promise.all([get("foods.json"), get("targets-uk.json"), get("targets-us.json"), get("targets-eu.json")]);
+    data = unpack(raw);
+    standards.push(...stds);
   } catch {
     loading.textContent = "Sorry, the planner's data couldn't be loaded. Please try again later.";
     return;
   }
-  if (foodsFile.missing || !foodsFile.foods.length) {
-    loading.innerHTML = `<span class="notice">The food data snapshot hasn't been built yet. It's created by the repository's "Refresh food data" workflow.</span>`;
+  if (data.missing || !data.foods.length) {
+    loading.innerHTML = `<span class="notice">The food data snapshot hasn't been built yet.</span>`;
     return;
   }
   loading.remove();
+  const app = $(root, "#app");
+  app.hidden = false;
 
-  const nutrients = foodsFile.nutrients;
-  // Display order: energy and macros, then vitamins, minerals, amino acids.
-  const ORDER = ["protein", "fat", "satfat", "carbohydrate", "fibre", "salt", "sodium", "la", "ala",
-    "vitaminA", "retinol", "vitaminD", "vitaminE", "vitaminK", "vitaminC", "thiamin", "riboflavin", "niacinNE",
-    "vitaminB6", "folate", "vitaminB12", "choline", "calcium", "iron", "magnesium", "phosphorus", "potassium",
-    "zinc", "copper", "manganese", "selenium", "iodine", "histidine", "isoleucine", "leucine", "lysine",
-    "metCys", "pheTyr", "threonine", "tryptophan", "valine"];
-  const nutrientOrder = new Map(ORDER.map((k, i) => [k, i]));
-  const form = $<HTMLFormElement>(root, "#settings");
-  const results = $(root, "#results");
-  const status = $(root, "#status");
-  form.hidden = false;
-  $(root, "#share").hidden = false;
+  const foodById = new Map(data.foods.map((f) => [f.id, f]));
+  const meta = new Map(data.nutrients.map((n) => [n.key, { label: n.label, unit: n.unit }]));
+  const catName = new Map(data.categories.map((c) => [c.id, c.name]));
 
-  // ---------- initial settings: page address, then (opt-in) remembered, then defaults
+  // ---------- state: page address first, then opt-in remembered settings, then defaults
   const rememberBox = $<HTMLInputElement>(root, "#rememberBox");
-  let s: Settings;
   const remembered = loadRemembered();
-  if (location.search.length > 1) s = decode(location.search);
-  else if (remembered) s = remembered;
-  else s = { ...DEFAULTS, excluded: [], overrides: {} };
+  let s: Settings = location.search.length > 1 ? decode(location.search) : remembered ?? fresh();
   rememberBox.checked = !!remembered;
+  let toggled = new Set(s.toggled);
 
-  const standard = () => standards.find((x) => x.id === s.standard && x.status === "available") ?? standards[0];
-  const profile = () => standard().profiles.find((p) => p.id === s.profile) ?? standard().profiles.find((p) => p.stage === "female") ?? standard().profiles[0];
-  const weight = () => s.weight ?? profile().defaultWeightKg;
-  const energyBand = () => ({ low: s.energyLow ?? profile().energy.low, high: s.energyHigh ?? profile().energy.high });
-  const officialTargets = () => {
-    const b = energyBand();
-    return resolveTargets(profile().targets, nutrients, (b.low + b.high) / 2, weight(), standard().id);
+  const std = () => standards.find((x) => x.id === s.standard && x.status === "available") ?? standards[0];
+  const pick = () => pickProfile(std(), s.sex, s.age, s.life);
+  const profile = () => pick().profile;
+  const defaultWeight = () => (isAdult(s.age) ? (s.sex === "male" ? 70 : 60) : profile().defaultWeightKg);
+  const weight = () => s.weight ?? defaultWeight();
+  const band = () => ({ low: s.energyLow ?? profile().energy.low, high: s.energyHigh ?? profile().energy.high });
+  const resolve = (withOverrides: boolean) => {
+    const b = band();
+    return resolveTargets(profile().targets, data.nutrients, (b.low + b.high) / 2, weight(), std().id, withOverrides ? s.overrides : {})
+      .sort((a, z) => ORDER.indexOf(a.key) - ORDER.indexOf(z.key));
   };
-  const currentTargets = () => {
-    const b = energyBand();
-    return resolveTargets(profile().targets, nutrients, (b.low + b.high) / 2, weight(), standard().id, s.overrides)
-      .sort((a, z) => (nutrientOrder.get(a.key) ?? 99) - (nutrientOrder.get(z.key) ?? 99));
-  };
-  const availableFoods = () => foodsFile.foods.filter((f) => s.diet === "vegetarian" || f.diet === "vegan");
+  const dietFoods = () => data.foods.filter((f) => dietOk(f, s.diet));
+  const selectedFoods = () => dietFoods().filter((f) => isOn(f, s.base, toggled));
 
-  // ---------- controls
-  const el = {
-    standard: $<HTMLSelectElement>(root, "#standard"),
-    profile: $<HTMLSelectElement>(root, "#profile"),
-    diet: $<HTMLSelectElement>(root, "#diet"),
-    n: $<HTMLInputElement>(root, "#n"),
-    options: $<HTMLInputElement>(root, "#options"),
-    weight: $<HTMLInputElement>(root, "#weight"),
-    energyLow: $<HTMLInputElement>(root, "#energyLow"),
-    energyHigh: $<HTMLInputElement>(root, "#energyHigh"),
-  };
-  el.standard.innerHTML = standards.map((st) =>
-    `<option value="${st.id}" ${st.status !== "available" ? "disabled" : ""}>${esc(st.longName)}${st.status !== "available" ? " (coming soon)" : ""}</option>`).join("");
-
-  function renderProfiles() {
-    const groups = new Map<string, Profile[]>();
-    for (const p of standard().profiles) groups.set(p.stage, [...(groups.get(p.stage) ?? []), p]);
-    el.profile.innerHTML = [...groups].map(([stage, ps]) =>
-      `<optgroup label="${esc(STAGE_LABELS[stage] ?? stage)}">${ps.map((p) => `<option value="${p.id}">${esc(p.label)}</option>`).join("")}</optgroup>`).join("");
-  }
-
-  function syncControls() {
-    s.standard = standard().id;
-    renderProfiles();
-    s.profile = profile().id;
-    el.standard.value = s.standard;
-    el.profile.value = s.profile;
-    el.diet.value = s.diet;
-    el.n.value = String(s.n);
-    el.options.value = String(s.options);
-    el.weight.value = String(weight());
-    const b = energyBand();
-    el.energyLow.value = String(b.low);
-    el.energyHigh.value = String(b.high);
-    $(root, "#energyNote").textContent = `Recommended: ${profile().energy.low}–${profile().energy.high} kcal. ${profile().energy.note}`;
-    const energyCustom = s.energyLow !== null || s.energyHigh !== null;
-    $(root, "#energyCustom").hidden = !energyCustom;
-    $(root, "#energyReset").hidden = !energyCustom;
-    renderTargets();
-    renderFoods();
-  }
-
-  function renderTargets() {
-    const official = new Map(officialTargets().map((t) => [t.key, t]));
-    const current = currentTargets();
-    const customCount = current.filter((t) => t.custom).length;
-    $(root, "#customBanner").hidden = customCount === 0;
-    $(root, "#targetsSummary").textContent = `(${current.length} nutrients${customCount ? `, ${customCount} custom` : ""})`;
-    const input = (t: ResolvedTarget, bound: "min" | "max") => {
-      const o = s.overrides[t.key]?.[bound];
-      const off = official.get(t.key)?.[bound];
-      return `<input type="number" step="any" min="0" data-key="${t.key}" data-bound="${bound}" aria-label="${esc(t.label)} ${bound === "min" ? "minimum" : "maximum"}"
-        value="${o !== undefined && o !== null ? o : ""}" placeholder="${off !== undefined ? fmt(off) : "none"}" />`;
-    };
-    $(root, "#targetsTable").innerHTML = `<thead><tr><th>Nutrient</th><th class="num">Official min</th><th class="num">Official max</th><th>Your min</th><th>Your max</th></tr></thead><tbody>${
-      current.map((t) => {
-        const off = official.get(t.key);
-        return `<tr><td>${esc(t.label)} <span class="muted small">${esc(t.unit)}</span>${t.custom ? '<span class="badge">custom</span>' : ""}</td>
-          <td class="num">${fmt(off?.min)}</td><td class="num">${fmt(off?.max)}</td>
-          <td>${input(t, "min")}</td><td>${input(t, "max")}</td></tr>`;
-      }).join("")}</tbody>`;
-  }
-
-  function renderFoods() {
-    const foods = availableFoods();
-    const groups = new Map<string, Food[]>();
-    for (const f of foods) groups.set(f.group, [...(groups.get(f.group) ?? []), f]);
-    $(root, "#foodsList").innerHTML = [...groups].map(([g, fs]) =>
-      `<h4>${esc(g)}</h4>` + fs.map((f) =>
-        `<label class="check"><input type="checkbox" data-food="${f.id}" ${s.excluded.includes(f.id) ? "" : "checked"} /> ${esc(f.name)}</label>`).join("")).join("");
-    const on = foods.filter((f) => !s.excluded.includes(f.id)).length;
-    $(root, "#foodsSummary").textContent = `(${on} of ${foods.length} selected)`;
-  }
-
-  function saveState() {
+  function save() {
+    s.toggled = [...toggled];
     history.replaceState(null, "", `?${encode(s)}`);
     if (rememberBox.checked) remember(s);
   }
 
-  function changed() {
-    saveState();
-    syncControls();
-    if (results.childElementCount) {
-      results.innerHTML = `<p class="notice info">Settings changed. Press "Find combinations" to update the results.</p>`;
-    }
+  // ---------- 1. About you
+  const age = $<HTMLInputElement>(root, "#age");
+  const weightIn = $<HTMLInputElement>(root, "#weight");
+  const life = $<HTMLSelectElement>(root, "#life");
+  $(root, "#standardSeg").innerHTML = standards.map((st) =>
+    `<label><input type="radio" name="standard" value="${st.id}" ${st.status !== "available" ? "disabled" : ""} /><span>${esc(st.name)}${st.status !== "available" ? " (soon)" : ""}</span></label>`).join("");
+
+  function renderYou() {
+    $$<HTMLInputElement>(root, 'input[name="sex"]').forEach((r) => (r.checked = r.value === s.sex));
+    $$<HTMLInputElement>(root, 'input[name="standard"]').forEach((r) => (r.checked = r.value === std().id));
+    age.value = String(s.age);
+    weightIn.value = s.weight === null ? "" : String(s.weight);
+    weightIn.placeholder = String(defaultWeight());
+    life.value = s.life;
+    const p = pick();
+    const b = band();
+    const src = std().sources[0];
+    $(root, "#profileLine").innerHTML =
+      `Targets: <b>${esc(std().name)}</b> recommendations for <b>${esc(p.profile.label.toLowerCase().replace(/(\d)-(\d)/, "$1–$2"))}</b> · ${b.low.toLocaleString("en-GB")}–${b.high.toLocaleString("en-GB")} kcal a day`
+      + (p.note ? ` <span class="muted">(${esc(p.note)})</span>` : "");
+    $(root, "#sourceLine").innerHTML = `Source: <a href="${esc(src.url)}">${esc(src.title)}</a>. ${std().sources.length > 1 ? `Also: ${std().sources.slice(1).map((x) => `<a href="${esc(x.url)}">${esc(x.title)}</a>`).join("; ")}.` : ""}`;
+    $<HTMLInputElement>(root, "#energyLow").value = String(b.low);
+    $<HTMLInputElement>(root, "#energyHigh").value = String(b.high);
+    $(root, "#energyNote").textContent = `Recommended: ${profile().energy.low.toLocaleString("en-GB")}–${profile().energy.high.toLocaleString("en-GB")} kcal. ${profile().energy.note}`;
+    const eCustom = s.energyLow !== null || s.energyHigh !== null;
+    $(root, "#energyCustom").hidden = !eCustom;
+    $(root, "#energyReset").hidden = !eCustom;
+    renderTargets();
+  }
+
+  function renderTargets() {
+    const official = new Map(resolve(false).map((t) => [t.key, t]));
+    const current = resolve(true);
+    const custom = current.filter((t) => t.custom).length + (s.energyLow !== null || s.energyHigh !== null ? 1 : 0);
+    $(root, "#customBanner").hidden = custom === 0;
+    $(root, "#tuneNote").textContent = `${std().name} · ${current.length} nutrient targets${custom ? ` · ${custom} custom` : ""}`;
+    const openNow = new Set($$<HTMLDetailsElement>(root, "#targetGroups details[open]").map((d) => d.dataset.group));
+    const input = (t: ResolvedTarget, bound: "min" | "max") => {
+      const o = s.overrides[t.key]?.[bound];
+      const off = official.get(t.key)?.[bound];
+      return `<input type="number" step="any" min="0" data-key="${t.key}" data-bound="${bound}" aria-label="${esc(t.label)} ${bound === "min" ? "minimum" : "maximum"}" value="${o ?? ""}" placeholder="${off !== undefined ? fmt(off) : "none"}" />`;
+    };
+    const range = (t?: ResolvedTarget) => t ? [t.min !== undefined ? `≥ ${fmt(t.min)}` : "", t.max !== undefined ? `≤ ${fmt(t.max)}` : ""].filter(Boolean).join(", ") || "–" : "–";
+    const notes: Record<string, string> = { amino: isAdult(s.age) ? `Per-kg amino acid needs (WHO 2007) worked out for ${weight()} kg.` : "Amino acid targets are given for adults only." };
+    $(root, "#targetGroups").innerHTML = GROUPS.map((g) => {
+      const ts = current.filter((t) => g.keys.includes(t.key));
+      if (!ts.length) return g.id === "amino" ? `<p class="small muted sans">${notes.amino}</p>` : "";
+      const nCustom = ts.filter((t) => t.custom).length;
+      return `<details data-group="${g.id}" ${openNow.has(g.id) ? "open" : ""}><summary>${esc(g.title)} <span class="summary-note">${ts.length} targets${nCustom ? `, ${nCustom} custom` : ""}</span></summary>
+        <div class="details-body">${notes[g.id] ? `<p class="small sans">${notes[g.id]}</p>` : ""}<div class="table-scroll"><table>
+        <thead><tr><th>Nutrient</th><th class="num">Official</th><th>Your minimum</th><th>Your maximum</th></tr></thead><tbody>
+        ${ts.map((t) => `<tr><td>${esc(t.label)} <span class="muted">${esc(t.unit)}</span>${t.custom ? '<span class="badge">custom</span>' : ""}</td>
+          <td class="num">${range(official.get(t.key))}</td><td>${input(t, "min")}</td><td>${input(t, "max")}</td></tr>`).join("")}
+        </tbody></table></div></div></details>`;
+    }).join("");
   }
 
   const numOrNull = (v: string) => (v.trim() === "" || !Number.isFinite(Number(v)) ? null : Number(v));
+  function changed(opts: { foods?: boolean } = {}) {
+    save();
+    renderYou();
+    renderFoodSummary();
+    if (opts.foods) refreshTree();
+    markStale();
+    if (s.mode === "build") renderBuilder();
+  }
 
-  el.standard.addEventListener("change", () => { s.standard = el.standard.value; s.overrides = {}; s.energyLow = s.energyHigh = null; changed(); });
-  el.profile.addEventListener("change", () => { s.profile = el.profile.value; s.energyLow = s.energyHigh = null; s.weight = null; changed(); });
-  el.diet.addEventListener("change", () => { s.diet = el.diet.value as Settings["diet"]; changed(); });
-  el.n.addEventListener("change", () => { s.n = Math.min(15, Math.max(1, Math.round(Number(el.n.value) || DEFAULTS.n))); changed(); });
-  el.options.addEventListener("change", () => { s.options = Math.min(5, Math.max(1, Math.round(Number(el.options.value) || DEFAULTS.options))); changed(); });
-  el.weight.addEventListener("change", () => {
-    const w = numOrNull(el.weight.value);
-    s.weight = w === null || w === profile().defaultWeightKg ? null : Math.min(300, Math.max(10, Math.round(w)));
+  $$<HTMLInputElement>(root, 'input[name="sex"]').forEach((r) => r.addEventListener("change", () => { s.sex = r.value as Settings["sex"]; s.energyLow = s.energyHigh = null; changed(); }));
+  root.addEventListener("change", (e) => {
+    const t = e.target as HTMLInputElement;
+    if (t.name === "standard") { s.standard = t.value; s.overrides = {}; s.energyLow = s.energyHigh = null; changed(); }
+  });
+  age.addEventListener("change", () => { s.age = Math.min(110, Math.max(1, Math.round(Number(age.value) || DEFAULTS.age))); s.energyLow = s.energyHigh = null; changed(); });
+  weightIn.addEventListener("change", () => {
+    const w = numOrNull(weightIn.value);
+    s.weight = w === null ? null : Math.min(300, Math.max(10, Math.round(w)));
     changed();
   });
-  for (const k of ["energyLow", "energyHigh"] as const) {
-    el[k].addEventListener("change", () => {
-      const v = numOrNull(el[k].value);
-      const rec = profile().energy[k === "energyLow" ? "low" : "high"];
-      s[k] = v === null || v === rec ? null : Math.min(6000, Math.max(300, Math.round(v)));
+  life.addEventListener("change", () => { s.life = life.value as Settings["life"]; s.energyLow = s.energyHigh = null; changed(); });
+  for (const [id, key] of [["#energyLow", "energyLow"], ["#energyHigh", "energyHigh"]] as const) {
+    $<HTMLInputElement>(root, id).addEventListener("change", (e) => {
+      const v = numOrNull((e.target as HTMLInputElement).value);
+      const rec = profile().energy[key === "energyLow" ? "low" : "high"];
+      s[key] = v === null || v === rec ? null : Math.min(6000, Math.max(300, Math.round(v)));
       changed();
     });
   }
   $(root, "#energyReset").addEventListener("click", () => { s.energyLow = s.energyHigh = null; changed(); });
-  $(root, "#resetTargets").addEventListener("click", () => { s.overrides = {}; changed(); });
-  $(root, "#targetsTable").addEventListener("change", (e) => {
+  $(root, "#resetTargets").addEventListener("click", () => { s.overrides = {}; s.energyLow = s.energyHigh = null; changed(); });
+  $(root, "#targetGroups").addEventListener("change", (e) => {
     const inp = e.target as HTMLInputElement;
-    const key = inp.dataset.key!, bound = inp.dataset.bound as "min" | "max";
+    if (!inp.dataset.key) return;
+    const key = inp.dataset.key, bound = inp.dataset.bound as "min" | "max";
     const v = numOrNull(inp.value);
     const o = { ...(s.overrides[key] ?? {}) };
     if (v === null) delete o[bound]; else o[bound] = v;
     if (Object.keys(o).length) s.overrides[key] = o; else delete s.overrides[key];
     changed();
   });
-  $(root, "#foodsList").addEventListener("change", (e) => {
-    const id = (e.target as HTMLInputElement).dataset.food!;
-    s.excluded = (e.target as HTMLInputElement).checked ? s.excluded.filter((x) => x !== id) : [...s.excluded, id];
-    changed();
+
+  // ---------- 2. Foods
+  const tree = $(root, "#foodTree");
+  const search = $<HTMLInputElement>(root, "#foodSearch");
+
+  function renderFoodSummary() {
+    $$<HTMLInputElement>(root, 'input[name="diet"]').forEach((r) => (r.checked = r.value === s.diet));
+    const all = dietFoods();
+    const on = all.filter((f) => isOn(f, s.base, toggled)).length;
+    const baseText = { common: "common foods", all: "everything", none: "nothing" }[s.base];
+    $(root, "#foodCount").innerHTML = `<b>${on.toLocaleString("en-GB")}</b> of ${all.length.toLocaleString("en-GB")} foods switched on`;
+    $(root, "#foodsNote").textContent = `starting from ${baseText}${toggled.size ? `, ${toggled.size} changed` : ""}`;
+  }
+
+  type Node = { id: string; name: string; foods: PlannerFood[] };
+  function categoriesTree(): { cat: Node; groups: Node[] }[] {
+    const out: { cat: Node; groups: Node[] }[] = [];
+    for (const c of data.categories) {
+      const foods = dietFoods().filter((f) => f.cat === c.id);
+      if (!foods.length) continue;
+      const byGroup = new Map<string, PlannerFood[]>();
+      for (const f of foods) byGroup.set(f.group, [...(byGroup.get(f.group) ?? []), f]);
+      const groups = [...byGroup].map(([name, fs]) => ({
+        id: `${c.id}:${name}`, name,
+        foods: fs.sort((a, b) => Number(b.common) - Number(a.common) || a.label.localeCompare(b.label)),
+      })).sort((a, b) => Number(b.foods.some((f) => f.common)) - Number(a.foods.some((f) => f.common)) || a.name.localeCompare(b.name));
+      out.push({ cat: { id: c.id, name: c.name, foods }, groups });
+    }
+    return out;
+  }
+
+  const itemHtml = (f: PlannerFood, label: string, path = "") =>
+    `<label class="item"><input type="checkbox" data-food="${f.id}" /> <span>${esc(label)}${f.common ? ' <span class="tag">common</span>' : ""}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`;
+  const triBox = (attr: string, id: string) => `<input type="checkbox" ${attr}="${esc(id)}" />`;
+  let treeModel = categoriesTree();
+  const groupFoods = new Map<string, PlannerFood[]>();
+
+  function renderTree() {
+    const q = search.value.trim();
+    if (q.length >= 2) {
+      const hits = dietFoods().filter((f) => matches(f, q)).sort((a, b) => Number(b.common) - Number(a.common) || a.name.length - b.name.length).slice(0, 200);
+      tree.innerHTML = hits.length
+        ? `<p class="small muted sans">${hits.length === 200 ? "First 200 matches" : `${hits.length} match${hits.length === 1 ? "" : "es"}`}</p><ul class="flat">${hits.map((f) => `<li>${itemHtml(f, f.name, `${catName.get(f.cat)} › ${f.group}`)}</li>`).join("")}</ul>`
+        : `<p class="small muted sans">No foods match "${esc(q)}".</p>`;
+      updateTreeStates();
+      return;
+    }
+    treeModel = categoriesTree();
+    groupFoods.clear();
+    tree.innerHTML = `<div class="tree">${treeModel.map(({ cat }) => `<details data-cat-box="${cat.id}"><summary>${triBox("data-cat", cat.id)} ${esc(cat.name)} <span class="count" data-count="${cat.id}"></span></summary><div class="cat-body"></div></details>`).join("")}</div>`;
+    for (const { cat, groups } of treeModel) {
+      groupFoods.set(cat.id, cat.foods);
+      for (const g of groups) groupFoods.set(g.id, g.foods);
+    }
+    updateTreeStates();
+  }
+
+  function fillCategory(box: HTMLDetailsElement) {
+    const body = $(box, ".cat-body");
+    if (body.childElementCount) return;
+    const entry = treeModel.find((x) => x.cat.id === box.dataset.catBox);
+    if (!entry) return;
+    const singles = entry.groups.filter((g) => g.foods.length === 1);
+    const multis = entry.groups.filter((g) => g.foods.length > 1);
+    body.innerHTML =
+      multis.map((g) => `<details><summary>${triBox("data-group", g.id)} ${esc(g.name)} <span class="count" data-count="${esc(g.id)}"></span></summary><div class="items">${g.foods.map((f) => itemHtml(f, f.common ? f.name : f.label)).join("")}</div></details>`).join("")
+      + (singles.length ? `<div class="items">${singles.map((g) => itemHtml(g.foods[0], g.foods[0].common ? g.foods[0].name : g.foods[0].name)).join("")}</div>` : "");
+    updateTreeStates();
+  }
+
+  function updateTreeStates() {
+    for (const cb of $$<HTMLInputElement>(tree, "input[data-food]")) cb.checked = isOn(foodById.get(cb.dataset.food!)!, s.base, toggled);
+    for (const cb of $$<HTMLInputElement>(tree, "input[data-cat], input[data-group]")) {
+      const id = cb.dataset.cat ?? cb.dataset.group!;
+      const fs = groupFoods.get(id) ?? [];
+      const on = fs.filter((f) => isOn(f, s.base, toggled)).length;
+      cb.checked = on === fs.length && on > 0;
+      cb.indeterminate = on > 0 && on < fs.length;
+      const count = tree.querySelector(`[data-count="${CSS.escape(id)}"]`);
+      if (count) count.textContent = `${on} of ${fs.length}`;
+    }
+  }
+  const refreshTree = () => { if ((root.querySelector("#foodsBox") as HTMLDetailsElement).open) renderTree(); };
+
+  tree.addEventListener("toggle", (e) => {
+    const d = e.target as HTMLDetailsElement;
+    if (d.open && d.dataset.catBox) fillCategory(d);
+  }, true);
+  tree.addEventListener("click", (e) => {
+    // A tick box inside a heading shouldn't open or close that section.
+    const t = e.target as HTMLElement;
+    if (t instanceof HTMLInputElement && t.closest("summary")) e.stopPropagation();
   });
+  tree.addEventListener("change", (e) => {
+    const cb = e.target as HTMLInputElement;
+    if (cb.dataset.food) setOn(foodById.get(cb.dataset.food)!, cb.checked, s.base, toggled);
+    else {
+      const id = cb.dataset.cat ?? cb.dataset.group;
+      for (const f of groupFoods.get(id!) ?? []) setOn(f, cb.checked, s.base, toggled);
+    }
+    updateTreeStates();
+    save();
+    renderFoodSummary();
+    markStale();
+  });
+  $(root, "#foodsBox").addEventListener("toggle", (e) => { if ((e.target as HTMLDetailsElement).open && !tree.childElementCount) renderTree(); });
+  let searchTimer = 0;
+  search.addEventListener("input", () => { clearTimeout(searchTimer); searchTimer = window.setTimeout(renderTree, 150); });
+  $$<HTMLButtonElement>(root, "button[data-base]").forEach((b) => b.addEventListener("click", () => {
+    s.base = b.dataset.base as Base; toggled.clear(); changed({ foods: true });
+  }));
+  $$<HTMLInputElement>(root, 'input[name="diet"]').forEach((r) => r.addEventListener("change", () => { s.diet = r.value as Settings["diet"]; changed({ foods: true }); }));
+
+  // ---------- reports (shared by suggestions and the builder)
+  function report(items: { food: PlannerFood; grams: number }[]) {
+    const current = resolve(true);
+    const { notAssessed } = splitAssessable(current, selectedFoods().length ? selectedFoods() : dietFoods());
+    const sums = totals(items, ORDER);
+    return analyse(sums, current, new Set(notAssessed.map((t) => t.key)), meta);
+  }
+
+  const chip = (r: Row) => {
+    const text = { met: "met", short: `${Math.round(r.pctOfMin!)}%`, low: `${Math.round(r.pctOfMin!)}%`, over: "over limit", within: "within limit", info: "no target", unassessed: "no data" }[r.status];
+    return `<span class="chip ${r.status}">${text}</span>`;
+  };
+  const target = (r: Row) => [r.min !== undefined ? `≥ ${fmt(r.min)}` : "", r.max !== undefined ? `≤ ${fmt(r.max)}` : ""].filter(Boolean).join(", ") || "–";
+  const tableHtml = (rows: Row[]) => `<div class="table-scroll"><table><thead><tr><th>Nutrient</th><th class="num">Amount</th><th class="num">Target</th><th></th></tr></thead><tbody>${
+    rows.map((r) => `<tr><td>${esc(r.label)}${r.custom ? '<span class="badge">custom</span>' : ""}</td><td class="num">${fmt(r.value)} <span class="muted">${esc(r.unit)}</span></td><td class="num muted">${target(r)}</td><td>${chip(r)}</td></tr>`).join("")
+  }</tbody></table></div>`;
+
+  function axesFor(rep: Report, keys: string[]): Axis[] {
+    return keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined)
+      .map((r) => ({ label: SHORT_LABEL[r.key] ?? r.label, pct: r.pctOfMin!, detail: `${fmt(r.value)} of ${fmt(r.min)} ${r.unit}` }));
+  }
+
+  function overviewAxes(rep: Report): Axis[] {
+    const b = band();
+        // Energy counts as 100% anywhere inside the calorie range.
+    const e = rep.energy;
+    const ePct = e < b.low ? (e / b.low) * 100 : e > b.high ? (e / b.high) * 100 : 100;
+    const axes: Axis[] = [{ label: "Energy", pct: ePct, detail: `${fmt(e)} kcal; range ${fmt(b.low)}–${fmt(b.high)}` }];
+    axes.push(...axesFor(rep, ["protein", "carbohydrate", "fibre"]));
+    for (const g of GROUPS.filter((x) => ["vitamins", "minerals", "amino"].includes(x.id))) {
+      const rs = g.keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined);
+      if (!rs.length) continue;
+      const avg = rs.reduce((a, r) => a + Math.min(100, r.pctOfMin!), 0) / rs.length;
+      const met = rs.filter((r) => r.status === "met").length;
+      axes.push({ label: { vitamins: "Vitamins", minerals: "Minerals", amino: "Amino acids" }[g.id as "vitamins"], pct: avg, detail: `${met} of ${rs.length} met; average, each capped at 100%` });
+    }
+    return axes;
+  }
+
+  function limitsHtml(rep: Report) {
+    const rows = rep.rows.filter((r) => r.max !== undefined && r.status !== "unassessed"
+      && (["fat", "satfat", "salt", "sodium"].includes(r.key) || (r.pctOfMax ?? 0) >= 80));
+    if (!rows.length) return "";
+    return `<div class="limits"><h4>Upper limits</h4>${rows.map((r) => `<div class="limit ${r.status === "over" ? "over" : ""}">
+      ${esc(r.label)}: <b>${fmt(r.value)}</b> of max ${fmt(r.max)} ${esc(r.unit)}${r.custom ? '<span class="badge">custom</span>' : ""}
+      <div class="lbar"><span style="width:${Math.min(100, r.pctOfMax ?? 0).toFixed(0)}%"></span></div></div>`).join("")}</div>`;
+  }
+
+  function noticesHtml(rep: Report) {
+    const short = (k: string) => { const r = rep.byKey.get(k); return r ? r.status === "short" || r.status === "low" : false; };
+    const out: string[] = [];
+    if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (<a href="${NHS_VITD}">NHS</a>).`);
+    if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products, so a fortified food or supplement may be needed (<a href="${NHS_VEGAN}">NHS</a>).`);
+    if ((rep.byKey.get("epaDha")?.value ?? 0) < 250) out.push(`<b>Omega-3 EPA and DHA:</b> found mainly in oily fish; plant omega-3 (ALA) converts to them poorly. There's no official target, but an algae-based supplement is the vegetarian source.`);
+    if (rep.unassessed.some((r) => r.key === "iodine")) out.push(`<b>Iodine</b> isn't in the food database, so it isn't checked. Milk and yoghurt are the main UK sources; if you use plant drinks, choose one with added iodine (<a href="${BDA_IODINE}">BDA</a>).`);
+    return out.length ? `<div class="notice small">${out.map((x) => `<p>${x}</p>`).join("")}</div>` : "";
+  }
+
+  function reportHtml(rep: Report) {
+    const shortTxt = rep.shortfalls.length
+      ? `Short on ${rep.shortfalls.slice(0, 5).map((r) => `${esc(r.label)} (${Math.round(r.pctOfMin!)}%)`).join(", ")}${rep.shortfalls.length > 5 ? ` and ${rep.shortfalls.length - 5} more` : ""}.`
+      : "Every assessed minimum is met.";
+    const over = rep.rows.filter((r) => r.status === "over");
+    const custom = rep.rows.some((r) => r.custom) || s.energyLow !== null || s.energyHigh !== null;
+    const detail = (id: string) => {
+      const g = GROUPS.find((x) => x.id === id)!;
+      const rows = rep.rows.filter((r) => g.keys.includes(r.key) && (r.min !== undefined || r.max !== undefined || id === "fats"));
+      if (!rows.length) return id === "amino" ? `<details><summary>${esc(g.title)}</summary><div class="details-body"><p class="small sans">Amino acid targets are given for adults only.</p></div></details>` : "";
+      const axes = axesFor(rep, g.keys);
+      const met = rows.filter((r) => r.status === "met").length, mins = rows.filter((r) => r.pctOfMin !== undefined).length;
+      return `<details><summary>${esc(g.title)} <span class="summary-note">${mins ? `${met} of ${mins} met` : `${rows.length} values`}</span></summary><div class="details-body">
+        ${axes.length >= 3 ? radarSvg(axes, { title: `${g.title}: share of each target reached` }) : ""}
+        ${tableHtml(rows)}</div></details>`;
+    };
+    return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> nutrient targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}
+        ${over.length ? ` <span class="chip over">Over the limit for ${over.map((r) => esc(r.label)).join(", ")}</span>` : ""}</p>
+      ${custom ? `<p class="small muted sans">Using some custom targets.</p>` : ""}
+      <div class="charts">${radarSvg(overviewAxes(rep), { title: "Overview: share of each target reached" })}${limitsHtml(rep)}</div>
+      ${noticesHtml(rep)}
+      ${detail("vitamins")}${detail("minerals")}${detail("amino")}
+      <details><summary>All values <span class="summary-note">including fats and values without targets</span></summary><div class="details-body">${tableHtml(rep.rows.filter((r) => r.key !== "energy"))}</div></details>`;
+  }
+
+  // ---------- 3a. Suggest
+  const results = $(root, "#results");
+  const status = $(root, "#status");
+  const runBtn = $<HTMLButtonElement>(root, "#run");
+  const nIn = $<HTMLInputElement>(root, "#n");
+  const optIn = $<HTMLInputElement>(root, "#options");
+  let lastPlans: Plan[] = [];
+  function markStale() {
+    if (results.childElementCount && !results.querySelector(".stale")) {
+      results.insertAdjacentHTML("afterbegin", `<p class="notice info stale">Settings changed. Press "Find combinations" to update these suggestions.</p>`);
+    }
+  }
+  nIn.addEventListener("change", () => { s.n = Math.min(15, Math.max(1, Math.round(Number(nIn.value) || DEFAULTS.n))); nIn.value = String(s.n); save(); markStale(); });
+  optIn.addEventListener("change", () => { s.options = Math.min(5, Math.max(1, Math.round(Number(optIn.value) || DEFAULTS.options))); optIn.value = String(s.options); save(); });
+
+  let worker: Worker | null = null;
+  runBtn.addEventListener("click", () => {
+    worker?.terminate();
+    const foods = selectedFoods();
+    const current = resolve(true);
+    const { assessable } = splitAssessable(current, foods);
+    const b = band();
+    if (!foods.length) { results.innerHTML = `<p class="notice bad">No foods are switched on. Open "Choose foods" above to pick some.</p>`; return; }
+    if (b.low > b.high) { results.innerHTML = `<p class="notice bad">The lower calorie value is higher than the upper one.</p>`; return; }
+    worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
+    runBtn.disabled = true;
+    lastPlans = [];
+    results.innerHTML = "";
+    status.textContent = `Finding option 1 of ${s.options}…`;
+    worker.onmessage = (m) => {
+      const d = m.data;
+      if (d.type === "plan") {
+        lastPlans.push(d.plan);
+        const k = lastPlans.length;
+        const items = (d.plan as Plan).items.map((i) => ({ food: foodById.get(i.id)!, grams: i.grams }));
+        const notes = items.map((i) => i.food.notes).filter(Boolean) as string[];
+        results.insertAdjacentHTML("beforeend", `<article class="result">
+          <h3><span>Option ${k}</span><span class="result-actions"><button type="button" class="small" data-edit="${k - 1}">Adjust in builder</button></span></h3>
+          <ul class="ingredients">${items.map((i) => `<li><b>${esc(i.food.name)}</b> · ${esc(describeAmount(i.food, i.grams))}</li>`).join("")}</ul>
+          ${reportHtml(report(items))}
+          ${notes.length ? `<p class="small muted sans">${notes.map(esc).join(" ")}</p>` : ""}
+        </article>`);
+        status.textContent = k < s.options ? `Finding option ${k + 1} of ${s.options}…` : "";
+      } else {
+        runBtn.disabled = false;
+        status.textContent = "";
+        if (d.type === "error") results.insertAdjacentHTML("beforeend", `<p class="notice bad">Something went wrong: ${esc(d.message)}</p>`);
+        else if (!lastPlans.length) results.insertAdjacentHTML("beforeend", `<p class="notice bad">No combination fits all the limits. Try allowing more foods, widening the calorie range, or switching more foods on.</p>`);
+        else if (lastPlans.length < s.options) results.insertAdjacentHTML("beforeend", `<p class="small muted sans">Only ${lastPlans.length} distinct option${lastPlans.length > 1 ? "s" : ""} could be found with these settings.</p>`);
+        worker?.terminate(); worker = null;
+      }
+    };
+    worker.postMessage({
+      input: { foods, targets: assessable, energyLow: b.low, energyHigh: b.high, maxIngredients: s.n, options: s.options },
+      keys: ORDER,
+    });
+  });
+  results.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest("button[data-edit]") as HTMLButtonElement | null;
+    if (!btn) return;
+    const p = lastPlans[Number(btn.dataset.edit)];
+    s.builder = p.items.map((i) => ({ id: i.id, grams: i.grams }));
+    setMode("build");
+    $(root, "#h-plan").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  // ---------- 3b. Build my own
+  const addSearch = $<HTMLInputElement>(root, "#addSearch");
+  const addList = $<HTMLUListElement>(root, "#addList");
+  const builderList = $(root, "#builderList");
+  const builderResult = $(root, "#builderResult");
+  let addHits: PlannerFood[] = [];
+  let addActive = -1;
+
+  const unitAmount = (f: PlannerFood, grams: number) => (f.unit === "g" ? grams : grams / f.unitGrams);
+  const unitLabel = (f: PlannerFood) => (f.unit === "g" ? "g" : `${f.unit}${f.unit.endsWith("h") ? "es" : "s"}`);
+
+  function renderBuilder() {
+    const items = s.builder.map((b) => ({ food: foodById.get(b.id), grams: b.grams })).filter((x): x is { food: PlannerFood; grams: number } => !!x.food);
+    if (!items.length) {
+      builderList.innerHTML = `<p class="small muted sans">No foods yet. Search above to add one, or press "Adjust in builder" on a suggested option.</p>`;
+      builderResult.innerHTML = "";
+      return;
+    }
+    builderList.innerHTML = `<div class="table-scroll builder-table"><table><thead><tr><th>Food</th><th>Amount</th><th class="num">kcal</th><th class="num">Protein</th><th></th></tr></thead><tbody>${
+      items.map((it, i) => `<tr><td>${esc(it.food.name)}</td>
+        <td><span class="amt"><input type="number" min="0" step="${it.food.unit === "g" ? 5 : 0.5}" data-row="${i}" value="${Math.round(unitAmount(it.food, it.grams) * 10) / 10}" aria-label="Amount of ${esc(it.food.name)}" /> ${esc(unitLabel(it.food))}${it.food.unit !== "g" ? ` <span class="muted small">(${Math.round(it.grams)} g)</span>` : ""}</span></td>
+        <td class="num">${fmt(((it.food.per100g.energy ?? 0) * it.grams) / 100)}</td>
+        <td class="num">${fmt(((it.food.per100g.protein ?? 0) * it.grams) / 100)} g</td>
+        <td><button type="button" class="link" data-remove="${i}" aria-label="Remove ${esc(it.food.name)}">Remove</button></td></tr>`).join("")
+    }</tbody></table></div><p class="sans small"><button type="button" class="link" id="clearBuilder">Clear all</button></p>`;
+    renderBuilderResult(items);
+  }
+  function renderBuilderResult(items = s.builder.map((b) => ({ food: foodById.get(b.id)!, grams: b.grams })).filter((x) => x.food)) {
+    builderResult.innerHTML = items.length ? `<article class="result"><h3><span>Your day</span></h3>${reportHtml(report(items))}</article>` : "";
+  }
+  builderList.addEventListener("input", (e) => {
+    const inp = e.target as HTMLInputElement;
+    if (inp.dataset.row === undefined) return;
+    const i = Number(inp.dataset.row);
+    const f = foodById.get(s.builder[i].id)!;
+    const v = Math.max(0, Number(inp.value) || 0);
+    s.builder[i].grams = f.unit === "g" ? v : v * f.unitGrams;
+    const row = inp.closest("tr")!;
+    row.children[2].textContent = fmt(((f.per100g.energy ?? 0) * s.builder[i].grams) / 100);
+    row.children[3].textContent = `${fmt(((f.per100g.protein ?? 0) * s.builder[i].grams) / 100)} g`;
+    save();
+    renderBuilderResult();
+  });
+  builderList.addEventListener("click", (e) => {
+    const t = e.target as HTMLElement;
+    if (t.dataset.remove !== undefined) { s.builder.splice(Number(t.dataset.remove), 1); save(); renderBuilder(); }
+    if (t.id === "clearBuilder") { s.builder = []; save(); renderBuilder(); }
+  });
+
+  function showAddList() {
+    const q = addSearch.value.trim();
+    addHits = q.length < 2 ? [] : dietFoods().filter((f) => matches(f, q))
+      .sort((a, b) => Number(b.common) - Number(a.common) || a.name.length - b.name.length).slice(0, 40);
+    addActive = -1;
+    addList.innerHTML = addHits.map((f, i) => `<li role="option" id="add-${i}" data-i="${i}">${esc(f.name)}${f.common ? ' <span class="tag">common</span>' : ""}<span class="path">${esc(catName.get(f.cat) ?? "")} › ${esc(f.group)}</span></li>`).join("")
+      || (q.length >= 2 ? `<li aria-disabled="true">No matches</li>` : "");
+    addList.hidden = !addList.childElementCount;
+    addSearch.setAttribute("aria-expanded", String(!addList.hidden));
+  }
+  function addFood(f: PlannerFood) {
+    const grams = f.unit === "g" ? Math.min(100, f.maxGrams) : f.unitGrams;
+    const existing = s.builder.find((b) => b.id === f.id);
+    if (existing) existing.grams += grams; else s.builder.push({ id: f.id, grams });
+    addSearch.value = "";
+    addList.hidden = true;
+    addSearch.setAttribute("aria-expanded", "false");
+    save();
+    renderBuilder();
+    addSearch.focus();
+  }
+  addSearch.addEventListener("input", showAddList);
+  addSearch.addEventListener("keydown", (e) => {
+    if (addList.hidden || !addHits.length) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      addActive = (addActive + (e.key === "ArrowDown" ? 1 : -1) + addHits.length) % addHits.length;
+      $$(addList, "li").forEach((li, i) => li.setAttribute("aria-selected", String(i === addActive)));
+      addSearch.setAttribute("aria-activedescendant", `add-${addActive}`);
+      addList.children[addActive]?.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      addFood(addHits[Math.max(0, addActive)]);
+    } else if (e.key === "Escape") { addList.hidden = true; }
+  });
+  addList.addEventListener("mousedown", (e) => {
+    const li = (e.target as HTMLElement).closest("li[data-i]") as HTMLElement | null;
+    if (li) { e.preventDefault(); addFood(addHits[Number(li.dataset.i)]); }
+  });
+  addSearch.addEventListener("blur", () => setTimeout(() => (addList.hidden = true), 150));
+
+  // ---------- mode
+  function setMode(m: Settings["mode"]) {
+    s.mode = m;
+    $$<HTMLInputElement>(root, 'input[name="mode"]').forEach((r) => (r.checked = r.value === m));
+    $(root, "#suggestPane").hidden = m !== "suggest";
+    $(root, "#buildPane").hidden = m !== "build";
+    if (m === "build") renderBuilder();
+    save();
+  }
+  $$<HTMLInputElement>(root, 'input[name="mode"]').forEach((r) => r.addEventListener("change", () => setMode(r.value as Settings["mode"])));
 
   // ---------- share / remember
   $(root, "#copyLink").addEventListener("click", async (e) => {
     const btn = e.currentTarget as HTMLButtonElement;
     try { await navigator.clipboard.writeText(location.href); btn.textContent = "Link copied"; }
-    catch { prompt("Copy this link:", location.href); }
+    catch { window.prompt("Copy this link:", location.href); }
     setTimeout(() => (btn.textContent = "Copy link"), 2000);
   });
   $(root, "#exportBtn").addEventListener("click", () => {
@@ -235,117 +558,25 @@ export async function start(root: HTMLElement) {
   $<HTMLInputElement>(root, "#importFile").addEventListener("change", async (e) => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    try { s = await importFile(file); changed(); }
+    try { s = await importFile(file); toggled = new Set(s.toggled); init(); }
     catch (err) { alert(err instanceof Error ? err.message : "Couldn't read that file."); }
     (e.target as HTMLInputElement).value = "";
   });
   rememberBox.addEventListener("change", () => { if (rememberBox.checked) remember(s); else forget(); });
   $(root, "#forgetBtn").addEventListener("click", () => { forget(); rememberBox.checked = false; });
-
   const refreshUrl = root.dataset.refreshUrl;
-  $(root, "#dataInfo").innerHTML = `Food data: USDA FoodData Central snapshot from ${esc(foodsFile.generated ?? meta.foodsLastUpdated ?? "unknown date")}. ` +
-    (refreshUrl ? `<a href="${esc(refreshUrl)}">Request a data refresh</a> (allowed once every 3 months). ` : "") +
-    `<a href="${esc(root.dataset.methodsUrl)}">Methods and sources</a>`;
+  $(root, "#dataInfo").innerHTML = `Food data: USDA FoodData Central, snapshot from ${esc(data.generated ?? "unknown date")} (${data.foods.length.toLocaleString("en-GB")} foods). `
+    + (refreshUrl ? `<a href="${esc(refreshUrl)}">Request a data refresh</a> (allowed once every 3 months). ` : "")
+    + `<a href="${esc(root.dataset.methodsUrl)}">Methods and sources</a>`;
 
-  // ---------- run the optimiser in a worker
-  let worker: Worker | null = null;
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    worker?.terminate();
-    worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
-    const foods = availableFoods().filter((f) => !s.excluded.includes(f.id));
-    const targets = currentTargets();
-    const { assessable, notAssessed } = splitAssessable(targets, foods);
-    const band = energyBand();
-    const runBtn = $<HTMLButtonElement>(root, "#run");
-    if (!foods.length) { results.innerHTML = `<p class="notice bad">Select at least one food.</p>`; return; }
-    if (band.low > band.high) { results.innerHTML = `<p class="notice bad">The lower calorie value is higher than the upper one.</p>`; return; }
-
-    runBtn.disabled = true;
-    const plans: Plan[] = [];
-    status.textContent = `Finding option 1 of ${s.options}…`;
-    results.innerHTML = headerHtml(targets, notAssessed);
-    worker.onmessage = (m) => {
-      const d = m.data;
-      if (d.type === "plan") {
-        plans.push(d.plan);
-        results.insertAdjacentHTML("beforeend", planHtml(d.plan, plans.length, assessable, foods));
-        status.textContent = plans.length < s.options ? `Finding option ${plans.length + 1} of ${s.options}…` : "";
-      } else {
-        runBtn.disabled = false;
-        status.textContent = "";
-        if (d.type === "error") results.insertAdjacentHTML("beforeend", `<p class="notice bad">Something went wrong: ${esc(d.message)}</p>`);
-        else if (!plans.length) results.insertAdjacentHTML("beforeend",
-          `<p class="notice bad">No combination fits all the limits. Try allowing more ingredients, widening the calorie range, or selecting more foods.</p>`);
-        else if (plans.length < s.options) results.insertAdjacentHTML("beforeend",
-          `<p class="muted small">Only ${plans.length} distinct option${plans.length > 1 ? "s" : ""} could be found with these settings.</p>`);
-        worker?.terminate(); worker = null;
-      }
-    };
-    worker.postMessage({
-      input: { foods, targets: assessable, energyLow: band.low, energyHigh: band.high, maxIngredients: s.n, options: s.options },
-      keys: nutrients.map((n) => n.key),
-    });
-  });
-
-  function headerHtml(targets: ResolvedTarget[], notAssessed: ResolvedTarget[]) {
-    const custom = targets.some((t) => t.custom) || s.energyLow !== null || s.energyHigh !== null;
-    let h = custom ? `<p class="notice">These results use custom targets that differ from the official ${esc(standard().name)} recommendations for ${esc(profile().label.toLowerCase())}.</p>` : "";
-    if (notAssessed.length) {
-      h += `<p class="notice info small"><strong>Not assessed:</strong> ${notAssessed.map((t) => esc(t.label)).join(", ")}. The food database has no values for these in most foods, so the planner can't check them.` +
-        (notAssessed.some((t) => t.key === "iodine") ? ` For iodine, milk and yoghurt are the main UK sources; if you use plant drinks, choose one fortified with iodine.` : "") + `</p>`;
-    }
-    return h;
+  function init() {
+    nIn.value = String(s.n);
+    optIn.value = String(s.options);
+    renderYou();
+    renderFoodSummary();
+    if (tree.childElementCount) renderTree();
+    results.innerHTML = "";
+    setMode(s.mode);
   }
-
-  function planHtml(p: Plan, k: number, targets: ResolvedTarget[], foods: Food[]) {
-    const mins = targets.filter((t) => t.min && t.min > 0);
-    const met = mins.filter((t) => (p.totals[t.key] ?? 0) >= t.min! * 0.999).length;
-    const avg = mins.length ? mins.reduce((a, t) => a + Math.min(1, (p.totals[t.key] ?? 0) / t.min!), 0) / mins.length : 1;
-    const foodById = new Map(foods.map((f) => [f.id, f]));
-    const rows = targets.map((t) => {
-      const v = p.totals[t.key] ?? 0;
-      let chip = "", pct = 100, cls = "";
-      if (t.min && t.min > 0) {
-        pct = (v / t.min) * 100;
-        cls = pct >= 99.9 ? "met" : pct >= 66 ? "short" : "low";
-        chip = `<span class="chip ${cls}">${pct >= 99.9 ? "met" : Math.round(pct) + "%"}</span>`;
-      } else {
-        chip = `<span class="chip limit">within limit</span>`;
-      }
-      const range = [t.min !== undefined ? `≥ ${fmt(t.min)}` : "", t.max !== undefined ? `≤ ${fmt(t.max)}` : ""].filter(Boolean).join(", ");
-      return `<tr><td>${esc(t.label)}${t.custom ? '<span class="badge">custom</span>' : ""}</td>
-        <td class="num">${fmt(v)} <span class="muted small">${esc(t.unit)}</span></td>
-        <td class="num muted">${range}</td>
-        <td style="width:22%">${t.min ? `<div class="bar"><span class="${cls === "met" ? "" : cls}" style="width:${Math.min(100, pct).toFixed(0)}%"></span></div>` : ""}</td>
-        <td>${chip}</td></tr>`;
-    }).join("");
-
-    const notes = p.items.map((i) => foodById.get(i.id)?.notes).filter(Boolean) as string[];
-    return `<article class="card plan">
-      <h2>Option ${k}</h2>
-      <p class="score"><strong>${met} of ${mins.length}</strong> minimum targets met · average coverage <strong>${Math.round(avg * 100)}%</strong> · ${fmt(p.energy)} kcal</p>
-      <ul class="ingredients">${p.items.map((i) => `<li><strong>${esc(i.name)}</strong>${esc(i.amountLabel)}</li>`).join("")}</ul>
-      ${noticesHtml(p, targets)}
-      ${notes.length ? `<p class="small muted">${notes.map(esc).join(" ")}</p>` : ""}
-      <details><summary>Nutrient breakdown</summary>
-        <div class="table-scroll"><table><thead><tr><th>Nutrient</th><th class="num">Amount</th><th class="num">Target</th><th></th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
-      </details>
-    </article>`;
-  }
-
-  function noticesHtml(p: Plan, targets: ResolvedTarget[]) {
-    const short = (key: string) => {
-      const t = targets.find((x) => x.key === key);
-      return t?.min ? (p.totals[key] ?? 0) < t.min * 0.999 : false;
-    };
-    const out: string[] = [];
-    if (short("vitaminD")) out.push(`<strong>Vitamin D:</strong> very few foods contain much. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (<a href="${NHS_VITD}">NHS</a>).`);
-    if (short("vitaminB12")) out.push(`<strong>Vitamin B12:</strong> this combination falls short. B12 comes almost only from animal foods and fortified products, so a fortified food or supplement may be needed (<a href="${NHS_VEGAN}">NHS</a>).`);
-    if ((p.totals.epaDha ?? 0) < 250) out.push(`<strong>Omega-3 EPA and DHA:</strong> these come mainly from oily fish; plant omega-3 (ALA) converts to them poorly. There's no official UK or US target, but an algae-based omega-3 supplement is the vegetarian and vegan source.`);
-    return out.length ? `<div class="notice small">${out.map((x) => `<p>${x}</p>`).join("")}</div>` : "";
-  }
-
-  syncControls();
-  saveState();
+  init();
 }

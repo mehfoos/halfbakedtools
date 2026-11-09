@@ -1,8 +1,8 @@
 {
-  "foodsLastUpdated": "2026-11-08",
+  "foodsLastUpdated": "2026-11-09",
   "foodsSources": {
     "srLegacy": "FoodData_Central_sr_legacy_food_csv_2018-04.zip",
     "foundation": null
   },
-  "foodCount": 54
+  "foodCount": 1682
 }
