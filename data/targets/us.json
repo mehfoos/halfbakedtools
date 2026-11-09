@@ -316,6 +316,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 2,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 40,
@@ -614,6 +622,14 @@
       "basis": "abs",
       "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 3,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
      }
     },
     "fat": {
@@ -916,6 +932,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 4,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -1216,6 +1240,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -1514,6 +1546,14 @@
       "basis": "abs",
       "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
      }
     },
     "fat": {
@@ -1879,6 +1919,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -2240,6 +2288,14 @@
       "basis": "abs",
       "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
      }
     },
     "fat": {
@@ -2605,6 +2661,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -2968,6 +3032,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 4,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -3268,6 +3340,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -3566,6 +3646,14 @@
       "basis": "abs",
       "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
      }
     },
     "fat": {
@@ -3931,6 +4019,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -4292,6 +4388,14 @@
       "basis": "abs",
       "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
      }
     },
     "fat": {
@@ -4657,6 +4761,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 5,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -5020,6 +5132,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 6,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -5318,6 +5438,14 @@
       "basis": "abs",
       "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 6,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
      }
     },
     "fat": {
@@ -5683,6 +5811,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 6,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -6046,6 +6182,14 @@
       "note": "Chronic disease risk reduction intake"
      }
     },
+    "pantothenic": {
+     "min": {
+      "value": 7,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
+     }
+    },
     "fat": {
      "max": {
       "value": 35,
@@ -6344,6 +6488,14 @@
       "basis": "abs",
       "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 7,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
      }
     },
     "fat": {
@@ -6707,6 +6859,14 @@
       "basis": "abs",
       "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
+     }
+    },
+    "pantothenic": {
+     "min": {
+      "value": 7,
+      "basis": "abs",
+      "source": "nasem-dri",
+      "note": "Adequate intake"
      }
     },
     "fat": {

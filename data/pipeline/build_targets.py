@@ -186,6 +186,9 @@ US_ENERGY = {
     ("female", "9-13"): (1200, 1600), ("female", "14-18"): (1600, 1800), ("female", "19-30"): (1600, 2000),
     ("female", "31-50"): (1600, 2000), ("female", "51-70"): (1600, 2000), ("female", "71+"): (1440, 1760),
 }
+# Pantothenic acid adequate intakes (mg/day), same table.
+US_PANTOTHENIC = {"1-3": 2, "4-8": 3, "9-13": 4, "14-18": 5, "19-30": 5, "31-50": 5, "51-70": 5, "71+": 5,
+                  "pregnancy": 6, "lactation": 7}
 US_AMDR_FAT = {"1-3": 40, "4-8": 35, "9-13": 35, "14-18": 35}  # upper % energy; adults 35
 
 
@@ -256,6 +259,7 @@ def build_us() -> dict:
                 for k, v in zip(cols, table[(stage, g)]):
                     put(t, k, "min", v, "abs", "nasem-dri")
             add_us_uls(t, g, stage, "nasem-dri")
+            put(t, "pantothenic", "min", US_PANTOTHENIC[stage if stage in ("pregnancy", "lactation") else g], "abs", "nasem-dri", "Adequate intake")
             put(t, "fat", "max", US_AMDR_FAT.get(g, 35), "pctEnergy", "nasem-dri", "Acceptable macronutrient distribution range")
             if g in ("19-30", "31-50", "51-70", "71+"):
                 add_aa(t)

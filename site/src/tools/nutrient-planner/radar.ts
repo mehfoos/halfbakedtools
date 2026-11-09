@@ -1,19 +1,33 @@
-// Small dependency-free SVG radar chart: share of each target achieved.
-// The dashed ring is the target (100%). Values beyond the outer ring are
-// drawn on the ring and marked, so one huge value can't distort the chart.
+// Small dependency-free SVG radar chart showing each nutrient as a percentage
+// of its target. The scale is linear and never clips: it runs to 150% by
+// default and grows (in steps of 50%) to fit the largest value, so 400% always
+// looks bigger than 300%. The target (100%) is a thick navy ring, labelled, so
+// it stays easy to find whatever the scale.
+//
+// Axis kinds: "min" (reach at least the target), "max" (stay at or below it),
+// "range" (stay inside a band; used for energy), "ref" (a reference amount,
+// not a goal). Points are green when that axis's goal is met, red when not,
+// grey for references.
 
-export type Axis = { label: string; pct: number; detail?: string };
+export type Axis = { label: string; pct: number; kind: "min" | "max" | "range" | "ref"; ok?: boolean; detail?: string };
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+const GOOD = "#2d7a2d", BAD = "#a3271c", NEUTRAL = "#666666", NAVY = "#000080";
 
-export function radarSvg(axes: Axis[], opts: { max?: number; size?: number; title: string }) {
-  const max = opts.max ?? 150;
-  const size = opts.size ?? 340;
+export function scaleMax(axes: Axis[], base = 150) {
+  const top = Math.max(0, ...axes.map((a) => a.pct));
+  return top <= base ? base : Math.ceil(top / 50) * 50;
+}
+
+export function radarSvg(axes: Axis[], opts: { title: string; base?: number; size?: number; zoom?: boolean }) {
   const n = axes.length;
   if (n < 3) return "";
-  const pad = 78;
-  const cx = size / 2 + pad, cy = size / 2 + 28, r = size / 2 - 10;
-  const W = size + pad * 2, H = size + 56;
+  // zoom: keep the scale at `base` and mark anything beyond it with an arrow instead.
+  const max = opts.zoom ? (opts.base ?? 150) : scaleMax(axes, opts.base ?? 150);
+  const size = opts.size ?? 340;
+  const pad = 82;
+  const cx = size / 2 + pad, cy = size / 2 + 30, r = size / 2 - 10;
+  const W = size + pad * 2, H = size + 64;
   const ang = (i: number) => -Math.PI / 2 + (2 * Math.PI * i) / n;
   const pt = (i: number, pct: number) => {
     const rr = (Math.min(Math.max(pct, 0), max) / max) * r;
@@ -21,28 +35,49 @@ export function radarSvg(axes: Axis[], opts: { max?: number; size?: number; titl
   };
   const ring = (pct: number) => axes.map((_, i) => pt(i, pct).map((v) => v.toFixed(1)).join(",")).join(" ");
   const shape = axes.map((a, i) => pt(i, a.pct).map((v) => v.toFixed(1)).join(",")).join(" ");
+  const step = max <= 200 ? 50 : max <= 500 ? 100 : max <= 1000 ? 200 : 500;
 
   let g = "";
-  for (const p of [50, max]) g += `<polygon points="${ring(p)}" fill="none" stroke="#cfcbb0" stroke-width="1"/>`;
+  // Grid rings with their percentages along the first axis.
+  for (let p = step; p <= max; p += step) {
+    if (p === 100) continue;
+    g += `<polygon points="${ring(p)}" fill="none" stroke="#d6d2b8" stroke-width="1"/>`;
+    const [x, y] = pt(0, p);
+    g += `<text x="${(x + 4).toFixed(1)}" y="${(y + 4).toFixed(1)}" font-size="10" fill="#8a8670">${p}%</text>`;
+  }
   axes.forEach((_, i) => {
     const [x, y] = pt(i, max);
-    g += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#e2dfc8" stroke-width="1"/>`;
+    g += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#e4e1cc" stroke-width="1"/>`;
   });
-  g += `<polygon points="${ring(100)}" fill="none" stroke="#000080" stroke-width="1.6" stroke-dasharray="5 4"/>`;
-  g += `<polygon points="${shape}" fill="rgba(45,122,45,0.22)" stroke="#2d7a2d" stroke-width="2" stroke-linejoin="round"/>`;
+  // Target ring: shaded inside, thick navy edge, labelled.
+  g += `<polygon points="${ring(100)}" fill="rgba(0,0,128,0.05)" stroke="${NAVY}" stroke-width="2.6"/>`;
+  {
+    const [x, y] = pt(0, 100);
+    g += `<text x="${(x + 5).toFixed(1)}" y="${(y - 4).toFixed(1)}" font-size="11" font-weight="700" fill="${NAVY}">target 100%</text>`;
+  }
+  // Achieved shape.
+  g += `<polygon points="${shape}" fill="rgba(45,122,45,0.18)" stroke="#2d7a2d" stroke-width="1.8" stroke-linejoin="round"/>`;
   axes.forEach((a, i) => {
     const [x, y] = pt(i, a.pct);
-    const short = a.pct < 99.5;
-    const over = a.pct > max;
-    g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${over ? 4.5 : 3.2}" fill="${short ? "#a3271c" : "#2d7a2d"}" stroke="#fff" stroke-width="1"><title>${esc(a.label)}: ${Math.round(a.pct)}% of target${a.detail ? ` (${esc(a.detail)})` : ""}</title></circle>`;
-    const [lx, ly] = pt(i, max + 16);
+    const colour = a.kind === "ref" ? NEUTRAL : a.ok ? GOOD : BAD;
+    const sign = a.kind === "min" ? "at least" : a.kind === "max" ? "at most" : a.kind === "range" ? "within range" : "reference";
+    if (a.pct > max) {
+      // Beyond the zoomed scale: an outward arrow on the edge.
+      const t = ang(i), ux = Math.cos(t), uy = Math.sin(t), px = -uy, py = ux;
+      const tip = [x + ux * 11, y + uy * 11], b1 = [x + px * 6, y + py * 6], b2 = [x - px * 6, y - py * 6];
+      g += `<polygon points="${[tip, b1, b2].map((q) => q.map((v) => v.toFixed(1)).join(",")).join(" ")}" fill="${colour}"/>`;
+    }
+    g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${colour}" stroke="#fff" stroke-width="1.2"><title>${esc(a.label)}: ${Math.round(a.pct)}% of ${sign}${a.detail ? ` (${esc(a.detail)})` : ""}</title></circle>`;
+    const [lx, ly] = pt(i, max * 1.1 + 4);
     const cos = Math.cos(ang(i));
     const anchor = Math.abs(cos) < 0.25 ? "middle" : cos > 0 ? "start" : "end";
-    const pctText = `${Math.round(a.pct)}%`;
-    g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="12.5" fill="#111">${esc(a.label)}`
-      + `<tspan x="${lx.toFixed(1)}" dy="14" font-size="12" font-weight="700" fill="${short ? "#a3271c" : "#2d7a2d"}">${pctText}</tspan></text>`;
+    const mark = a.kind === "min" ? " ≥" : a.kind === "max" ? " ≤" : "";
+    g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="12.5" fill="#111">${esc(a.label)}${mark}`
+      + `<tspan x="${lx.toFixed(1)}" dy="14" font-size="12" font-weight="700" fill="${colour}">${Math.round(a.pct)}%</tspan></text>`;
   });
-  g += `<text x="${(cx + 4).toFixed(1)}" y="${(cy - (100 / max) * r - 4).toFixed(1)}" font-size="10.5" fill="#000080">target</text>`;
+  const clipped = axes.filter((a) => a.pct > max).length;
+  const note = clipped ? `<text x="${W - 6}" y="${H - 6}" text-anchor="end" font-size="10.5" fill="#8a8670">Zoomed to ${max}%: arrows mark ${clipped} value${clipped > 1 ? "s" : ""} beyond the edge</text>`
+    : max > (opts.base ?? 150) ? `<text x="${W - 6}" y="${H - 6}" text-anchor="end" font-size="10.5" fill="#8a8670">Scale extended to ${max}% to fit the highest value</text>` : "";
   return `<svg class="radar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.title)}" font-family="'Averia Sans Libre', Arial, sans-serif">`
-    + `<title>${esc(opts.title)}</title>${g}</svg>`;
+    + `<title>${esc(opts.title)}</title>${g}${note}</svg>`;
 }
