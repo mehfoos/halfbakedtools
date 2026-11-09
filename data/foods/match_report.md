@@ -104,6 +104,24 @@ Check that each food matched the record you expect. Edit `foods_catalogue.json` 
 | Sesame seeds | – | Seeds, sesame seeds, whole, dried (170150) | 49 |
 | Hemp seeds (hulled) | – | Seeds, hemp seed, hulled (170148) | 41 |
 | Almond drink (unsweetened) | – | Beverages, almond milk, unsweetened, shelf stable (174832) | 36 |
+| Chicken breast (roasted) | – | Chicken, broilers or fryers, breast, meat only, cooked, roasted (171477) | 49 |
+| Chicken thigh (roasted) | – | Chicken, broilers or fryers, thigh, meat only, cooked, roasted (172388) | 49 |
+| Turkey mince (cooked) | – | Turkey, Ground, cooked (171506) | 49 |
+| Beef mince, 15% fat (cooked) | – | Beef, ground, 85% lean meat / 15% fat, patty, cooked, broiled (174032) | 49 |
+| Beef sirloin steak (lean, grilled) | – | Beef, top sirloin, steak, separable lean only, trimmed to 0" fat, choice, cooked, broiled (168635) | 48 |
+| Pork tenderloin (lean, roasted) | – | Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted (168250) | 49 |
+| Lamb leg (lean, roasted) | – | Lamb, New Zealand, imported, frozen, leg, whole (shank and sirloin), separable lean only, cooked, roasted (172516) | 44 |
+| Ham (sliced) | – | Ham, sliced, regular (approximately 11% fat) (173864) | 49 |
+| Beef liver (cooked) | – | Beef, variety meats and by-products, liver, cooked, braised (168626) | 49 |
+| Salmon (farmed, cooked) | – | Fish, salmon, Atlantic, farmed, cooked, dry heat (175168) | 49 |
+| Tinned pink salmon (with bones) | – | Fish, salmon, pink, canned, total can contents (173690) | 49 |
+| Tinned tuna in water | – | Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program) (173709) | 49 |
+| Sardines in oil (tinned) | – | Fish, sardine, Atlantic, canned in oil, drained solids with bone (175139) | 49 |
+| Mackerel (cooked) | – | Fish, mackerel, Atlantic, cooked, dry heat (175120) | 45 |
+| Cod (cooked) | – | Fish, cod, Atlantic, cooked, dry heat (171956) | 49 |
+| Haddock (cooked) | – | Fish, haddock, cooked, dry heat (174198) | 49 |
+| Prawns (cooked) | – | Crustaceans, shrimp, mixed species, cooked, moist heat (may contain additives to retain moisture) (171971) | 49 |
+| Mussels (cooked) | – | Mollusks, mussel, blue, cooked, moist heat (174217) | 45 |
 
 ## Other foods (added automatically, off by default)
 
@@ -117,6 +135,8 @@ Rules are in `auto_foods.py`.
 | Grains, bread & pasta | 304 |
 | Breakfast cereals | 15 |
 | Nuts & seeds | 88 |
+| Meat & poultry | 423 |
+| Fish & seafood | 122 |
 | Dairy & eggs | 170 |
 | Plant drinks | 3 |
 | Oils & fats | 36 |

@@ -1,7 +1,7 @@
 // Planner settings: defaults, page-address (URL) encoding, file export/import,
 // and the optional, opt-in "remember on this device" storage.
 import type { Override } from "./solver.ts";
-import type { Base } from "./foods.ts";
+import type { Base, Diet } from "./foods.ts";
 import type { LifeStage, Sex } from "./profiles.ts";
 
 export type BuilderItem = { id: string; grams: number };
@@ -10,7 +10,7 @@ export type Settings = {
   sex: Sex;
   age: number;
   weight: number | null;          // null = default for sex
-  diet: "vegetarian" | "vegan";
+  diet: Diet;
   standard: string;
   life: LifeStage;
   n: number;                      // maximum number of ingredients
@@ -25,7 +25,7 @@ export type Settings = {
 };
 
 export const DEFAULTS: Settings = {
-  sex: "female", age: 35, weight: null, diet: "vegetarian", standard: "uk", life: "none",
+  sex: "female", age: 35, weight: null, diet: "none", standard: "uk", life: "none",
   n: 6, options: 3, energyLow: null, energyHigh: null, base: "common", toggled: [], overrides: {},
   mode: "suggest", builder: [],
 };
@@ -47,7 +47,7 @@ export function encode(s: Settings): string {
   p.set("sex", s.sex === "male" ? "m" : "f");
   p.set("age", String(s.age));
   if (s.weight !== null) p.set("w", String(s.weight));
-  if (s.diet === "vegan") p.set("d", "vegan");
+  if (s.diet !== "none") p.set("d", s.diet === "vegan" ? "vegan" : "veg");
   if (s.standard !== "uk") p.set("s", s.standard);
   if (s.life !== "none") p.set("ls", s.life);
   if (s.n !== DEFAULTS.n) p.set("n", String(s.n));
@@ -68,7 +68,9 @@ export function decode(query: string): Settings {
   s.sex = p.get("sex") === "m" ? "male" : "female";
   s.age = clampInt(p.get("age"), 1, 110) ?? DEFAULTS.age;
   s.weight = clampInt(p.get("w"), 10, 300);
-  if (p.get("d") === "vegan") s.diet = "vegan";
+  const d = p.get("d");
+  if (d === "vegan") s.diet = "vegan";
+  else if (d === "veg" || d === "vegetarian") s.diet = "vegetarian";
   if (p.get("s") && /^[a-z]{2}$/.test(p.get("s")!)) s.standard = p.get("s")!;
   const ls = p.get("ls");
   if (ls === "pregnancy" || ls === "lactation") s.life = ls;

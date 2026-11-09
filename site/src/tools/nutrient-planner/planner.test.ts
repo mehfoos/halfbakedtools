@@ -42,7 +42,7 @@ test("UK has no pregnancy values yet, so standard values are used with a note", 
 
 test("settings survive a round trip through the page address", () => {
   const s = fresh();
-  Object.assign(s, { sex: "male", age: 44, weight: 82, diet: "vegan", standard: "us", n: 4, base: "all", toggled: ["lentils", "u12345"],
+  Object.assign(s, { sex: "male", age: 44, weight: 82, diet: "vegetarian", standard: "us", n: 4, base: "all", toggled: ["lentils", "u12345"],
     overrides: { protein: { min: 90 } }, mode: "build", builder: [{ id: "egg", grams: 100 }, { id: "u170567", grams: 25.5 }] });
   assert.deepEqual(decode(encode(s)), s);
 });
@@ -78,4 +78,14 @@ test("analysis marks shortfalls, limits and missing data", () => {
   assert.equal(r.byKey.get("salt")!.status, "over");
   assert.equal(r.byKey.get("iodine")!.status, "unassessed");
   assert.equal(r.minCount, 1);
+});
+
+test("diet filter: no restriction, vegetarian, vegan", async () => {
+  const { dietOk } = await import("./foods.ts");
+  const meat = { diet: "meat" } as PlannerFood, veg = { diet: "vegetarian" } as PlannerFood, vegan = { diet: "vegan" } as PlannerFood;
+  assert.deepEqual([meat, veg, vegan].map((f) => dietOk(f, "none")), [true, true, true]);
+  assert.deepEqual([meat, veg, vegan].map((f) => dietOk(f, "vegetarian")), [false, true, true]);
+  assert.deepEqual([meat, veg, vegan].map((f) => dietOk(f, "vegan")), [false, false, true]);
+  assert.equal(fresh().diet, "none");
+  assert.equal(decode("d=veg").diet, "vegetarian");
 });
