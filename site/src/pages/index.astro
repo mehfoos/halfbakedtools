@@ -2,7 +2,7 @@
 import Base from "../layouts/Base.astro";
 const base = import.meta.env.BASE_URL;
 ---
-<Base>
+<Base current="home">
   <h1>Half-Baked Tools</h1>
   <p class="lede">Small, open-source tools for everyday questions. Every tool shows its sources and its limits, and keeps improving as better evidence and data arrive.</p>
   <h2>Tools</h2>
@@ -10,7 +10,7 @@ const base = import.meta.env.BASE_URL;
     <li>
       <a class="card" href={`${base}tools/nutrient-planner/`}>
         <h3 style="margin-top:0">Nutrient planner <span class="tag">New</span></h3>
-        <p class="muted" style="margin:0">Find a small set of everyday ingredients that together come close to UK or US daily nutrient recommendations, for your age and sex, without going over safe upper limits.</p>
+        <p class="muted" style="margin:0">Find a handful of everyday foods that together cover UK or US daily nutrient recommendations for your age and sex, or build your own day and see how it measures up, with charts for vitamins, minerals and amino acids.</p>
       </a>
     </li>
   </ul>

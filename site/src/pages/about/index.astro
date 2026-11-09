@@ -5,16 +5,19 @@ import us from "../../../../data/targets/us.json";
 import meta from "../../../../data/meta.json";
 const standards = [uk, us];
 ---
-<Base title="Methods and sources">
+<Base title="Methods and sources" current="about">
   <h1>Methods and sources</h1>
   <p class="lede">How the nutrient planner works, where its numbers come from, and what it can't tell you.</p>
 
   <h2>Food composition data</h2>
   <p>
     Nutrient values come from <a href="https://fdc.nal.usda.gov/">USDA FoodData Central</a> (public domain):
-    the SR Legacy dataset, with newer Foundation Foods analyses used where a food has been matched to one.
-    A curated list of about 55 cheap, common, UK-available foods is matched to USDA records; the list and the
-    match report live in the repository's <code>data/</code> folder so anyone can check them.
+    the SR Legacy dataset. About 100 cheap, common, UK-available foods are hand-matched to USDA records, given
+    friendly names and practical units, and switched on by default. Around 1,600 more vegetables, fruits, pulses,
+    grains, breads, nuts, seeds, dairy foods, eggs, oils, herbs and spices are added automatically by rules that
+    leave out meat, fish, baby foods, branded and heavily processed products; these are off by default and can be
+    switched on in the planner's food list. The food list, the rules and a match report live in the repository's
+    <code>data/</code> folder so anyone can check them.
   </p>
   <p class="muted small">
     Current snapshot: {meta.foodsLastUpdated ? `built ${meta.foodsLastUpdated}, ${meta.foodCount} foods` : "not built yet"}.
@@ -41,6 +44,15 @@ const standards = [uk, us];
     minimum targets, so being 20% short of iron counts the same as being 20% short of protein. Upper limits
     (salt, saturated fat, tolerable upper intake levels) and your calorie range are never exceeded.
     Further options are found by forbidding most of the ingredients of earlier options.
+  </p>
+  <h2>Reading the charts</h2>
+  <p>
+    Each radar chart shows the share of each minimum target reached. The dashed ring is the target (100%);
+    points outside it are above the target. Anything above 150% is drawn on the outer ring so one very high
+    value doesn't squash the rest. In the overview, vitamins, minerals and amino acids are each shown as the
+    average across that group with every nutrient capped at 100%, so a surplus of one can't hide a shortfall
+    in another; open each group to see the individual nutrients. Upper limits (fat, saturated fat, salt and any
+    safety limit that is close) are shown separately as bars, because for those, less is better.
   </p>
 
   <h2>Limitations</h2>

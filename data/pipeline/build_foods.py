@@ -8,9 +8,15 @@ food in foods_catalogue.json, and writes:
   data/foods/match_report.md    which USDA record each food matched (review this)
   data/meta.json                when the snapshot was built and from what
 
-Foundation Foods (newer lab analyses) is preferred when a food matches there;
-any nutrient it lacks is filled from the SR Legacy match, and the source of
-every value is recorded.
+Foods come from two places:
+  * the curated catalogue (foods_catalogue.json): common foods with friendly
+    names and units, switched on by default ("common": true);
+  * every other SR Legacy food that passes the rules in auto_foods.py
+    (vegetables, fruit, pulses, grains, nuts, dairy, eggs, oils, herbs...),
+    switched off by default so people can add them from the food list.
+
+Foundation Foods (newer lab analyses) is preferred for a curated food that has
+a "foundation" query; any nutrient it lacks is filled from SR Legacy.
 
 Standard library only. Usage:
   python3 data/pipeline/build_foods.py                  # download and build
@@ -31,6 +37,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PIPELINE = ROOT / "data" / "pipeline"
+sys.path.insert(0, str(PIPELINE))  # explicit, because the script is run with python3 -I
+import auto_foods  # noqa: E402
 OUT_DIR = ROOT / "data" / "foods"
 META = ROOT / "data" / "meta.json"
 
@@ -87,11 +95,12 @@ class Dataset:
         self.label = label
         self.path = path
         self.zf = zipfile.ZipFile(path)
-        self.foods = {
-            row["fdc_id"]: row["description"]
-            for row in read_csv(self.zf, "food.csv")
-            if row.get("data_type") in data_types
-        }
+        self.foods: dict[str, str] = {}
+        self.category: dict[str, str] = {}
+        for row in read_csv(self.zf, "food.csv"):
+            if row.get("data_type") in data_types:
+                self.foods[row["fdc_id"]] = row["description"]
+                self.category[row["fdc_id"]] = row.get("food_category_id", "")
         self.nutrient_meta = {
             int(row["id"]): (row["name"], row["unit_name"].upper())
             for row in read_csv(self.zf, "nutrient.csv")
@@ -205,41 +214,69 @@ def main() -> int:
     if unmatched:
         log("No USDA match for: " + ", ".join(unmatched) + " (see match_report.md)")
 
-    sr_vals = sr.values({m[2][0] for m in matches if m[2]})
+    curated_ids = {m[2][0] for m in matches if m[2]}
+    auto = []
+    for fid, desc in sr.foods.items():
+        if fid in curated_ids:
+            continue
+        cat = auto_foods.auto_include(sr.category.get(fid, ""), desc)
+        if cat:
+            auto.append((fid, desc, cat))
+
+    sr_vals = sr.values(curated_ids | {a[0] for a in auto})
     fn_vals = fnd.values({m[1][0] for m in matches if m[1]}) if fnd else {}
 
     nutrients = spec["nutrients"]
+    keys = [n["key"] for n in nutrients] + [d["key"] for d in spec["derived"]]
+    sig = lambda x: float(f"{x:.4g}")
     foods_out, report = [], []
+
+    def pack(vals: dict) -> list:
+        return [sig(vals[k]) if k in vals else None for k in keys]
+
     for food, m_fn, m_sr in matches:
         if not m_fn and not m_sr:
             report.append(f"| {food['name']} | **no match** | | |")
             continue
-        vals, source = {}, {}
+        vals = {}
         if m_sr:
-            for k, v in extract(nutrients, sr_vals[m_sr[0]], sr.nutrient_meta).items():
-                vals[k], source[k] = v, "sr"
+            vals.update(extract(nutrients, sr_vals[m_sr[0]], sr.nutrient_meta))
         if m_fn:
-            for k, v in extract(nutrients, fn_vals[m_fn[0]], fnd.nutrient_meta).items():
-                vals[k], source[k] = v, "foundation"
+            vals.update(extract(nutrients, fn_vals[m_fn[0]], fnd.nutrient_meta))
         if "energy" not in vals:
             report.append(f"| {food['name']} | skipped: no energy value | | |")
             continue
         vals.update(derive(vals))
-        primary = ("foundation", *m_fn) if m_fn else ("sr", *m_sr)
+        primary = m_fn or m_sr
+        group, _ = auto_foods.group_and_variant(auto_foods.uk_name(primary[1]))
         foods_out.append({
-            "id": food["id"], "name": food["name"], "group": food["group"], "diet": food["diet"],
-            "unit": food["unit"], "unitGrams": food["unitGrams"], "step": food["step"],
-            "maxGrams": food["maxGrams"], "notes": food.get("notes"),
-            "usda": {
-                "primary": {"dataset": primary[0], "fdcId": primary[1], "description": primary[2]},
-                "srLegacy": {"fdcId": m_sr[0], "description": m_sr[1]} if m_sr else None,
-            },
-            "per100g": {k: round(v, 4) for k, v in sorted(vals.items())},
-            "valueSource": {k: source[k] for k in sorted(source)},
+            "id": food["id"], "name": food["name"],
+            "cat": auto_foods.CURATED_CATEGORY.get(food["group"], "other"), "group": food.get("listGroup") or group,
+            "label": food["name"], "diet": food["diet"], "common": True,
+            "unit": food["unit"], "unitGrams": food["unitGrams"], "step": food["step"], "maxGrams": food["maxGrams"],
+            "notes": food.get("notes"), "fdcId": primary[0], "usdaName": primary[1],
+            "dataset": "foundation" if m_fn else "sr", "v": pack(vals),
         })
         fn_txt = f"{m_fn[1]} ({m_fn[0]})" if m_fn else "–"
         sr_txt = f"{m_sr[1]} ({m_sr[0]})" if m_sr else "–"
         report.append(f"| {food['name']} | {fn_txt} | {sr_txt} | {len(vals)} |")
+
+    auto_counts: dict[str, int] = {}
+    for fid, desc, cat in auto:
+        vals = extract(nutrients, sr_vals.get(fid, {}), sr.nutrient_meta)
+        if "energy" not in vals:
+            continue
+        vals.update(derive(vals))
+        name = auto_foods.uk_name(desc)
+        group, variant = auto_foods.group_and_variant(name)
+        step, cap = auto_foods.amounts_for(cat, name)
+        foods_out.append({
+            "id": f"u{fid}", "name": name, "cat": cat, "group": group, "label": variant,
+            "diet": auto_foods.diet_for(cat, desc), "common": False,
+            "unit": "g", "unitGrams": 1, "step": step, "maxGrams": cap, "notes": None,
+            "fdcId": fid, "usdaName": desc, "dataset": "sr", "v": pack(vals),
+        })
+        auto_counts[cat] = auto_counts.get(cat, 0) + 1
 
     if fnd:
         write_foundation_candidates(catalogue, fnd)
@@ -252,18 +289,26 @@ def main() -> int:
         "source": "USDA FoodData Central (public domain)",
         "files": sources,
         "nutrients": nutrients + spec["derived"],
+        "keys": keys,
+        "categories": [{"id": c, "name": n} for c, n in auto_foods.CATEGORIES],
         "foods": foods_out,
-    }, ensure_ascii=False, indent=1))
+    }, ensure_ascii=False, separators=(",", ":")))
+    cat_names = dict(auto_foods.CATEGORIES)
     (OUT_DIR / "match_report.md").write_text(
         f"# Food match report ({today})\n\n"
+        "## Common foods (curated, on by default)\n\n"
         "Check that each food matched the record you expect. Edit `foods_catalogue.json` to fix a match.\n\n"
         "| Food | Foundation match (fdc_id) | SR Legacy match (fdc_id) | Nutrient values |\n|---|---|---|---|\n"
-        + "\n".join(report) + "\n"
+        + "\n".join(report) + "\n\n"
+        "## Other foods (added automatically, off by default)\n\n"
+        "Rules are in `auto_foods.py`.\n\n| Category | Foods |\n|---|---|\n"
+        + "\n".join(f"| {cat_names[c]} | {n} |" for c, n in sorted(auto_counts.items(), key=lambda x: list(cat_names).index(x[0])))
+        + "\n"
     )
     meta = json.loads(META.read_text()) if META.exists() else {}
     meta.update({"foodsLastUpdated": today, "foodsSources": sources, "foodCount": len(foods_out)})
     META.write_text(json.dumps(meta, indent=2) + "\n")
-    log(f"Wrote {len(foods_out)} foods ({len(unmatched)} unmatched)")
+    log(f"Wrote {len(foods_out)} foods ({len(foods_out) - sum(auto_counts.values())} common, {sum(auto_counts.values())} more; {len(unmatched)} unmatched)")
     return 1 if len(foods_out) == 0 else 0
 
 

@@ -2,10 +2,16 @@
 import "../styles/global.css";
 import { site } from "../site.config";
 
-interface Props { title?: string; description?: string; wide?: boolean }
-const { title, description = site.tagline, wide = false } = Astro.props;
+interface Props { title?: string; description?: string; current?: string }
+const { title, description = site.tagline, current = "" } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const pageTitle = title ? `${title} · ${site.name}` : site.name;
+const nav = [
+  { href: base, label: "Home", id: "home" },
+  { href: `${base}tools/nutrient-planner/`, label: "Nutrient planner", id: "nutrient-planner" },
+  { href: `${base}about/`, label: "Methods", id: "about" },
+  { href: `${base}privacy/`, label: "Privacy", id: "privacy" },
+];
 ---
 <!doctype html>
 <html lang="en-GB">
@@ -15,34 +21,34 @@ const pageTitle = title ? `${title} · ${site.name}` : site.name;
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="referrer" content="no-referrer" />
-    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <link rel="icon" href={`${base}favicon.ico`} sizes="any" />
+    <link rel="icon" href={`${base}brand/logo.svg`} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={`${base}brand/apple-touch-icon.png`} />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <header class="site-header">
-      <div class="wrap header-inner">
-        <a class="brand" href={base}>
-          <span class="brand-mark" aria-hidden="true">◐</span>
-          <span>{site.name}</span>
-        </a>
-        <nav aria-label="Main">
-          <a href={`${base}tools/nutrient-planner/`}>Nutrient planner</a>
-          <a href={`${base}about/`}>Methods</a>
-          <a href={`${base}privacy/`}>Privacy</a>
-        </nav>
+    <header class="wrap">
+      <div class="title-heading">
+        <a class="logo" href={base}><img src={`${base}brand/logo.svg`} alt="Half-Baked Tools home" width="72" height="72" /></a>
+        <p class="site-title"><a href={base}>HALF-BAKED TOOLS</a></p>
+        <div class="spacer" aria-hidden="true"></div>
       </div>
+      <nav aria-label="Main">
+        <ul class="nav-menu">
+          {nav.map((n) => <li><a href={n.href} aria-current={n.id === current ? "page" : undefined}>{n.label}</a></li>)}
+        </ul>
+      </nav>
     </header>
-    <main id="main" class:list={["wrap", { wide }]}>
+    <main id="main" class="wrap">
       <slot />
     </main>
-    <footer class="site-footer">
-      <div class="wrap">
-        <p>{site.tagline}</p>
-        <p>
-          Open source on <a href={site.repoUrl}>GitHub</a>. No cookies, no tracking.
-          Information only, not medical advice.
-        </p>
-      </div>
+    <footer class="wrap site-footer">
+      <ul class="nav-menu">
+        <li><a href={site.repoUrl}>Source on GitHub</a></li>
+        <li><a href={`${base}about/`}>Methods and sources</a></li>
+        <li><a href={`${base}privacy/`}>Privacy</a></li>
+      </ul>
+      <p>{site.tagline} No cookies, no tracking. Information only, not medical advice.</p>
     </footer>
   </body>
 </html>

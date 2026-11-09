@@ -70,8 +70,11 @@ export function resolveTargets(
   return out;
 }
 
-/** Nutrients with values for at least `minCoverage` of foods can be optimised; the rest are reported as not assessed. */
-export function splitAssessable(targets: ResolvedTarget[], foods: Food[], minCoverage = 0.8) {
+/**
+ * Nutrients with values for at least `minCoverage` of the chosen foods are optimised (a food with no
+ * value counts as zero, which errs on the safe side); the rest are reported as not assessed.
+ */
+export function splitAssessable(targets: ResolvedTarget[], foods: Food[], minCoverage = 0.25) {
   const assessable: ResolvedTarget[] = [];
   const notAssessed: ResolvedTarget[] = [];
   for (const t of targets) {

@@ -1,0 +1,53 @@
+// Picks the reference-intake profile (age band) that matches a person.
+import type { TargetSpec } from "./solver.ts";
+
+export type Profile = {
+  id: string; stage: string; group: string; label: string;
+  energy: { kcal: number; low: number; high: number; note: string };
+  defaultWeightKg: number;
+  targets: Record<string, TargetSpec>;
+};
+export type Standard = {
+  id: string; name: string; longName: string; status: string;
+  sources: { id: string; title: string; url: string }[];
+  notes: string[]; profiles: Profile[];
+};
+
+export type Sex = "female" | "male";
+export type LifeStage = "none" | "pregnancy" | "lactation";
+
+/** Parse "19-50", "75+", "1" into [min, max] ages. */
+export function groupRange(group: string): [number, number] {
+  if (group.endsWith("+")) return [Number(group.slice(0, -1)), 200];
+  const [a, b] = group.split("-").map(Number);
+  return [a, Number.isFinite(b) ? b : a];
+}
+
+export type Pick = { profile: Profile; note?: string };
+
+export function pickProfile(std: Standard, sex: Sex, age: number, life: LifeStage): Pick {
+  const inRange = (p: Profile) => {
+    const [lo, hi] = groupRange(p.group);
+    return age >= lo && age < hi + 1;
+  };
+  let note: string | undefined;
+  if (life !== "none") {
+    const pool = std.profiles.filter((p) => p.stage === life);
+    if (!pool.length) {
+      note = `${std.name} values for ${life === "pregnancy" ? "pregnancy" : "breastfeeding"} aren't included yet, so standard values for your age are used.`;
+    } else {
+      const hit = pool.find(inRange);
+      if (hit) return { profile: hit };
+      const nearest = age < groupRange(pool[0].group)[0] ? pool[0] : pool[pool.length - 1];
+      return { profile: nearest, note: `The nearest available age group (${nearest.group}) is used.` };
+    }
+  }
+  const pool = std.profiles.filter((p) => p.stage === sex || p.stage === "child");
+  const hit = pool.find(inRange);
+  if (hit) return { profile: hit, note };
+  const sorted = [...pool].sort((a, b) => groupRange(a.group)[0] - groupRange(b.group)[0]);
+  const nearest = age < groupRange(sorted[0].group)[0] ? sorted[0] : sorted[sorted.length - 1];
+  return { profile: nearest, note: note ?? `The nearest available age group (${nearest.group}) is used.` };
+}
+
+export const isAdult = (age: number) => age >= 19;
