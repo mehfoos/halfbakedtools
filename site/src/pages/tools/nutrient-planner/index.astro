@@ -183,8 +183,19 @@ const base = import.meta.env.BASE_URL;
   #planner .charts { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 8px 20px; align-items: center; }
   @media (max-width: 720px) { #planner .charts { grid-template-columns: 1fr; } }
   #planner svg.radar { width: 100%; height: auto; max-width: 520px; display: block; margin: 0 auto; }
-  #planner .limits { font-family: var(--sans); font-size: 0.9rem; }
-  #planner .limits h4 { margin: 0 0 6px; font-size: 0.95rem; }
+  #planner figure.chart { margin: 0; }
+  #planner figure.chart figcaption { text-align: center; font-family: var(--sans); }
+  #planner table.contrib th.num { max-width: 9em; white-space: normal; text-align: right; }
+  #planner .share { display: inline-block; min-width: 3.2em; padding: 1px 4px; background: linear-gradient(90deg, rgba(45,122,45,0.25) var(--w), transparent var(--w)); }
+  #planner .chart-title { margin: 14px 0 0; font-size: 1rem; }
+  #planner .side { font-size: 0.9rem; }
+  #planner .side h4 { margin: 12px 0 6px; font-size: 0.95rem; }
+  #planner .legend, #planner .groups { list-style: none; padding: 0; margin: 0 0 6px; }
+  #planner .legend li, #planner .groups li { margin: 3px 0; display: flex; align-items: center; gap: 8px; }
+  #planner .sw { display: inline-block; flex: none; }
+  #planner .sw.ring { width: 22px; height: 0; border-top: 3px solid #000080; }
+  #planner .sw.dot { width: 10px; height: 10px; border-radius: 50%; }
+  #planner .sw.good { background: #2d7a2d; } #planner .sw.bad { background: #a3271c; } #planner .sw.ref { background: #666; }
   #planner .limit { margin-bottom: 8px; }
   #planner .limit .lbar { height: 8px; background: #eeeadb; border-radius: 4px; overflow: hidden; margin-top: 3px; }
   #planner .limit .lbar span { display: block; height: 100%; background: var(--navy); }

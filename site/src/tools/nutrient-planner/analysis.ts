@@ -3,16 +3,16 @@
 import type { Food, ResolvedTarget } from "./solver.ts";
 
 export const GROUPS: { id: string; title: string; keys: string[] }[] = [
-  { id: "macros", title: "Energy and macronutrients", keys: ["energy", "protein", "carbohydrate", "fibre", "fat", "satfat", "salt", "sodium"] },
-  { id: "vitamins", title: "Vitamins", keys: ["vitaminA", "vitaminD", "vitaminE", "vitaminK", "vitaminC", "thiamin", "riboflavin", "niacinNE", "vitaminB6", "folate", "vitaminB12", "choline", "retinol"] },
+  { id: "macros", title: "Energy and macronutrients", keys: ["energy", "protein", "carbohydrate", "sugars", "fibre", "fat", "satfat", "salt", "sodium"] },
+  { id: "vitamins", title: "Vitamins", keys: ["vitaminA", "vitaminD", "vitaminE", "vitaminK", "vitaminC", "thiamin", "riboflavin", "niacinNE", "pantothenic", "vitaminB6", "folate", "vitaminB12", "choline", "retinol", "vitaminD2", "vitaminD3"] },
   { id: "minerals", title: "Minerals", keys: ["calcium", "iron", "magnesium", "phosphorus", "potassium", "zinc", "copper", "manganese", "selenium", "iodine"] },
-  { id: "amino", title: "Essential amino acids", keys: ["histidine", "isoleucine", "leucine", "lysine", "metCys", "pheTyr", "threonine", "tryptophan", "valine"] },
+  { id: "amino", title: "Essential amino acids (protein building blocks)", keys: ["histidine", "isoleucine", "leucine", "lysine", "metCys", "pheTyr", "threonine", "tryptophan", "valine"] },
   { id: "fats", title: "Fatty acids", keys: ["la", "ala", "epaDha"] },
 ];
 export const ORDER = GROUPS.flatMap((g) => g.keys);
 export const SHORT_LABEL: Record<string, string> = {
   carbohydrate: "Carbs", vitaminA: "A", vitaminD: "D", vitaminE: "E", vitaminK: "K", vitaminC: "C",
-  thiamin: "B1", riboflavin: "B2", niacinNE: "B3", vitaminB6: "B6", folate: "Folate", vitaminB12: "B12",
+  thiamin: "B1", riboflavin: "B2", niacinNE: "B3", pantothenic: "B5", vitaminB6: "B6", folate: "Folate (B9)", vitaminB12: "B12",
   choline: "Choline", metCys: "Met+Cys", pheTyr: "Phe+Tyr", epaDha: "EPA+DHA", la: "Omega-6 LA", ala: "Omega-3 ALA",
 };
 

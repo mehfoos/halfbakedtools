@@ -4,7 +4,7 @@ import { resolveTargets, splitAssessable, describeAmount, type Plan, type Resolv
 import { pickProfile, isAdult, type Standard } from "./profiles.ts";
 import { unpack, isOn, setOn, dietOk, matches, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
 import { GROUPS, ORDER, SHORT_LABEL, analyse, totals, type Report, type Row } from "./analysis.ts";
-import { radarSvg, type Axis } from "./radar.ts";
+import { radarSvg, scaleMax, type Axis } from "./radar.ts";
 import { decode, encode, exportFile, forget, fresh, importFile, loadRemembered, remember, DEFAULTS, type Settings } from "./state.ts";
 
 const NHS_VITD = "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/";
@@ -21,6 +21,7 @@ export const fmt = (v: number | undefined) => {
   if (a === 0) return "0";
   return Number(v.toPrecision(2)).toString();
 };
+type Item = { food: PlannerFood; grams: number };
 const $ = <T extends HTMLElement = HTMLElement>(root: ParentNode, sel: string) => root.querySelector(sel) as T;
 const $$ = <T extends HTMLElement = HTMLElement>(root: ParentNode, sel: string) => Array.from(root.querySelectorAll(sel)) as T[];
 
@@ -310,33 +311,51 @@ export async function start(root: HTMLElement) {
 
   function axesFor(rep: Report, keys: string[]): Axis[] {
     return keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined)
-      .map((r) => ({ label: SHORT_LABEL[r.key] ?? r.label, pct: r.pctOfMin!, detail: `${fmt(r.value)} of ${fmt(r.min)} ${r.unit}` }));
+      .map((r) => ({ label: SHORT_LABEL[r.key] ?? r.label, pct: r.pctOfMin!, kind: "min" as const, ok: r.status === "met", detail: `${fmt(r.value)} of ${fmt(r.min)} ${r.unit}` }));
   }
 
+  // Overview laid out like a UK/EU nutrition label (Regulation 1169/2011): energy, fat, saturates,
+  // carbohydrate, sugars, fibre, protein, salt. Each is measured against this person's own target where
+  // one exists; otherwise against the label's adult reference intake (shown in grey as a reference).
+  const ADULT_RI: Record<string, number> = { fat: 70, satfat: 20, carbohydrate: 260, sugars: 90, protein: 50, salt: 6 };
   function overviewAxes(rep: Report): Axis[] {
     const b = band();
-        // Energy counts as 100% anywhere inside the calorie range.
-    const e = rep.energy;
-    const ePct = e < b.low ? (e / b.low) * 100 : e > b.high ? (e / b.high) * 100 : 100;
-    const axes: Axis[] = [{ label: "Energy", pct: ePct, detail: `${fmt(e)} kcal; range ${fmt(b.low)}–${fmt(b.high)}` }];
-    axes.push(...axesFor(rep, ["protein", "carbohydrate", "fibre"]));
-    for (const g of GROUPS.filter((x) => ["vitamins", "minerals", "amino"].includes(x.id))) {
-      const rs = g.keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined);
-      if (!rs.length) continue;
-      const avg = rs.reduce((a, r) => a + Math.min(100, r.pctOfMin!), 0) / rs.length;
-      const met = rs.filter((r) => r.status === "met").length;
-      axes.push({ label: { vitamins: "Vitamins", minerals: "Minerals", amino: "Amino acids" }[g.id as "vitamins"], pct: avg, detail: `${met} of ${rs.length} met; average, each capped at 100%` });
-    }
+    const e = rep.energy, mid = (b.low + b.high) / 2;
+    const axes: Axis[] = [{ label: "Energy", pct: (e / mid) * 100, kind: "range", ok: e >= b.low && e <= b.high,
+      detail: `${fmt(e)} kcal; target range ${fmt(b.low)}–${fmt(b.high)}` }];
+    const add = (key: string, label: string) => {
+      let r = rep.byKey.get(key);
+      if (key === "salt" && r?.max === undefined && rep.byKey.get("sodium")?.max !== undefined) { r = rep.byKey.get("sodium"); label = "Sodium"; }
+      if (!r || r.status === "unassessed") return;
+      if (r.min !== undefined && r.min > 0) axes.push({ label, pct: r.pctOfMin!, kind: "min", ok: r.status === "met", detail: `${fmt(r.value)} of at least ${fmt(r.min)} ${r.unit}` });
+      else if (r.max !== undefined && r.max > 0) axes.push({ label, pct: (r.value / r.max) * 100, kind: "max", ok: r.value <= r.max * 1.001, detail: `${fmt(r.value)} of at most ${fmt(r.max)} ${r.unit}` });
+      else if (ADULT_RI[key] && isAdult(s.age)) axes.push({ label, pct: (r.value / ADULT_RI[key]) * 100, kind: "ref", detail: `${fmt(r.value)} g; label reference intake ${ADULT_RI[key]} g for an adult` });
+    };
+    add("fat", "Fat"); add("satfat", "Saturates"); add("carbohydrate", "Carbs"); add("sugars", "Sugars");
+    add("fibre", "Fibre"); add("protein", "Protein"); add("salt", "Salt");
     return axes;
   }
 
-  function limitsHtml(rep: Report) {
-    const rows = rep.rows.filter((r) => r.max !== undefined && r.status !== "unassessed"
-      && (["fat", "satfat", "salt", "sodium"].includes(r.key) || (r.pctOfMax ?? 0) >= 80));
-    if (!rows.length) return "";
-    return `<div class="limits"><h4>Upper limits</h4>${rows.map((r) => `<div class="limit ${r.status === "over" ? "over" : ""}">
-      ${esc(r.label)}: <b>${fmt(r.value)}</b> of max ${fmt(r.max)} ${esc(r.unit)}${r.custom ? '<span class="badge">custom</span>' : ""}
-      <div class="lbar"><span style="width:${Math.min(100, r.pctOfMax ?? 0).toFixed(0)}%"></span></div></div>`).join("")}</div>`;
+  function sideHtml(rep: Report) {
+    const groups = GROUPS.filter((g) => ["vitamins", "minerals", "amino"].includes(g.id)).map((g) => {
+      const rs = g.keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined);
+      if (!rs.length) return "";
+      const met = rs.filter((r) => r.status === "met").length;
+      return `<li><span class="chip ${met === rs.length ? "met" : "short"}">${met} of ${rs.length}</span> ${esc(g.title)}</li>`;
+    }).join("");
+    const close = rep.rows.filter((r) => r.max !== undefined && r.status !== "unassessed"
+      && !["fat", "satfat", "salt", "sodium"].includes(r.key) && (r.pctOfMax ?? 0) >= 80);
+    return `<div class="side sans">
+      <ul class="legend">
+        <li><span class="sw ring"></span> Target (100%)</li>
+        <li><span class="sw dot good"></span> Goal met</li>
+        <li><span class="sw dot bad"></span> Goal not met</li>
+        <li><span class="sw dot ref"></span> Reference only</li>
+      </ul>
+      <p class="small muted">≥ aim for at least the target · ≤ stay at or below it.</p>
+      ${groups ? `<h4>Vitamins, minerals and protein building blocks</h4><ul class="groups">${groups}</ul><p class="small muted">Open each section below for its own chart.</p>` : ""}
+      ${close.length ? `<h4>Close to a safety limit</h4>${close.map((r) => `<div class="limit ${r.status === "over" ? "over" : ""}">${esc(r.label)}: <b>${fmt(r.value)}</b> of max ${fmt(r.max)} ${esc(r.unit)}<div class="lbar"><span style="width:${Math.min(100, r.pctOfMax ?? 0).toFixed(0)}%"></span></div></div>`).join("")}` : ""}
+    </div>`;
   }
 
   function noticesHtml(rep: Report) {
@@ -351,7 +370,57 @@ export async function start(root: HTMLElement) {
     return out.length ? `<div class="notice small">${out.map((x) => `<p>${x}</p>`).join("")}</div>` : "";
   }
 
-  function reportHtml(rep: Report) {
+  // Charts can be zoomed to the target; contributions are worked out only when opened.
+  const charts = new Map<string, { axes: Axis[]; title: string; zoom: boolean }>();
+  const contribs = new Map<string, { items: Item[]; keys: string[] }>();
+  let uid = 0;
+  function chart(axes: Axis[], title: string) {
+    if (axes.length < 3) return "";
+    const id = `c${++uid}`;
+    charts.set(id, { axes, title, zoom: false });
+    const canZoom = scaleMax(axes) > 150;
+    return `<figure class="chart" data-chart="${id}">${radarSvg(axes, { title })}${canZoom ? `<figcaption><button type="button" class="link small" data-zoom="${id}">Zoom to target</button></figcaption>` : ""}</figure>`;
+  }
+  root.addEventListener("click", (e) => {
+    const b = (e.target as HTMLElement).closest("button[data-zoom]") as HTMLButtonElement | null;
+    if (!b) return;
+    const c = charts.get(b.dataset.zoom!);
+    const fig = b.closest("figure");
+    if (!c || !fig) return;
+    c.zoom = !c.zoom;
+    fig.querySelector("svg")!.outerHTML = radarSvg(c.axes, { title: c.title, zoom: c.zoom });
+    b.textContent = c.zoom ? "Show full scale" : "Zoom to target";
+  });
+  function contribSection(items: Item[], keys: string[], what: string) {
+    const id = `k${++uid}`;
+    contribs.set(id, { items, keys });
+    return `<details data-contrib="${id}"><summary>Which foods provide ${esc(what)}</summary><div class="details-body"></div></details>`;
+  }
+  root.addEventListener("toggle", (e) => {
+    const d = e.target as HTMLDetailsElement;
+    if (!d.open || !d.dataset.contrib) return;
+    const body = d.querySelector(".details-body")!;
+    if (body.childElementCount) return;          // already worked out
+    const c = contribs.get(d.dataset.contrib);
+    if (c) body.innerHTML = contribTable(c.items, c.keys);
+  }, true);
+  function contribTable(items: Item[], keys: string[]) {
+    // D2 and D3 are recorded for too few foods to split the total fairly.
+    const ks = keys.filter((k) => !["vitaminD2", "vitaminD3"].includes(k) && meta.has(k) && items.some((it) => (it.food.per100g[k] ?? 0) > 0));
+    if (!ks.length) return `<p class="small sans">No values to show.</p>`;
+    const amount = (it: Item, k: string) => ((it.food.per100g[k] ?? 0) * it.grams) / 100;
+    return `<p class="small sans">Share of the day's total that each food provides.</p><div class="table-scroll"><table class="contrib"><thead><tr><th>Nutrient</th>${items.map((it) => `<th class="num">${esc(it.food.name)}</th>`).join("")}</tr></thead><tbody>${
+      ks.map((k) => {
+        const total = items.reduce((a, it) => a + amount(it, k), 0);
+        return `<tr><td>${esc(meta.get(k)!.label)}</td>${items.map((it) => {
+          const share = total > 0 ? (amount(it, k) / total) * 100 : 0;
+          return `<td class="num"><span class="share" style="--w:${share.toFixed(0)}%">${share >= 0.5 ? Math.round(share) + "%" : "–"}</span></td>`;
+        }).join("")}</tr>`;
+      }).join("")
+    }</tbody></table></div>`;
+  }
+
+  function reportHtml(rep: Report, items: Item[]) {
     const shortTxt = rep.shortfalls.length
       ? `Short on ${rep.shortfalls.slice(0, 5).map((r) => `${esc(r.label)} (${Math.round(r.pctOfMin!)}%)`).join(", ")}${rep.shortfalls.length > 5 ? ` and ${rep.shortfalls.length - 5} more` : ""}.`
       : "Every assessed minimum is met.";
@@ -364,13 +433,17 @@ export async function start(root: HTMLElement) {
       const axes = axesFor(rep, g.keys);
       const met = rows.filter((r) => r.status === "met").length, mins = rows.filter((r) => r.pctOfMin !== undefined).length;
       return `<details><summary>${esc(g.title)} <span class="summary-note">${mins ? `${met} of ${mins} met` : `${rows.length} values`}</span></summary><div class="details-body">
-        ${axes.length >= 3 ? radarSvg(axes, { title: `${g.title}: share of each target reached` }) : ""}
-        ${tableHtml(rows)}</div></details>`;
+        ${chart(axes, `${g.title}: share of each target reached`)}
+        ${id === "vitamins" ? `<p class="small sans muted">Vitamin D targets cover all vitamin D from food (D2 and D3 together). The difference matters mainly for supplements, where D3 raises blood levels more effectively. B5 (pantothenic acid) has a US target only; biotin (B7) isn't shown because the food data rarely includes it.</p>` : ""}
+        ${tableHtml(rows)}
+        ${contribSection(items, g.keys, g.id === "amino" ? "these amino acids" : `these ${g.title.toLowerCase()}`)}</div></details>`;
     };
     return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> nutrient targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}
         ${over.length ? ` <span class="chip over">Over the limit for ${over.map((r) => esc(r.label)).join(", ")}</span>` : ""}</p>
       ${custom ? `<p class="small muted sans">Using some custom targets.</p>` : ""}
-      <div class="charts">${radarSvg(overviewAxes(rep), { title: "Overview: share of each target reached" })}${limitsHtml(rep)}</div>
+      <h4 class="chart-title">At a glance <span class="muted small">(laid out like a food label)</span></h4>
+      <div class="charts">${chart(overviewAxes(rep), "Overview: energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt as a share of target")}${sideHtml(rep)}</div>
+      ${contribSection(items, ["energy", "fat", "satfat", "carbohydrate", "sugars", "fibre", "protein", "salt"], "energy, fat, carbs, fibre, protein and salt")}
       ${noticesHtml(rep)}
       ${detail("vitamins")}${detail("minerals")}${detail("amino")}
       <details><summary>All values <span class="summary-note">including fats and values without targets</span></summary><div class="details-body">${tableHtml(rep.rows.filter((r) => r.key !== "energy"))}</div></details>`;
@@ -415,7 +488,7 @@ export async function start(root: HTMLElement) {
         results.insertAdjacentHTML("beforeend", `<article class="result">
           <h3><span>Option ${k}</span><span class="result-actions"><button type="button" class="small" data-edit="${k - 1}">Adjust in builder</button></span></h3>
           <ul class="ingredients">${items.map((i) => `<li><b>${esc(i.food.name)}</b> · ${esc(describeAmount(i.food, i.grams))}</li>`).join("")}</ul>
-          ${reportHtml(report(items))}
+          ${reportHtml(report(items), items)}
           ${notes.length ? `<p class="small muted sans">${notes.map(esc).join(" ")}</p>` : ""}
         </article>`);
         status.textContent = k < s.options ? `Finding option ${k + 1} of ${s.options}…` : "";
@@ -470,7 +543,7 @@ export async function start(root: HTMLElement) {
     renderBuilderResult(items);
   }
   function renderBuilderResult(items = s.builder.map((b) => ({ food: foodById.get(b.id)!, grams: b.grams })).filter((x) => x.food)) {
-    builderResult.innerHTML = items.length ? `<article class="result"><h3><span>Your day</span></h3>${reportHtml(report(items))}</article>` : "";
+    builderResult.innerHTML = items.length ? `<article class="result"><h3><span>Your day</span></h3>${reportHtml(report(items), items)}</article>` : "";
   }
   builderList.addEventListener("input", (e) => {
     const inp = e.target as HTMLInputElement;
