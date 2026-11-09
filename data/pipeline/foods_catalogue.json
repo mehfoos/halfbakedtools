@@ -1562,6 +1562,269 @@
    "step": 50,
    "maxGrams": 800,
    "notes": "US data; check your brand for added calcium, B12, vitamin D and iodine."
+  },
+  {
+   "id": "chicken-breast",
+   "name": "Chicken breast (roasted)",
+   "group": "Meat",
+   "diet": "meat",
+   "include": [
+    "Chicken, broilers or fryers, breast, meat only, cooked, roasted"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300
+  },
+  {
+   "id": "chicken-thigh",
+   "name": "Chicken thigh (roasted)",
+   "group": "Meat",
+   "diet": "meat",
+   "include": [
+    "Chicken, broilers or fryers, thigh, meat only, cooked, roasted"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300
+  },
+  {
+   "id": "turkey-mince",
+   "name": "Turkey mince (cooked)",
+   "group": "Meat",
+   "diet": "meat",
+   "include": [
+    "Turkey, Ground, cooked"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300
+  },
+  {
+   "id": "beef-mince",
+   "name": "Beef mince, 15% fat (cooked)",
+   "group": "Meat",
+   "diet": "meat",
+   "include": [
+    "Beef, ground, 85% lean meat / 15% fat, patty, cooked, broiled"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300
+  },
+  {
+   "id": "beef-steak",
+   "name": "Beef sirloin steak (lean, grilled)",
+   "group": "Meat",
+   "diet": "meat",
+   "include": [
+    "Beef, top sirloin, steak, separable lean only",
+    "cooked, broiled"
+   ],
+   "exclude": [
+    "select",
+    "prime",
+    "1/4"
+   ],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300
+  },
+  {
+   "id": "pork-loin",
+   "name": "Pork tenderloin (lean, roasted)",
+   "group": "Meat",
+   "diet": "meat",
+   "include": [
+    "Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300
+  },
+  {
+   "id": "lamb-leg",
+   "name": "Lamb leg (lean, roasted)",
+   "group": "Meat",
+   "diet": "meat",
+   "include": [
+    "Lamb, New Zealand, imported, frozen, leg, whole (shank and sirloin), separable lean only, cooked, roasted"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300
+  },
+  {
+   "id": "ham",
+   "name": "Ham (sliced)",
+   "group": "Meat",
+   "diet": "meat",
+   "include": [
+    "Ham, sliced, regular"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 100,
+   "notes": "Processed meat: the NHS advises keeping red and processed meat to about 70 g a day."
+  },
+  {
+   "id": "beef-liver",
+   "name": "Beef liver (cooked)",
+   "group": "Meat",
+   "diet": "meat",
+   "include": [
+    "Beef, variety meats and by-products, liver, cooked, braised"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 100,
+   "notes": "Very high in vitamin A: the NHS advises avoiding liver in pregnancy."
+  },
+  {
+   "id": "salmon",
+   "name": "Salmon (farmed, cooked)",
+   "group": "Fish",
+   "diet": "meat",
+   "include": [
+    "Fish, salmon, Atlantic, farmed, cooked, dry heat"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300,
+   "notes": "NHS advice: up to 4 portions of oily fish a week (2 if pregnant or trying for a baby)."
+  },
+  {
+   "id": "tinned-salmon",
+   "name": "Tinned pink salmon (with bones)",
+   "group": "Fish",
+   "diet": "meat",
+   "include": [
+    "Fish, salmon, pink, canned, total can contents"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 200,
+   "notes": "NHS advice: up to 4 portions of oily fish a week (2 if pregnant or trying for a baby)."
+  },
+  {
+   "id": "tuna",
+   "name": "Tinned tuna in water",
+   "group": "Fish",
+   "diet": "meat",
+   "include": [
+    "Fish, tuna, light, canned in water, drained solids"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 200
+  },
+  {
+   "id": "sardines",
+   "name": "Sardines in oil (tinned)",
+   "group": "Fish",
+   "diet": "meat",
+   "include": [
+    "Fish, sardine, Atlantic, canned in oil, drained solids with bone"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 150,
+   "notes": "NHS advice: up to 4 portions of oily fish a week (2 if pregnant or trying for a baby)."
+  },
+  {
+   "id": "mackerel",
+   "name": "Mackerel (cooked)",
+   "group": "Fish",
+   "diet": "meat",
+   "include": [
+    "Fish, mackerel, Atlantic, cooked, dry heat"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 200,
+   "notes": "NHS advice: up to 4 portions of oily fish a week (2 if pregnant or trying for a baby)."
+  },
+  {
+   "id": "cod",
+   "name": "Cod (cooked)",
+   "group": "Fish",
+   "diet": "meat",
+   "include": [
+    "Fish, cod, Atlantic, cooked, dry heat"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300
+  },
+  {
+   "id": "haddock",
+   "name": "Haddock (cooked)",
+   "group": "Fish",
+   "diet": "meat",
+   "include": [
+    "Fish, haddock, cooked, dry heat"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 300
+  },
+  {
+   "id": "prawns",
+   "name": "Prawns (cooked)",
+   "group": "Fish",
+   "diet": "meat",
+   "include": [
+    "Crustaceans, shrimp, mixed species, cooked, moist heat"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 200
+  },
+  {
+   "id": "mussels",
+   "name": "Mussels (cooked)",
+   "group": "Fish",
+   "diet": "meat",
+   "include": [
+    "Mollusks, mussel, blue, cooked, moist heat"
+   ],
+   "exclude": [],
+   "unit": "g",
+   "unitGrams": 1,
+   "step": 10,
+   "maxGrams": 200
   }
  ]
 }

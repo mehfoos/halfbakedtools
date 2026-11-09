@@ -343,8 +343,10 @@ export async function start(root: HTMLElement) {
     const short = (k: string) => { const r = rep.byKey.get(k); return r ? r.status === "short" || r.status === "low" : false; };
     const out: string[] = [];
     if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (<a href="${NHS_VITD}">NHS</a>).`);
-    if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products, so a fortified food or supplement may be needed (<a href="${NHS_VEGAN}">NHS</a>).`);
-    if ((rep.byKey.get("epaDha")?.value ?? 0) < 250) out.push(`<b>Omega-3 EPA and DHA:</b> found mainly in oily fish; plant omega-3 (ALA) converts to them poorly. There's no official target, but an algae-based supplement is the vegetarian source.`);
+    if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products${s.diet === "none" ? "" : ", so a fortified food or supplement may be needed"} (<a href="${NHS_VEGAN}">NHS</a>).`);
+    if ((rep.byKey.get("epaDha")?.value ?? 0) < 250) out.push(s.diet === "none"
+      ? `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish such as salmon, mackerel and sardines; the NHS advises at least one portion of oily fish a week. Plant omega-3 (ALA) converts to them poorly.`
+      : `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish; plant omega-3 (ALA) converts to them poorly. There's no official target, but an algae-based supplement is the vegetarian and vegan source.`);
     if (rep.unassessed.some((r) => r.key === "iodine")) out.push(`<b>Iodine</b> isn't in the food database, so it isn't checked. Milk and yoghurt are the main UK sources; if you use plant drinks, choose one with added iodine (<a href="${BDA_IODINE}">BDA</a>).`);
     return out.length ? `<div class="notice small">${out.map((x) => `<p>${x}</p>`).join("")}</div>` : "";
   }

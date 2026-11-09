@@ -36,7 +36,10 @@ export function setOn(f: PlannerFood, on: boolean, base: Base, toggled: Set<stri
   if (on === fromBase) toggled.delete(f.id); else toggled.add(f.id);
 }
 
-export const dietOk = (f: PlannerFood, diet: "vegetarian" | "vegan") => diet === "vegetarian" || f.diet === "vegan";
+export type Diet = "none" | "vegetarian" | "vegan";
+/** "none" allows everything; vegetarian hides meat and fish; vegan also hides dairy, eggs and honey. */
+export const dietOk = (f: PlannerFood, diet: Diet) =>
+  diet === "none" || (diet === "vegetarian" ? f.diet !== "meat" : f.diet === "vegan");
 
 /** Simple case-insensitive match on all words. */
 export function matches(f: PlannerFood, query: string) {

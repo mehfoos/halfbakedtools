@@ -20,7 +20,7 @@ export type Bound = { value: number; basis: "abs" | "pctEnergy" | "perKg"; sourc
 export type TargetSpec = { min?: Bound; max?: Bound };
 export type NutrientDef = { key: string; label: string; unit: string };
 export type Food = {
-  id: string; name: string; group: string; diet: "vegan" | "vegetarian";
+  id: string; name: string; group: string; diet: "vegan" | "vegetarian" | "meat";
   unit: string; unitGrams: number; step: number; maxGrams: number; notes?: string | null;
   per100g: Record<string, number>;
 };
