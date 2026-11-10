@@ -12,7 +12,8 @@
   {
    "id": "efsa",
    "title": "EFSA (2017) Dietary Reference Values for nutrients: Summary report. EFSA supporting publication 2017:e15121",
-   "url": "https://doi.org/10.2903/sp.efsa.2017.e15121"
+   "url": "https://doi.org/10.2903/sp.efsa.2017.e15121",
+   "archive": "https://github.com/mehfoos/halfbakedtools/blob/main/docs/sources/efsa-2017-drv-summary-report.pdf"
   },
   {
    "id": "nasem-dri-ul",

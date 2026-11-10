@@ -9,7 +9,7 @@ export type Profile = {
 };
 export type Standard = {
   id: string; name: string; longName: string; status: string;
-  sources: { id: string; title: string; url: string }[];
+  sources: { id: string; title: string; url: string; archive?: string }[];
   notes: string[]; profiles: Profile[];
   verified?: { checked: boolean; date?: string; against: string };
 };

@@ -36,7 +36,7 @@ const standards = [uk, us, eu];
           : <><strong>Not yet checked</strong> against the original document. {s.verified?.against}.</>}
       </p>
       <ul class="prose">
-        {s.sources.map((src) => <li><a href={src.url}>{src.title}</a></li>)}
+        {s.sources.map((src) => <li><a href={src.url}>{src.title}</a>{src.archive && <> (<a href={src.archive}>copy kept in this site's repository</a>, the exact version checked)</>}</li>)}
       </ul>
       <ul class="prose muted small">{s.notes.map((n) => <li>{n}</li>)}</ul>
     </section>

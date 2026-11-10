@@ -240,7 +240,7 @@ def build_uk() -> dict:
         "status": "available",
         "verified": {"checked": True, "date": "2026-11-09", "against": "Public Health England (2016) Government Dietary Recommendations PDF, Tables 1-6 (pages 6-11)"},
         "sources": [
-            {"id": "phe-2016", "title": "Public Health England (2016) Government Dietary Recommendations, Tables 1-6", "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf"},
+            {"id": "phe-2016", "title": "Public Health England (2016) Government Dietary Recommendations, Tables 1-6", "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf", "archive": "https://github.com/mehfoos/halfbakedtools/blob/main/docs/sources/phe-2016-government-dietary-recommendations.pdf"},
             {"id": "nasem-dri-ul", "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels (the UK has no complete set)", "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"},
             WHO_AA_SOURCE,
         ],
@@ -430,7 +430,7 @@ def build_eu() -> dict:
         "id": "eu", "name": "EU", "longName": "EU Dietary Reference Values (EFSA)", "status": "available",
         "verified": {"checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 2, 3, 5, 7, 9, 11 and 17"},
         "sources": [
-            {"id": "efsa", "title": "EFSA (2017) Dietary Reference Values for nutrients: Summary report. EFSA supporting publication 2017:e15121", "url": "https://doi.org/10.2903/sp.efsa.2017.e15121"},
+            {"id": "efsa", "title": "EFSA (2017) Dietary Reference Values for nutrients: Summary report. EFSA supporting publication 2017:e15121", "url": "https://doi.org/10.2903/sp.efsa.2017.e15121", "archive": "https://github.com/mehfoos/halfbakedtools/blob/main/docs/sources/efsa-2017-drv-summary-report.pdf"},
             {"id": "nasem-dri-ul", "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels", "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"},
             WHO_AA_SOURCE,
         ],
