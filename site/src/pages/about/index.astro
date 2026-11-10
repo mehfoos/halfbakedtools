@@ -4,6 +4,8 @@ import uk from "../../../../data/targets/uk.json";
 import us from "../../../../data/targets/us.json";
 import eu from "../../../../data/targets/eu.json";
 import meta from "../../../../data/meta.json";
+import References from "../../components/References.astro";
+import { cite } from "../../lib/references.ts";
 const standards = [uk, us, eu];
 ---
 <Base title="Methods and sources" current="about">
@@ -12,8 +14,8 @@ const standards = [uk, us, eu];
 
   <h2>Food composition data</h2>
   <p>
-    Nutrient values come from <a href="https://fdc.nal.usda.gov/">USDA FoodData Central</a> (public domain):
-    the SR Legacy dataset. About 115 cheap, common, UK-available foods are hand-matched to USDA records, given
+    Nutrient values come from the US Department of Agriculture's FoodData Central (public domain), SR Legacy
+    dataset <Fragment set:html={cite("usda-sr")} />. About 115 cheap, common, UK-available foods are hand-matched to USDA records, given
     friendly names and practical units, and switched on by default. Around 2,100 more vegetables, fruits, pulses,
     grains, breads, nuts, seeds, meat, fish, dairy foods, eggs, oils, herbs and spices are added automatically by
     rules that keep cooked lean cuts of meat and leave out baby foods, branded and heavily processed products;
@@ -34,9 +36,10 @@ const standards = [uk, us, eu];
         {s.verified?.checked
           ? <><strong>Checked</strong> line by line against the original document ({s.verified.against}) on {s.verified.date}.</>
           : <><strong>Not yet checked</strong> against the original document. {s.verified?.against}.</>}
+        {s.verified?.pending && <> <strong>Not yet checked:</strong> {s.verified.pending}</>}
       </p>
       <ul class="prose">
-        {s.sources.map((src) => <li><a href={src.url}>{src.title}</a>{src.archive && <> (<a href={src.archive}>copy kept in this site's repository</a>, the exact version checked)</>}</li>)}
+        {s.sources.map((src) => <li>{src.role ? `${src.role}: ` : ""}{src.title} <Fragment set:html={cite(src.id)} /></li>)}
       </ul>
       <ul class="prose muted small">{s.notes.map((n) => <li>{n}</li>)}</ul>
     </section>
@@ -49,7 +52,7 @@ const standards = [uk, us, eu];
 
   <h2>How the planner chooses foods</h2>
   <p>
-    The planner solves a mixed-integer programme (with the <a href="https://highs.dev/">HiGHS</a> solver, running in your browser).
+    The planner solves a mixed-integer programme with the HiGHS solver <Fragment set:html={cite("highs")} />, running in your browser.
     It chooses at most your chosen number of ingredients and an amount of each, in practical steps
     (10 g, half an egg, a slice of bread), to minimise the total <em>relative</em> shortfall across all
     minimum targets, so being 20% short of iron counts the same as being 20% short of protein. Upper limits
@@ -65,7 +68,7 @@ const standards = [uk, us, eu];
     the target; "≤" means stay at or below it.
   </p>
   <p>
-    The "At a glance" chart follows the nutrition declaration on UK and EU food labels (Regulation 1169/2011):
+    The "At a glance" chart follows the nutrition declaration on UK and EU food labels (Regulation 1169/2011) <Fragment set:html={cite("eu-1169")} />:
     energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt. Each is compared with the official
     recommendation for the person where one exists; total sugars, which has no recommendation, is compared with
     the label's adult reference intake (90 g) and shown in grey. Vitamins, minerals and essential amino acids
@@ -76,11 +79,13 @@ const standards = [uk, us, eu];
   <h2>Limitations</h2>
   <p>The results are estimates. Please treat them as a starting point for thinking about your food, not as a precise measurement.</p>
   <ul class="prose">
-    <li><strong>Borrowed safety limits.</strong> The UK and EU tables used here don't give a complete set of upper limits, so the US tolerable upper intake levels are used for safety checks in every standard. Those US values come from the NCBI copy of the US tables, which hasn't yet been re-checked against the original document.</li>
+    <li><strong>Borrowed safety limits.</strong> The UK and EU tables used here don't give a complete set of upper limits, so the US tolerable upper intake levels <Fragment set:html={cite("nasem-dri")} /> are used for safety checks in every standard.</li>
     <li><strong>US food data, UK shops.</strong> Fortification differs between countries (for example US milk usually has added vitamin D; UK milk doesn't), and brands differ. Fortified products should be checked against their labels.</li>
     <li><strong>Iodine and some other nutrients</strong> are missing from most USDA records, so they are listed as "not checked" rather than guessed. Where a food has no value for a nutrient, it counts as zero, which can understate the total.</li>
     <li><strong>Absorption isn't modelled yet.</strong> Iron from plants is absorbed less well than iron from meat, ALA omega-3 converts poorly to EPA and DHA, and phytates reduce zinc absorption. These are planned refinements.</li>
-    <li><strong>Amino acid targets</strong> use WHO adult requirements per kg of body weight and are applied to adults only.</li>
+    <li><strong>Amino acid targets</strong> use WHO adult requirements per kg of body weight <Fragment set:html={cite("who-2007")} /> and are applied to adults only. They haven't yet been checked against the original WHO report.</li>
     <li><strong>Reference values are for healthy populations.</strong> If you have a medical condition, are pregnant, or are planning food for a child, check with a doctor, midwife or registered dietitian.</li>
   </ul>
+
+  <References />
 </Base>

@@ -1,0 +1,21 @@
+---
+// Collapsible IEEE-style reference list: every source the site uses, with the original link and an
+// archived copy kept in the repository.
+import { SOURCES, entryHtml } from "../lib/references.ts";
+interface Props { open?: boolean }
+const { open = false } = Astro.props;
+---
+<details class="references" id="references" open={open}>
+  <summary>References ({SOURCES.length})</summary>
+  <div class="details-body">
+  <p class="small muted sans">
+    Numbered as cited ([1], [2], …); the numbers are the same on every page. Each entry links to the original
+    and to a copy kept in this site's repository, so the exact version used stays available.
+  </p>
+  <ol class="ref-list">
+    {SOURCES.map((s, i) => (
+      <li id={`ref-${s.id}`}><span class="ref-n">[{i + 1}]</span><span class="ref-body" set:html={entryHtml(s)} /></li>
+    ))}
+  </ol>
+  </div>
+</details>

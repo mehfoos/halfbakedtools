@@ -4,6 +4,7 @@
  "longName": "UK government dietary recommendations",
  "status": "available",
  "verified": {
+  "pending": "the amino acid targets (WHO 2007), which apply to adults.",
   "checked": true,
   "date": "2026-11-09",
   "against": "Public Health England (2016) Government Dietary Recommendations PDF, Tables 1-6 (pages 6-11)"
@@ -11,19 +12,20 @@
  "sources": [
   {
    "id": "phe-2016",
-   "title": "Public Health England (2016) Government Dietary Recommendations, Tables 1-6",
-   "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf",
-   "archive": "https://github.com/mehfoos/halfbakedtools/blob/main/docs/sources/phe-2016-government-dietary-recommendations.pdf"
+   "title": "Government Dietary Recommendations: Government recommendations for energy and nutrients for males and females aged 1–18 years and 19+ years",
+   "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf"
   },
   {
-   "id": "nasem-dri-ul",
-   "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels (the UK has no complete set)",
-   "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"
+   "id": "nasem-dri",
+   "title": "Dietary Reference Intakes summary tables",
+   "url": "https://www.nationalacademies.org/projects/HMD-FNB-18-P-120/resources",
+   "role": "Safety upper limits (the UK has no complete set)"
   },
   {
    "id": "who-2007",
-   "title": "WHO/FAO/UNU (2007) Protein and amino acid requirements in human nutrition, WHO Technical Report Series 935",
-   "url": "https://iris.who.int/handle/10665/43411"
+   "title": "Protein and Amino Acid Requirements in Human Nutrition",
+   "url": "https://iris.who.int/handle/10665/43411",
+   "role": "Amino acids"
   }
  ],
  "notes": [
@@ -96,7 +98,7 @@
      "max": {
       "value": 30,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -123,7 +125,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -136,7 +138,7 @@
      "max": {
       "value": 63,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -149,7 +151,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -162,7 +164,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -189,7 +191,7 @@
      "max": {
       "value": 7,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -202,7 +204,7 @@
      "max": {
       "value": 1.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -215,7 +217,7 @@
      "max": {
       "value": 200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -228,7 +230,7 @@
      "max": {
       "value": 90,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -241,7 +243,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -249,7 +251,7 @@
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -257,7 +259,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -265,7 +267,7 @@
      "max": {
       "value": 2,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -342,7 +344,7 @@
      "max": {
       "value": 30,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -369,7 +371,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -382,7 +384,7 @@
      "max": {
       "value": 63,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -395,7 +397,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -408,7 +410,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -435,7 +437,7 @@
      "max": {
       "value": 7,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -448,7 +450,7 @@
      "max": {
       "value": 1.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -461,7 +463,7 @@
      "max": {
       "value": 200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -474,7 +476,7 @@
      "max": {
       "value": 90,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -487,7 +489,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -502,7 +504,7 @@
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -510,7 +512,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -518,7 +520,7 @@
      "max": {
       "value": 2,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -595,7 +597,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -622,7 +624,7 @@
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -635,7 +637,7 @@
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -648,7 +650,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -661,7 +663,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -688,7 +690,7 @@
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -701,7 +703,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -714,7 +716,7 @@
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -727,7 +729,7 @@
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -740,7 +742,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -769,7 +771,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -777,7 +779,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -785,7 +787,7 @@
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -862,7 +864,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -889,7 +891,7 @@
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -902,7 +904,7 @@
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -915,7 +917,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -928,7 +930,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -955,7 +957,7 @@
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -968,7 +970,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -981,7 +983,7 @@
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -994,7 +996,7 @@
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1007,7 +1009,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1036,7 +1038,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1044,7 +1046,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1052,7 +1054,7 @@
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -1129,7 +1131,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1156,7 +1158,7 @@
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1169,7 +1171,7 @@
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1182,7 +1184,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1195,7 +1197,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1222,7 +1224,7 @@
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1235,7 +1237,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1248,7 +1250,7 @@
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1261,7 +1263,7 @@
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1274,7 +1276,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1303,7 +1305,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1311,7 +1313,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1319,7 +1321,7 @@
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -1396,7 +1398,7 @@
      "max": {
       "value": 60,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1423,7 +1425,7 @@
      "max": {
       "value": 1200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1436,7 +1438,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1449,7 +1451,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1462,7 +1464,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1489,7 +1491,7 @@
      "max": {
       "value": 23,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1502,7 +1504,7 @@
      "max": {
       "value": 5.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1515,7 +1517,7 @@
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1528,7 +1530,7 @@
      "max": {
       "value": 280,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1541,7 +1543,7 @@
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1570,7 +1572,7 @@
      "max": {
       "value": 1700,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1578,7 +1580,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1586,7 +1588,7 @@
      "max": {
       "value": 6,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -1663,7 +1665,7 @@
      "max": {
       "value": 80,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1690,7 +1692,7 @@
      "max": {
       "value": 1800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1703,7 +1705,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1716,7 +1718,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1729,7 +1731,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1756,7 +1758,7 @@
      "max": {
       "value": 34,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1769,7 +1771,7 @@
      "max": {
       "value": 8.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1782,7 +1784,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1795,7 +1797,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1808,7 +1810,7 @@
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1837,7 +1839,7 @@
      "max": {
       "value": 2800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1845,7 +1847,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1853,7 +1855,7 @@
      "max": {
       "value": 9,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -1930,7 +1932,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1957,7 +1959,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1970,7 +1972,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1983,7 +1985,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1996,7 +1998,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2023,7 +2025,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2036,7 +2038,7 @@
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2049,7 +2051,7 @@
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2062,7 +2064,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2075,7 +2077,7 @@
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2104,7 +2106,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2112,7 +2114,7 @@
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2120,7 +2122,7 @@
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2260,7 +2262,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2287,7 +2289,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2300,7 +2302,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2313,7 +2315,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2326,7 +2328,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2353,7 +2355,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2366,7 +2368,7 @@
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2379,7 +2381,7 @@
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2392,7 +2394,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2405,7 +2407,7 @@
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2434,7 +2436,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2442,7 +2444,7 @@
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2450,7 +2452,7 @@
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2590,7 +2592,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2617,7 +2619,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2630,7 +2632,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2643,7 +2645,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2656,7 +2658,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2683,7 +2685,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2696,7 +2698,7 @@
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2709,7 +2711,7 @@
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2722,7 +2724,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2735,7 +2737,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2764,7 +2766,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2772,7 +2774,7 @@
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2780,7 +2782,7 @@
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2920,7 +2922,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2947,7 +2949,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2960,7 +2962,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2973,7 +2975,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2986,7 +2988,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3013,7 +3015,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3026,7 +3028,7 @@
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3039,7 +3041,7 @@
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3052,7 +3054,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3065,7 +3067,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3094,7 +3096,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3102,7 +3104,7 @@
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3110,7 +3112,7 @@
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3243,7 +3245,7 @@
      "max": {
       "value": 30,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3270,7 +3272,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3283,7 +3285,7 @@
      "max": {
       "value": 63,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3296,7 +3298,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3309,7 +3311,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3336,7 +3338,7 @@
      "max": {
       "value": 7,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3349,7 +3351,7 @@
      "max": {
       "value": 1.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3362,7 +3364,7 @@
      "max": {
       "value": 200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3375,7 +3377,7 @@
      "max": {
       "value": 90,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3388,7 +3390,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3396,7 +3398,7 @@
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3404,7 +3406,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3412,7 +3414,7 @@
      "max": {
       "value": 2,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -3489,7 +3491,7 @@
      "max": {
       "value": 30,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3516,7 +3518,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3529,7 +3531,7 @@
      "max": {
       "value": 63,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3542,7 +3544,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3555,7 +3557,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3582,7 +3584,7 @@
      "max": {
       "value": 7,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3595,7 +3597,7 @@
      "max": {
       "value": 1.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3608,7 +3610,7 @@
      "max": {
       "value": 200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3621,7 +3623,7 @@
      "max": {
       "value": 90,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3634,7 +3636,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3649,7 +3651,7 @@
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3657,7 +3659,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3665,7 +3667,7 @@
      "max": {
       "value": 2,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -3742,7 +3744,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3769,7 +3771,7 @@
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3782,7 +3784,7 @@
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3795,7 +3797,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3808,7 +3810,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3835,7 +3837,7 @@
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3848,7 +3850,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3861,7 +3863,7 @@
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3874,7 +3876,7 @@
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3887,7 +3889,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3916,7 +3918,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3924,7 +3926,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3932,7 +3934,7 @@
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -4009,7 +4011,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4036,7 +4038,7 @@
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4049,7 +4051,7 @@
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4062,7 +4064,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4075,7 +4077,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4102,7 +4104,7 @@
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4115,7 +4117,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4128,7 +4130,7 @@
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4141,7 +4143,7 @@
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4154,7 +4156,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4183,7 +4185,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4191,7 +4193,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4199,7 +4201,7 @@
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -4276,7 +4278,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4303,7 +4305,7 @@
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4316,7 +4318,7 @@
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4329,7 +4331,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4342,7 +4344,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4369,7 +4371,7 @@
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4382,7 +4384,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4395,7 +4397,7 @@
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4408,7 +4410,7 @@
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4421,7 +4423,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4450,7 +4452,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4458,7 +4460,7 @@
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4466,7 +4468,7 @@
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -4543,7 +4545,7 @@
      "max": {
       "value": 60,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4570,7 +4572,7 @@
      "max": {
       "value": 1200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4583,7 +4585,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4596,7 +4598,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4609,7 +4611,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4636,7 +4638,7 @@
      "max": {
       "value": 23,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4649,7 +4651,7 @@
      "max": {
       "value": 5.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4662,7 +4664,7 @@
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4675,7 +4677,7 @@
      "max": {
       "value": 280,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4688,7 +4690,7 @@
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4717,7 +4719,7 @@
      "max": {
       "value": 1700,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4725,7 +4727,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4733,7 +4735,7 @@
      "max": {
       "value": 6,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -4810,7 +4812,7 @@
      "max": {
       "value": 80,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4837,7 +4839,7 @@
      "max": {
       "value": 1800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4850,7 +4852,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4863,7 +4865,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4876,7 +4878,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4903,7 +4905,7 @@
      "max": {
       "value": 34,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4916,7 +4918,7 @@
      "max": {
       "value": 8.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4929,7 +4931,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4942,7 +4944,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4955,7 +4957,7 @@
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4984,7 +4986,7 @@
      "max": {
       "value": 2800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4992,7 +4994,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5000,7 +5002,7 @@
      "max": {
       "value": 9,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     }
@@ -5077,7 +5079,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5104,7 +5106,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5117,7 +5119,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5130,7 +5132,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5143,7 +5145,7 @@
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5170,7 +5172,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5183,7 +5185,7 @@
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5196,7 +5198,7 @@
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5209,7 +5211,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5222,7 +5224,7 @@
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5251,7 +5253,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5259,7 +5261,7 @@
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5267,7 +5269,7 @@
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5407,7 +5409,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5434,7 +5436,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5447,7 +5449,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5460,7 +5462,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5473,7 +5475,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5500,7 +5502,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5513,7 +5515,7 @@
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5526,7 +5528,7 @@
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5539,7 +5541,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5552,7 +5554,7 @@
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5581,7 +5583,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5589,7 +5591,7 @@
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5597,7 +5599,7 @@
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5737,7 +5739,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5764,7 +5766,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5777,7 +5779,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5790,7 +5792,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5803,7 +5805,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5830,7 +5832,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5843,7 +5845,7 @@
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5856,7 +5858,7 @@
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5869,7 +5871,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5882,7 +5884,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5911,7 +5913,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5919,7 +5921,7 @@
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5927,7 +5929,7 @@
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6067,7 +6069,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6094,7 +6096,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6107,7 +6109,7 @@
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6120,7 +6122,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6133,7 +6135,7 @@
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6160,7 +6162,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6173,7 +6175,7 @@
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6186,7 +6188,7 @@
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6199,7 +6201,7 @@
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6212,7 +6214,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6241,7 +6243,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6249,7 +6251,7 @@
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6257,7 +6259,7 @@
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },

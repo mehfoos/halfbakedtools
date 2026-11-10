@@ -127,3 +127,13 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-sp
 .tag { display: inline-block; font-family: var(--sans); font-size: 0.75rem; font-weight: 700; padding: 1px 8px; border-radius: 99px; background: var(--peach); color: #7a3d12; vertical-align: middle; }
 .prose li { margin-bottom: 0.4em; }
 code { font-family: var(--mono); font-size: 0.88em; background: var(--beige); padding: 1px 4px; }
+
+/* References (IEEE style) */
+.references { margin: 2rem 0 1rem; }
+.references > summary { font-family: var(--sans); font-weight: 700; cursor: pointer; }
+.ref-list { list-style: none; padding: 0; margin: 0.5rem 0 0; font-size: 0.9rem; }
+.ref-list li { display: grid; grid-template-columns: 2.6em 1fr; gap: 0 0.4em; margin: 0 0 0.8em; overflow-wrap: anywhere; }
+.ref-list li.ref-target { background: #fff6c9; }
+.ref-n { font-family: var(--sans); font-weight: 700; }
+.ref-meta { display: block; font-family: var(--sans); font-size: 0.82rem; margin-top: 2px; }
+a.cite { text-decoration: none; white-space: nowrap; }

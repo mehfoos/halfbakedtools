@@ -20,17 +20,24 @@ import json
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[2] / "data" / "targets"
+REGISTER = {r["id"]: r for r in json.loads((OUT.parent / "sources.json").read_text())["sources"]}
+
+
+def ref(rid: str, role: str | None = None) -> dict:
+    """A reference from data/sources.json (the site numbers and lists them from there)."""
+    r = REGISTER[rid]
+    out = {"id": rid, "title": r["title"], "url": r["url"]}
+    if role:
+        out["role"] = role
+    return out
+
 
 # ---------------------------------------------------------------------------
 # Shared: WHO/FAO/UNU (2007) adult indispensable amino acid requirements,
 # mg per kg body weight per day. WHO Technical Report Series 935, Table 23.
 # Applied to adults (19+) in every standard; children are not assessed.
 # ---------------------------------------------------------------------------
-WHO_AA_SOURCE = {
-    "id": "who-2007",
-    "title": "WHO/FAO/UNU (2007) Protein and amino acid requirements in human nutrition, WHO Technical Report Series 935",
-    "url": "https://iris.who.int/handle/10665/43411",
-}
+WHO_AA_SOURCE = None  # filled from the reference register below
 WHO_AA = {"histidine": 10, "isoleucine": 20, "leucine": 39, "lysine": 30, "metCys": 15,
           "pheTyr": 25, "threonine": 15, "tryptophan": 4, "valine": 26}
 
@@ -179,15 +186,33 @@ US_UL = {
 US_UL_PREG_P = 3500  # phosphorus UL in pregnancy
 # Sodium Chronic Disease Risk Reduction intakes (mg/day): reduce if above.
 US_SODIUM_CDRR = {"1-3": 1200, "4-8": 1500, "9-13": 1800, "14-18": 2300, "19-30": 2300, "31-50": 2300, "51-70": 2300, "71+": 2300}
-# Approximate calorie needs, Dietary Guidelines for Americans 2020-2025
-# (sedentary ranges; 61+ single values). Used only as a default band.
-US_ENERGY = {
-    ("child", "1-3"): (1000, 1200), ("child", "4-8"): (1000, 1400),
-    ("male", "9-13"): (1400, 2000), ("male", "14-18"): (2000, 2400), ("male", "19-30"): (2200, 2600),
-    ("male", "31-50"): (2200, 2600), ("male", "51-70"): (2000, 2600), ("male", "71+"): (1800, 2200),
-    ("female", "9-13"): (1200, 1600), ("female", "14-18"): (1600, 1800), ("female", "19-30"): (1600, 2000),
-    ("female", "31-50"): (1600, 2000), ("female", "51-70"): (1600, 2000), ("female", "71+"): (1440, 1760),
-}
+# Estimated calorie needs, Dietary Guidelines for Americans 2020-2025, Appendix 2 (pages 139-140).
+# Table A2-2, sedentary column, by single year of age: (male, female). Table A2-1 covers 12-23 months.
+_DGA_SED = [  # (from age, to age, male, female)
+    (2, 2, 1000, 1000), (3, 3, 1000, 1000), (4, 4, 1200, 1200), (5, 5, 1200, 1200), (6, 6, 1400, 1200),
+    (7, 7, 1400, 1200), (8, 8, 1400, 1400), (9, 9, 1600, 1400), (10, 10, 1600, 1400), (11, 11, 1800, 1600),
+    (12, 12, 1800, 1600), (13, 13, 2000, 1600), (14, 14, 2000, 1800), (15, 15, 2200, 1800), (16, 16, 2400, 1800),
+    (17, 17, 2400, 1800), (18, 18, 2400, 1800), (19, 20, 2600, 2000), (21, 25, 2400, 2000), (26, 30, 2400, 1800),
+    (31, 35, 2400, 1800), (36, 40, 2400, 1800), (41, 45, 2200, 1800), (46, 50, 2200, 1800), (51, 55, 2200, 1600),
+    (56, 60, 2200, 1600), (61, 65, 2000, 1600), (66, 70, 2000, 1600), (71, 75, 2000, 1600), (76, 120, 2000, 1600),
+]
+DGA_AGE_1 = {"kcal": 900, "low": 800, "high": 1000}  # Table A2-1: 800-1,000 kcal at 12-23 months (both sexes)
+
+
+def us_energy_by_age(sex: str, group: str) -> dict:
+    """Exact sedentary estimate for each whole year of age in the group; default band +/-10%."""
+    lo, hi = (int(x) for x in group.replace("+", "-120").split("-"))
+    out = {}
+    for age in range(lo, hi + 1):
+        if age == 1:
+            out["1"] = dict(DGA_AGE_1)
+            continue
+        row = next(r for r in _DGA_SED if r[0] <= age <= r[1])
+        k = row[2] if sex == "male" else row[3]
+        out[str(age)] = {"kcal": k, "low": round(k * 0.9), "high": round(k * 1.1)}
+    return out
+
+
 # Pantothenic acid adequate intakes (mg/day), same table.
 US_PANTOTHENIC = {"1-3": 2, "4-8": 3, "9-13": 4, "14-18": 5, "19-30": 5, "31-50": 5, "51-70": 5, "71+": 5,
                   "pregnancy": 6, "lactation": 7}
@@ -224,7 +249,7 @@ def build_uk() -> dict:
                 if g in groups:
                     put(t, key, bound, pct, "pctEnergy", "phe-2016")
             # UK salt limit already covers sodium, so the US sodium value is not added.
-            add_us_uls(t, UK_TO_US_UL[g], sex, "nasem-dri-ul", sodium=False)
+            add_us_uls(t, UK_TO_US_UL[g], sex, "nasem-dri", sodium=False)
             if g in ("19-50", "51-64", "65-74", "75+"):
                 add_aa(t)
             kcal = UK["energy"][0 if sex == "male" else 1][col]
@@ -238,12 +263,8 @@ def build_uk() -> dict:
     return {
         "id": "uk", "name": "UK", "longName": "UK government dietary recommendations",
         "status": "available",
-        "verified": {"checked": True, "date": "2026-11-09", "against": "Public Health England (2016) Government Dietary Recommendations PDF, Tables 1-6 (pages 6-11)"},
-        "sources": [
-            {"id": "phe-2016", "title": "Public Health England (2016) Government Dietary Recommendations, Tables 1-6", "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf", "archive": "https://github.com/mehfoos/halfbakedtools/blob/main/docs/sources/phe-2016-government-dietary-recommendations.pdf"},
-            {"id": "nasem-dri-ul", "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels (the UK has no complete set)", "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"},
-            WHO_AA_SOURCE,
-        ],
+        "verified": {"pending": "the amino acid targets (WHO 2007), which apply to adults.", "checked": True, "date": "2026-11-09", "against": "Public Health England (2016) Government Dietary Recommendations PDF, Tables 1-6 (pages 6-11)"},
+        "sources": [ref("phe-2016"), ref("nasem-dri", "Safety upper limits (the UK has no complete set)"), ref("who-2007", "Amino acids")],
         "notes": [
             "Vitamin A is expressed in retinol equivalents by PHE and in retinol activity equivalents by USDA food data; plant sources of vitamin A may be slightly overestimated against the UK target.",
             "Free sugars (limit 5% of energy) are not assessed because food databases do not separate free from intrinsic sugars.",
@@ -268,27 +289,30 @@ def build_us() -> dict:
             put(t, "fat", "max", US_AMDR_FAT.get(g, 35), "pctEnergy", "nasem-dri", "Acceptable macronutrient distribution range")
             if g in ("19-30", "31-50", "51-70", "71+"):
                 add_aa(t)
-            base = "female" if stage in ("pregnancy", "lactation") else stage
-            low, high = US_ENERGY[(base, g if (base, g) in US_ENERGY else "19-30")]
-            note = "Dietary Guidelines for Americans 2020-2025 estimate (sedentary); raise it if you are active."
-            if stage in ("pregnancy", "lactation"):
-                note += " Pregnancy and breastfeeding usually need more energy than this non-pregnant default; ask your midwife or doctor."
+            sex = "male" if stage == "male" else "female"  # children: DGA values for girls (lower), noted below
+            by_age = us_energy_by_age(sex, g)
+            first = by_age[str(int(g.split("-")[0].rstrip("+")))]
+            note = "Dietary Guidelines for Americans 2020-2025 estimate for a sedentary person of your age and sex (Table A2-2); default band ±10%. Raise it if you are active."
+            by_sex = None
+            if stage == "child":
+                note = "Dietary Guidelines for Americans 2020-2025 estimate for a sedentary child of this age and sex (Tables A2-1 and A2-2); default band ±10%."
+                by_sex = {"male": us_energy_by_age("male", g), "female": by_age}
+            if stage == "pregnancy":
+                note += " In pregnancy the guidelines add about 340 kcal a day in the second trimester and 452 kcal in the third (Table A2-3); this default doesn't."
+            if stage == "lactation":
+                note += " While breastfeeding the guidelines add about 330 kcal a day in the first 6 months and 400 kcal after (Table A2-3); this default doesn't."
             label_stage = {"child": "Child", "male": "Male", "female": "Female", "pregnancy": "Pregnant", "lactation": "Breastfeeding"}[stage]
             profiles.append({
                 "id": f"{stage}-{g}", "stage": stage, "group": g, "label": f"{label_stage}, {g} years",
-                "energy": {"kcal": round((low + high) / 2), "low": low, "high": high, "note": note},
+                "energy": {**first, "note": note, **({"bySex": by_sex} if by_sex else {"byAge": by_age})},
                 "defaultWeightKg": 70 if stage == "male" else (60 if stage != "child" else 20),
                 "targets": t,
             })
     return {
         "id": "us", "name": "US", "longName": "US Dietary Reference Intakes (National Academies)",
         "status": "available",
-        "verified": {"checked": False, "against": "Read from the NCBI Bookshelf copy of the National Academies summary tables; not yet re-checked line by line against the original document"},
-        "sources": [
-            {"id": "nasem-dri", "title": "National Academies (2019) Dietary Reference Intakes summary tables, Appendix J of DRIs for Sodium and Potassium", "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"},
-            {"id": "dga-2020", "title": "Dietary Guidelines for Americans 2020-2025, estimated calorie needs (via MSD Manual)", "url": "https://www.merckmanuals.com/home/multimedia/table/estimated-number-of-calories-needed-based-on-age-sex-and-activity-level"},
-            WHO_AA_SOURCE,
-        ],
+        "verified": {"pending": "the amino acid targets (WHO 2007), which apply to adults.", "checked": True, "date": "2026-11-10", "against": "National Academies DRI summary table PDFs (RDA and AI for vitamins, elements, water and macronutrients; upper limits; chronic disease risk reduction; macronutrient ranges) and Dietary Guidelines for Americans 2020-2025, Appendix 2"},
+        "sources": [ref("nasem-dri"), ref("dga-2020", "Calorie estimates"), ref("who-2007", "Amino acids")],
         "notes": [
             "Upper limits for magnesium, niacin, folate and vitamin E apply to supplements and fortificants only, so they are not applied to food.",
             "The vitamin A upper limit applies to preformed vitamin A (retinol), not to carotenes from plants.",
@@ -372,26 +396,26 @@ def eu_targets(sex: str, g: str, stage: str) -> dict:
     t: dict = {}
     if stage in ("pregnancy", "lactation"):
         for k, v in (EU_PREG if stage == "pregnancy" else EU_LACT).items():
-            put(t, k, "min", round(v, 2), "abs", "efsa")
+            put(t, k, "min", round(v, 2), "abs", "efsa-2017")
     else:
         i = EU_GROUPS.index(g)
         for k, rows in EU_ABS.items():
             row = rows[0] if sex == "male" or len(rows) == 1 else rows[1]
-            put(t, k, "min", row[i], "abs", "efsa")
-    put(t, "thiamin", "min", 0.1, "perMJ", "efsa", "0.1 mg per MJ of energy")
-    put(t, "niacinNE", "min", 1.6, "perMJ", "efsa", "1.6 mg niacin equivalents per MJ of energy")
-    put(t, "fat", "max", EU_FAT_MAX.get(g, 35), "pctEnergy", "efsa", "Reference intake range " + ("35-40" if g in EU_FAT_MAX else "20-35") + "% of energy")
+            put(t, k, "min", row[i], "abs", "efsa-2017")
+    put(t, "thiamin", "min", 0.1, "perMJ", "efsa-2017", "0.1 mg per MJ of energy")
+    put(t, "niacinNE", "min", 1.6, "perMJ", "efsa-2017", "1.6 mg niacin equivalents per MJ of energy")
+    put(t, "fat", "max", EU_FAT_MAX.get(g, 35), "pctEnergy", "efsa-2017", "Reference intake range " + ("35-40" if g in EU_FAT_MAX else "20-35") + "% of energy")
     if stage not in ("pregnancy", "lactation") and g in ("1-3", "4-6", "7-10", "11-14", "15-17"):
         for k, by_sex in EU_BY_AGE.items():
             if sex in by_sex:
                 t[k]["min"]["byAge"] = {str(a): v for a, v in by_sex[sex].items()}
-    put(t, "carbohydrate", "min", 45, "pctEnergy", "efsa", "Reference intake range 45-60% of energy")
-    put(t, "la", "min", 4, "pctEnergy", "efsa", "Adequate intake")
-    put(t, "ala", "min", 0.5, "pctEnergy", "efsa", "Adequate intake")
-    put(t, "epaDha", "min", 350 if stage in ("pregnancy", "lactation") else 250, "abs", "efsa",
+    put(t, "carbohydrate", "min", 45, "pctEnergy", "efsa-2017", "Reference intake range 45-60% of energy")
+    put(t, "la", "min", 4, "pctEnergy", "efsa-2017", "Adequate intake")
+    put(t, "ala", "min", 0.5, "pctEnergy", "efsa-2017", "Adequate intake")
+    put(t, "epaDha", "min", 350 if stage in ("pregnancy", "lactation") else 250, "abs", "efsa-2017",
         "Adequate intake" + (" (250 mg plus 100-200 mg DHA)" if stage in ("pregnancy", "lactation")
                              else " (100 mg of DHA under age 2)" if g == "1-3" else ""))
-    put(t, "protein", "min", round(EU_PROTEIN_ADULT * 1000), "perKg", "efsa", "Population reference intake per kg body weight"
+    put(t, "protein", "min", round(EU_PROTEIN_ADULT * 1000), "perKg", "efsa-2017", "Population reference intake per kg body weight"
         + (f", plus {EU_PROTEIN_EXTRA[stage]} g/day ({'second trimester' if stage == 'pregnancy' else 'first 6 months'})" if stage in EU_PROTEIN_EXTRA else ""))
     if stage in EU_PROTEIN_EXTRA:
         t["protein"]["min"]["extraG"] = EU_PROTEIN_EXTRA[stage]
@@ -399,7 +423,7 @@ def eu_targets(sex: str, g: str, stage: str) -> dict:
         t["protein"]["min"]["byAge"] = {str(a): round(v * 1000) for a, v in EU_PROTEIN_AGE[sex].items()}
     # EFSA sets no numeric limit for saturated fat ("as low as possible") or salt in these tables, so the
     # US tolerable upper intake levels and sodium risk-reduction intake are borrowed, as for the UK.
-    add_us_uls(t, EU_TO_US_UL["25-50" if stage in ("pregnancy", "lactation") else g], stage if stage in ("pregnancy", "lactation") else sex, "nasem-dri-ul")
+    add_us_uls(t, EU_TO_US_UL["25-50" if stage in ("pregnancy", "lactation") else g], stage if stage in ("pregnancy", "lactation") else sex, "nasem-dri")
     if g in ("18-24", "25-50", "51+") or stage in ("pregnancy", "lactation"):
         add_aa(t)
     return t
@@ -428,12 +452,8 @@ def build_eu() -> dict:
         })
     return {
         "id": "eu", "name": "EU", "longName": "EU Dietary Reference Values (EFSA)", "status": "available",
-        "verified": {"checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 2, 3, 5, 7, 9, 11 and 17"},
-        "sources": [
-            {"id": "efsa", "title": "EFSA (2017) Dietary Reference Values for nutrients: Summary report. EFSA supporting publication 2017:e15121", "url": "https://doi.org/10.2903/sp.efsa.2017.e15121", "archive": "https://github.com/mehfoos/halfbakedtools/blob/main/docs/sources/efsa-2017-drv-summary-report.pdf"},
-            {"id": "nasem-dri-ul", "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels", "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"},
-            WHO_AA_SOURCE,
-        ],
+        "verified": {"pending": "the amino acid targets (WHO 2007), which apply to adults.", "checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 2, 3, 5, 7, 9, 11 and 17"},
+        "sources": [ref("efsa-2017"), ref("nasem-dri", "Safety upper limits (EFSA tables give no complete set)"), ref("who-2007", "Amino acids")],
         "notes": [
             "Values are population reference intakes (PRI) where EFSA set one, otherwise adequate intakes (AI), from the EFSA 2017 summary report (Tables 2, 3, 5, 7, 9 and 11).",
             "For children, protein, vitamin E, copper, magnesium and girls' iron follow EFSA's exact age bands; protein uses EFSA's value for each year of age.",

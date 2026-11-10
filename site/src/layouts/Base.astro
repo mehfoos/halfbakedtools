@@ -50,5 +50,21 @@ const nav = [
       </ul>
       <p>{site.tagline} No cookies, no tracking. Information only, not medical advice.</p>
     </footer>
+    <script>
+      // Citation links point into a collapsible reference list: open it before jumping.
+      const openRef = (hash: string) => {
+        if (!hash.startsWith("#ref-")) return;
+        const el = document.getElementById(hash.slice(1));
+        const box = el?.closest("details");
+        if (box) box.open = true;
+        el?.classList.add("ref-target");
+        el?.scrollIntoView({ block: "center" });
+      };
+      document.addEventListener("click", (e) => {
+        const a = (e.target as Element | null)?.closest?.("a.cite") as HTMLAnchorElement | null;
+        if (a) { e.preventDefault(); history.replaceState(null, "", a.hash); document.querySelectorAll(".ref-target").forEach((x) => x.classList.remove("ref-target")); openRef(a.hash); }
+      });
+      openRef(location.hash);
+    </script>
   </body>
 </html>
