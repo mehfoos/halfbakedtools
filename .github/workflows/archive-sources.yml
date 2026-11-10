@@ -1,0 +1,27 @@
+# Fetches a copy of every reference listed in data/sources.json into docs/sources/
+# (GitHub's runners can reach the publishers' sites), then commits them.
+name: Archive sources
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Re-download files that are already archived"
+        type: boolean
+        default: false
+permissions:
+  contents: write
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch sources
+        run: python3 -I data/pipeline/archive_sources.py ${{ inputs.force && '--force' || '' }}
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/sources
+          git diff --cached --quiet && echo "Nothing new" && exit 0
+          git commit -m "Archive source documents"
+          git push

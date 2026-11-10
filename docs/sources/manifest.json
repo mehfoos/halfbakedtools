@@ -1,0 +1,14 @@
+{
+  "efsa-2017-drv-summary-report.pdf": {
+    "source": "efsa-2017",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "0231c27d944b9d9ec209d9b6c8d42b9a969df6054f0e30ff7e945bb77d532c48"
+  },
+  "phe-2016-government-dietary-recommendations.pdf": {
+    "source": "phe-2016",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "ba28add5cc79e4064ec9bf556eb1540800a967e886698bf3eee63cba49c4a778"
+  }
+}

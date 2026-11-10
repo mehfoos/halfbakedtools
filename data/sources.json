@@ -1,0 +1,130 @@
+{
+  "_comment": "Every reference the site uses, in citation order. The site numbers them [1], [2], ... in this order (IEEE style). 'archive' lists copies kept in the repository (docs/sources/) or as a release asset; archive_sources.py fetches any that are missing. Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
+  "repoBlob": "https://github.com/mehfoos/halfbakedtools/blob/main/docs/sources/",
+  "sources": [
+    {
+      "id": "usda-sr",
+      "pre": "U.S. Department of Agriculture, Agricultural Research Service,",
+      "title": "FoodData Central: SR Legacy", "style": "italic",
+      "post": "Beltsville, MD, USA, Apr. 2018.",
+      "url": "https://fdc.nal.usda.gov/",
+      "licence": "Public domain (US government work)",
+      "usedFor": "Nutrient content of every food",
+      "archive": [
+        {"label": "Archived copy (data download)", "release": "https://github.com/mehfoos/halfbakedtools/releases/download/usda-data-2026-11-08/FoodData_Central_sr_legacy_food_csv_2018-04.zip"}
+      ]
+    },
+    {
+      "id": "phe-2016",
+      "pre": "Public Health England,",
+      "title": "Government Dietary Recommendations: Government recommendations for energy and nutrients for males and females aged 1–18 years and 19+ years", "style": "italic",
+      "post": "London, UK, Aug. 2016.",
+      "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf",
+      "licence": "© Crown copyright, Open Government Licence v3.0",
+      "usedFor": "UK targets",
+      "archive": [{"file": "phe-2016-government-dietary-recommendations.pdf"}]
+    },
+    {
+      "id": "nasem-dri",
+      "pre": "National Academies of Sciences, Engineering, and Medicine,",
+      "title": "Appendix J: Dietary Reference Intakes summary tables", "style": "quoted",
+      "post": "in <i>Dietary Reference Intakes for Sodium and Potassium</i>. Washington, DC, USA: National Academies Press, 2019, NCBI Bookshelf NBK545442.",
+      "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/",
+      "licence": "© National Academy of Sciences; copy kept so the checked values can be traced",
+      "usedFor": "US targets, and the safety upper limits used for every standard",
+      "archive": [
+        {"file": "nasem-2019-dri-appendix-j.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/", "render": true},
+        {"file": "nasem-2019-dri-table-j1.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab1/", "render": true, "optional": true},
+        {"file": "nasem-2019-dri-table-j2.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab2/", "render": true, "optional": true},
+        {"file": "nasem-2019-dri-table-j3.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab3/", "render": true, "optional": true},
+        {"file": "nasem-2019-dri-table-j4.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab4/", "render": true, "optional": true},
+        {"file": "nasem-2019-dri-table-j5.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab5/", "render": true, "optional": true},
+        {"file": "nasem-2019-dri-table-j6.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab6/", "render": true, "optional": true},
+        {"file": "nasem-2019-dri-table-j7.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab7/", "render": true, "optional": true},
+        {"file": "nasem-2019-dri-table-j8.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab8/", "render": true, "optional": true},
+        {"file": "nasem-2019-dri-table-j9.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab9/", "render": true, "optional": true},
+        {"file": "nasem-2019-dri-table-j10.pdf", "fetch": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab10/", "render": true, "optional": true}
+      ]
+    },
+    {
+      "id": "dga-2020",
+      "pre": "U.S. Department of Agriculture and U.S. Department of Health and Human Services,",
+      "title": "Dietary Guidelines for Americans, 2020–2025", "style": "italic",
+      "post": "9th ed. Washington, DC, USA, Dec. 2020, Appendix 2, Estimated calorie needs.",
+      "url": "https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf",
+      "licence": "Public domain (US government work)",
+      "usedFor": "US calorie defaults",
+      "archive": [{"file": "dga-2020-2025.pdf", "fetch": "https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf"}]
+    },
+    {
+      "id": "efsa-2017",
+      "pre": "European Food Safety Authority,",
+      "title": "Dietary reference values for nutrients: Summary report", "style": "quoted",
+      "post": "<i>EFSA Supporting Publications</i>, vol. 14, no. 12, Art. no. e15121, Dec. 2017, doi: 10.2903/sp.efsa.2017.e15121.",
+      "url": "https://doi.org/10.2903/sp.efsa.2017.e15121",
+      "licence": "© EFSA; re-use authorised with acknowledgement of the source",
+      "usedFor": "EU targets and default body weights",
+      "archive": [{"file": "efsa-2017-drv-summary-report.pdf"}]
+    },
+    {
+      "id": "who-2007",
+      "pre": "WHO/FAO/UNU Expert Consultation,",
+      "title": "Protein and Amino Acid Requirements in Human Nutrition", "style": "italic",
+      "post": "WHO Technical Report Series 935. Geneva, Switzerland: World Health Organization, 2007.",
+      "url": "https://iris.who.int/handle/10665/43411",
+      "licence": "© World Health Organization; copy kept so the checked values can be traced",
+      "usedFor": "Essential amino acid targets (adults)",
+      "archive": [{"file": "who-2007-trs-935.pdf", "fetch": "https://iris.who.int/bitstream/handle/10665/43411/WHO_TRS_935_eng.pdf"}]
+    },
+    {
+      "id": "eu-1169",
+      "pre": "European Parliament and Council of the European Union,",
+      "title": "Regulation (EU) No 1169/2011 on the provision of food information to consumers", "style": "quoted",
+      "post": "<i>Official Journal of the European Union</i>, vol. L 304, pp. 18–63, Nov. 2011, Annex XIII Part B.",
+      "url": "https://eur-lex.europa.eu/eli/reg/2011/1169/oj",
+      "licence": "© European Union; re-use authorised with acknowledgement of the source",
+      "usedFor": "Food-label categories and reference intakes in the “At a glance” chart",
+      "archive": [{"file": "eu-2011-regulation-1169.pdf", "fetch": "https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32011R1169"}]
+    },
+    {
+      "id": "highs",
+      "pre": "Q. Huangfu and J. A. J. Hall,",
+      "title": "Parallelizing the dual revised simplex method", "style": "quoted",
+      "post": "<i>Mathematical Programming Computation</i>, vol. 10, no. 1, pp. 119–142, 2018, doi: 10.1007/s12532-017-0130-5. Software: HiGHS, https://highs.dev/.",
+      "url": "https://doi.org/10.1007/s12532-017-0130-5",
+      "licence": "Open access, CC BY 4.0",
+      "usedFor": "The optimisation solver",
+      "archive": [{"file": "huangfu-hall-2018-highs.pdf", "fetch": "https://link.springer.com/content/pdf/10.1007/s12532-017-0130-5.pdf"}]
+    },
+    {
+      "id": "nhs-vitd",
+      "pre": "NHS,",
+      "title": "Vitamin D", "style": "quoted",
+      "post": "Vitamins and minerals.",
+      "url": "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/",
+      "licence": "© Crown copyright, Open Government Licence v3.0",
+      "usedFor": "Vitamin D supplement advice",
+      "archive": [{"file": "nhs-vitamin-d.pdf", "fetch": "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/", "render": true}]
+    },
+    {
+      "id": "nhs-vegan",
+      "pre": "NHS,",
+      "title": "The vegan diet", "style": "quoted",
+      "post": "Eat well.",
+      "url": "https://www.nhs.uk/live-well/eat-well/how-to-eat-a-balanced-diet/the-vegan-diet/",
+      "licence": "© Crown copyright, Open Government Licence v3.0",
+      "usedFor": "Vitamin B12 advice",
+      "archive": [{"file": "nhs-vegan-diet.pdf", "fetch": "https://www.nhs.uk/live-well/eat-well/how-to-eat-a-balanced-diet/the-vegan-diet/", "render": true}]
+    },
+    {
+      "id": "nhs-iodine",
+      "pre": "NHS,",
+      "title": "Iodine", "style": "quoted",
+      "post": "Vitamins and minerals.",
+      "url": "https://www.nhs.uk/conditions/vitamins-and-minerals/iodine/",
+      "licence": "© Crown copyright, Open Government Licence v3.0",
+      "usedFor": "Iodine advice",
+      "archive": [{"file": "nhs-iodine.pdf", "fetch": "https://www.nhs.uk/conditions/vitamins-and-minerals/iodine/", "render": true}]
+    }
+  ]
+}
