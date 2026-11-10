@@ -10,8 +10,7 @@ or a document is revised. The official links remain the primary references.
 - Web pages are kept as both the raw HTML and a PDF print of the page.
 - Missing copies are fetched by the **Archive sources** workflow (Actions tab → Archive sources → Run workflow).
   The USDA food data is archived as a release asset rather than here, because it is large.
-- Not yet archived: WHO Technical Report Series 935 (the WHO site blocks automated downloads). Upload it as
-  `who-2007-trs-935.pdf`.
+- The WHO report blocks automated downloads, so `who-2007-trs-935.pdf` was uploaded by the site owner.
 
 Copies of documents under copyright (National Academies, WHO) are kept only so the values used here can be traced;
 all rights remain with the publishers.

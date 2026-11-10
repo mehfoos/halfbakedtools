@@ -83,7 +83,7 @@ const standards = [uk, us, eu];
     <li><strong>US food data, UK shops.</strong> Fortification differs between countries (for example US milk usually has added vitamin D; UK milk doesn't), and brands differ. Fortified products should be checked against their labels.</li>
     <li><strong>Iodine and some other nutrients</strong> are missing from most USDA records, so they are listed as "not checked" rather than guessed. Where a food has no value for a nutrient, it counts as zero, which can understate the total.</li>
     <li><strong>Absorption isn't modelled yet.</strong> Iron from plants is absorbed less well than iron from meat, ALA omega-3 converts poorly to EPA and DHA, and phytates reduce zinc absorption. These are planned refinements.</li>
-    <li><strong>Amino acid targets</strong> use WHO adult requirements per kg of body weight <Fragment set:html={cite("who-2007")} /> and are applied to adults only. They haven't yet been checked against the original WHO report.</li>
+    <li><strong>Amino acid targets</strong> use the WHO safe intake per kg of body weight for adults (the average requirement plus 24%) <Fragment set:html={cite("who-2007")} />, and are applied to adults only. WHO found too little evidence to set separate values for older people.</li>
     <li><strong>Reference values are for healthy populations.</strong> If you have a medical condition, are pregnant, or are planning food for a child, check with a doctor, midwife or registered dietitian.</li>
   </ul>
 

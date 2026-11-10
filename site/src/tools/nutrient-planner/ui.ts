@@ -127,7 +127,7 @@ export async function start(root: HTMLElement) {
       return `<input type="number" step="any" min="0" data-key="${t.key}" data-bound="${bound}" aria-label="${esc(t.label)} ${bound === "min" ? "minimum" : "maximum"}" value="${o ?? ""}" placeholder="${off !== undefined ? fmt(off) : "none"}" />`;
     };
     const range = (t?: ResolvedTarget) => t ? [t.min !== undefined ? `≥ ${fmt(t.min)}` : "", t.max !== undefined ? `≤ ${fmt(t.max)}` : ""].filter(Boolean).join(", ") || "–" : "–";
-    const notes: Record<string, string> = { amino: isAdult(s.age) ? `Per-kg amino acid needs (WHO 2007 ${cite("who-2007")}) worked out for ${weight()} kg.` : "Amino acid targets are given for adults only." };
+    const notes: Record<string, string> = { amino: isAdult(s.age) ? `Amino acid safe intakes per kg of body weight (WHO 2007 ${cite("who-2007")}) worked out for ${weight()} kg.` : "Amino acid targets are given for adults only." };
     $(root, "#targetGroups").innerHTML = GROUPS.map((g) => {
       const ts = current.filter((t) => g.keys.includes(t.key));
       if (!ts.length) return g.id === "amino" ? `<p class="small muted sans">${notes.amino}</p>` : "";

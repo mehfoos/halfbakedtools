@@ -4,7 +4,6 @@
  "longName": "US Dietary Reference Intakes (National Academies)",
  "status": "available",
  "verified": {
-  "pending": "the amino acid targets (WHO 2007), which apply to adults.",
   "checked": true,
   "date": "2026-11-10",
   "against": "National Academies DRI summary table PDFs (RDA and AI for vitamins, elements, water and macronutrients; upper limits; chronic disease risk reduction; macronutrient ranges) and Dietary Guidelines for Americans 2020-2025, Appendix 2"
@@ -1782,65 +1781,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -2255,65 +2263,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -2728,65 +2745,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -3351,65 +3377,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -4454,65 +4489,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -4927,65 +4971,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -5400,65 +5453,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -6023,65 +6085,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -6791,65 +6862,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -7264,65 +7344,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -8032,65 +8121,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
@@ -8505,65 +8603,74 @@
     },
     "histidine": {
      "min": {
-      "value": 10,
+      "value": 12.4,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 10 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "isoleucine": {
      "min": {
-      "value": 20,
+      "value": 24.8,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 20 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "leucine": {
      "min": {
-      "value": 39,
+      "value": 48.36,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 39 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "lysine": {
      "min": {
-      "value": 30,
+      "value": 37.2,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 30 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "metCys": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "pheTyr": {
      "min": {
-      "value": 25,
+      "value": 31.0,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 25 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "threonine": {
      "min": {
-      "value": 15,
+      "value": 18.6,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 15 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "tryptophan": {
      "min": {
-      "value": 4,
+      "value": 4.96,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 4 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     },
     "valine": {
      "min": {
-      "value": 26,
+      "value": 32.24,
       "basis": "perKg",
-      "source": "who-2007"
+      "source": "who-2007",
+      "note": "Safe level: average requirement 26 mg/kg (Table 23) plus 24% (section 8.4)"
      }
     }
    }
