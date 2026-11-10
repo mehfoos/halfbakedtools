@@ -12,7 +12,8 @@
   {
    "id": "phe-2016",
    "title": "Public Health England (2016) Government Dietary Recommendations, Tables 1-6",
-   "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf"
+   "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf",
+   "archive": "https://github.com/mehfoos/halfbakedtools/blob/main/docs/sources/phe-2016-government-dietary-recommendations.pdf"
   },
   {
    "id": "nasem-dri-ul",

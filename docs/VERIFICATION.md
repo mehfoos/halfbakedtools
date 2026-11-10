@@ -2,6 +2,7 @@
 
 Each standard's numbers live in `data/pipeline/build_targets.py`, with page references beside the tables.
 This file records when they were checked against the original documents and what changed.
+The exact copies of the documents used for checking are kept in [`docs/sources/`](sources/), with checksums.
 
 | Standard | Status | Checked against | Date |
 |---|---|---|---|
