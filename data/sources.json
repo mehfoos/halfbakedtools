@@ -111,18 +111,13 @@
       "pre": "WHO/FAO/UNU Expert Consultation,",
       "title": "Protein and Amino Acid Requirements in Human Nutrition",
       "style": "italic",
-      "post": "WHO Technical Report Series 935. Geneva, Switzerland: World Health Organization, 2007.",
+      "post": "WHO Technical Report Series 935. Geneva, Switzerland: World Health Organization, 2007, Table 23 and Section 8.4, p. 150.",
       "url": "https://iris.who.int/handle/10665/43411",
       "licence": "© World Health Organization; copy kept so the checked values can be traced",
       "usedFor": "Essential amino acid targets (adults)",
       "archive": [
         {
-          "file": "who-2007-trs-935.pdf",
-          "fetch": [
-            "https://iris.who.int/bitstream/handle/10665/43411/WHO_TRS_935_eng.pdf?sequence=1&isAllowed=y",
-            "https://apps.who.int/iris/bitstream/handle/10665/43411/WHO_TRS_935_eng.pdf",
-            "https://iris.who.int/bitstream/handle/10665/43411/WHO_TRS_935_eng.pdf"
-          ]
+          "file": "who-2007-trs-935.pdf"
         }
       ]
     },

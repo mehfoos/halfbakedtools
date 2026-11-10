@@ -150,6 +150,11 @@ test("every reference's archived copy exists and every cited source is registere
       if (b) assert.ok(ids.has(b.source), `${std} bound cites unregistered ${b.source}`);
   }
   const missing = reg.sources.flatMap((s: { archive: { file?: string }[] }) => s.archive.filter((a) => a.file && !manifest[a.file]).map((a) => a.file));
-  // Known gap: the WHO report can't be fetched automatically; it is listed as "not yet available" until uploaded.
-  assert.deepEqual(missing, ["who-2007-trs-935.pdf"]);
+  assert.deepEqual(missing, []);
+});
+
+test("amino acid targets are the WHO safe level (average requirement + 24%)", () => {
+  const t = pickProfile(uk, "female", 40, "none").profile.targets;
+  assert.equal(t.lysine.min!.value, 37.2);
+  assert.equal(t.leucine.min!.value, 48.36);
 });

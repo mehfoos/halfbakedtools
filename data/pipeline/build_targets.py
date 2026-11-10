@@ -34,8 +34,12 @@ def ref(rid: str, role: str | None = None) -> dict:
 
 # ---------------------------------------------------------------------------
 # Shared: WHO/FAO/UNU (2007) adult indispensable amino acid requirements,
-# mg per kg body weight per day. WHO Technical Report Series 935, Table 23.
-# Applied to adults (19+) in every standard; children are not assessed.
+# mg per kg body weight per day. WHO Technical Report Series 935, Table 23 (page 150):
+# these are AVERAGE requirements. Section 8.4 (same page): safe levels of intake are
+# 24% higher (coefficient of variation 12%, as for protein). The safe level is used as
+# the target, to match the other nutrients' targets, which cover nearly everyone.
+# Applied to adults (19+) in every standard; children are not assessed. Section 8.5:
+# no separate values for older people, so the adult values apply at every adult age.
 # ---------------------------------------------------------------------------
 WHO_AA_SOURCE = None  # filled from the reference register below
 WHO_AA = {"histidine": 10, "isoleucine": 20, "leucine": 39, "lysine": 30, "metCys": 15,
@@ -49,9 +53,13 @@ def put(t: dict, key: str, bound: str, value, basis: str, source: str, note: str
     t.setdefault(key, {})[bound] = b
 
 
+WHO_SAFE_FACTOR = 1.24
+
+
 def add_aa(t: dict) -> None:
     for k, v in WHO_AA.items():
-        put(t, k, "min", v, "perKg", "who-2007")
+        put(t, k, "min", round(v * WHO_SAFE_FACTOR, 2), "perKg", "who-2007",
+            f"Safe level: average requirement {v} mg/kg (Table 23) plus 24% (section 8.4)")
 
 
 # ---------------------------------------------------------------------------
@@ -263,7 +271,7 @@ def build_uk() -> dict:
     return {
         "id": "uk", "name": "UK", "longName": "UK government dietary recommendations",
         "status": "available",
-        "verified": {"pending": "the amino acid targets (WHO 2007), which apply to adults.", "checked": True, "date": "2026-11-09", "against": "Public Health England (2016) Government Dietary Recommendations PDF, Tables 1-6 (pages 6-11)"},
+        "verified": {"checked": True, "date": "2026-11-09", "against": "Public Health England (2016) Government Dietary Recommendations PDF, Tables 1-6 (pages 6-11)"},
         "sources": [ref("phe-2016"), ref("nasem-dri", "Safety upper limits (the UK has no complete set)"), ref("who-2007", "Amino acids")],
         "notes": [
             "Vitamin A is expressed in retinol equivalents by PHE and in retinol activity equivalents by USDA food data; plant sources of vitamin A may be slightly overestimated against the UK target.",
@@ -311,7 +319,7 @@ def build_us() -> dict:
     return {
         "id": "us", "name": "US", "longName": "US Dietary Reference Intakes (National Academies)",
         "status": "available",
-        "verified": {"pending": "the amino acid targets (WHO 2007), which apply to adults.", "checked": True, "date": "2026-11-10", "against": "National Academies DRI summary table PDFs (RDA and AI for vitamins, elements, water and macronutrients; upper limits; chronic disease risk reduction; macronutrient ranges) and Dietary Guidelines for Americans 2020-2025, Appendix 2"},
+        "verified": {"checked": True, "date": "2026-11-10", "against": "National Academies DRI summary table PDFs (RDA and AI for vitamins, elements, water and macronutrients; upper limits; chronic disease risk reduction; macronutrient ranges) and Dietary Guidelines for Americans 2020-2025, Appendix 2"},
         "sources": [ref("nasem-dri"), ref("dga-2020", "Calorie estimates"), ref("who-2007", "Amino acids")],
         "notes": [
             "Upper limits for magnesium, niacin, folate and vitamin E apply to supplements and fortificants only, so they are not applied to food.",
@@ -452,7 +460,7 @@ def build_eu() -> dict:
         })
     return {
         "id": "eu", "name": "EU", "longName": "EU Dietary Reference Values (EFSA)", "status": "available",
-        "verified": {"pending": "the amino acid targets (WHO 2007), which apply to adults.", "checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 2, 3, 5, 7, 9, 11 and 17"},
+        "verified": {"checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 2, 3, 5, 7, 9, 11 and 17"},
         "sources": [ref("efsa-2017"), ref("nasem-dri", "Safety upper limits (EFSA tables give no complete set)"), ref("who-2007", "Amino acids")],
         "notes": [
             "Values are population reference intakes (PRI) where EFSA set one, otherwise adequate intakes (AI), from the EFSA 2017 summary report (Tables 2, 3, 5, 7, 9 and 11).",

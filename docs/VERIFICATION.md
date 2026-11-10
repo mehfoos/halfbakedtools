@@ -12,9 +12,14 @@ The exact copies of the documents used for checking are kept in [`docs/sources/`
 | US calories | Checked | *Dietary Guidelines for Americans, 2020–2025*, Appendix 2, Tables A2-1 to A2-3 | 10 Nov 2026 |
 | Upper limits (all standards) | Checked | National Academies DRI summary tables, tolerable upper intake levels (vitamins and elements) | 10 Nov 2026 |
 | Food-label reference intakes | Checked | Regulation (EU) No 1169/2011, Annex XIII Part B | 10 Nov 2026 |
-| Amino acids (all standards) | **Not yet checked** | WHO/FAO/UNU (2007) Technical Report Series 935, Table 23. The report can't be fetched automatically; a copy needs uploading. | – |
+| Amino acids (all standards) | Checked | WHO/FAO/UNU (2007) Technical Report Series 935, Table 23 and section 8.4 (page 150) | 10 Nov 2026 |
 
 ## Changes made on 10 Nov 2026
+
+- **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of
+  healthy adults need more than. Section 8.4 says safe levels of intake are 24% higher. The targets now use the safe
+  level (for example lysine 37.2 mg/kg instead of 30), consistent with every other nutrient's target, which is set to
+  cover nearly everyone. Section 8.5 gives no separate values for older people, so the adult values apply at all adult ages.
 
 - **US vitamins, elements, macronutrients, upper limits, sodium and fat range:** every value matched the National Academies tables. No changes.
 - **US calories:** previously approximate bands taken from a secondary source (MSD Manual). Now the exact *Dietary Guidelines* sedentary estimate for the person's age and sex (Table A2-2; Table A2-1 for age 1), with a ±10% default band. The pregnancy and breastfeeding notes now give the guidelines' extra calories (Table A2-3).
