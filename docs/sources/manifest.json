@@ -12,6 +12,13 @@
     "note": "uploaded by the site owner",
     "sha256": "0231c27d944b9d9ec209d9b6c8d42b9a969df6054f0e30ff7e945bb77d532c48"
   },
+  "eu-2011-regulation-1169.pdf": {
+    "source": "eu-1169",
+    "url": "https://www.legislation.gov.uk/eur/2011/1169/pdfs/eur_20111169_adopted_en.pdf",
+    "finalUrl": "https://www.legislation.gov.uk/eur/2011/1169/pdfs/eur_20111169_adopted_en.pdf",
+    "retrieved": "2026-11-10",
+    "sha256": "a291b1e5777d47033085b74dac7b1f5fc9903b1875fd079a99678858f25269d5"
+  },
   "huangfu-hall-2018-highs.pdf": {
     "source": "highs",
     "url": "https://link.springer.com/content/pdf/10.1007/s12532-017-0130-5.pdf",
@@ -19,159 +26,47 @@
     "retrieved": "2026-11-10",
     "sha256": "6d1d210df96363aaaffaca752aeb6b395465f4f27c426f89f5891ddeccb28985"
   },
-  "nasem-2019-dri-appendix-j.html": {
+  "nasem-dri-cdrr.pdf": {
     "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/",
+    "url": "https://www.nationalacademies.org/cdn/materials/9fb9fad2-46ad-4b55-9584-fbc62a66d429",
+    "finalUrl": "https://www.nationalacademies.org/cdn/materials/9fb9fad2-46ad-4b55-9584-fbc62a66d429",
     "retrieved": "2026-11-10",
-    "sha256": "8ddd9df14425175da06e0722fdfbc67ce51c43e3002a7ae0e1e6dc66f5ac12d2"
+    "sha256": "8b2725f6adf9030aad92034f477bec5161c16cb1d8a065dc0094b2bf5a1b5c0d"
   },
-  "nasem-2019-dri-appendix-j.pdf": {
+  "nasem-dri-macronutrients-summary.pdf": {
     "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/",
+    "url": "https://www.nationalacademies.org/cdn/materials/9fb9fae1-63a0-4048-88ad-3f972639149a",
+    "finalUrl": "https://www.nationalacademies.org/cdn/materials/9fb9fae1-63a0-4048-88ad-3f972639149a",
     "retrieved": "2026-11-10",
-    "sha256": "5894e02e2eb3ddc7ac114fb74a3a31d09e9caa0c721c62855b775c63a4b4c7a1"
+    "sha256": "64d11aa435ddcb43dcc5e27f11fc42f781c3c51337c9189f006c7364a8e5a989"
   },
-  "nasem-2019-dri-table-j1.html": {
+  "nasem-dri-rda-ai-vitamins-elements.pdf": {
     "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab1/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab1/",
+    "url": "https://www.nationalacademies.org/cdn/materials/9fb9fae8-82dc-4e60-8521-30dd740d1b5e",
+    "finalUrl": "https://www.nationalacademies.org/cdn/materials/9fb9fae8-82dc-4e60-8521-30dd740d1b5e",
     "retrieved": "2026-11-10",
-    "sha256": "32045d17f807a1c1c650e6aedb66ce7e8455cc86a12123abb92f8b66d7e83af3"
+    "sha256": "5e10fff417499a7ef5db69fcd244dc11c07118d9322e17f8bc0303fa0dc556ac"
   },
-  "nasem-2019-dri-table-j1.pdf": {
+  "nasem-dri-rda-ai-water-macronutrients.pdf": {
     "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab1/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab1/",
+    "url": "https://www.nationalacademies.org/cdn/materials/9fb9fae6-337c-4b7c-9821-2c81d1f65ad0",
+    "finalUrl": "https://www.nationalacademies.org/cdn/materials/9fb9fae6-337c-4b7c-9821-2c81d1f65ad0",
     "retrieved": "2026-11-10",
-    "sha256": "2c5c122d8700f5569aab4402eec8b3abb3233d74a3d2d4f7239744075a1e8e54"
+    "sha256": "f6b689361a525055229c156e79db74b06adb7500c652501b55682a07805b6e50"
   },
-  "nasem-2019-dri-table-j10.html": {
+  "nasem-dri-ul-vitamins-elements.pdf": {
     "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab10/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab10/",
+    "url": "https://www.nationalacademies.org/cdn/materials/9fb9faeb-1faf-41d1-b2f7-381c9b8bdbef",
+    "finalUrl": "https://www.nationalacademies.org/cdn/materials/9fb9faeb-1faf-41d1-b2f7-381c9b8bdbef",
     "retrieved": "2026-11-10",
-    "sha256": "31ff632305be2e11c0c1680398a81faeb6187c8bf77a6b016689a27abb12adbc"
+    "sha256": "858ef674224dc2e227c23933a026cdcc17d2cef6e7576c645500c8a879b08f7f"
   },
-  "nasem-2019-dri-table-j10.pdf": {
+  "nasem-dri-values-summary.pdf": {
     "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab10/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab10/",
+    "url": "https://www.nationalacademies.org/cdn/materials/9fb9fad5-4dc6-4b97-bd02-955b95d05eda",
+    "finalUrl": "https://www.nationalacademies.org/cdn/materials/9fb9fad5-4dc6-4b97-bd02-955b95d05eda",
     "retrieved": "2026-11-10",
-    "sha256": "070703199c7926f0fafda0f84c6b032cbba75eb86edff9436811e7a048a4e47a"
-  },
-  "nasem-2019-dri-table-j2.html": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab2/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab2/",
-    "retrieved": "2026-11-10",
-    "sha256": "e9407dc00ae4b58edd232edce53d47c62048ebe6c38e6e25bac8a717b0619ea9"
-  },
-  "nasem-2019-dri-table-j2.pdf": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab2/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab2/",
-    "retrieved": "2026-11-10",
-    "sha256": "b18bec324cc344d4c6af3299fea177badb4d52c2412ef6606ad8f8f9bfdd3ed4"
-  },
-  "nasem-2019-dri-table-j3.html": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab3/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab3/",
-    "retrieved": "2026-11-10",
-    "sha256": "800f682ec0cfb05926d28cd6676cb8da6adffd9caeef246e5b3d0460c8f8c8fc"
-  },
-  "nasem-2019-dri-table-j3.pdf": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab3/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab3/",
-    "retrieved": "2026-11-10",
-    "sha256": "d51fbf905cbf4c8559e29b898a00c46d2ad74cf322bfbb302a1dd75f021ffb30"
-  },
-  "nasem-2019-dri-table-j4.html": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab4/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab4/",
-    "retrieved": "2026-11-10",
-    "sha256": "98fa7c0e1b1d0912740b2989524dadafde62e6cd3f1898b47ae66a857a551be0"
-  },
-  "nasem-2019-dri-table-j4.pdf": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab4/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab4/",
-    "retrieved": "2026-11-10",
-    "sha256": "56317a8951f4492f9b8b1b2593ca9818d3203a18b3a5cce4e7ad676d10dbe3e2"
-  },
-  "nasem-2019-dri-table-j5.html": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab5/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab5/",
-    "retrieved": "2026-11-10",
-    "sha256": "c61c58a18cbcfb22068cd0d483b0c185c7340af8c9a42792cdb6d0093d930539"
-  },
-  "nasem-2019-dri-table-j5.pdf": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab5/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab5/",
-    "retrieved": "2026-11-10",
-    "sha256": "29cd0ea18078e6185b8499c7b64a1542c35d8f7277c416c80ad801ddd3ca25fe"
-  },
-  "nasem-2019-dri-table-j6.html": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab6/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab6/",
-    "retrieved": "2026-11-10",
-    "sha256": "5543a2897432c1f28dbf5f8ee7fbab60894a1db32dc9b98f2d5a69df9fa641ec"
-  },
-  "nasem-2019-dri-table-j6.pdf": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab6/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab6/",
-    "retrieved": "2026-11-10",
-    "sha256": "f3e632bc896a44c826031637be278e14b54855f626175d4ae06ba79f288eeaac"
-  },
-  "nasem-2019-dri-table-j7.html": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab7/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab7/",
-    "retrieved": "2026-11-10",
-    "sha256": "6568d1b3d747fe532e39296a9cff707901d0171ae040382c1631c6b4d4f7770d"
-  },
-  "nasem-2019-dri-table-j7.pdf": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab7/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab7/",
-    "retrieved": "2026-11-10",
-    "sha256": "091477198274230f694c5d34cc4480a1b2b3bff544344796ca732395cdd7dd9d"
-  },
-  "nasem-2019-dri-table-j8.html": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab8/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab8/",
-    "retrieved": "2026-11-10",
-    "sha256": "459fd14bab36b869f083a35310b1d9cc1a2008c5fa2ce26dc5116bf3d2e7188a"
-  },
-  "nasem-2019-dri-table-j8.pdf": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab8/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab8/",
-    "retrieved": "2026-11-10",
-    "sha256": "8fe19c91512a295bedd94e0b1183e551332852b0d9f5e36cfeaf39d7b5a48837"
-  },
-  "nasem-2019-dri-table-j9.html": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab9/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab9/",
-    "retrieved": "2026-11-10",
-    "sha256": "da80874a1f1512da1e1e301a72d26e4f41585d9179f2feccbd30de7aca65ccfe"
-  },
-  "nasem-2019-dri-table-j9.pdf": {
-    "source": "nasem-dri",
-    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab9/",
-    "finalUrl": "https://www.ncbi.nlm.nih.gov/books/NBK545442/table/appJ_tab9/",
-    "retrieved": "2026-11-10",
-    "sha256": "bab2bd7cb29be251cdb0991921965ea59f22015b5470852b6a23aa13c2bbecbe"
+    "sha256": "303e37625ff2a7531e6f63d3f3017f133458855c957e15564a2a38a098052db2"
   },
   "nhs-iodine.html": {
     "source": "nhs-iodine",
