@@ -48,6 +48,26 @@ def render(url: str, out: Path) -> None:
         raise RuntimeError("rendered PDF missing or empty")
 
 
+BLOCK_MARKERS = (b"Checking your browser", b"reCAPTCHA", b"captcha", b"Request Rejected", b"challenge-platform")
+
+
+def fetch_one(src: dict, a: dict, url: str, out: Path, manifest: dict, today: str) -> None:
+    if a.get("render"):
+        html = out.with_suffix(".html")
+        final = download(url, html)
+        if any(m in html.read_bytes()[:200000] for m in BLOCK_MARKERS):
+            html.unlink()
+            raise RuntimeError("site returned a bot check instead of the page")
+        render(url, out)
+        manifest[html.name] = {"source": src["id"], "url": url, "finalUrl": final, "retrieved": today}
+    else:
+        final = download(url, out)
+        if a["file"].endswith(".pdf") and out.read_bytes()[:5] != b"%PDF-":
+            out.unlink()
+            raise RuntimeError("response was not a PDF")
+    manifest[out.name] = {"source": src["id"], "url": url, "finalUrl": final, "retrieved": today}
+
+
 def main() -> int:
     force = "--force" in sys.argv
     DEST.mkdir(parents=True, exist_ok=True)
@@ -61,22 +81,17 @@ def main() -> int:
             out = DEST / a["file"]
             if out.exists() and not force:
                 continue
-            try:
-                if a.get("render"):
-                    html = out.with_suffix(".html")
-                    final = download(a["fetch"], html)
-                    render(a["fetch"], out)
-                    manifest[html.name] = {"source": src["id"], "url": a["fetch"], "finalUrl": final, "retrieved": today}
-                else:
-                    final = download(a["fetch"], out)
-                    head = out.read_bytes()[:5]
-                    if a["file"].endswith(".pdf") and head != b"%PDF-":
-                        out.unlink()
-                        raise RuntimeError("response was not a PDF")
-                manifest[out.name] = {"source": src["id"], "url": a["fetch"], "finalUrl": final, "retrieved": today}
-                print(f"ok      {a['file']}")
-            except Exception as e:  # keep going; report at the end
-                print(f"FAILED  {a['file']}: {e}")
+            urls = a["fetch"] if isinstance(a["fetch"], list) else [a["fetch"]]
+            errors = []
+            for url in urls:
+                try:
+                    fetch_one(src, a, url, out, manifest, today)
+                    print(f"ok      {a['file']}  <- {url}")
+                    break
+                except Exception as e:
+                    errors.append(f"{url}: {e}")
+            else:
+                print(f"FAILED  {a['file']}: " + " | ".join(errors))
                 if not a.get("optional"):
                     failed.append(a["file"])
     for f in sorted(DEST.iterdir()):
