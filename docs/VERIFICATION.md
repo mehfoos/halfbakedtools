@@ -8,9 +8,18 @@ The exact copies of the documents used for checking are kept in [`docs/sources/`
 |---|---|---|---|
 | UK | Checked | Public Health England (2016) *Government Dietary Recommendations*, Tables 1–6 (pages 6–11) | 9 Nov 2026 |
 | EU | Checked | EFSA (2017) *Dietary reference values for nutrients: Summary report*, doi:10.2903/sp.efsa.2017.e15121, Tables 2, 3, 5, 7, 9, 11, 17 | 9 Nov 2026 |
-| US | **Not yet checked** | Values read from the NCBI Bookshelf copy of the National Academies DRI summary tables (NBK545442). Needs a line-by-line check against the original tables. | – |
-| Upper limits (all standards) | **Not yet checked** | US Tolerable Upper Intake Levels from the same NCBI copy | – |
-| Amino acids (all standards) | **Not yet checked** | WHO/FAO/UNU (2007) Technical Report Series 935, Table 23, via secondary sources | – |
+| US | Checked | National Academies DRI summary table PDFs: RDA and AI (vitamins, elements, water and macronutrients), chronic disease risk reduction intakes, acceptable macronutrient distribution ranges | 10 Nov 2026 |
+| US calories | Checked | *Dietary Guidelines for Americans, 2020–2025*, Appendix 2, Tables A2-1 to A2-3 | 10 Nov 2026 |
+| Upper limits (all standards) | Checked | National Academies DRI summary tables, tolerable upper intake levels (vitamins and elements) | 10 Nov 2026 |
+| Food-label reference intakes | Checked | Regulation (EU) No 1169/2011, Annex XIII Part B | 10 Nov 2026 |
+| Amino acids (all standards) | **Not yet checked** | WHO/FAO/UNU (2007) Technical Report Series 935, Table 23. The report can't be fetched automatically; a copy needs uploading. | – |
+
+## Changes made on 10 Nov 2026
+
+- **US vitamins, elements, macronutrients, upper limits, sodium and fat range:** every value matched the National Academies tables. No changes.
+- **US calories:** previously approximate bands taken from a secondary source (MSD Manual). Now the exact *Dietary Guidelines* sedentary estimate for the person's age and sex (Table A2-2; Table A2-1 for age 1), with a ±10% default band. The pregnancy and breastfeeding notes now give the guidelines' extra calories (Table A2-3).
+- **Food-label reference intakes** (energy 2000 kcal, fat 70 g, saturates 20 g, carbohydrate 260 g, sugars 90 g, protein 50 g, salt 6 g): matched.
+- Note: the National Academies table PDFs are marked "prepublication copy: uncorrected proofs" on the publisher's own site.
 
 ## Corrections made on 9 Nov 2026
 

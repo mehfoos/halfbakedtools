@@ -3,15 +3,16 @@ import type { TargetSpec } from "./solver.ts";
 
 export type Profile = {
   id: string; stage: string; group: string; label: string;
-  energy: { kcal: number; low: number; high: number; note: string };
+  energy: Energy & { note: string; byAge?: Record<string, Energy>; bySex?: Record<string, Record<string, Energy>> };
   defaultWeightKg: number;
   targets: Record<string, TargetSpec>;
 };
+export type Energy = { kcal: number; low: number; high: number };
 export type Standard = {
   id: string; name: string; longName: string; status: string;
-  sources: { id: string; title: string; url: string; archive?: string }[];
+  sources: { id: string; title: string; url: string; role?: string }[];
   notes: string[]; profiles: Profile[];
-  verified?: { checked: boolean; date?: string; against: string };
+  verified?: { checked: boolean; date?: string; against: string; pending?: string };
 };
 
 export type Sex = "female" | "male";
@@ -64,4 +65,11 @@ export function refWeight(sex: Sex, age: number, life: LifeStage = "none") {
   if (life === "pregnancy" && age >= 18) return 70.5;
   const row = REF.find(([lo, hi]) => age >= lo && age < hi + 1) ?? REF[REF.length - 1];
   return sex === "male" ? row[2] : row[3];
+}
+
+/** Calorie estimate for a person: the exact value for their age (and sex) where the source gives one. */
+export function energyFor(p: Profile, age: number, sex: Sex): Energy & { note: string } {
+  const a = String(Math.floor(age));
+  const e = p.energy.bySex?.[sex]?.[a] ?? p.energy.byAge?.[a];
+  return e ? { kcal: e.kcal, low: e.low, high: e.high, note: p.energy.note } : p.energy;
 }

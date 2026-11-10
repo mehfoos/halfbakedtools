@@ -4,26 +4,28 @@
  "longName": "EU Dietary Reference Values (EFSA)",
  "status": "available",
  "verified": {
+  "pending": "the amino acid targets (WHO 2007), which apply to adults.",
   "checked": true,
   "date": "2026-11-09",
   "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 2, 3, 5, 7, 9, 11 and 17"
  },
  "sources": [
   {
-   "id": "efsa",
-   "title": "EFSA (2017) Dietary Reference Values for nutrients: Summary report. EFSA supporting publication 2017:e15121",
-   "url": "https://doi.org/10.2903/sp.efsa.2017.e15121",
-   "archive": "https://github.com/mehfoos/halfbakedtools/blob/main/docs/sources/efsa-2017-drv-summary-report.pdf"
+   "id": "efsa-2017",
+   "title": "Dietary reference values for nutrients: Summary report",
+   "url": "https://doi.org/10.2903/sp.efsa.2017.e15121"
   },
   {
-   "id": "nasem-dri-ul",
-   "title": "Safety upper limits borrowed from US National Academies Tolerable Upper Intake Levels",
-   "url": "https://www.ncbi.nlm.nih.gov/books/NBK545442/"
+   "id": "nasem-dri",
+   "title": "Dietary Reference Intakes summary tables",
+   "url": "https://www.nationalacademies.org/projects/HMD-FNB-18-P-120/resources",
+   "role": "Safety upper limits (EFSA tables give no complete set)"
   },
   {
    "id": "who-2007",
-   "title": "WHO/FAO/UNU (2007) Protein and amino acid requirements in human nutrition, WHO Technical Report Series 935",
-   "url": "https://iris.who.int/handle/10665/43411"
+   "title": "Protein and Amino Acid Requirements in Human Nutrition",
+   "url": "https://iris.who.int/handle/10665/43411",
+   "role": "Amino acids"
   }
  ],
  "notes": [
@@ -55,19 +57,19 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 63,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -75,7 +77,7 @@
      "min": {
       "value": 6,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -101,19 +103,19 @@
      "min": {
       "value": 12,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 20,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -121,19 +123,19 @@
      "min": {
       "value": 0.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 0.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 30,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -141,26 +143,26 @@
      "min": {
       "value": 120,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 1.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 140,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -168,19 +170,19 @@
      "min": {
       "value": 4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 450,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -188,12 +190,12 @@
      "min": {
       "value": 90,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -201,12 +203,12 @@
      "min": {
       "value": 0.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -214,12 +216,12 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -227,19 +229,19 @@
      "min": {
       "value": 800,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 90,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -247,12 +249,12 @@
      "min": {
       "value": 7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -260,12 +262,12 @@
      "min": {
       "value": 4.3,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 7,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -273,7 +275,7 @@
      "min": {
       "value": 0.7,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -297,7 +299,7 @@
      "max": {
       "value": 1.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -305,7 +307,7 @@
      "min": {
       "value": 170,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -331,14 +333,14 @@
      "min": {
       "value": 10,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -346,7 +348,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -354,7 +356,7 @@
      "max": {
       "value": 40,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 35-40% of energy"
      }
     },
@@ -362,7 +364,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -370,7 +372,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -378,7 +380,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -386,7 +388,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake (100 mg of DHA under age 2)"
      }
     },
@@ -394,7 +396,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -421,7 +423,7 @@
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -429,7 +431,7 @@
      "max": {
       "value": 1200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -452,19 +454,19 @@
      "min": {
       "value": 300,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -472,7 +474,7 @@
      "min": {
       "value": 9,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -498,19 +500,19 @@
      "min": {
       "value": 20,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 30,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -518,19 +520,19 @@
      "min": {
       "value": 0.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 0.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -538,26 +540,26 @@
      "min": {
       "value": 140,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 1.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 170,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -565,19 +567,19 @@
      "min": {
       "value": 4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 800,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -585,12 +587,12 @@
      "min": {
       "value": 90,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -598,12 +600,12 @@
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -611,12 +613,12 @@
      "min": {
       "value": 440,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -624,19 +626,19 @@
      "min": {
       "value": 1100,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 20,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -644,12 +646,12 @@
      "min": {
       "value": 7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -657,12 +659,12 @@
      "min": {
       "value": 5.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -670,7 +672,7 @@
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -694,7 +696,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -702,7 +704,7 @@
      "min": {
       "value": 230,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -728,14 +730,14 @@
      "min": {
       "value": 14,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -743,7 +745,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -751,7 +753,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -759,7 +761,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -767,7 +769,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -775,7 +777,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -783,7 +785,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -791,7 +793,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -818,7 +820,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -826,7 +828,7 @@
      "max": {
       "value": 1500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -849,19 +851,19 @@
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -869,7 +871,7 @@
      "min": {
       "value": 9,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -895,19 +897,19 @@
      "min": {
       "value": 30,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 45,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -915,19 +917,19 @@
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -935,26 +937,26 @@
      "min": {
       "value": 200,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 2.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -962,19 +964,19 @@
      "min": {
       "value": 4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 800,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -982,12 +984,12 @@
      "min": {
       "value": 90,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -995,12 +997,12 @@
      "min": {
       "value": 1.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1008,12 +1010,12 @@
      "min": {
       "value": 440,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1021,19 +1023,19 @@
      "min": {
       "value": 1800,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 35,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1041,12 +1043,12 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1054,12 +1056,12 @@
      "min": {
       "value": 7.4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1067,7 +1069,7 @@
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -1091,7 +1093,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1099,7 +1101,7 @@
      "min": {
       "value": 230,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -1125,14 +1127,14 @@
      "min": {
       "value": 16,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -1140,7 +1142,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -1148,7 +1150,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -1156,7 +1158,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -1164,7 +1166,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -1172,7 +1174,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -1180,7 +1182,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -1188,7 +1190,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -1215,7 +1217,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1223,7 +1225,7 @@
      "max": {
       "value": 1500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -1246,19 +1248,19 @@
      "min": {
       "value": 600,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1266,7 +1268,7 @@
      "min": {
       "value": 13,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -1292,19 +1294,19 @@
      "min": {
       "value": 45,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1312,19 +1314,19 @@
      "min": {
       "value": 1.4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 60,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1332,26 +1334,26 @@
      "min": {
       "value": 270,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 3.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 340,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1359,19 +1361,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 1150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1379,12 +1381,12 @@
      "min": {
       "value": 120,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1392,12 +1394,12 @@
      "min": {
       "value": 2.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 6,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1405,12 +1407,12 @@
      "min": {
       "value": 640,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1418,19 +1420,19 @@
      "min": {
       "value": 2700,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 55,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 280,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1438,12 +1440,12 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1451,12 +1453,12 @@
      "min": {
       "value": 10.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 23,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1464,7 +1466,7 @@
      "min": {
       "value": 1.3,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -1488,7 +1490,7 @@
      "max": {
       "value": 5.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1496,7 +1498,7 @@
      "min": {
       "value": 300,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -1522,14 +1524,14 @@
      "min": {
       "value": 19,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -1537,7 +1539,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -1545,7 +1547,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -1553,7 +1555,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -1561,7 +1563,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -1569,7 +1571,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -1577,7 +1579,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -1585,7 +1587,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -1612,7 +1614,7 @@
      "max": {
       "value": 1700,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1620,7 +1622,7 @@
      "max": {
       "value": 1800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -1643,19 +1645,19 @@
      "min": {
       "value": 750,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1663,7 +1665,7 @@
      "min": {
       "value": 13,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -1689,19 +1691,19 @@
      "min": {
       "value": 65,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 100,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1709,19 +1711,19 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 80,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1729,26 +1731,26 @@
      "min": {
       "value": 330,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 4.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1756,19 +1758,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 1150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1776,12 +1778,12 @@
      "min": {
       "value": 130,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1789,12 +1791,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 9,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1802,12 +1804,12 @@
      "min": {
       "value": 640,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1815,19 +1817,19 @@
      "min": {
       "value": 3500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1835,12 +1837,12 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1848,12 +1850,12 @@
      "min": {
       "value": 14.2,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 34,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1861,7 +1863,7 @@
      "min": {
       "value": 1.3,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -1885,7 +1887,7 @@
      "max": {
       "value": 8.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -1893,7 +1895,7 @@
      "min": {
       "value": 300,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -1919,14 +1921,14 @@
      "min": {
       "value": 21,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -1934,7 +1936,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -1942,7 +1944,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -1950,7 +1952,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -1958,7 +1960,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -1966,7 +1968,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -1974,7 +1976,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -1982,7 +1984,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -2009,7 +2011,7 @@
      "max": {
       "value": 2800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2017,7 +2019,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -2040,19 +2042,19 @@
      "min": {
       "value": 750,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2060,26 +2062,26 @@
      "min": {
       "value": 13,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminK": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 110,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2087,19 +2089,19 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2107,26 +2109,26 @@
      "min": {
       "value": 330,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 4.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2134,19 +2136,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 1000,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2154,12 +2156,12 @@
      "min": {
       "value": 150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2167,12 +2169,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2180,12 +2182,12 @@
      "min": {
       "value": 550,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2193,19 +2195,19 @@
      "min": {
       "value": 3500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2213,12 +2215,12 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2226,12 +2228,12 @@
      "min": {
       "value": 11.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2239,12 +2241,12 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2252,21 +2254,21 @@
      "min": {
       "value": 350,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "fibre": {
      "min": {
       "value": 25,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -2274,7 +2276,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -2282,7 +2284,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -2290,7 +2292,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -2298,7 +2300,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -2306,7 +2308,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -2314,7 +2316,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -2322,7 +2324,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight"
      }
     },
@@ -2330,7 +2332,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2338,7 +2340,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     },
@@ -2424,19 +2426,19 @@
      "min": {
       "value": 750,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2444,26 +2446,26 @@
      "min": {
       "value": 13,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminK": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 110,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2471,19 +2473,19 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2491,26 +2493,26 @@
      "min": {
       "value": 330,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 4.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2518,19 +2520,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 950,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2538,12 +2540,12 @@
      "min": {
       "value": 150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2551,12 +2553,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2564,12 +2566,12 @@
      "min": {
       "value": 550,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2577,19 +2579,19 @@
      "min": {
       "value": 3500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2597,12 +2599,12 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2610,12 +2612,12 @@
      "min": {
       "value": 11.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2623,12 +2625,12 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2636,21 +2638,21 @@
      "min": {
       "value": 350,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "fibre": {
      "min": {
       "value": 25,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -2658,7 +2660,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -2666,7 +2668,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -2674,7 +2676,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -2682,7 +2684,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -2690,7 +2692,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -2698,7 +2700,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -2706,7 +2708,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight"
      }
     },
@@ -2714,7 +2716,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2722,7 +2724,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     },
@@ -2808,19 +2810,19 @@
      "min": {
       "value": 750,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2828,26 +2830,26 @@
      "min": {
       "value": 13,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminK": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 110,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2855,19 +2857,19 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2875,26 +2877,26 @@
      "min": {
       "value": 330,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 4.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2902,19 +2904,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 950,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2922,12 +2924,12 @@
      "min": {
       "value": 150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2935,12 +2937,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2948,12 +2950,12 @@
      "min": {
       "value": 550,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2961,19 +2963,19 @@
      "min": {
       "value": 3500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2981,12 +2983,12 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -2994,12 +2996,12 @@
      "min": {
       "value": 11.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3007,12 +3009,12 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3020,21 +3022,21 @@
      "min": {
       "value": 350,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "fibre": {
      "min": {
       "value": 25,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -3042,7 +3044,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -3050,7 +3052,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -3058,7 +3060,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -3066,7 +3068,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -3074,7 +3076,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -3082,7 +3084,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -3090,7 +3092,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight"
      }
     },
@@ -3098,7 +3100,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3106,7 +3108,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     },
@@ -3192,19 +3194,19 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 63,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3212,7 +3214,7 @@
      "min": {
       "value": 6,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -3238,19 +3240,19 @@
      "min": {
       "value": 12,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 20,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3258,19 +3260,19 @@
      "min": {
       "value": 0.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 0.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 30,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3278,26 +3280,26 @@
      "min": {
       "value": 120,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 1.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 140,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3305,19 +3307,19 @@
      "min": {
       "value": 4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 450,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3325,12 +3327,12 @@
      "min": {
       "value": 90,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3338,12 +3340,12 @@
      "min": {
       "value": 0.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3351,12 +3353,12 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3364,19 +3366,19 @@
      "min": {
       "value": 800,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 90,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3384,7 +3386,7 @@
      "min": {
       "value": 7,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 7,
        "2": 7,
@@ -3408,7 +3410,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3416,12 +3418,12 @@
      "min": {
       "value": 4.3,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 7,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3429,7 +3431,7 @@
      "min": {
       "value": 0.7,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -3453,7 +3455,7 @@
      "max": {
       "value": 1.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3461,7 +3463,7 @@
      "min": {
       "value": 170,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -3487,14 +3489,14 @@
      "min": {
       "value": 10,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -3502,7 +3504,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -3510,7 +3512,7 @@
      "max": {
       "value": 40,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 35-40% of energy"
      }
     },
@@ -3518,7 +3520,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -3526,7 +3528,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -3534,7 +3536,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -3542,7 +3544,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake (100 mg of DHA under age 2)"
      }
     },
@@ -3550,7 +3552,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -3577,7 +3579,7 @@
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3585,7 +3587,7 @@
      "max": {
       "value": 1200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -3608,19 +3610,19 @@
      "min": {
       "value": 300,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3628,7 +3630,7 @@
      "min": {
       "value": 9,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -3654,19 +3656,19 @@
      "min": {
       "value": 20,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 30,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3674,19 +3676,19 @@
      "min": {
       "value": 0.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 0.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3694,26 +3696,26 @@
      "min": {
       "value": 140,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 1.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 170,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3721,19 +3723,19 @@
      "min": {
       "value": 4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 800,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3741,12 +3743,12 @@
      "min": {
       "value": 90,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3754,12 +3756,12 @@
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3767,12 +3769,12 @@
      "min": {
       "value": 440,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3780,19 +3782,19 @@
      "min": {
       "value": 1100,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 20,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3800,7 +3802,7 @@
      "min": {
       "value": 7,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 7,
        "2": 7,
@@ -3824,7 +3826,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3832,12 +3834,12 @@
      "min": {
       "value": 5.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3845,7 +3847,7 @@
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -3869,7 +3871,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -3877,7 +3879,7 @@
      "min": {
       "value": 230,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -3903,14 +3905,14 @@
      "min": {
       "value": 14,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -3918,7 +3920,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -3926,7 +3928,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -3934,7 +3936,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -3942,7 +3944,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -3950,7 +3952,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -3958,7 +3960,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -3966,7 +3968,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -3993,7 +3995,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4001,7 +4003,7 @@
      "max": {
       "value": 1500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -4024,19 +4026,19 @@
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 75,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4044,7 +4046,7 @@
      "min": {
       "value": 9,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -4070,19 +4072,19 @@
      "min": {
       "value": 30,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 45,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 650,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4090,19 +4092,19 @@
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4110,26 +4112,26 @@
      "min": {
       "value": 200,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 2.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4137,19 +4139,19 @@
      "min": {
       "value": 4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 800,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4157,12 +4159,12 @@
      "min": {
       "value": 90,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4170,12 +4172,12 @@
      "min": {
       "value": 1.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4183,12 +4185,12 @@
      "min": {
       "value": 440,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4196,19 +4198,19 @@
      "min": {
       "value": 1800,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 35,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 150,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4216,7 +4218,7 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 7,
        "2": 7,
@@ -4240,7 +4242,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4248,12 +4250,12 @@
      "min": {
       "value": 7.4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 12,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4261,7 +4263,7 @@
      "min": {
       "value": 1.0,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -4285,7 +4287,7 @@
      "max": {
       "value": 3.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4293,7 +4295,7 @@
      "min": {
       "value": 230,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -4319,14 +4321,14 @@
      "min": {
       "value": 16,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -4334,7 +4336,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -4342,7 +4344,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -4350,7 +4352,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -4358,7 +4360,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -4366,7 +4368,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -4374,7 +4376,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -4382,7 +4384,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -4409,7 +4411,7 @@
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4417,7 +4419,7 @@
      "max": {
       "value": 1500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -4440,19 +4442,19 @@
      "min": {
       "value": 600,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4460,7 +4462,7 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -4486,19 +4488,19 @@
      "min": {
       "value": 45,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1200,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4506,19 +4508,19 @@
      "min": {
       "value": 1.4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.4,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 60,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4526,26 +4528,26 @@
      "min": {
       "value": 270,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 3.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 340,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4553,19 +4555,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 1150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4573,12 +4575,12 @@
      "min": {
       "value": 120,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 600,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4586,12 +4588,12 @@
      "min": {
       "value": 2.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 6,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4599,12 +4601,12 @@
      "min": {
       "value": 640,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4612,19 +4614,19 @@
      "min": {
       "value": 2700,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 55,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 280,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4632,7 +4634,7 @@
      "min": {
       "value": 13,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 7,
        "2": 7,
@@ -4656,7 +4658,7 @@
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4664,12 +4666,12 @@
      "min": {
       "value": 10.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 23,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4677,7 +4679,7 @@
      "min": {
       "value": 1.1,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -4701,7 +4703,7 @@
      "max": {
       "value": 5.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4709,7 +4711,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -4735,14 +4737,14 @@
      "min": {
       "value": 19,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -4750,7 +4752,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -4758,7 +4760,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -4766,7 +4768,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -4774,7 +4776,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -4782,7 +4784,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -4790,7 +4792,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -4798,7 +4800,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -4825,7 +4827,7 @@
      "max": {
       "value": 1700,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4833,7 +4835,7 @@
      "max": {
       "value": 1800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -4856,19 +4858,19 @@
      "min": {
       "value": 650,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4876,7 +4878,7 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 6,
        "2": 6,
@@ -4902,19 +4904,19 @@
      "min": {
       "value": 65,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 90,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4922,19 +4924,19 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 80,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4942,26 +4944,26 @@
      "min": {
       "value": 330,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 4.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4969,19 +4971,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 1150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -4989,12 +4991,12 @@
      "min": {
       "value": 130,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 900,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5002,12 +5004,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 9,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5015,12 +5017,12 @@
      "min": {
       "value": 640,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5028,19 +5030,19 @@
      "min": {
       "value": 3500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5048,7 +5050,7 @@
      "min": {
       "value": 13,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 7,
        "2": 7,
@@ -5072,7 +5074,7 @@
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5080,12 +5082,12 @@
      "min": {
       "value": 11.9,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 34,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5093,7 +5095,7 @@
      "min": {
       "value": 1.1,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 0.7,
        "2": 0.7,
@@ -5117,7 +5119,7 @@
      "max": {
       "value": 8.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5125,7 +5127,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "byAge": {
        "1": 170,
        "2": 170,
@@ -5151,14 +5153,14 @@
      "min": {
       "value": 21,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -5166,7 +5168,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -5174,7 +5176,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -5182,7 +5184,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -5190,7 +5192,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -5198,7 +5200,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -5206,7 +5208,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -5214,7 +5216,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight",
       "byAge": {
        "1": 1140,
@@ -5241,7 +5243,7 @@
      "max": {
       "value": 2800,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5249,7 +5251,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     }
@@ -5272,19 +5274,19 @@
      "min": {
       "value": 650,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5292,26 +5294,26 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminK": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 95,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5319,19 +5321,19 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5339,26 +5341,26 @@
      "min": {
       "value": 330,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 4.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5366,19 +5368,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 1000,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5386,12 +5388,12 @@
      "min": {
       "value": 150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5399,12 +5401,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5412,12 +5414,12 @@
      "min": {
       "value": 550,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5425,19 +5427,19 @@
      "min": {
       "value": 3500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5445,12 +5447,12 @@
      "min": {
       "value": 16,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5458,12 +5460,12 @@
      "min": {
       "value": 9.3,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5471,12 +5473,12 @@
      "min": {
       "value": 1.3,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5484,21 +5486,21 @@
      "min": {
       "value": 300,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "fibre": {
      "min": {
       "value": 25,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -5506,7 +5508,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -5514,7 +5516,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -5522,7 +5524,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -5530,7 +5532,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -5538,7 +5540,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -5546,7 +5548,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -5554,7 +5556,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight"
      }
     },
@@ -5562,7 +5564,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5570,7 +5572,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     },
@@ -5656,19 +5658,19 @@
      "min": {
       "value": 650,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5676,26 +5678,26 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminK": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 95,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5703,19 +5705,19 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5723,26 +5725,26 @@
      "min": {
       "value": 330,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 4.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5750,19 +5752,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 950,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5770,12 +5772,12 @@
      "min": {
       "value": 150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5783,12 +5785,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5796,12 +5798,12 @@
      "min": {
       "value": 550,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5809,19 +5811,19 @@
      "min": {
       "value": 3500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5829,12 +5831,12 @@
      "min": {
       "value": 16,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5842,12 +5844,12 @@
      "min": {
       "value": 9.3,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5855,12 +5857,12 @@
      "min": {
       "value": 1.3,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5868,21 +5870,21 @@
      "min": {
       "value": 300,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "fibre": {
      "min": {
       "value": 25,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -5890,7 +5892,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -5898,7 +5900,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -5906,7 +5908,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -5914,7 +5916,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -5922,7 +5924,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -5930,7 +5932,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -5938,7 +5940,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight"
      }
     },
@@ -5946,7 +5948,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -5954,7 +5956,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     },
@@ -6040,19 +6042,19 @@
      "min": {
       "value": 650,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6060,26 +6062,26 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminK": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 95,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6087,19 +6089,19 @@
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.6,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6107,26 +6109,26 @@
      "min": {
       "value": 330,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 4.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 400,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6134,19 +6136,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 950,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6154,12 +6156,12 @@
      "min": {
       "value": 150,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6167,12 +6169,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6180,12 +6182,12 @@
      "min": {
       "value": 550,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6193,19 +6195,19 @@
      "min": {
       "value": 3500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6213,12 +6215,12 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6226,12 +6228,12 @@
      "min": {
       "value": 9.3,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6239,12 +6241,12 @@
      "min": {
       "value": 1.3,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6252,21 +6254,21 @@
      "min": {
       "value": 300,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "fibre": {
      "min": {
       "value": 25,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -6274,7 +6276,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -6282,7 +6284,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -6290,7 +6292,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -6298,7 +6300,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -6306,7 +6308,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -6314,7 +6316,7 @@
      "min": {
       "value": 250,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -6322,7 +6324,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight"
      }
     },
@@ -6330,7 +6332,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6338,7 +6340,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     },
@@ -6424,19 +6426,19 @@
      "min": {
       "value": 700,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6444,26 +6446,26 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminK": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 105,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6471,19 +6473,19 @@
      "min": {
       "value": 1.9,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.8,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6491,26 +6493,26 @@
      "min": {
       "value": 600,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 4.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 480,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6518,19 +6520,19 @@
      "min": {
       "value": 5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 950,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6538,12 +6540,12 @@
      "min": {
       "value": 200,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6551,12 +6553,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6564,12 +6566,12 @@
      "min": {
       "value": 550,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6577,19 +6579,19 @@
      "min": {
       "value": 3500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6597,12 +6599,12 @@
      "min": {
       "value": 16,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6610,12 +6612,12 @@
      "min": {
       "value": 10.9,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6623,12 +6625,12 @@
      "min": {
       "value": 1.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6636,21 +6638,21 @@
      "min": {
       "value": 300,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "fibre": {
      "min": {
       "value": 25,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -6658,7 +6660,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -6666,7 +6668,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -6674,7 +6676,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -6682,7 +6684,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -6690,7 +6692,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -6698,7 +6700,7 @@
      "min": {
       "value": 350,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake (250 mg plus 100-200 mg DHA)"
      }
     },
@@ -6706,7 +6708,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight, plus 9 g/day (second trimester)",
       "extraG": 9
      }
@@ -6715,7 +6717,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6723,7 +6725,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     },
@@ -6809,19 +6811,19 @@
      "min": {
       "value": 1300,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminD": {
      "min": {
       "value": 15,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6829,26 +6831,26 @@
      "min": {
       "value": 11,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminK": {
      "min": {
       "value": 70,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminC": {
      "min": {
       "value": 155,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6856,19 +6858,19 @@
      "min": {
       "value": 2.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB6": {
      "min": {
       "value": 1.7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6876,26 +6878,26 @@
      "min": {
       "value": 500,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "vitaminB12": {
      "min": {
       "value": 5.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "choline": {
      "min": {
       "value": 520,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 3500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6903,19 +6905,19 @@
      "min": {
       "value": 7,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "calcium": {
      "min": {
       "value": 950,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 2500,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6923,12 +6925,12 @@
      "min": {
       "value": 200,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6936,12 +6938,12 @@
      "min": {
       "value": 3.0,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 11,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6949,12 +6951,12 @@
      "min": {
       "value": 550,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 4000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6962,19 +6964,19 @@
      "min": {
       "value": 4000,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "selenium": {
      "min": {
       "value": 85,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 400,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6982,12 +6984,12 @@
      "min": {
       "value": 16,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 45,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -6995,12 +6997,12 @@
      "min": {
       "value": 12.2,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 40,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -7008,12 +7010,12 @@
      "min": {
       "value": 1.5,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      },
      "max": {
       "value": 10.0,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -7021,21 +7023,21 @@
      "min": {
       "value": 300,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "fibre": {
      "min": {
       "value": 25,
       "basis": "abs",
-      "source": "efsa"
+      "source": "efsa-2017"
      }
     },
     "thiamin": {
      "min": {
       "value": 0.1,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "0.1 mg per MJ of energy"
      }
     },
@@ -7043,7 +7045,7 @@
      "min": {
       "value": 1.6,
       "basis": "perMJ",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "1.6 mg niacin equivalents per MJ of energy"
      }
     },
@@ -7051,7 +7053,7 @@
      "max": {
       "value": 35,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 20-35% of energy"
      }
     },
@@ -7059,7 +7061,7 @@
      "min": {
       "value": 45,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Reference intake range 45-60% of energy"
      }
     },
@@ -7067,7 +7069,7 @@
      "min": {
       "value": 4,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -7075,7 +7077,7 @@
      "min": {
       "value": 0.5,
       "basis": "pctEnergy",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake"
      }
     },
@@ -7083,7 +7085,7 @@
      "min": {
       "value": 350,
       "basis": "abs",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Adequate intake (250 mg plus 100-200 mg DHA)"
      }
     },
@@ -7091,7 +7093,7 @@
      "min": {
       "value": 830,
       "basis": "perKg",
-      "source": "efsa",
+      "source": "efsa-2017",
       "note": "Population reference intake per kg body weight, plus 19 g/day (first 6 months)",
       "extraG": 19
      }
@@ -7100,7 +7102,7 @@
      "max": {
       "value": 3000,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Tolerable upper intake level"
      }
     },
@@ -7108,7 +7110,7 @@
      "max": {
       "value": 2300,
       "basis": "abs",
-      "source": "nasem-dri-ul",
+      "source": "nasem-dri",
       "note": "Chronic disease risk reduction intake"
      }
     },

@@ -141,7 +141,8 @@
           "fetch": [
             "https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:32011R1169&from=EN",
             "https://www.legislation.gov.uk/eur/2011/1169/pdfs/eur_20111169_adopted_en.pdf"
-          ]
+          ],
+          "label": "Archived copy (text as adopted, via legislation.gov.uk)"
         }
       ]
     },

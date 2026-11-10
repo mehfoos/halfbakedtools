@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { pickProfile, groupRange, type Standard } from "./profiles.ts";
+import { pickProfile, groupRange, energyFor, type Standard } from "./profiles.ts";
 import { decode, encode, fresh } from "./state.ts";
 import { isOn, setOn, type PlannerFood } from "./foods.ts";
 import { analyse } from "./analysis.ts";
@@ -125,4 +125,31 @@ test("EU exact age bands and per-year protein (EFSA 2017 Tables 3, 7, 9, 11)", a
 test("UK fibre: 15 g at age 4, 20 g at ages 5-6 (PHE 2016 Table 1)", () => {
   assert.equal(pickProfile(uk, "male", 4, "none").profile.targets.fibre.min!.value, 15);
   assert.equal(pickProfile(uk, "male", 5, "none").profile.targets.fibre.min!.value, 20);
+});
+
+test("US calories follow the Dietary Guidelines table for the exact age", () => {
+  const e = (sex: "male" | "female", age: number) => energyFor(pickProfile(us, sex, age, "none").profile, age, sex).kcal;
+  assert.equal(e("male", 20), 2600);   // Table A2-2, 19-20, sedentary
+  assert.equal(e("male", 25), 2400);
+  assert.equal(e("female", 30), 1800);
+  assert.equal(e("female", 75), 1600);
+  assert.equal(e("male", 6), 1400);
+  assert.equal(e("female", 6), 1200);
+  assert.equal(e("female", 1), 900);   // Table A2-1, 800-1,000
+});
+
+test("every reference's archived copy exists and every cited source is registered", () => {
+  const root = new URL("../../../../", import.meta.url);
+  const reg = JSON.parse(readFileSync(new URL("data/sources.json", root), "utf8"));
+  const manifest = JSON.parse(readFileSync(new URL("docs/sources/manifest.json", root), "utf8"));
+  const ids = new Set(reg.sources.map((s: { id: string }) => s.id));
+  for (const std of ["uk", "us", "eu"]) {
+    const d = load(std);
+    for (const s of d.sources) assert.ok(ids.has(s.id), `${std} cites unregistered ${s.id}`);
+    for (const p of d.profiles) for (const spec of Object.values(p.targets)) for (const b of [spec.min, spec.max])
+      if (b) assert.ok(ids.has(b.source), `${std} bound cites unregistered ${b.source}`);
+  }
+  const missing = reg.sources.flatMap((s: { archive: { file?: string }[] }) => s.archive.filter((a) => a.file && !manifest[a.file]).map((a) => a.file));
+  // Known gap: the WHO report can't be fetched automatically; it is listed as "not yet available" until uploaded.
+  assert.deepEqual(missing, ["who-2007-trs-935.pdf"]);
 });

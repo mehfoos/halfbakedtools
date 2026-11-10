@@ -1,15 +1,13 @@
 // Nutrient planner user interface. Everything runs in the browser; the only
 // network requests are for the site's own data files.
 import { resolveTargets, splitAssessable, describeAmount, type Plan, type ResolvedTarget } from "./solver.ts";
-import { pickProfile, isAdult, refWeight, type Standard } from "./profiles.ts";
+import { pickProfile, isAdult, refWeight, energyFor, type Standard } from "./profiles.ts";
 import { unpack, isOn, setOn, dietOk, matches, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
 import { GROUPS, ORDER, SHORT_LABEL, analyse, totals, type Report, type Row } from "./analysis.ts";
 import { radarSvg, scaleMax, type Axis, type Overlay } from "./radar.ts";
 import { decode, encode, exportFile, forget, fresh, importFile, loadRemembered, remember, DEFAULTS, type Settings } from "./state.ts";
 
-const NHS_VITD = "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/";
-const NHS_VEGAN = "https://www.nhs.uk/live-well/eat-well/how-to-eat-a-balanced-diet/the-vegan-diet/";
-const BDA_IODINE = "https://www.bda.uk.com/resource/iodine.html";
+import { cite } from "../../lib/references.ts";
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 export const fmt = (v: number | undefined) => {
@@ -22,7 +20,7 @@ export const fmt = (v: number | undefined) => {
   return Number(v.toPrecision(2)).toString();
 };
 type Item = { food: PlannerFood; grams: number };
-const CAVEAT = `<p class="small muted sans caveat">These are estimates. They use average food composition, mostly from US data, so real foods vary with brand, variety and cooking. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).</p>`;
+const CAVEAT = `<p class="small muted sans caveat">These are estimates. They use average food composition, mostly from US data ${cite("usda-sr")}, so real foods vary with brand, variety and cooking. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).</p>`;
 const $ = <T extends HTMLElement = HTMLElement>(root: ParentNode, sel: string) => root.querySelector(sel) as T;
 const $$ = <T extends HTMLElement = HTMLElement>(root: ParentNode, sel: string) => Array.from(root.querySelectorAll(sel)) as T[];
 
@@ -66,7 +64,8 @@ export async function start(root: HTMLElement) {
   const profile = () => pick().profile;
   const defaultWeight = () => refWeight(s.sex, s.age, s.life);
   const weight = () => s.weight ?? defaultWeight();
-  const band = () => ({ low: s.energyLow ?? profile().energy.low, high: s.energyHigh ?? profile().energy.high });
+  const energy = () => energyFor(profile(), s.age, s.sex);
+  const band = () => ({ low: s.energyLow ?? energy().low, high: s.energyHigh ?? energy().high });
   const resolve = (withOverrides: boolean) => {
     const b = band();
     return resolveTargets(profile().targets, data.nutrients, (b.low + b.high) / 2, weight(), std().id, withOverrides ? s.overrides : {}, s.age)
@@ -102,12 +101,13 @@ export async function start(root: HTMLElement) {
       `Targets: <b>${esc(std().name)}</b> recommendations for <b>${esc(p.profile.label.toLowerCase().replace(/(\d)-(\d)/, "$1–$2"))}</b> · ${b.low.toLocaleString("en-GB")}–${b.high.toLocaleString("en-GB")} kcal a day`
       + (p.note ? ` <span class="muted">(${esc(p.note)})</span>` : "");
     const v = std().verified;
-    $(root, "#sourceLine").innerHTML = `Source: <a href="${esc(src.url)}">${esc(src.title)}</a>. ${std().sources.length > 1 ? `Also: ${std().sources.slice(1).map((x) => `<a href="${esc(x.url)}">${esc(x.title)}</a>`).join("; ")}.` : ""}`
+    $(root, "#sourceLine").innerHTML = `Source: ${esc(src.title)} ${cite(src.id)}. ${std().sources.length > 1 ? std().sources.slice(1).map((x) => `${esc(x.role ?? x.title)}: ${cite(x.id)}`).join("; ") + "." : ""}`
       + (v ? `<br>${v.checked ? `<b>Checked</b> against the original document (${esc(v.against)}) on ${esc(new Date(v.date + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }))}.` : `<b>Not yet checked against the original document.</b> ${esc(v.against)}.`}` : "");
     $(root, "#unverified").hidden = !!v?.checked;
+    if (v?.pending) $(root, "#sourceLine").innerHTML += ` <b>Not yet checked:</b> ${esc(v.pending)}`;
     $<HTMLInputElement>(root, "#energyLow").value = String(b.low);
     $<HTMLInputElement>(root, "#energyHigh").value = String(b.high);
-    $(root, "#energyNote").textContent = `Recommended: ${profile().energy.low.toLocaleString("en-GB")}–${profile().energy.high.toLocaleString("en-GB")} kcal. ${profile().energy.note}`;
+    $(root, "#energyNote").textContent = `Recommended: ${energy().low.toLocaleString("en-GB")}–${energy().high.toLocaleString("en-GB")} kcal. ${energy().note}`;
     const eCustom = s.energyLow !== null || s.energyHigh !== null;
     $(root, "#energyCustom").hidden = !eCustom;
     $(root, "#energyReset").hidden = !eCustom;
@@ -127,7 +127,7 @@ export async function start(root: HTMLElement) {
       return `<input type="number" step="any" min="0" data-key="${t.key}" data-bound="${bound}" aria-label="${esc(t.label)} ${bound === "min" ? "minimum" : "maximum"}" value="${o ?? ""}" placeholder="${off !== undefined ? fmt(off) : "none"}" />`;
     };
     const range = (t?: ResolvedTarget) => t ? [t.min !== undefined ? `≥ ${fmt(t.min)}` : "", t.max !== undefined ? `≤ ${fmt(t.max)}` : ""].filter(Boolean).join(", ") || "–" : "–";
-    const notes: Record<string, string> = { amino: isAdult(s.age) ? `Per-kg amino acid needs (WHO 2007) worked out for ${weight()} kg.` : "Amino acid targets are given for adults only." };
+    const notes: Record<string, string> = { amino: isAdult(s.age) ? `Per-kg amino acid needs (WHO 2007 ${cite("who-2007")}) worked out for ${weight()} kg.` : "Amino acid targets are given for adults only." };
     $(root, "#targetGroups").innerHTML = GROUPS.map((g) => {
       const ts = current.filter((t) => g.keys.includes(t.key));
       if (!ts.length) return g.id === "amino" ? `<p class="small muted sans">${notes.amino}</p>` : "";
@@ -166,7 +166,7 @@ export async function start(root: HTMLElement) {
   for (const [id, key] of [["#energyLow", "energyLow"], ["#energyHigh", "energyHigh"]] as const) {
     $<HTMLInputElement>(root, id).addEventListener("change", (e) => {
       const v = numOrNull((e.target as HTMLInputElement).value);
-      const rec = profile().energy[key === "energyLow" ? "low" : "high"];
+      const rec = energy()[key === "energyLow" ? "low" : "high"];
       s[key] = v === null || v === rec ? null : Math.min(6000, Math.max(300, Math.round(v)));
       changed();
     });
@@ -324,7 +324,7 @@ export async function start(root: HTMLElement) {
     return others().map((x) => {
       const p = pickProfile(x, s.sex, s.age, s.life).profile;
       const t = new Map(resolveTargets(p.targets, data.nutrients, mid, weight(), x.id, {}, s.age).map((r) => [r.key, r]));
-      return { id: x.id, targets: t, energyMid: (p.energy.low + p.energy.high) / 2 };
+      return { id: x.id, targets: t, energyMid: (energyFor(p, s.age, s.sex).low + energyFor(p, s.age, s.sex).high) / 2 };
     });
   }
   function withOthers(axis: Axis, key: string, main: number | undefined, bound: "min" | "max", cmp: ReturnType<typeof otherTargets>): Axis {
@@ -393,12 +393,12 @@ export async function start(root: HTMLElement) {
   function noticesHtml(rep: Report) {
     const short = (k: string) => { const r = rep.byKey.get(k); return r ? r.status === "short" || r.status === "low" : false; };
     const out: string[] = [];
-    if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (<a href="${NHS_VITD}">NHS</a>).`);
-    if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products${s.diet === "none" ? "" : ", so a fortified food or supplement may be needed"} (<a href="${NHS_VEGAN}">NHS</a>).`);
+    if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (NHS ${cite("nhs-vitd")}).`);
+    if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products${s.diet === "none" ? "" : ", so a fortified food or supplement may be needed"} (NHS ${cite("nhs-vegan")}).`);
     if ((rep.byKey.get("epaDha")?.value ?? 0) < 250 && rep.byKey.get("epaDha")?.min === undefined) out.push(s.diet === "none"
       ? `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish such as salmon, mackerel and sardines; the NHS advises at least one portion of oily fish a week. Plant omega-3 (ALA) converts to them poorly.`
-      : `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish; plant omega-3 (ALA) converts to them poorly. The UK and US set no target; EFSA (EU) advises 250 mg a day. An algae-based supplement is the vegetarian and vegan source.`);
-    if (rep.unassessed.some((r) => r.key === "iodine")) out.push(`<b>Iodine</b> isn't in the food database, so it isn't checked. Milk and yoghurt are the main UK sources; if you use plant drinks, choose one with added iodine (<a href="${BDA_IODINE}">BDA</a>).`);
+      : `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish; plant omega-3 (ALA) converts to them poorly. The UK and US set no target; EFSA (EU) advises 250 mg a day ${cite("efsa-2017")}. An algae-based supplement is the vegetarian and vegan source.`);
+    if (rep.unassessed.some((r) => r.key === "iodine")) out.push(`<b>Iodine</b> isn't in the food database, so it isn't checked. Milk and yoghurt are the main UK sources; if you use plant drinks, choose one with added iodine (NHS ${cite("nhs-iodine")}).`);
     return out.length ? `<div class="notice small">${out.map((x) => `<p>${x}</p>`).join("")}</div>` : "";
   }
 
