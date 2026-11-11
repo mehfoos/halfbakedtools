@@ -1,0 +1,91 @@
+---
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { referencesFor } from "@site/lib/references.ts";
+import references from "../references.json";
+import uk from "../data/targets/uk.json";
+import us from "../data/targets/us.json";
+import eu from "../data/targets/eu.json";
+import meta from "../data/meta.json";
+const { cite } = referencesFor(references as Parameters<typeof referencesFor>[0]);
+const standards = [uk, us, eu];
+---
+<ToolLayout slug="nutrient-planner" page="methods">
+  <h1>Methods and sources</h1>
+  <p class="lede">How the nutrient planner works, where its numbers come from, and what it can't tell you.</p>
+
+  <h2>Food composition data</h2>
+  <p>
+    Nutrient values come from the US Department of Agriculture's FoodData Central (public domain), SR Legacy
+    dataset <Fragment set:html={cite("usda-sr")} />. About 115 cheap, common, UK-available foods are hand-matched to USDA records, given
+    friendly names and practical units, and switched on by default. Around 2,100 more vegetables, fruits, pulses,
+    grains, breads, nuts, seeds, meat, fish, dairy foods, eggs, oils, herbs and spices are added automatically by
+    rules that keep cooked lean cuts of meat and leave out baby foods, branded and heavily processed products;
+    these are off by default and can be switched on in the planner's food list. Choosing vegetarian hides meat and
+    fish; choosing vegan also hides dairy, eggs and honey. The food list, the rules and a match report live in the repository's
+    <code>tools/nutrient-planner/</code> folder so anyone can check them.
+  </p>
+  <p class="muted small">
+    Current snapshot: {meta.foodsLastUpdated ? `built ${meta.foodsLastUpdated}, ${meta.foodCount} foods` : "not built yet"}.
+    The snapshot is stored in the repository so the site keeps working even if the USDA servers change, and is refreshed every three months.
+  </p>
+
+  <h2>Recommended intakes</h2>
+  {standards.map((s) => (
+    <section>
+      <h3>{s.longName}</h3>
+      <p class="small">
+        {s.verified?.checked
+          ? <><strong>Checked</strong> line by line against the original document ({s.verified.against}) on {s.verified.date}.</>
+          : <><strong>Not yet checked</strong> against the original document. {s.verified?.against}.</>}
+        {s.verified?.pending && <> <strong>Not yet checked:</strong> {s.verified.pending}</>}
+      </p>
+      <ul class="prose">
+        {s.sources.map((src) => <li>{src.role ? `${src.role}: ` : ""}{src.title} <Fragment set:html={cite(src.id)} /></li>)}
+      </ul>
+      <ul class="prose muted small">{s.notes.map((n) => <li>{n}</li>)}</ul>
+    </section>
+  ))}
+  <p>
+    The charts can also show the other two standards' targets for the same person (same age, sex, weight and
+    calories) as thin coloured outlines, so you can see where the UK, US and EU agree and where they differ.
+    The planner always optimises against the one standard you choose.
+  </p>
+
+  <h2>How the planner chooses foods</h2>
+  <p>
+    The planner solves a mixed-integer programme with the HiGHS solver <Fragment set:html={cite("highs")} />, running in your browser.
+    It chooses at most your chosen number of ingredients and an amount of each, in practical steps
+    (10 g, half an egg, a slice of bread), to minimise the total <em>relative</em> shortfall across all
+    minimum targets, so being 20% short of iron counts the same as being 20% short of protein. Upper limits
+    (salt, saturated fat, tolerable upper intake levels) and your calorie range are never exceeded.
+    Further options are found by forbidding most of the ingredients of earlier options.
+  </p>
+  <h2>Reading the charts</h2>
+  <p>
+    Each radar chart shows every nutrient as a percentage of its target. The thick navy ring is the target
+    (100%). The scale is linear and runs to 150% unless a value is higher, in which case it grows to fit, so
+    400% always looks larger than 300%; "Zoom to target" shows the area around 100% instead and marks anything
+    beyond the edge with an arrow. Green points meet their goal and red ones don't. "≥" means aim for at least
+    the target; "≤" means stay at or below it.
+  </p>
+  <p>
+    The "At a glance" chart follows the nutrition declaration on UK and EU food labels (Regulation 1169/2011) <Fragment set:html={cite("eu-1169")} />:
+    energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt. Each is compared with the official
+    recommendation for the person where one exists; total sugars, which has no recommendation, is compared with
+    the label's adult reference intake (90 g) and shown in grey. Vitamins, minerals and essential amino acids
+    (the building blocks of protein) each have their own chart below it, with a table showing which foods
+    provide each nutrient.
+  </p>
+
+  <h2>Limitations</h2>
+  <p>The results are estimates. Please treat them as a starting point for thinking about your food, not as a precise measurement.</p>
+  <ul class="prose">
+    <li><strong>Borrowed safety limits.</strong> The UK and EU tables used here don't give a complete set of upper limits, so the US tolerable upper intake levels <Fragment set:html={cite("nasem-dri")} /> are used for safety checks in every standard.</li>
+    <li><strong>US food data, UK shops.</strong> Fortification differs between countries (for example US milk usually has added vitamin D; UK milk doesn't), and brands differ. Fortified products should be checked against their labels.</li>
+    <li><strong>Iodine and some other nutrients</strong> are missing from most USDA records, so they are listed as "not checked" rather than guessed. Where a food has no value for a nutrient, it counts as zero, which can understate the total.</li>
+    <li><strong>Absorption isn't modelled yet.</strong> Iron from plants is absorbed less well than iron from meat, ALA omega-3 converts poorly to EPA and DHA, and phytates reduce zinc absorption. These are planned refinements.</li>
+    <li><strong>Amino acid targets</strong> use the WHO safe intake per kg of body weight for adults (the average requirement plus 24%) <Fragment set:html={cite("who-2007")} />, and are applied to adults only. WHO found too little evidence to set separate values for older people.</li>
+    <li><strong>Reference values are for healthy populations.</strong> If you have a medical condition, are pregnant, or are planning food for a child, check with a doctor, midwife or registered dietitian.</li>
+  </ul>
+
+</ToolLayout>

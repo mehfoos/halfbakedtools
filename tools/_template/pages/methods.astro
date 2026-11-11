@@ -1,0 +1,15 @@
+---
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { referencesFor } from "@site/lib/references.ts";
+import references from "../references.json";
+const { cite } = referencesFor(references);
+---
+<ToolLayout slug="TEMPLATE" page="methods">
+  <h1>Methods and sources</h1>
+  <h2>How it works</h2>
+  <p>Explain the method, citing every source <Fragment set:html={cite("example-2020")} />.</p>
+  <h2>What has been checked</h2>
+  <p>Say which values have been checked against the original documents, and which haven't yet.</p>
+  <h2>Limitations</h2>
+  <ul class="prose"><li>What the tool can't tell you.</li></ul>
+</ToolLayout>

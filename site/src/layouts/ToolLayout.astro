@@ -1,0 +1,31 @@
+---
+// Layout for every tool page: breadcrumb, the tool's own page tabs, the page content, then the
+// tool's collapsible reference list (from tools/<slug>/references.json, if the tool has one).
+import Base from "./Base.astro";
+import References from "../components/References.astro";
+import { toolBySlug, pageHref, STATUS_LABEL } from "../lib/tools.ts";
+import type { ReferenceFile } from "../lib/references.ts";
+
+interface Props { slug: string; page: string; title?: string; description?: string }
+const { slug, page, title, description } = Astro.props;
+const tool = toolBySlug(slug);
+const base = import.meta.env.BASE_URL;
+const refFiles = import.meta.glob<ReferenceFile>("../../../tools/*/references.json", { eager: true, import: "default" });
+const refs = refFiles[`../../../tools/${slug}/references.json`];
+const pageLabel = tool.pages.find((p) => p.page === page)?.label;
+---
+<Base title={title ?? (page === "index" ? tool.name : `${pageLabel} · ${tool.name}`)} description={description ?? tool.summary} current="tool">
+  <nav class="tool-bar sans" aria-label={`${tool.name} pages`}>
+    <p class="crumbs small"><a href={base}>Tools</a> › <span>{tool.topic}</span></p>
+    <p class="tool-name"><a href={pageHref(base, tool, "index")}>{tool.name}</a> <span class="tag">{STATUS_LABEL[tool.status]}</span></p>
+    {tool.pages.length > 1 && (
+      <ul class="tool-tabs">
+        {tool.pages.map((p) => (
+          <li><a href={pageHref(base, tool, p.page)} aria-current={p.page === page ? "page" : undefined}>{p.label}</a></li>
+        ))}
+      </ul>
+    )}
+  </nav>
+  <slot />
+  {refs && <References file={refs} />}
+</Base>

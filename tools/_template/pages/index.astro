@@ -1,0 +1,16 @@
+---
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { referencesFor } from "@site/lib/references.ts";
+import references from "../references.json";
+const { cite } = referencesFor(references);
+---
+<ToolLayout slug="TEMPLATE" page="index">
+  <h1>Tool name</h1>
+  <p class="lede">What it does, in one sentence.</p>
+  <p>A claim that needs a source <Fragment set:html={cite("example-2020")} />.</p>
+  <div id="tool"><noscript><p class="notice">This tool runs in your browser and needs JavaScript.</p></noscript></div>
+  <script>
+    import { start } from "../web/main.ts";
+    start(document.getElementById("tool")!);
+  </script>
+</ToolLayout>
