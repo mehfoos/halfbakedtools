@@ -25,9 +25,12 @@ automatically.
    and the date. Until something is checked, say so on the methods page.
 7. **Data:** anything in `data/` (`*.json`, any depth) is published at `/tools/<slug>/data/…`. Scripts that build it
    go in `pipeline/`; scheduled jobs go in `.github/workflows/<slug>-*.yml`.
-8. **Run** `npm test` and `npm run dev`, then delete anything left over from the template.
+8. **Record the tool's intent and design decisions** in `DECISIONS.md`, with reasons.
+9. **Run** `npm test` and `npm run dev`, then delete anything left over from the template.
 
 ## Rules every tool follows
+
+These summarise [PRINCIPLES.md](PRINCIPLES.md), which gives the reasons; read it first.
 
 - **Accuracy before features.** Prefer fewer, checked numbers to more, unchecked ones. Claim less and deliver more.
 - **Calculations run in the browser.** Nothing a visitor enters is sent anywhere; no cookies, analytics or

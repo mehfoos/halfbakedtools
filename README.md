@@ -4,7 +4,8 @@ Open, evolving tools for life's questions, with the evidence shown. Live at **ht
 
 Every tool on the site follows the same rules: accuracy comes before features, every claim is cited and
 the cited documents are archived in this repository, methods and limitations are written down, and
-calculations run in the visitor's browser.
+calculations run in the visitor's browser. The intent and the reasons behind these rules are in
+**[docs/PRINCIPLES.md](docs/PRINCIPLES.md)**; contributors (human or AI) should read it, and [AGENTS.md](AGENTS.md), first.
 
 ## Tools
 
@@ -22,6 +23,7 @@ tools/                     one self-contained folder per tool (see docs/ADDING_A
     web/                   browser code and its tests (*.test.ts)
     references.json        the tool's references, in citation order ([1], [2], ...)
     VERIFICATION.md        what has been checked against which source, and when
+    DECISIONS.md           the tool's intent and design decisions, with reasons
     data/                  data the tool publishes (copied to the site at build time)
     pipeline/              scripts that build data/ (optional)
     README.md              how the tool works and how to maintain it
@@ -35,7 +37,8 @@ site/                      the shared site shell
 sources/                   archived copies of every referenced document, shared by all tools,
                            with manifest.json (retrieval date, original URL, SHA-256)
 scripts/                   site-wide scripts: data sync, source archiving
-docs/                      setup and contributor guides
+docs/                      principles (PRINCIPLES.md), setup and contributor guides
+AGENTS.md, CLAUDE.md       instructions for AI assistants
 .github/workflows/         deploy, source archiving, per-tool data jobs (named <slug>-*.yml)
 ```
 
