@@ -20,6 +20,10 @@ for (const slug of folders) {
   const dir = join(TOOLS, slug);
   const template = slug.startsWith("_");
 
+  test(`${slug}: has README, DECISIONS and VERIFICATION files`, () => {
+    for (const f of ["README.md", "DECISIONS.md", "VERIFICATION.md"]) assert.ok(existsSync(join(dir, f)), `missing ${f}`);
+  });
+
   test(`${slug}: tool.json is complete and matches its pages`, () => {
     const t = json(join(dir, "tool.json"));
     if (!template) assert.equal(t.slug, slug);
