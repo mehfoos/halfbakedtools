@@ -1,0 +1,15 @@
+{
+  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Each needs an archived copy: give 'fetch' (one URL or a list to try) and the Archive sources workflow saves it as sources/<file>; set 'render': true for web pages. Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
+  "sources": [
+    {
+      "id": "example-2020",
+      "pre": "A. Author and B. Author,",
+      "title": "Title of the article", "style": "quoted",
+      "post": "<i>Journal Name</i>, vol. 1, no. 2, pp. 3–4, 2020, doi: 10.0000/example.",
+      "url": "https://doi.org/10.0000/example",
+      "licence": "Licence or reuse terms",
+      "usedFor": "What the tool uses it for",
+      "archive": [{ "file": "author-2020-short-title.pdf", "fetch": "https://example.org/paper.pdf" }]
+    }
+  ]
+}

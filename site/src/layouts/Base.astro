@@ -1,15 +1,14 @@
 ---
 import "../styles/global.css";
-import { site } from "../site.config";
+import { site } from "../site.config.ts";
 
 interface Props { title?: string; description?: string; current?: string }
 const { title, description = site.tagline, current = "" } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const pageTitle = title ? `${title} · ${site.name}` : site.name;
 const nav = [
-  { href: base, label: "Home", id: "home" },
-  { href: `${base}tools/nutrient-planner/`, label: "Nutrient planner", id: "nutrient-planner" },
-  { href: `${base}about/`, label: "Methods", id: "about" },
+  { href: base, label: "Tools", id: "home" },
+  { href: `${base}about/`, label: "About", id: "about" },
   { href: `${base}privacy/`, label: "Privacy", id: "privacy" },
 ];
 ---
@@ -45,10 +44,10 @@ const nav = [
     <footer class="wrap site-footer">
       <ul class="nav-menu">
         <li><a href={site.repoUrl}>Source on GitHub</a></li>
-        <li><a href={`${base}about/`}>Methods and sources</a></li>
+        <li><a href={`${base}about/`}>About</a></li>
         <li><a href={`${base}privacy/`}>Privacy</a></li>
       </ul>
-      <p>{site.tagline} No cookies, no tracking. Information only, not medical advice.</p>
+      <p>{site.tagline} No cookies, no tracking. Information only; not medical, financial or legal advice.</p>
     </footer>
     <script>
       // Citation links point into a collapsible reference list: open it before jumping.

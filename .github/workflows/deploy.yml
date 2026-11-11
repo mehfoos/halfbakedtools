@@ -3,7 +3,7 @@ name: Deploy site
 on:
   push:
     branches: [main]
-    paths: ["site/**", "data/**", ".github/workflows/deploy.yml"]
+    paths: ["site/**", "tools/**", "sources/**", "scripts/**", "astro.config.mjs", "package*.json", ".github/workflows/deploy.yml"]
   workflow_dispatch:
   workflow_call:
 
@@ -27,15 +27,12 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: site/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install
-        working-directory: site
         run: npm ci
-      - name: Test optimiser
-        working-directory: site
+      - name: Test
         run: npm test
       - name: Build
-        working-directory: site
         env:
           PUBLIC_REPO: ${{ github.repository }}
           # Set repository variables SITE_URL / SITE_BASE if not using the custom domain.
@@ -44,7 +41,7 @@ jobs:
         run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site/dist
+          path: dist
 
   deploy:
     needs: build

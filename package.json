@@ -1,0 +1,19 @@
+{
+  "name": "halfbakedtools-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync-data": "node scripts/sync-data.mjs",
+    "dev": "npm run sync-data && astro dev",
+    "build": "npm run sync-data && astro build",
+    "preview": "astro preview",
+    "test": "node --test --experimental-strip-types \"tools/*/web/*.test.ts\" \"site/src/**/*.test.ts\""
+  },
+  "dependencies": {
+    "astro": "^7.4.7",
+    "highs": "^1.15.4"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

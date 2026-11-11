@@ -1,0 +1,14 @@
+name: "Nutrient planner: data refresh request"
+description: Ask for the nutrient planner's food data snapshot to be refreshed from USDA FoodData Central (runs at most once every 3 months).
+title: "Data refresh request: nutrient planner"
+labels: ["data-refresh", "nutrient-planner"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submitting this issue checks when the food data was last refreshed. If it was 3 months ago or more,
+        a refresh runs automatically and this issue is closed when it's done. Otherwise you'll get a reply with the next possible date.
+  - type: textarea
+    id: reason
+    attributes:
+      label: Anything we should know? (optional)

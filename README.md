@@ -2,51 +2,58 @@
 
 Open, evolving tools for life's questions, with the evidence shown. Live at **https://halfbakedtools.com**.
 
+Every tool on the site follows the same rules: accuracy comes before features, every claim is cited and
+the cited documents are archived in this repository, methods and limitations are written down, and
+calculations run in the visitor's browser.
+
 ## Tools
 
-| Tool | What it does |
-|---|---|
-| [Nutrient planner](site/src/tools/nutrient-planner/) | Suggests a small number of everyday foods, with amounts, that together meet UK, US or EU daily nutrient recommendations without exceeding upper limits, or lets you build your own day; radar charts for macronutrients, vitamins, minerals and amino acids. ~1,700 foods. Runs entirely in the browser. |
+| Tool | Folder | Status |
+|---|---|---|
+| Nutrient planner: a few everyday foods that together meet UK, US or EU daily nutrient recommendations, or check your own day | [`tools/nutrient-planner/`](tools/nutrient-planner/) | Beta |
 
 ## Repository layout
 
 ```
-site/                      Astro website (deployed to GitHub Pages)
-  src/pages/               pages: home, methods, privacy, one folder per tool
-  src/layouts/, src/styles/  shared layout and design
-  src/tools/<tool>/        each tool's code (planner: solver, UI, worker, tests)
-  scripts/sync-data.mjs    copies data/ into the site at build time
-data/
-  pipeline/                Python scripts (standard library only)
-    build_foods.py         downloads USDA data, builds data/foods/foods.json
-    build_targets.py       reference intakes transcribed from official tables
-    foods_catalogue.json   the curated common foods and how each matches USDA records
-    auto_foods.py          rules for adding the other USDA foods (categories, UK names, portion caps)
-    nutrients.json         nutrient keys ↔ USDA nutrient ids
-  foods/                   generated food snapshot + match report
-  targets/                 generated UK / US / EU targets
-  meta.json                when the snapshot was last built
-docs/                      setup and maintenance notes
-.github/workflows/         deploy, quarterly data refresh, refresh requests
+tools/                     one self-contained folder per tool (see docs/ADDING_A_TOOL.md)
+  <slug>/
+    tool.json              name, summary, topic, status, pages: drives the home page and navigation
+    pages/*.astro          the tool's pages, served at /tools/<slug>/ and /tools/<slug>/<page>/
+    web/                   browser code and its tests (*.test.ts)
+    references.json        the tool's references, in citation order ([1], [2], ...)
+    VERIFICATION.md        what has been checked against which source, and when
+    data/                  data the tool publishes (copied to the site at build time)
+    pipeline/              scripts that build data/ (optional)
+    README.md              how the tool works and how to maintain it
+  _template/               copy this to start a new tool
+site/                      the shared site shell
+  src/layouts/             Base (header, footer) and ToolLayout (tool tabs + reference list)
+  src/components/          shared components (References)
+  src/lib/                 tool registry, IEEE reference formatting
+  src/pages/               site-wide pages only: home, about, privacy
+  src/styles/, public/     shared design, logo, fonts
+sources/                   archived copies of every referenced document, shared by all tools,
+                           with manifest.json (retrieval date, original URL, SHA-256)
+scripts/                   site-wide scripts: data sync, source archiving
+docs/                      setup and contributor guides
+.github/workflows/         deploy, source archiving, per-tool data jobs (named <slug>-*.yml)
 ```
 
 ## Running locally
 
 ```bash
-python3 data/pipeline/build_targets.py
-python3 data/pipeline/build_foods.py      # downloads ~10 MB from USDA
-cd site && npm ci && npm test && npm run dev
+npm ci
+npm test          # every tool's tests, plus checks that every tool folder follows the conventions
+npm run dev       # http://localhost:4321
 ```
 
-## Data and licences
+Tool-specific data builds are described in each tool's README.
+
+## Licences
 
 - Code: MIT (see `LICENSE`).
 - Fonts: Averia Serif Libre and Averia Sans Libre, SIL Open Font Licence (`site/src/assets/fonts/OFL.txt`).
-- Food composition: [USDA FoodData Central](https://fdc.nal.usda.gov/), public domain.
-- UK recommendations: Public Health England (2016) *Government Dietary Recommendations*, Open Government Licence v3.0.
-- US recommendations: National Academies Dietary Reference Intakes summary tables.
-- EU recommendations: EFSA Dietary Reference Values (2017 summary tables), as tabulated in Gibson, *Principles of Nutritional Assessment*.
-- Food-label reference intakes: Regulation (EU) 1169/2011 Annex XIII (retained in UK law).
-- Amino acid requirements: WHO/FAO/UNU (2007), WHO Technical Report Series 935.
+- Archived source documents in `sources/` remain under their publishers' terms; each tool's
+  `references.json` records the licence of every document it cites.
 
-Information only, not medical advice. See the site's Methods page for limitations.
+Information only; not medical, financial or legal advice.
