@@ -1,4 +1,11 @@
 {
+  "bull-2020-who-physical-activity-guidelines.pdf": {
+    "source": "who-2020",
+    "url": "https://ueaeprints.uea.ac.uk/id/eprint/77844/1/Published_Version.pdf",
+    "finalUrl": "https://ueaeprints.uea.ac.uk/id/eprint/77844/1/Published_Version.pdf",
+    "retrieved": "2026-11-15",
+    "sha256": "9affb04af502267d10a232a192ea7e65b7248bea84130967f3fa3679732345ce"
+  },
   "compendium-2024-adult-activity-list.pdf": {
     "source": "compendium-2024",
     "url": "https://pacompendium.com/wp-content/uploads/2024/01/2024-adult-compendium_1_2024.pdf",
