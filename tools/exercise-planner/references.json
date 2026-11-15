@@ -32,7 +32,8 @@
           "file": "schoenfeld-2019-set-volume-multi-joint.pdf",
           "fetch": [
             "https://www.mdpi.com/2075-4663/7/7/177/pdf",
-            "https://pmc.ncbi.nlm.nih.gov/articles/PMC6681288/pdf/sports-07-00177.pdf"
+            "https://vuir.vu.edu.au/42522/1/sports-07-00177.pdf",
+            "https://europepmc.org/articles/PMC6681288?pdf=render"
           ]
         }
       ]
@@ -86,6 +87,8 @@
         {
           "file": "who-2020-physical-activity-guidelines.pdf",
           "fetch": [
+            "https://iris.who.int/bitstream/handle/10665/336656/9789240015128-eng.pdf?sequence=1&isAllowed=y",
+            "https://apps.who.int/iris/bitstream/handle/10665/336656/9789240015128-eng.pdf",
             "https://iris.who.int/bitstream/handle/10665/336656/9789240015128-eng.pdf"
           ]
         }
