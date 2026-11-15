@@ -1,4 +1,11 @@
 {
+  "compendium-2024-adult-activity-list.pdf": {
+    "source": "compendium-2024",
+    "url": "https://pacompendium.com/wp-content/uploads/2024/01/2024-adult-compendium_1_2024.pdf",
+    "finalUrl": "https://pacompendium.com/wp-content/uploads/2024/01/2024-adult-compendium_1_2024.pdf",
+    "retrieved": "2026-11-15",
+    "sha256": "5319ed1ff07a1e005173b7fa0f9c5c32ae6369d70e788ac8ff99f475b81bffa8"
+  },
   "dga-2020-2025.pdf": {
     "source": "dga-2020",
     "url": "https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf",
@@ -18,6 +25,13 @@
     "finalUrl": "https://www.legislation.gov.uk/eur/2011/1169/pdfs/eur_20111169_adopted_en.pdf",
     "retrieved": "2026-11-10",
     "sha256": "a291b1e5777d47033085b74dac7b1f5fc9903b1875fd079a99678858f25269d5"
+  },
+  "herrmann-2024-adult-compendium.pdf": {
+    "source": "compendium-2024",
+    "url": "https://rcastoragev2.blob.core.windows.net/21bf8ca80a76a05a52608ccd69dff716/main.PMC10818145.pdf",
+    "finalUrl": "https://rcastoragev2.blob.core.windows.net/21bf8ca80a76a05a52608ccd69dff716/main.PMC10818145.pdf",
+    "retrieved": "2026-11-15",
+    "sha256": "f420abacffb7a2ef14f13b9ac1b3d6b6912233b092ac27e657b5517c7ed505f5"
   },
   "huangfu-hall-2018-highs.pdf": {
     "source": "highs",
@@ -109,6 +123,69 @@
     "finalUrl": "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/",
     "retrieved": "2026-11-10",
     "sha256": "a14edd6b845823e2150e04669ee3280cfbb9a23f33722e9de6b48bd2a1bb3656"
+  },
+  "openstax-ap2e-11-3-head-neck-back.html": {
+    "source": "openstax-ap2e",
+    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
+    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
+    "retrieved": "2026-11-15",
+    "sha256": "87211a32f7bb2ee38e28330949bf074b39f33cbbe5952252047deb3c68930798"
+  },
+  "openstax-ap2e-11-3-head-neck-back.pdf": {
+    "source": "openstax-ap2e",
+    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
+    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
+    "retrieved": "2026-11-15",
+    "sha256": "2d4349b872465f4c2888da2774cdeee28e65d7bd037919cdc8e64c8720a3ccb1"
+  },
+  "openstax-ap2e-11-4-abdomen-thorax.html": {
+    "source": "openstax-ap2e",
+    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
+    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
+    "retrieved": "2026-11-15",
+    "sha256": "c6deea86da255a55bba9c7d531ce34935380d59744d1f520af228c6504718bc3"
+  },
+  "openstax-ap2e-11-4-abdomen-thorax.pdf": {
+    "source": "openstax-ap2e",
+    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
+    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
+    "retrieved": "2026-11-15",
+    "sha256": "317f566cae937269a2d265acb0991ffb2bc2b3473b65496173efb31c479137dd"
+  },
+  "openstax-ap2e-11-5-upper-limbs.html": {
+    "source": "openstax-ap2e",
+    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+    "retrieved": "2026-11-15",
+    "sha256": "34cd301c269c74935cc58a548336578b3300d2a612ce876f091f828a4f5e3400"
+  },
+  "openstax-ap2e-11-5-upper-limbs.pdf": {
+    "source": "openstax-ap2e",
+    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+    "retrieved": "2026-11-15",
+    "sha256": "386cb9fcb99b351aad0451a63b4263889fbbe67f88ef5ef5e9c80b798176b202"
+  },
+  "openstax-ap2e-11-6-lower-limbs.html": {
+    "source": "openstax-ap2e",
+    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
+    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
+    "retrieved": "2026-11-15",
+    "sha256": "73ff220bc8d37f813613c9a0f30c90bf9634a5abbac9b445ca8dc167a5d2ec89"
+  },
+  "openstax-ap2e-11-6-lower-limbs.pdf": {
+    "source": "openstax-ap2e",
+    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
+    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
+    "retrieved": "2026-11-15",
+    "sha256": "c865c916484f3833f5134b1c4af45186066803537a18ce9c0862a8982cf81e88"
+  },
+  "pelland-2024-dose-response-preprint-v2.pdf": {
+    "source": "pelland-2026",
+    "url": "https://sportrxiv.org/index.php/server/preprint/download/460/967/908",
+    "finalUrl": "https://sportrxiv.org/index.php/server/preprint/download/460/967/908",
+    "retrieved": "2026-11-15",
+    "sha256": "219064b8fb4198fb4eb5690b9cfb36a3a4ef66375263f8a8dddb7ea5f33efb5d"
   },
   "phe-2016-government-dietary-recommendations.pdf": {
     "source": "phe-2016",
