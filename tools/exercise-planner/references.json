@@ -1,0 +1,120 @@
+{
+  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Each needs an archived copy: give 'fetch' (one URL or a list to try) and the Archive sources workflow saves it as sources/<file>; set 'render': true for web pages. Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
+  "sources": [
+    {
+      "id": "pelland-2026",
+      "pre": "J. C. Pelland, J. F. Remmert, Z. P. Robinson, S. R. Hinson and M. C. Zourdos,",
+      "title": "The resistance training dose response: Meta-regressions exploring the effects of weekly volume and frequency on muscle hypertrophy and strength gains",
+      "style": "quoted",
+      "post": "<i>Sports Medicine</i>, vol. 56, no. 2, pp. 481–505, 2026, doi: 10.1007/s40279-025-02344-w. Archived copy: preprint version 2, SportRχiv, Oct. 2024, doi: 10.51224/SRXIV.460.",
+      "url": "https://doi.org/10.1007/s40279-025-02344-w",
+      "licence": "Preprint: CC BY 4.0",
+      "usedFor": "Counting sets that train a muscle directly as 1 and indirectly as 0.5 (the 'fractional' method)",
+      "archive": [
+        {
+          "label": "Archived copy (preprint, version 2)",
+          "file": "pelland-2024-dose-response-preprint-v2.pdf",
+          "fetch": "https://sportrxiv.org/index.php/server/preprint/download/460/967/908"
+        }
+      ]
+    },
+    {
+      "id": "schoenfeld-2019",
+      "pre": "B. J. Schoenfeld, J. Grgic, C. Haun, T. Itagaki and E. R. Helms,",
+      "title": "Calculating set-volume for the limb muscles with the performance of multi-joint exercises: Implications for resistance training prescription",
+      "style": "quoted",
+      "post": "<i>Sports</i>, vol. 7, no. 7, art. 177, Jul. 2019, doi: 10.3390/sports7070177.",
+      "url": "https://doi.org/10.3390/sports7070177",
+      "licence": "CC BY 4.0",
+      "usedFor": "How much multi-joint exercises (presses, rows, squats) work the arm and leg muscles they don't mainly target",
+      "archive": [
+        {
+          "file": "schoenfeld-2019-set-volume-multi-joint.pdf",
+          "fetch": [
+            "https://www.mdpi.com/2075-4663/7/7/177/pdf",
+            "https://pmc.ncbi.nlm.nih.gov/articles/PMC6681288/pdf/sports-07-00177.pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "openstax-ap2e",
+      "pre": "J. G. Betts et al.,",
+      "title": "Anatomy and Physiology 2e",
+      "style": "italic",
+      "post": "Houston, TX, USA: OpenStax, 2022, ch. 11, “The Muscular System,” sections 11.3–11.6.",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-introduction",
+      "licence": "CC BY 4.0 (as stated by OpenStax)",
+      "usedFor": "What each muscle does (which joint movement it produces), used to decide which muscles an exercise works",
+      "archive": [
+        {
+          "label": "Archived copy (11.3 head, neck and back)",
+          "file": "openstax-ap2e-11-3-head-neck-back.pdf",
+          "fetch": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
+          "render": true
+        },
+        {
+          "label": "11.4 abdominal wall and thorax",
+          "file": "openstax-ap2e-11-4-abdomen-thorax.pdf",
+          "fetch": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
+          "render": true
+        },
+        {
+          "label": "11.5 pectoral girdle and upper limbs",
+          "file": "openstax-ap2e-11-5-upper-limbs.pdf",
+          "fetch": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+          "render": true
+        },
+        {
+          "label": "11.6 pelvic girdle and lower limbs",
+          "file": "openstax-ap2e-11-6-lower-limbs.pdf",
+          "fetch": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
+          "render": true
+        }
+      ]
+    },
+    {
+      "id": "who-2020",
+      "pre": "World Health Organization,",
+      "title": "WHO Guidelines on Physical Activity and Sedentary Behaviour",
+      "style": "italic",
+      "post": "Geneva, Switzerland, 2020, ISBN 978-92-4-001512-8.",
+      "url": "https://iris.who.int/handle/10665/336656",
+      "licence": "CC BY-NC-SA 3.0 IGO",
+      "usedFor": "Weekly aerobic and muscle-strengthening recommendations for adults; moderate and vigorous intensity in METs",
+      "archive": [
+        {
+          "file": "who-2020-physical-activity-guidelines.pdf",
+          "fetch": [
+            "https://iris.who.int/bitstream/handle/10665/336656/9789240015128-eng.pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "compendium-2024",
+      "pre": "S. D. Herrmann et al.,",
+      "title": "2024 Adult Compendium of Physical Activities: A third update of the energy costs of human activities",
+      "style": "quoted",
+      "post": "<i>Journal of Sport and Health Science</i>, vol. 13, no. 1, pp. 6–12, 2024, doi: 10.1016/j.jshs.2023.10.010. Activity list: <i>2024 Adult Compendium of Physical Activities</i>, pacompendium.com, Jan. 2024.",
+      "url": "https://pacompendium.com/",
+      "licence": "Article: CC BY-NC-ND 4.0. Activity list: free to use and cite, MET values not to be changed (pacompendium.com)",
+      "usedFor": "How hard each aerobic activity is, in METs (metabolic equivalents), with the Compendium's activity code",
+      "archive": [
+        {
+          "label": "Archived copy (activity list)",
+          "file": "compendium-2024-adult-activity-list.pdf",
+          "fetch": "https://pacompendium.com/wp-content/uploads/2024/01/2024-adult-compendium_1_2024.pdf"
+        },
+        {
+          "label": "article",
+          "file": "herrmann-2024-adult-compendium.pdf",
+          "fetch": [
+            "https://rcastoragev2.blob.core.windows.net/21bf8ca80a76a05a52608ccd69dff716/main.PMC10818145.pdf"
+          ],
+          "optional": true
+        }
+      ]
+    }
+  ]
+}
