@@ -1,0 +1,12 @@
+{
+  "slug": "exercise-planner",
+  "name": "Exercise planner",
+  "summary": "Pick the muscles you want to train, or heart and lung fitness, say what equipment you have (a full gym, machines, free weights or nothing at all), and get a few short lists of exercises that cover them, with charts of what each list works.",
+  "topic": "Exercise and health",
+  "status": "alpha",
+  "added": "2026-11-15",
+  "pages": [
+    { "page": "index", "label": "Planner" },
+    { "page": "methods", "label": "Methods and sources" }
+  ]
+}

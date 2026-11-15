@@ -1,0 +1,103 @@
+---
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { referencesFor } from "@site/lib/references.ts";
+import references from "../references.json";
+const { cite } = referencesFor(references as Parameters<typeof referencesFor>[0]);
+const base = import.meta.env.BASE_URL;
+---
+<ToolLayout slug="exercise-planner" page="index" description="Choose the muscles you want to train, or heart and lung fitness, and the equipment you have, and get a few short lists of exercises that cover them.">
+  <h1>Exercise planner</h1>
+  <p class="lede">Choose what you want to train and what equipment you have, and get a few short lists of exercises that cover it, with charts of what each list works.</p>
+  <p class="notice small">Early version (alpha). Which muscles each exercise works is partly the tool's own classification; see <a href={`${base}tools/exercise-planner/methods/`}>Methods and sources</a>. Information only, not medical advice: if you have a health condition, an injury or haven't exercised for a while, ask a GP or physiotherapist first.</p>
+
+  <div id="planner">
+    <noscript><p class="notice">The planner runs in your browser and needs JavaScript.</p></noscript>
+
+    <section class="panel" aria-labelledby="h-targets">
+      <h2 id="h-targets">1. What do you want to train? <span class="summary-note" id="targetNote"></span></h2>
+      <p class="preset-row sans" id="groupButtons"></p>
+      <div class="check-grid" id="targetBoxes"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="h-equip">
+      <h2 id="h-equip">2. What equipment do you have? <span class="summary-note" id="equipNote"></span></h2>
+      <p class="preset-row sans" id="presetButtons"></p>
+      <details>
+        <summary>Choose individual items</summary>
+        <div class="details-body check-columns" id="equipmentBoxes"></div>
+      </details>
+    </section>
+
+    <section class="panel" aria-labelledby="h-options">
+      <h2 id="h-options" class="sr-only">Options</h2>
+      <details>
+        <summary>Fine-tune <span class="summary-note" id="optionsNote"></span></summary>
+        <div class="details-body">
+          <div class="tune-row sans">
+            <label class="field">Most exercises in a suggestion <input id="maxEx" type="number" min="1" max="10" step="1" inputmode="numeric" /></label>
+            <label class="field">Number of suggestions <input id="count" type="number" min="1" max="6" step="1" inputmode="numeric" /></label>
+          </div>
+          <fieldset class="sans">
+            <legend>How different should the suggestions be?</legend>
+            <div class="segmented" id="overlapSeg"></div>
+            <p class="small muted">"Some shared" lets a suggestion share up to half its exercises with an earlier one.</p>
+          </fieldset>
+          <label class="field sans">Count a target muscle as covered at
+            <select id="depth">
+              <option value="0.5">½ set (trained at least indirectly)</option>
+              <option value="1">1 set (default: one direct exercise, or two indirect)</option>
+              <option value="2">2 sets</option>
+              <option value="3">3 sets</option>
+            </select>
+          </label>
+          <p class="small muted sans">Counted from one set of each exercise in the list. <span id="depthCustom" class="badge" hidden>changed from the default</span></p>
+          <details>
+            <summary>Exercises to include</summary>
+            <div class="details-body">
+              <p class="small sans">Untick any exercise you don't want suggested (for example, one you can't do). <button type="button" class="link" id="includeAll">Include all</button></p>
+              <div class="check-columns" id="exerciseList"></div>
+            </div>
+          </details>
+          <p><button type="button" class="small" id="reset">Reset everything</button></p>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel" aria-labelledby="h-results">
+      <h2 id="h-results">3. Suggestions</h2>
+      <p class="small sans">
+        Each muscle gets <strong>1 set</strong> from a set of an exercise that trains it directly, and <strong>½ set</strong>
+        from one that trains it indirectly, a counting method that best predicted muscle growth in a 2026 analysis of
+        training studies <Fragment set:html={cite("pelland-2026")} />. The WHO recommends muscle-strengthening activities that
+        involve all major muscle groups on 2 or more days a week, and 150–300 minutes of moderate or 75–150 minutes of vigorous
+        aerobic activity a week, for adults <Fragment set:html={cite("who-2020")} />. Aerobic effort is in METs (multiples of the
+        energy used sitting at rest) from the Compendium of Physical Activities <Fragment set:html={cite("compendium-2024")} />.
+      </p>
+      <div id="results" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <style is:global>
+    #planner .check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 4px 16px; }
+    #planner .check-columns { columns: 260px; column-gap: 20px; }
+    #planner .check { display: flex; gap: 6px; align-items: baseline; padding: 2px 0; break-inside: avoid; font-family: var(--sans); }
+    #planner .equip-group { break-inside: avoid; margin-bottom: 8px; }
+    #planner .equip-group legend { font-weight: 700; color: var(--navy); font-family: var(--sans); }
+    #planner .preset-row button { margin: 2px 4px 2px 0; }
+    #planner .tune-row { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 10px; }
+    #planner .field { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    #planner .option { margin: 16px 0; }
+    #planner .option h3 { margin-top: 0; }
+    #planner .ex-list { padding-left: 1.2em; }
+    #planner .ex-list li { margin-bottom: 0.7em; }
+    #planner .ex-name { font-weight: 700; }
+    #planner figure.chart { margin: 8px 0; }
+    #planner svg.radar { width: 100%; max-width: 520px; height: auto; display: block; }
+    #planner .badge { font-family: var(--sans); font-size: 0.75rem; font-weight: 700; padding: 1px 6px; border-radius: 3px; background: var(--warn-soft); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  </style>
+  <script>
+    import { start } from "../web/ui.ts";
+    start(document.getElementById("planner")!);
+  </script>
+</ToolLayout>

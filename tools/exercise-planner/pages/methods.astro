@@ -1,0 +1,160 @@
+---
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { referencesFor } from "@site/lib/references.ts";
+import references from "../references.json";
+import { EXERCISES, EQUIPMENT, MUSCLES } from "../web/catalogue.ts";
+const { cite } = referencesFor(references as Parameters<typeof referencesFor>[0]);
+const muscle = Object.fromEntries(MUSCLES.map((m) => [m.id, m.label]));
+const equip = Object.fromEntries(EQUIPMENT.map((e) => [e.id, e.label]));
+const needs = (n: string[][]) => n.length ? n.map((g) => g.map((e) => equip[e]).join(" or ")).join("; plus ") : "nothing";
+const strength = EXERCISES.filter((e) => e.direct.length);
+const aerobic = EXERCISES.filter((e) => e.met?.length);
+---
+<ToolLayout slug="exercise-planner" page="methods">
+  <h1>Methods and sources</h1>
+  <p class="lede">How the exercise planner works, where its numbers come from, what has been checked, and what it can't tell you.</p>
+
+  <h2>How suggestions are found</h2>
+  <p>
+    You choose targets (any of 13 muscle groups, and heart and lungs) and the equipment you have. The planner keeps
+    the exercises your equipment allows and that help at least one target, then tries every combination of up to the
+    number of exercises you allow. It ranks them by:
+  </p>
+  <ol class="prose">
+    <li>how many targets are covered (a target muscle is covered when one set of each exercise in the list gives it
+      at least 1 set, counted as below; heart and lungs is covered by any aerobic activity);</li>
+    <li>then the fewest exercises;</li>
+    <li>then the most work for the target muscles, up to twice the covered level;</li>
+  </ol>
+  <p>
+    Exercises that do exactly the same for your targets (for example the bench press and the chest press machine, if
+    your only targets are chest and triceps) are searched as one, then swapped for each other to make varied lists.
+    The planner picks the best few lists that differ enough from each other ("All different" shares no exercises; "Some
+    shared" lets a list share up to half its exercises with an earlier one), preferring, among equals, the more intense
+    aerobic activity and the exercises that work more muscles overall. If more than 30 exercises could help, it keeps
+    the best three for each target plus those that help most overall, and the page says so.
+  </p>
+
+  <h2>Counting sets: direct and indirect</h2>
+  <p>
+    A set of an exercise counts as <strong>1 set</strong> for a muscle it trains <em>directly</em> and as
+    <strong>½ set</strong> for a muscle it trains <em>indirectly</em>. This is the "fractional" method of Pelland and
+    colleagues, whose meta-regressions of resistance-training studies classified each set as direct (the measured muscle
+    was likely the primary force generator) or indirect (the muscle was likely meaningfully trained but as a helper, or
+    synergist), and found that counting indirect sets as half a set gave the strongest evidence for predicting muscle growth
+    <Fragment set:html={cite("pelland-2026")} />.
+  </p>
+  <p>
+    An earlier review by Schoenfeld and colleagues found that multi-joint exercises such as presses, rows and squats
+    can't be assumed to train every muscle involved as much as an exercise aimed at that muscle; for example, during
+    squats and the leg press the hamstrings are much less active than the quadriceps. At the time, with little direct
+    evidence, they advised counting sets one-for-one and adjusting by judgement <Fragment set:html={cite("schoenfeld-2019")} />.
+    The planner follows the later, larger analysis and counts half.
+  </p>
+
+  <h2>Which muscles each exercise works</h2>
+  <p>
+    <strong>Exercises classified in the analysis.</strong> Pelland and colleagues list how they classified common exercises
+    for the quadriceps, hamstrings, chest, front of the shoulders, trapezius, triceps and biceps (Table 1A of the archived
+    preprint) <Fragment set:html={cite("pelland-2026")} />. Where an exercise appears there, the planner follows it: for
+    example the bench press trains the chest directly and the triceps and front shoulders indirectly; rows and pulldowns
+    train the biceps and trapezius indirectly; squats, lunges and the leg press don't count for the hamstrings.
+  </p>
+  <p>
+    <strong>Everything else, by analogy.</strong> The other exercises, and the muscles that table doesn't cover (lats,
+    glutes, lower back, abs, calves, forearms), are classified by the planner from anatomy. Each exercise is described by
+    the joint movements it loads (for example, knee and hip extension in a squat), and the muscles that produce those
+    movements come from an open anatomy textbook <Fragment set:html={cite("openstax-ap2e")} />: for example the gluteus
+    maximus extends the hip, the hamstrings bend the knee and extend the hip, the erector spinae is the main extensor of
+    the spine, the latissimus dorsi pulls the upper arm down and back, and the gastrocnemius and soleus point the foot.
+    A muscle producing the exercise's main movement counts as direct; one producing a secondary movement counts as indirect.
+    These exercises are marked <span class="tag">by analogy</span> in the planner. This is a judgement, made openly, not a
+    measurement.
+  </p>
+  <p>
+    Muscles that only hold the body still (such as the trunk muscles in a squat) are listed as "steadied" and not counted,
+    except in exercises whose whole purpose is the hold, such as the plank or the farmer's carry.
+  </p>
+
+  <details>
+    <summary>All {strength.length} exercises and their muscles</summary>
+    <div class="details-body table-scroll">
+      <table>
+        <thead><tr><th>Exercise</th><th>Needs</th><th>Direct (1 set)</th><th>Indirect (½ set)</th><th>Basis</th></tr></thead>
+        <tbody>
+          {strength.map((e) => (
+            <tr>
+              <td>{e.name}<br /><span class="muted small">{e.moves}</span></td>
+              <td class="small">{needs(e.needs)}</td>
+              <td>{e.direct.map((m) => muscle[m]).join(", ")}</td>
+              <td>{e.indirect.map((m) => muscle[m]).join(", ") || "–"}</td>
+              <td class="small">{e.listed ? <>Pelland et al., Table 1A ("{e.listed}")</> : "By analogy (anatomy)"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <h2>Heart and lungs</h2>
+  <p>
+    Aerobic activities are rated by their MET value (metabolic equivalent: how many times the energy used sitting at rest),
+    copied unchanged, with activity codes, from the 2024 Adult Compendium of Physical Activities, which compiles measured
+    energy costs for adults aged 19 to 59 <Fragment set:html={cite("compendium-2024")} />. The WHO defines moderate intensity
+    as 3 to under 6 METs and vigorous intensity as 6 METs or more, and recommends that adults do 150–300 minutes of
+    moderate or 75–150 minutes of vigorous aerobic activity a week (or a mix), plus muscle-strengthening activities
+    involving all major muscle groups on 2 or more days a week <Fragment set:html={cite("who-2020")} />.
+  </p>
+  <details>
+    <summary>All {aerobic.length} aerobic activities and their Compendium values</summary>
+    <div class="details-body table-scroll">
+      <table>
+        <thead><tr><th>Activity</th><th>Code</th><th class="num">MET</th><th>Compendium description</th></tr></thead>
+        <tbody>
+          {aerobic.flatMap((e) => e.met!.map((r, i) => (
+            <tr><td>{i === 0 ? e.name : ""}</td><td>{r.code}</td><td class="num">{r.met.toFixed(1)}</td><td class="small">{r.label}</td></tr>
+          )))}
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <h2>Charts</h2>
+  <p>
+    The charts show fractional sets per muscle from one set of each exercise in a suggestion, on a linear scale that
+    grows to fit the largest value and never cuts values off. The navy line marks the covered level for your target muscles,
+    and every value is written next to its point, with ✓ or "short", so colour is never the only signal. With fewer than
+    three target muscles a bar chart is used, as a radar chart needs at least three axes.
+  </p>
+
+  <h2>What has been checked</h2>
+  <ul class="prose">
+    <li><strong>Checked</strong> (15 Nov 2026) against the archived copies: every MET value, code and description; the
+      fractional counting method and Table 1A classifications; the WHO recommendations and intensity definitions; the
+      muscle actions used from the anatomy textbook. Details are in the repository's
+      <code>tools/exercise-planner/VERIFICATION.md</code>.</li>
+    <li><strong>Not yet checked</strong> against muscle-activity (EMG) studies: the exercises classified by analogy.
+      Systematic reviews of muscle activity exist for several of them (for example squats, deadlifts and core exercises)
+      and are the next thing to compare against.</li>
+  </ul>
+
+  <h2>Limitations</h2>
+  <ul class="prose">
+    <li>The suggestions are lists of exercises, not a training programme: they don't say how heavy, how many repetitions,
+      how many sets or how often. Do any new exercise with good technique, starting light.</li>
+    <li>Thirteen muscle groups is a simplification. Within a group, different exercises stress different parts (for
+      example, the upper and lower chest).</li>
+    <li>Direct and indirect are two broad categories. Real exercises sit on a continuum, and technique, grip and range of
+      motion change which muscles work hardest.</li>
+    <li>The analysis behind the counting method pooled studies lasting about 10 weeks on average, in participants with an
+      average age of about 25 <Fragment set:html={cite("pelland-2026")} />. It may apply less well to older people or very
+      experienced lifters.</li>
+    <li>MET values are averages for adults aged 19 to 59; your own effort depends on your fitness and pace
+      <Fragment set:html={cite("compendium-2024")} />.</li>
+    <li>Muscles that only hold the body still aren't counted, although they are under tension and some authors suggest
+      counting them as part of a set <Fragment set:html={cite("schoenfeld-2019")} />. The charts may therefore understate
+      the work for, say, the lower back in a deadlift.</li>
+    <li>"Covered" means "trained by the list at least once", the planner's own threshold for building lists. It is not a
+      recommended dose.</li>
+  </ul>
+</ToolLayout>
