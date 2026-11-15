@@ -193,6 +193,13 @@
     "note": "uploaded by the site owner",
     "sha256": "ba28add5cc79e4064ec9bf556eb1540800a967e886698bf3eee63cba49c4a778"
   },
+  "schoenfeld-2019-set-volume-multi-joint.pdf": {
+    "source": "schoenfeld-2019",
+    "url": "https://vuir.vu.edu.au/42522/1/sports-07-00177.pdf",
+    "finalUrl": "https://vuir.vu.edu.au/42522/1/sports-07-00177.pdf",
+    "retrieved": "2026-11-15",
+    "sha256": "e5fdd58cf4e1a7b4bd6406a0a7af1c4e048f092d578f1a4fde3ff8600c4784bb"
+  },
   "who-2007-trs-935.pdf": {
     "source": "who-2007",
     "retrieved": null,
