@@ -3,7 +3,7 @@
 import type { OutputFormat, SplitMode } from "./session.ts";
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -47,6 +47,9 @@ export const TASKS: Task[] = [
     pick: "Select PDF files", hint: "Type a percentage and press Resize. Tick pages first to resize only those.",
     parts: ["select", "scale"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "resized", tag: "⤢" },
 
+  { slug: "edit", name: "Edit PDF", blurb: "Add text and pictures to pages: fill in a form, add a note, a date, a signature picture or a logo.", group: "Organise", accept: "both",
+    pick: "Select PDF file", hint: "Press ＋ Text or ＋ Picture, then drag it into place. This adds to pages; it can't yet change or remove what is already on them.",
+    parts: ["marks"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "edited", tag: "✎" },
   { slug: "compress", name: "Compress PDF", blurb: "Make a PDF smaller by shrinking the pictures inside it. You see the real new size before you download.", group: "Optimise", accept: "pdf",
     pick: "Select PDF files", hint: "Choose how hard to compress, then press Compress to see the new size and a before-and-after preview.",
     parts: ["compress"], formats: ["pdf"], which: "all", action: "Compress PDF", perFile: true, suffix: "compressed", tag: "↓" },
@@ -70,13 +73,13 @@ export const TASKS: Task[] = [
 export const WORKSPACE: Task = {
   slug: "workspace", name: "All-in-one workspace", blurb: "Every tool on one page, for jobs that need several steps: arrange, then split or convert, and save your settings to carry on later.", group: "Organise", accept: "both",
   pick: "Select PDFs or images", hint: "Tick pages to select them, then use the buttons. Drag pages to reorder them.",
-  parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo", "scale", "split", "imageDpi", "compress"],
+  parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo", "scale", "split", "imageDpi", "compress", "marks"],
   formats: ["pdf", "png", "jpeg", "webp", "tiff", "bmp", "txt"], which: "all", action: "Save all pages", suffix: "edited", tag: "ALL",
 };
 
 /** Asked for by the owner and not built yet. Shown on the home grid, clearly marked, so nobody hunts for them. */
 export const NOT_BUILT: { name: string; tag: string }[] = [
-  { name: "Edit PDF", tag: "✎" },
+  { name: "Remove or change existing text and pictures", tag: "▮" },
   { name: "Word to PDF", tag: "DOC" }, { name: "PowerPoint to PDF", tag: "PPT" }, { name: "Excel to PDF", tag: "XLS" }, { name: "HTML to PDF", tag: "WEB" },
   { name: "PDF to Word", tag: "DOC" }, { name: "PDF to PowerPoint", tag: "PPT" }, { name: "PDF to Excel", tag: "XLS" }, { name: "PDF to HTML", tag: "WEB" },
 ];

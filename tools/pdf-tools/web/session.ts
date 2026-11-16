@@ -5,6 +5,7 @@
 // settings file contains, so a visitor can add the same files again later and carry on.
 import { parseRanges } from "./ranges.ts";
 import { NO_COMPRESSION, type CompressOptions } from "./compress-core.ts";
+import { cleanMark, type Mark } from "./marks.ts";
 
 export const FORMAT = "halfbakedtools.pdf-tools.settings";
 export const VERSION = 1;
@@ -13,7 +14,7 @@ export type Rotation = 0 | 90 | 180 | 270;
 export type SourceRef = { id: string; name: string; size: number; sha256: string; pages: number; kind: "pdf" | "image" };
 /** One output page: page `page` (from 0) of source `src`, turned by `rotate` degrees clockwise on top of
  *  any rotation already in the file, and resized with its contents by `scale` (1 = unchanged). */
-export type PageItem = { src: string; page: number; rotate: Rotation; scale: number };
+export type PageItem = { src: string; page: number; rotate: Rotation; scale: number; marks?: Mark[] };
 export type OutputFormat = "pdf" | "png" | "jpeg" | "webp" | "bmp" | "tiff" | "txt";
 export type SplitMode = "none" | "every" | "ranges" | "each";
 export type Output = {
@@ -39,19 +40,34 @@ export const emptySession = (): Session => ({ sources: [], pages: [], output: { 
 
 /** Adds a source and appends all its pages. If the session is already waiting for this file
  *  (same checksum, from a loaded settings file), it is matched instead and no pages are added. */
-export function addSource(s: Session, ref: Omit<SourceRef, "id">): { session: Session; id: string; matched: boolean } {
+export function addSource(s: Session, ref: Omit<SourceRef, "id">, appendPages = true): { session: Session; id: string; matched: boolean } {
   const known = s.sources.find((x) => x.sha256 === ref.sha256);
   if (known) return { session: s, id: known.id, matched: true };
   let n = s.sources.length + 1;
   while (s.sources.some((x) => x.id === `f${n}`)) n++;
   const id = `f${n}`;
-  const pages = Array.from({ length: ref.pages }, (_, page): PageItem => ({ src: id, page, rotate: 0, scale: 1 }));
+  // appendPages = false: a picture added to be placed on a page, not to become a page itself
+  const pages = appendPages ? Array.from({ length: ref.pages }, (_, page): PageItem => ({ src: id, page, rotate: 0, scale: 1 })) : [];
   return { session: { ...s, sources: [...s.sources, { ...ref, id }], pages: [...s.pages, ...pages] }, id, matched: false };
 }
 
-/** Removes a source and every page that came from it. */
-export const removeSource = (s: Session, id: string): Session =>
-  ({ ...s, sources: s.sources.filter((x) => x.id !== id), pages: s.pages.filter((p) => p.src !== id) });
+/** Removes a source, every page that came from it, and every picture placed from it. */
+export const removeSource = (s: Session, id: string): Session => ({
+  ...s, sources: s.sources.filter((x) => x.id !== id),
+  pages: s.pages.filter((p) => p.src !== id).map((p) => (p.marks?.some((m) => m.type === "image" && m.src === id) ? withMarks(p, p.marks.filter((m) => !(m.type === "image" && m.src === id))) : p)),
+});
+
+/** A copy of the page with these marks (none = the field is left out, keeping settings files tidy). */
+export const withMarks = (p: PageItem, marks: Mark[]): PageItem => {
+  const { marks: _old, ...rest } = p;
+  return marks.length ? { ...rest, marks } : rest;
+};
+/** Replaces the marks on the page at `index`. */
+export function setMarks(pages: PageItem[], index: number, marks: Mark[], sel: number[] = []): Edit {
+  return { pages: pages.map((p, i) => (i === index ? withMarks(p, marks) : p)), sel };
+}
+/** How many times a source is used: as pages, and as pictures placed on pages. */
+export const usage = (s: Session, id: string) => s.pages.reduce((n, p) => n + (p.src === id ? 1 : 0) + (p.marks?.filter((m) => m.type === "image" && m.src === id).length ?? 0), 0);
 
 // --- Page list edits. `sel` is a list of positions in `pages`; each returns the new list and new selection. ---
 export type Edit = { pages: PageItem[]; sel: number[] };
@@ -197,7 +213,12 @@ export function parseSettings(text: string): Session {
     if (!isObj(x) || !src || !int(x.page, 0, src.pages - 1) || ![0, 90, 180, 270].includes(x.rotate as number) || !num(x.scale, SCALE_MIN, SCALE_MAX)) {
       throw new Error(`The settings file's page ${i + 1} is damaged.`);
     }
-    return { src: src.id, page: x.page as number, rotate: x.rotate as Rotation, scale: x.scale as number };
+    const item: PageItem = { src: src.id, page: x.page as number, rotate: x.rotate as Rotation, scale: x.scale as number };
+    if (x.marks === undefined) return item;
+    if (!Array.isArray(x.marks) || x.marks.length > 2000) throw new Error(`The settings file's page ${i + 1} is damaged.`);
+    const marks = x.marks.map((m: unknown) => cleanMark(m, (id) => byId.get(id)?.kind === "image"));
+    if (marks.some((m) => m === null)) throw new Error(`The settings file's page ${i + 1} has a damaged addition.`);
+    return withMarks(item, marks as Mark[]);
   });
 
   const o = isObj(j.output) ? j.output : {};

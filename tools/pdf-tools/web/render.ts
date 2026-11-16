@@ -21,7 +21,8 @@ export class NeedsPassword extends Error { wrong: boolean; constructor(wrong: bo
 
 /** `vendor` is the address of the PDF.js support files served by this site (fonts, character maps, decoders). */
 export async function openPdf(bytes: Uint8Array, vendorPath: string, password?: string): Promise<pdfjs.PDFDocumentProxy> {
-  const vendor = new URL(vendorPath, location.href).href;   // full address: the in-memory worker has no folder of its own
+  const vendor = new URL(vendorPath, location.href).href;
+  await closing;   // full address: the in-memory worker has no folder of its own
   try {
     return await pdfjs.getDocument({
       data: bytes.slice(),                    // PDF.js takes ownership of the bytes it is given, so hand it a copy
@@ -36,6 +37,11 @@ export async function openPdf(bytes: Uint8Array, vendorPath: string, password?: 
     throw e;
   }
 }
+
+/** Releases an opened PDF's memory. PDF.js refuses to open a document while it is still closing another, so
+ *  closes are queued and openPdf waits for them. */
+let closing: Promise<unknown> = Promise.resolve();
+export const closePdf = (doc: pdfjs.PDFDocumentProxy) => { closing = closing.then(() => doc.loadingTask.destroy()).catch(() => {}); };
 
 /** Size of a page in PDF points (1/72 inch) as it will be seen, including the file's own rotation, before the visitor's edits. */
 export async function pageSize(h: Handle, page: number, imageDpi: number): Promise<{ w: number; h: number }> {

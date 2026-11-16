@@ -7,16 +7,18 @@ import { NO_COMPRESSION, PRESETS, saving, greyInPlace, type CompressOptions, typ
 import { recompressImages } from "./compress.ts";
 import {
   emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName,
-  serialise, parseSettings, defaultName, clashes, SCALE_MIN, SCALE_MAX, DPI_MIN, DPI_MAX,
+  serialise, parseSettings, defaultName, clashes, setMarks, usage, SCALE_MIN, SCALE_MAX, DPI_MIN, DPI_MAX,
   type Session, type PageItem, type Edit, type OutputFormat, type SplitMode, type Rotation, type SourceRef,
 } from "./session.ts";
 import { parsePageList, formatRanges } from "./ranges.ts";
-import { makeBuilder, inspectPdf, type SourceData } from "./build.ts";
+import { makeBuilder, inspectPdf, fontSet, cantDraw, type SourceData } from "./build.ts";
+import { createEditor } from "./editor.ts";
+import type { Mark } from "./marks.ts";
 import { encodeBmp } from "./bmp.ts";
 import { pagesToText } from "./text.ts";
 import { jpegOrientation, orientationToRotation } from "./exif.ts";
 import { taskBySlug, type Part } from "./tasks.ts";
-import { openPdf, drawPage, pageText, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle } from "./render.ts";
+import { openPdf, closePdf, drawPage, pageText, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle } from "./render.ts";
 
 // The TIFF library is only fetched (from this site) when a TIFF is read or written.
 const utif = async () => { const m = await import("utif2"); return ((m as { default?: typeof m }).default ?? m); };
@@ -86,7 +88,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     }
   }
 
-  async function loadImage(bytes: Uint8Array, type: string): Promise<Loaded> {
+  /** `upright`: store a sideways photo already turned (for pictures placed on a page, which have no page to turn). */
+  async function loadImage(bytes: Uint8Array, type: string, upright = false): Promise<Loaded> {
     const toPng = async (c: HTMLCanvasElement) => new Uint8Array(await (await canvasBlob(c, "image/png")).arrayBuffer());
     const canvasOf = (img: CanvasImageSource, w: number, h: number) => { const c = el("canvas", { width: w, height: h }); c.getContext("2d")!.drawImage(img, 0, 0); return c; };
     if (isTiff(bytes)) {
@@ -104,7 +107,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     if (isJpeg(bytes)) {
       const turn = orientationToRotation(jpegOrientation(bytes));
       // The JPEG goes into the PDF untouched (no quality loss); the page is turned to match the photo's orientation note.
-      if (turn !== null) return { data: { kind: "image", bytes, type: "jpeg", turn }, handle: { kind: "image", img, width, height, turn }, usedPassword: false };
+      if (turn !== null && !(upright && turn !== 0)) return { data: { kind: "image", bytes, type: "jpeg", turn }, handle: { kind: "image", img, width, height, turn }, usedPassword: false };
     } else if (isPng(bytes)) {
       return { data: { kind: "image", bytes, type: "png" }, handle: { kind: "image", img, width, height, turn: 0 }, usedPassword: false };
     }
@@ -154,6 +157,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       }
       render();
       say(notes.join(" "), notes.length ? "warn" : "info");
+      if (task.slug === "edit" && editor && !editor.isOpen() && session.pages.length && has(session.pages[0])) editor.open(0);
     });
   }
 
@@ -236,7 +240,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const files = $("files");
     files.replaceChildren(...session.sources.map((s) => {
       const ok = loaded.has(s.sha256);
-      const n = session.pages.filter((p) => p.src === s.id).length;
+      const n = usage(session, s.id);
       return el("li", { className: ok ? "" : "missing" },
         el("span", {}, `${s.name} `, el("span", { className: "muted small" }, `${s.kind === "pdf" ? `${s.pages} page${s.pages === 1 ? "" : "s"}` : "image"}, ${fmtSize(s.size)}; ${n} in use${ok ? "" : ""}`)),
         ok ? "" : el("strong", { className: "badge-missing" }, " Not added yet: add this file to carry on"),
@@ -252,7 +256,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       img.style.transform = `rotate(${p.rotate}deg)`;
       const key = `${s.sha256}:${p.page}`;
       if (thumbs.has(key)) img.src = thumbs.get(key)!;
-      const notes = [p.rotate ? `turned ${p.rotate}°` : "", p.scale !== 1 ? `${Math.round(p.scale * 1000) / 10}% size` : ""].filter(Boolean).join(", ");
+      const added = p.marks?.length ?? 0;
+      const notes = [p.rotate ? `turned ${p.rotate}°` : "", p.scale !== 1 ? `${Math.round(p.scale * 1000) / 10}% size` : "", added ? `${added} addition${added === 1 ? "" : "s"} (not shown in this small preview)` : ""].filter(Boolean).join(", ");
       const tile = el("li", { className: `tile${sel.has(i) ? " on" : ""}`, draggable: true },
         el("label", {},
           el("span", { className: "thumb" }, ok ? img : el("span", { className: "small" }, "File not added yet")),
@@ -260,6 +265,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
           el("span", { className: "from small muted" }, `${s.name}${s.kind === "pdf" ? `, p. ${p.page + 1}` : ""}`),
           notes ? el("span", { className: "from small" }, notes) : ""));
       tile.dataset.i = String(i);
+      if (ok && can("marks")) { const b = el("button", { type: "button", className: "small edit" }, added ? "Edit additions" : "Add text or picture"); b.dataset.edit = String(i); tile.append(b); }
       if (ok && !thumbs.has(key)) watcher.observe(tile);
       return tile;
     }));
@@ -274,6 +280,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     if (o.compress.mode !== "none") put("cMode", o.compress.mode);
     const grey = root.querySelector<HTMLInputElement>("#cGrey"); if (grey) grey.checked = o.compress.grey;
     showOptions(); refreshButtons();
+    if (editor?.isOpen()) editor.refresh();
   }
   const fmtSize = (n: number) => n < 1e6 ? `${Math.max(1, Math.round(n / 1e3))} kB` : `${(n / 1e6).toFixed(1)} MB`;
 
@@ -292,6 +299,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   // selection: click, shift-click for a range
   grid.addEventListener("click", (e) => {
+    const editBtn = (e.target as Element).closest<HTMLElement>("[data-edit]");
+    if (editBtn && !busy) return void editor?.open(Number(editBtn.dataset.edit));
     const tile = (e.target as Element).closest<HTMLElement>(".tile");
     if (!tile || !(e.target instanceof HTMLInputElement)) return;
     const i = Number(tile.dataset.i);
@@ -341,6 +350,48 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     if (!e.dataTransfer?.files.length) return;
     e.preventDefault(); addFiles([...e.dataTransfer.files]);
   });
+
+  // ---------- pages with additions, and the editor ----------
+  const dataMap = () => new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
+  const buildOne = (p: PageItem) => makeBuilder(dataMap(), { imageDpi: session.output.imageDpi })([{ ...p, scale: 1 }]);
+  /** What to draw or read for a page. A page with additions is first built as it will be saved, so pictures and
+   *  text made from it include them. Call `done` afterwards. */
+  async function drawable(p: PageItem): Promise<{ handle: Handle; page: number; rotate: Rotation; done: () => void }> {
+    if (!p.marks?.length) return { handle: loaded.get(src(p.src).sha256)!.handle, page: p.page, rotate: p.rotate, done: () => {} };
+    const doc = await openPdf(await buildOne(p), vendor);
+    return { handle: { kind: "pdf", doc }, page: 0, rotate: 0, done: () => closePdf(doc) };
+  }
+  let fonts: ReturnType<typeof fontSet> | null = null;
+  PDFDocument.create().then((d) => { fonts = fontSet(d); });   // only used to measure text for the editor's handles
+  const editor = can("marks") ? createEditor({
+    root, say,
+    page: (i) => session.pages[i], count: () => session.pages.length,
+    baseSize: (p) => pageSize(loaded.get(src(p.src).sha256)!.handle, p.page, session.output.imageDpi),
+    async draw(p, pxPerPoint) {
+      const doc = await openPdf(await buildOne(p), vendor);
+      try { return await drawPage({ kind: "pdf", doc }, 0, 0, { pxPerPoint, pxPerImagePx: pxPerPoint }); } finally { closePdf(doc); }
+    },
+    font: (m) => fonts!(m.font, m.bold),
+    cantDraw: (m) => cantDraw(m.text, fonts!(m.font, m.bold)),
+    setMarks(i, marks: Mark[], quiet) { if (!quiet) remember(); session = { ...session, pages: setMarks(session.pages, i, marks).pages }; render(); },
+    async addPicture(file) {
+      try {
+        const bytes = new Uint8Array(await file.arrayBuffer()), sha = await sha256(bytes);
+        if (isPdf(bytes)) { say("Choose a picture (PNG, JPEG, and so on), not a PDF.", "bad"); return null; }
+        let item = loaded.get(sha);
+        if (item && item.data.kind === "image" && item.data.turn) item = undefined;   // added earlier as a sideways photo page: needs an upright copy
+        if (!item) item = await loadImage(bytes, file.type, true);
+        if (item.handle.kind !== "image") return null;
+        const known = session.sources.find((s) => s.sha256 === sha);
+        if (known && loaded.get(sha) !== item) { say("That photo is already added as a page; to place it on a page too, save a copy of it under another name first.", "bad"); return null; }
+        loaded.set(sha, item);
+        const r = addSource(session, { name: file.name, size: bytes.length, sha256: sha, pages: 1, kind: "image" }, false);
+        session = r.session;
+        return { id: r.id, width: item.handle.width, height: item.handle.height };
+      } catch (e) { console.error(e); say(`"${file.name}" couldn't be read as a picture.`, "bad"); return null; }
+    },
+    onClose: () => render(),
+  }) : null;
 
   // ---------- output options ----------
   function readOptions() {
@@ -481,7 +532,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         }
       } else if (o.format === "txt") {
         const texts: string[] = [];
-        for (const [i, p] of pages.entries()) { progress(`Reading text: page ${i + 1} of ${pages.length}…`); texts.push(await pageText(loaded.get(src(p.src).sha256)!.handle, p.page)); }
+        for (const [i, p] of pages.entries()) { progress(`Reading text: page ${i + 1} of ${pages.length}…`); const d = await drawable(p); try { texts.push(await pageText(d.handle, d.page)); } finally { d.done(); } }
         const { text, empty } = pagesToText(texts);
         if (empty === pages.length) throw new Error("No text was found. If these pages are scans or photos, the words are pictures, and this tool can't read text from pictures.");
         download(`${o.name}.txt`, new Blob([text], { type: "text/plain;charset=utf-8" }));
@@ -490,9 +541,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         const files = [];
         for (const [i, p] of pages.entries()) {
           progress(`Drawing page ${i + 1} of ${pages.length}…`);
-          const h = loaded.get(src(p.src).sha256)!.handle;
-          const pxPerPoint = (o.dpi / 72) * p.scale;
-          const c = await drawPage(h, p.page, p.rotate, { pxPerPoint, pxPerImagePx: pxPerPoint * (72 / o.imageDpi) });
+          const d = await drawable(p), pxPerPoint = (o.dpi / 72) * p.scale;
+          let c: HTMLCanvasElement;
+          try { c = await drawPage(d.handle, d.page, d.rotate, { pxPerPoint, pxPerImagePx: pxPerPoint * (72 / o.imageDpi) }); } finally { d.done(); }
           let bytes: Uint8Array;
           if (o.format === "bmp" || o.format === "tiff") {
             const px = c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data;
@@ -512,8 +563,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const out = await PDFDocument.create();
     for (const [i, p] of pp.entries()) {
       step(i);
-      const h = loaded.get(src(p.src).sha256)!.handle, pxPerPoint = c.dpi / 72;
-      const canvas = await drawPage(h, p.page, p.rotate, { pxPerPoint, pxPerImagePx: pxPerPoint * (72 / session.output.imageDpi) });
+      const d = await drawable(p), pxPerPoint = c.dpi / 72;
+      let canvas: HTMLCanvasElement;
+      try { canvas = await drawPage(d.handle, d.page, d.rotate, { pxPerPoint, pxPerImagePx: pxPerPoint * (72 / session.output.imageDpi) }); } finally { d.done(); }
       if (c.grey) { const ctx = canvas.getContext("2d")!, d = ctx.getImageData(0, 0, canvas.width, canvas.height); greyInPlace(d.data); ctx.putImageData(d, 0, 0); }
       const img = await out.embedJpg(new Uint8Array(await (await canvasBlob(canvas, "image/jpeg", c.quality)).arrayBuffer()));
       const w = (canvas.width / pxPerPoint) * p.scale, ht = (canvas.height / pxPerPoint) * p.scale;
@@ -597,6 +649,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   });
   $("startOver").addEventListener("click", () => {
     if (busy) return;
+    editor?.close();
     for (const u of thumbs.values()) URL.revokeObjectURL(u);
     thumbs.clear(); loaded.clear(); undo.length = 0; sel = new Set(); session = fresh(); level = levelOf(session.output.compress); clearResult(); render(); say("");
   });

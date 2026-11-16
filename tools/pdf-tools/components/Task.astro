@@ -17,6 +17,7 @@ const policy = import.meta.env.PROD ? CSP : "";
   {policy && <meta slot="head" http-equiv="Content-Security-Policy" content={policy} />}
   <div id="pdftools" data-vendor={vendor} data-task={task.slug}>
     <input id="picker" class="sr-only" type="file" multiple accept={ACCEPT[task.accept]} />
+    <input id="stampPicker" class="sr-only" type="file" accept={ACCEPT.image} data-part="marks" />
 
     <section id="hero" class="hero">
       <h1>{task.name}</h1>
@@ -33,6 +34,20 @@ const policy = import.meta.env.PROD ? CSP : "";
     <div id="work" class="work" hidden>
       <div class="main">
         <p class="crumbline sans small"><a href={home}>All PDF tools</a> › <strong>{task.name}</strong> <span class="summary-note" id="selNote"></span></p>
+        <div id="editor" data-part="marks" hidden>
+          <div class="bar sans" role="toolbar" aria-label="Editing">
+            <button type="button" class="small" id="edBack">◀ All pages</button>
+            <button type="button" class="small" id="edPrev" aria-label="Previous page">‹</button>
+            <span id="edWhere" class="small"></span>
+            <button type="button" class="small" id="edNext" aria-label="Next page">›</button>
+            <button type="button" class="small add" id="edText">＋ Text</button>
+            <label class="button small add" for="stampPicker">＋ Picture</label>
+            <button type="button" class="small" data-act="undo" id="edUndo">Undo</button>
+          </div>
+          <div id="edStage" class="stage"><canvas></canvas><div id="edLayer" class="layer"></div></div>
+          <p class="small muted sans">Drag an addition to move it; drag a picture's corner square to resize it. With one selected, the arrow keys nudge it and Delete removes it. What you see is the page exactly as it will be saved.</p>
+        </div>
+        <div id="gridView">
         <div class="bar sans" role="toolbar" aria-label="Page actions">
           <label class="button small add" for="picker">＋ Add files</label>
           <button type="button" class="small" data-part="select" data-act="all">Select all</button>
@@ -46,6 +61,7 @@ const policy = import.meta.env.PROD ? CSP : "";
           <button type="button" class="small" id="undo" data-act="undo">Undo</button>
         </div>
         <ul id="grid" class="grid"></ul>
+        </div>
         <p id="waiting" class="notice small" hidden></p>
         <details id="filesBox" hidden>
           <summary>Files added</summary>
@@ -56,6 +72,18 @@ const policy = import.meta.env.PROD ? CSP : "";
       <aside class="side" aria-labelledby="h-task">
         <h1 id="h-task" class="side-title">{task.name}</h1>
         <p class="small sans">{task.hint}</p>
+
+        <div id="markProps" class="sans opts props" data-part="marks" hidden>
+          <p data-for="text"><label for="mText">Text</label><br /><textarea id="mText" rows="3"></textarea></p>
+          <p id="mWarn" class="notice small" hidden></p>
+          <p data-for="text"><label class="field">Size <input id="mSize" type="number" min="4" max="400" step="1" inputmode="decimal" /> points</label></p>
+          <p data-for="text"><label class="field">Font
+            <select id="mFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option></select></label></p>
+          <p data-for="text"><label><input id="mBold" type="checkbox" /> Bold</label></p>
+          <p data-for="text"><label class="field">Colour <input id="mColor" type="color" /></label></p>
+          <p><label class="field">Turn by <input id="mRotate" type="number" min="-360" max="360" step="1" inputmode="numeric" />°</label> <span class="small muted">clockwise</span></p>
+          <p><button type="button" class="small" id="mDelete">Remove this addition</button></p>
+        </div>
 
         <div id="more" class="sans opts">
           <p data-part="selectText"><label class="field">Select pages <input id="selText" type="text" placeholder="1-3, 5, 8-" size="10" /></label>
@@ -211,6 +239,16 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .result .pair.zoom { grid-template-columns: 1fr; }
     #pdftools .result .pair.zoom canvas { cursor: zoom-out; }
     #pdftools .result figcaption { font-size: 0.8rem; text-align: center; }
+    #pdftools .stage { position: relative; line-height: 0; box-shadow: 0 0 0 1px #999; background: #fff; touch-action: none; }
+    #pdftools .stage canvas { width: 100%; height: auto; display: block; }
+    #pdftools .layer { position: absolute; inset: 0; overflow: hidden; }
+    #pdftools .mark { position: absolute; transform-origin: 0 0; outline: 1px dashed rgba(0, 0, 128, 0.45); cursor: move; box-sizing: border-box; }
+    #pdftools .mark:hover, #pdftools .mark:focus-visible { outline: 2px solid var(--link-hover); }
+    #pdftools .mark.sel { outline: 2px solid var(--navy); background: rgba(0, 0, 128, 0.06); }
+    #pdftools .grip { position: absolute; right: -7px; bottom: -7px; width: 14px; height: 14px; background: var(--navy); border: 2px solid #fff; cursor: nwse-resize; }
+    #pdftools .props { border: 1px solid var(--navy); border-radius: 6px; padding: 10px; margin-bottom: 12px; background: #f6f7fd; }
+    #pdftools .props textarea { width: 100%; font: inherit; padding: 4px; box-sizing: border-box; }
+    #pdftools .tile .edit { margin-top: 2px; }
     #pdftools .result .go-result .big { width: 100%; }
     #pdftools .ask { border-width: 2px; }
     #pdftools .ask p { margin: 0 0 0.5em; }

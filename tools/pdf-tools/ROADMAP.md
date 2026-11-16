@@ -18,7 +18,7 @@ button. The current single workspace page can stay as the "organise" task and th
 (`session.ts`, `build.ts`, `render.ts` need no change). **Done 2026-11-16**: see `web/tasks.ts` (the task list),
 `components/Task.astro` (the shared page) and `pages/index.astro` (the grid). To add a task: add an entry to
 `TASKS`, a one-line page in `pages/`, and a `"nav": false` entry in `tool.json`. When a "Not built yet" task is
-built, move it from `NOT_BUILT` to `TASKS` (done for Compress PDF). The owner stressed again that, unlike that
+built, move it from `NOT_BUILT` to `TASKS` (done for Compress PDF and Edit PDF). The owner stressed again that, unlike that
 site, **everything must be processed locally and nothing may go to a server or cloud**.
 
 ## Where things stand
@@ -27,7 +27,7 @@ site, **everything must be processed locally and nothing may go to a server or c
 |---|---|---|
 | 1 | Skeleton, no-upload enforcement, merge, reorder, duplicate, remove, rotate, resize page with contents, split, extract, PDF → images (PNG, JPEG, WebP, TIFF, BMP) and text, images → PDF, settings file | **Done 2026-11-16** (alpha) |
 | 2 | Compression with options and size preview; resize images inside scanned PDFs independently of page size; named paper sizes | **Compression done 2026-11-16** (`web/compress-core.ts`, `web/compress.ts`); it also covers shrinking scan pictures without changing page size. Named paper sizes still wait for a source |
-| 3 | Edit page content: add text and images, move/resize/rotate them, remove or redact content | Not started |
+| 3 | Edit page content: add text and images, move/resize/rotate them, remove or redact content | **Adding done 2026-11-16** (`web/marks.ts`, `web/editor.ts`; text and pictures, move, resize pictures, rotate, font/size/colour/bold). Removing or changing existing content not started |
 | 4 | Text and HTML ↔ PDF; Word, PowerPoint, Excel (and OpenDocument) ↔ PDF; PDF → SVG | Office → PDF **on hold by the owner (2026-11-16)**, work kept on branch `office-to-pdf`; rest not started |
 | 5 | Task-first interface in the style of ilovepdf.com, in this site's theme | **Done 2026-11-16** |
 
@@ -103,7 +103,18 @@ Suggested approach:
 
 Test with pdf-lib-generated fixtures in Node where possible; pixel work needs the browser run.
 
-## Phase 3: editing page content
+## Phase 3: what is left
+
+- [ ] **Remove or redact existing content** (the owner asked for "remove text"). Must be true removal: rewrite the
+      page's content stream to drop the text-showing operators inside a chosen region, then verify with text
+      extraction that the words are gone. Do not ship a cover-up box as "removal" (see `DECISIONS.md`).
+- [ ] More scripts for added text: embed a font with `@pdf-lib/fontkit`, served from this site, licence checked.
+- [ ] Resize handles and on-canvas typing for text; touch gestures; keyboard-only editing checked.
+- [ ] Shapes, lines, highlights, tick/cross marks; a freehand signature pad.
+- [ ] Show additions in the small page previews.
+- [ ] Changing existing text in place is not reliably possible in general; don't promise it.
+
+## Phase 3 (original notes): editing page content
 
 - **Adding** text, images, shapes, and moving/resizing/rotating what was added: an overlay model per page
   (`overlays: [{ type, x, y, w, h, rotate, ... }]`), drawn with pdf-lib (`drawText`, `drawImage`) at save time

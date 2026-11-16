@@ -46,6 +46,11 @@
       "nav": false
     },
     {
+      "page": "edit",
+      "label": "Edit PDF",
+      "nav": false
+    },
+    {
       "page": "compress",
       "label": "Compress PDF",
       "nav": false

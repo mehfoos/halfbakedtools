@@ -286,3 +286,100 @@ test("names: defaults carry a suffix, and clashes with added files are found wha
     assert.deepEqual(clashes([`${defaultName("scan.pdf", t.suffix)}.pdf`], ["scan.pdf"]), [], `${t.slug}: default name must differ from the original`);
   }
 });
+
+// ---- added text and pictures ----
+import { toUser, turn, textBox, placeText, placeImage, parseColor, unsupported, cleanMark, baseToView, viewToBase, visibleSize, type TextMark, type ImageMark, type Mark } from "./marks.ts";
+import { setMarks, withMarks, usage } from "./session.ts";
+import { fontSet, cantDraw } from "./build.ts";
+const near = (a: number, b: number, msg?: string) => assert.ok(Math.abs(a - b) < 1e-6, `${msg ?? ""} ${a} vs ${b}`);
+const BOX = { x: 0, y: 0, width: 200, height: 300 };
+test("marks: displayed points map to the PDF's coordinates for every page rotation", () => {
+  // The displayed top-left corner is a different corner of the unrotated page for each rotation.
+  assert.deepEqual(toUser(0, 0, BOX, 0), { x: 0, y: 300 });
+  assert.deepEqual(toUser(0, 0, BOX, 90), { x: 0, y: 0 });
+  assert.deepEqual(toUser(0, 0, BOX, 180), { x: 200, y: 0 });
+  assert.deepEqual(toUser(0, 0, BOX, 270), { x: 200, y: 300 });
+  // The displayed bottom-right corner is the opposite one.
+  assert.deepEqual(toUser(200, 300, BOX, 0), { x: 200, y: 0 });
+  assert.deepEqual(toUser(300, 200, BOX, 90), { x: 200, y: 300 });
+  assert.deepEqual(toUser(10, 20, { x: 5, y: 7, width: 200, height: 300 }, 0), { x: 15, y: 287 }, "a crop box that doesn't start at zero is allowed for");
+  assert.deepEqual(visibleSize(BOX, 90), { w: 300, h: 200 });
+});
+test("marks: turning an offset clockwise on screen", () => {
+  const t = turn(0, 10, 90); near(t.dx, -10); near(t.dy, 0);        // down becomes left
+  const u = turn(10, 0, 90); near(u.dx, 0); near(u.dy, 10);         // right becomes down
+});
+test("marks: base view and turned view convert both ways", () => {
+  for (const q of [0, 90, 180, 270] as const) {
+    const v = baseToView(30, 40, 200, 300, q), b = viewToBase(v.x, v.y, 200, 300, q);
+    assert.deepEqual(b, { x: 30, y: 40 }, `turn ${q}`);
+  }
+  assert.deepEqual(baseToView(0, 0, 200, 300, 90), { x: 300, y: 0 }, "turned right, the old top-left is the new top-right");
+  assert.deepEqual(baseToView(0, 0, 200, 300, 270), { x: 0, y: 200 });
+});
+const FONT = { widthOfTextAtSize: (t: string, s: number) => t.length * s * 0.5, heightAtSize: (s: number) => s * 0.7 };
+const T: TextMark = { type: "text", x: 20, y: 30, rotate: 0, text: "ab\nabcd", size: 10, color: "#ff0000", font: "sans", bold: false };
+test("marks: text is laid out line by line from its top-left corner", () => {
+  assert.deepEqual(textBox(T, FONT), { w: 20, h: 24, ascent: 7, lines: ["ab", "abcd"] });
+  const p = placeText(T, FONT, BOX, 0);
+  assert.equal(p.angle, 0);
+  assert.deepEqual(p.lines, [{ text: "ab", x: 20, y: 300 - 37 }, { text: "abcd", x: 20, y: 300 - 49 }]);
+  const r = placeText({ ...T, text: "ab" }, FONT, BOX, 90);          // page stored sideways: text must be turned to look upright
+  assert.equal(r.angle, 90); near(r.lines[0].x, 37); near(r.lines[0].y, 20);
+  const s = placeText({ ...T, text: "ab", rotate: 90 }, FONT, BOX, 0); // text turned clockwise on screen
+  assert.equal(s.angle, -90); near(s.lines[0].x, 20 - 7); near(s.lines[0].y, 300 - 30);
+});
+test("marks: a picture is placed by its bottom-left corner", () => {
+  const I: ImageMark = { type: "image", x: 10, y: 20, rotate: 0, w: 50, h: 40, src: "f2" };
+  assert.deepEqual(placeImage(I, BOX, 0), { x: 10, y: 240, width: 50, height: 40, angle: 0 });
+  const r = placeImage({ ...I, rotate: 90 }, BOX, 0); near(r.x, -30); near(r.y, 280); assert.equal(r.angle, -90);
+});
+test("marks: colours, unsupported characters and settings checks", () => {
+  assert.deepEqual(parseColor("#ff0080"), { r: 1, g: 0, b: 128 / 255 }); assert.deepEqual(parseColor("red"), { r: 0, g: 0, b: 0 });
+  assert.deepEqual(unsupported("a\nb€c", new Set([97, 98, 99])), ["€"]);
+  const img = (id: string) => id === "f2";
+  assert.deepEqual(cleanMark({ ...T, extra: 1 }, img), T);
+  assert.deepEqual(cleanMark({ type: "image", x: 1, y: 2, rotate: 0, w: 3, h: 4, src: "f2" }, img), { type: "image", x: 1, y: 2, rotate: 0, w: 3, h: 4, src: "f2" });
+  for (const bad of [null, {}, { ...T, size: 0 }, { ...T, color: "red" }, { ...T, font: "comic" }, { ...T, x: NaN }, { ...T, text: 5 }, { ...T, bold: "yes" },
+    { type: "image", x: 1, y: 2, rotate: 0, w: 3, h: 4, src: "f1" }, { type: "image", x: 1, y: 2, rotate: 0, w: 0, h: 4, src: "f2" }, { type: "shape", x: 1, y: 2, rotate: 0 }]) {
+    assert.equal(cleanMark(bad, img), null, JSON.stringify(bad));
+  }
+});
+test("session: marks are set, counted, saved in settings, and removed with their picture", () => {
+  let s = addSource(emptySession(), { name: "a.pdf", size: 10, sha256: SHA("a"), pages: 2, kind: "pdf" }).session;
+  const stamp = addSource(s, { name: "logo.png", size: 5, sha256: SHA("b"), pages: 1, kind: "image" }, false);
+  s = stamp.session;
+  assert.equal(s.pages.length, 2, "a picture added to place on a page doesn't become a page");
+  const marks: Mark[] = [T, { type: "image", x: 1, y: 2, rotate: 0, w: 30, h: 40, src: stamp.id }];
+  s = { ...s, pages: setMarks(s.pages, 1, marks).pages };
+  assert.equal(s.pages[0].marks, undefined); assert.equal(s.pages[1].marks?.length, 2);
+  assert.equal(usage(s, stamp.id), 1); assert.equal(usage(s, "f1"), 2);
+  assert.deepEqual(parseSettings(serialise(s)), s);
+  assert.equal(duplicate(s.pages, [1]).pages[2].marks?.length, 2, "a duplicated page keeps its additions");
+  const gone = removeSource(s, stamp.id);
+  assert.deepEqual(gone.pages[1].marks, [T]);
+  assert.equal("marks" in withMarks(s.pages[1], []), false);
+  const j = JSON.parse(serialise(s)); j.pages[1].marks[1].src = "f1";
+  assert.throws(() => parseSettings(JSON.stringify(j)), /damaged addition/);
+  j.pages[1].marks = "x"; assert.throws(() => parseSettings(JSON.stringify(j)), /damaged/);
+});
+test("build: added text and pictures are written, on plain and rotated pages", async () => {
+  const data = new Map<string, SourceData>([["a", { kind: "pdf", bytes: await sample(1) }], ["r", { kind: "pdf", bytes: await sample(1, true) }], ["i", { kind: "image", bytes: PNG, type: "png" }]]);
+  const marks: Mark[] = [{ ...T, text: "Added words" }, { type: "image", x: 5, y: 5, rotate: 0, w: 20, h: 20, src: "i" }];
+  const out = await makeBuilder(data, { imageDpi: 96 })([{ ...P("a", 0), marks }, { ...P("r", 0), marks, rotate: 90 }, P("a", 0)]);
+  const doc = await PDFDocument.load(out), pages = doc.getPages();
+  const fontsOf = (i: number) => (pages[i].node.Resources()?.lookup(PDFName.of("Font")) as any)?.keys().length ?? 0;
+  const xobjects = (i: number) => (pages[i].node.Resources()?.lookup(PDFName.of("XObject")) as any)?.keys().length ?? 0;
+  assert.equal(fontsOf(0), 2, "the page's own font plus the one for the added text");
+  assert.equal(fontsOf(2), 1, "a page without additions is unchanged");
+  assert.equal(xobjects(0), 1); assert.equal(xobjects(1), 1);
+  assert.equal(pages[1].getRotation().angle, 180, "the turn made in the tool is applied after the additions are drawn");
+  await assert.rejects(makeBuilder(data, { imageDpi: 96 })([{ ...P("a", 0), marks: [{ ...T, text: "日本語" }] }]), /can't write yet/);
+  await assert.rejects(makeBuilder(data, { imageDpi: 96 })([{ ...P("a", 0), marks: [{ type: "image", x: 0, y: 0, rotate: 0, w: 5, h: 5, src: "zz" }] }]), /picture placed on a page hasn't been added/);
+});
+test("build: the built-in fonts report which characters they can't draw", async () => {
+  const doc = await PDFDocument.create(), f = fontSet(doc)("sans", false);
+  assert.deepEqual(cantDraw("Café – “quoted” £5 €5", f), []);
+  assert.deepEqual(cantDraw("Ω and 日", f), ["Ω", "日"]);
+  assert.equal(fontSet(doc)("mono", true).name, "Courier-Bold");
+});

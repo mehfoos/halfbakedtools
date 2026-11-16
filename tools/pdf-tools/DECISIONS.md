@@ -26,6 +26,11 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-16 | Edit PDF (first part) adds text and pictures only. No "cover with a box" tool is offered | A covered word is still in the file and can be copied out; offering it would look like removal (principle 2). True removal needs content-stream rewriting: see `ROADMAP.md` |
+| 2026-11-16 | The editor shows the page rebuilt as a real PDF after every change; on-screen boxes are only handles | Guarantees what is seen is what is saved, with no second text-layout engine to drift out of step |
+| 2026-11-16 | Additions are stored per page, in points from the top-left of the page as the file shows it, before any turn or resize made in the tool | They then turn, resize, duplicate and move with their page, and survive the settings file |
+| 2026-11-16 | Added text uses the PDF format's built-in fonts (Helvetica, Times, Courier; regular and bold) | Nothing to embed or download; every PDF viewer has them. Cost: Western European characters only, stated in the page and enforced before saving |
+| 2026-11-16 | A picture placed on a page is another fingerprinted source in the settings file, not embedded in it | Keeps the settings file free of content |
 | 2026-11-16 | Default output names carry a task suffix (`report-merged.pdf`, `scan-compressed.pdf`). If the visitor's chosen name matches a file they added, the tool stops and asks before saving | Owner's request: never overwrite an original by accident. A web page can't see the visitor's folders, so matching against the names of added files is the check that is possible; the page says so |
 | 2026-11-16 | Compress PDF shows the real size of the finished file, plus a before-and-after first page, before anything is downloaded | Owner asked for an "estimate of new size"; the true size is better than a guess (principle 2), and compression is fast enough to just do |
 | 2026-11-16 | Default compression shrinks pictures only and never touches text; turning pages into pictures is a separate, clearly warned custom method | Keeps text sharp, selectable and accessible |
