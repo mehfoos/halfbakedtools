@@ -6,7 +6,7 @@ requirements) first.
 
 **The rule that outranks everything: no file content leaves the browser.** No server step, no CDN, no third-party
 request. `web/privacy.test.ts` and the security policy in `web/csp.ts` enforce it; never weaken either to make a
-feature work. If a feature can't be done locally, don't offer it, and say so.
+feature work. Any new worker must be started from a blob, or the policy won't bind it (see `README.md`). If a feature can't be done locally, don't offer it, and say so.
 
 ## Where things stand
 
@@ -24,10 +24,13 @@ items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
 
 - [ ] Check in Firefox, Safari and on a phone; check drag-and-drop; try large and awkward real-world PDFs
       (hundreds of pages, scans, forms, CJK text). Record results in `VERIFICATION.md`.
-- [ ] **Sources to archive** (blocked from the build environment; ask the owner to download and upload them, per
-      `AGENTS.md`): the PDF standard (ISO 32000-1:2008, free copy published by Adobe) for "1 point = 1/72 inch" and
-      page boxes; a source for ISO 216 (A-series) and US Letter/Legal dimensions. Then add `references.json`,
+- [ ] **Sources to archive.** The owner supplied the PDF standard (PDF 32000-1:2008) and the unit was checked
+      against it (see `VERIFICATION.md`), but the file is not committed: its copyright notice says permission to
+      reproduce must be arranged with ISO. Awaiting the owner's decision on archiving it publicly. Still needed: a
+      source for ISO 216 (A-series) and US Letter/Legal dimensions (downloads are blocked from the build
+      environment; ask the owner to upload). Then add `references.json`,
       cite them on the methods page, tick them off in `VERIFICATION.md`, and offer named paper sizes.
+- [ ] Pages with a `UserUnit` other than 1 (rare, very large pages) are untested.
 - [ ] Multi-image TIFF: use every image, not only the first (`loadImage` in `web/ui.ts`; a source would then have
       several pages and `SourceData` needs one image per page).
 - [ ] Keep bookmarks (outline) and document title when the output comes from a single source PDF.

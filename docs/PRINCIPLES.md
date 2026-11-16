@@ -141,7 +141,7 @@ reason.
 
 | Date | Decision | Reason |
 |---|---|---|
-| 2026-11-16 | A tool that handles visitors' files sets a browser security policy (CSP) on its page blocking connections to other sites, and has a test that fails if its code can send data | Makes "nothing leaves the browser" enforced and checkable (first used by the PDF tools) |
+| 2026-11-16 | A tool that handles visitors' files sets a browser security policy (CSP) on its page blocking connections to other sites, starts any background workers from blobs so the policy binds them too, and has a test that fails if its code can send data | Makes "nothing leaves the browser" enforced and checkable (first used by the PDF tools) |
 | 2026-11-16 | Library files needed at run time are copied from `node_modules` and served by this site (`vendor` in `tool.json`) | No third-party requests |
 | 2026-11-11 | Each tool is a self-contained folder; references numbered per tool; shared `sources/` archive | Site will host many tools |
 | 2026-11-10 | IEEE-style numbered citations; collapsible reference lists with original and archived links | Traceability; owner's requirement |

@@ -21,7 +21,9 @@ promise, and it is enforced (see "The no-upload guarantee" below).
 ## The no-upload guarantee
 
 1. `web/csp.ts` is a Content-Security-Policy, set in a `<meta>` tag on the tool page (production builds), that makes
-   the browser refuse connections to any other origin and all form submissions. It covers the libraries too.
+   the browser refuse connections to any other origin and all form submissions.
+   **A page's policy does not bind workers started from a web address**, so every worker must be started from a
+   blob (see `web/render.ts`); then the policy covers the libraries too.
 2. `web/privacy.test.ts` fails `npm test` (and so blocks deployment) if this tool's own code contains a network
    API, if its pages load anything from another site, or if the policy is weakened.
 3. Libraries are bundled from `node_modules`; PDF.js support files are copied by `scripts/sync-data.mjs` (the

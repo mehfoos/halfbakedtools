@@ -1,11 +1,16 @@
 // Browser-only: opens PDFs and images for display, and draws pages onto a canvas.
 // Uses PDF.js (Mozilla's PDF reader, the one built into Firefox), bundled with this site.
 import * as pdfjs from "pdfjs-dist";
-import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import workerSource from "pdfjs-dist/build/pdf.worker.min.mjs?raw";
 import type { Rotation } from "./session.ts";
 import { piecesToText, type TextPiece } from "./text.ts";
 
-pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+// PDF.js reads files in a background worker. A worker started from a web address is NOT bound by the page's
+// security policy (csp.ts), but one started from code held inside the page is. So the worker's code is bundled
+// as text and started from memory: the browser then applies the page's policy to it, and it cannot contact
+// another site. privacy.test.ts fails if this is changed back.
+const worker = new Worker(URL.createObjectURL(new Blob([workerSource], { type: "text/javascript" })), { type: "module" });
+pdfjs.GlobalWorkerOptions.workerPort = worker;
 
 export type PdfHandle = { kind: "pdf"; doc: pdfjs.PDFDocumentProxy };
 /** `turn` = degrees the stored pixels are turned in the PDF because of a photo's orientation note. `img` is already upright. */
@@ -15,7 +20,8 @@ export type Handle = PdfHandle | ImageHandle;
 export class NeedsPassword extends Error { wrong: boolean; constructor(wrong: boolean) { super("password"); this.wrong = wrong; } }
 
 /** `vendor` is the address of the PDF.js support files served by this site (fonts, character maps, decoders). */
-export async function openPdf(bytes: Uint8Array, vendor: string, password?: string): Promise<pdfjs.PDFDocumentProxy> {
+export async function openPdf(bytes: Uint8Array, vendorPath: string, password?: string): Promise<pdfjs.PDFDocumentProxy> {
+  const vendor = new URL(vendorPath, location.href).href;   // full address: the in-memory worker has no folder of its own
   try {
     return await pdfjs.getDocument({
       data: bytes.slice(),                    // PDF.js takes ownership of the bytes it is given, so hand it a copy

@@ -34,3 +34,12 @@ test("pdf-tools: the tool page sets a browser security policy that blocks connec
   for (const rule of ["default-src 'self'", "connect-src 'self'", "form-action 'none'", "object-src 'none'", "frame-src 'none'"]) assert.ok(csp.includes(rule), `policy is missing: ${rule}`);
   assert.doesNotMatch(csp, /https?:|\*/, "the policy must not allow any other site");
 });
+
+test("pdf-tools: background workers are started from memory, so the security policy binds them", () => {
+  // Measured in Chrome on 2026-11-16: a worker started from a web address ignored the page's policy and could
+  // contact another site; a worker started from a blob (code held in the page) was blocked.
+  for (const f of read("web")) {
+    assert.doesNotMatch(f.text, /workerSrc|\?worker\b|\?url["']/, `${f.name} must not start a worker from a web address`);
+    for (const m of f.text.matchAll(/new\s+(?:Shared)?Worker\s*\(([^)]*)/g)) assert.match(m[1], /createObjectURL/, `${f.name}: start workers from a blob`);
+  }
+});

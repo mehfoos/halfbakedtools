@@ -28,6 +28,7 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 |---|---|---|
 | 2026-11-16 | Built in phases; phase 1 is page arrangement, images and text. See `ROADMAP.md` | Too large for one pass; accuracy before features |
 | 2026-11-16 | A browser security policy (CSP) on the tool page blocks connections to other origins, plus a test that scans the tool's code for network APIs | Makes "never uploaded" enforced and checkable, not just promised; covers third-party libraries |
+| 2026-11-16 | The PDF.js worker's code is bundled as text and started from a blob, not from a web address | Measured in Chrome: a page's security policy does not bind a worker started from a web address, so the first published version's claim that the policy covered the libraries was too strong for PDF.js's worker. Blob workers inherit the policy. Corrected within the hour |
 | 2026-11-16 | Libraries are npm packages bundled into the site; PDF.js fonts, character maps and decoders are copied to the site by `sync-data` | No CDN or third-party requests (principle 4) |
 | 2026-11-16 | Edits are a non-destructive list of pages (`src`, `page`, `rotate`, `scale`) applied when saving | Makes undo, the settings file and testing simple; originals are never altered |
 | 2026-11-16 | The settings file holds file names, sizes and SHA-256 fingerprints, never content or passwords; files are matched by fingerprint when re-added | Small, private, and safe to keep or share; detects a changed file |
