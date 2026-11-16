@@ -96,6 +96,29 @@ const policy = import.meta.env.PROD ? CSP : "";
           <div id="optText">
             <p class="small muted">Words are saved in the order the PDF stores them, which is usually but not always reading order.</p>
           </div>
+          <div id="optCompress" data-part="compress">
+            <p><label class="field">Compression
+              <select id="cLevel">
+                <option value="none">None</option>
+                <option value="light">Light: best quality</option>
+                <option value="recommended">Recommended</option>
+                <option value="strong">Strong: smallest pictures</option>
+                <option value="custom">Custom…</option>
+              </select></label></p>
+            <p class="small muted" id="cSummary"></p>
+            <div id="cCustom">
+              <p><label class="field">Method
+                <select id="cMode">
+                  <option value="images">Shrink the pictures; text stays text</option>
+                  <option value="flatten">Turn whole pages into pictures</option>
+                  <option value="tidy">Tidy up only, no quality loss</option>
+                </select></label></p>
+              <p id="cDpiRow"><label class="field">Keep at most <input id="cDpi" type="number" min="36" max="600" step="1" inputmode="numeric" /> dots per inch</label><br /><span class="small muted">Fewer dots: smaller file, blurrier pictures.</span></p>
+              <p id="cQualityRow"><label class="field">Picture quality <input id="cQuality" type="number" min="10" max="100" step="1" inputmode="numeric" /> %</label><br /><span class="small muted">Lower: smaller file, more blockiness.</span></p>
+              <p id="cGreyRow"><label><input id="cGrey" type="checkbox" /> Make pictures grey (no colour)</label></p>
+              <p class="small notice" id="cFlattenWarn"><strong>Text will become part of a picture:</strong> it can no longer be selected, searched or read aloud by a screen reader, and links stop working.</p>
+            </div>
+          </div>
           <details id="optImageDpi" data-part="imageDpi">
             <summary>Size of images on the page</summary>
             <div class="details-body">
@@ -107,6 +130,7 @@ const policy = import.meta.env.PROD ? CSP : "";
         </div>
 
         <p id="status" class="notice info small" role="status" aria-live="polite" hidden></p>
+        <div id="result" class="result sans" hidden></div>
         <div class="go">
           <button type="button" class="primary big" id="saveAll">{task.action}</button>
           <button type="button" id="saveSel" data-needs-sel>Save the selected pages</button>
@@ -176,6 +200,17 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .field input[type="number"] { width: 5em; }
     #pdftools .go { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
     #pdftools .go .big { width: 100%; }
+    #pdftools .result { border: 2px solid var(--good); border-radius: 6px; padding: 10px; margin: 10px 0; background: var(--good-soft); }
+    #pdftools .result.same { border-color: var(--warn); background: var(--warn-soft); }
+    #pdftools .result table { font-size: 0.85rem; background: #fff; }
+    #pdftools .result .big-number { font-size: 1.5rem; font-weight: 700; margin: 0; }
+    #pdftools .result .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
+    #pdftools .result .pair figure { margin: 0; }
+    #pdftools .result .pair canvas { width: 100%; height: auto; display: block; box-shadow: 0 0 0 1px #999; background: #fff; cursor: zoom-in; }
+    #pdftools .result .pair.zoom { grid-template-columns: 1fr; }
+    #pdftools .result .pair.zoom canvas { cursor: zoom-out; }
+    #pdftools .result figcaption { font-size: 0.8rem; text-align: center; }
+    #pdftools .result .go-result .big { width: 100%; }
     #pdftools .row { display: flex; flex-wrap: wrap; gap: 8px; }
     @media (max-width: 760px) {
       #pdftools .work { grid-template-columns: 1fr; }

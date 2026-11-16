@@ -222,5 +222,54 @@ test("tasks: each has a page, a tool.json entry, a sensible default, and nothing
   }
   assert.ok(TASKS.every((t) => !NOT_BUILT.some((n) => n.name === t.name)));
   assert.deepEqual(WORKSPACE.formats.length, 7);
+  for (const t of ALL_TASKS) if (t.perFile) assert.ok(t.parts.includes("compress") && t.formats.length === 1 && t.formats[0] === "pdf");
   assert.throws(() => taskBySlug("nope"));
+});
+
+// ---- compression rules ----
+import { estimateDpi, targetSize, canRecompress, unpredict, toRgba, greyInPlace, saving, PRESETS, NO_COMPRESSION, type ImageInfo } from "./compress-core.ts";
+test("compress: detail is estimated against the page, and pictures are never enlarged", () => {
+  // 2480 pixels across a page 595.28 points (595.28 / 72 = 8.27 inches) wide is 300 dots per inch.
+  assert.equal(Math.round(estimateDpi(2480, 3508, 595.28, 841.89)), 300);
+  assert.equal(Math.round(estimateDpi(3508, 2480, 595.28, 841.89)), 300, "a sideways picture gives the same answer");
+  assert.deepEqual(targetSize(2480, 3508, 595.28, 841.89, 150), { width: 1240, height: 1754, scale: 150 / estimateDpi(2480, 3508, 595.28, 841.89) });
+  assert.deepEqual(targetSize(600, 800, 595.28, 841.89, 150), { width: 600, height: 800, scale: 1 });
+  assert.equal(targetSize(10, 4000, 72, 72, 36).width, 1);
+});
+test("compress: only plain 8-bit colour or grey pictures are rewritten", () => {
+  const base: ImageInfo = { width: 1000, height: 1000, bits: 8, filters: ["DCTDecode"], colour: "rgb", hasMask: false, bytes: 100_000, predictor: 1, colours: 3 };
+  assert.deepEqual(canRecompress(base), { ok: true, kind: "jpeg" });
+  assert.deepEqual(canRecompress({ ...base, filters: ["FlateDecode"], predictor: 15 }), { ok: true, kind: "flate" });
+  assert.deepEqual(canRecompress({ ...base, filters: ["FlateDecode"], colour: "grey", colours: 1 }), { ok: true, kind: "flate" });
+  for (const bad of [{ colour: "other" as const }, { bits: 1 }, { hasMask: true }, { filters: ["JPXDecode"] }, { filters: ["FlateDecode", "DCTDecode"] }, { filters: [] },
+    { filters: ["FlateDecode"], predictor: 2 }, { filters: ["FlateDecode"], colours: 4 }, { width: 20, height: 20 }, { bytes: 500 }, { width: 10_000, height: 10_000 }]) {
+    assert.equal(canRecompress({ ...base, ...bad }).ok, false, JSON.stringify(bad));
+  }
+});
+test("compress: row prediction is undone for every row type", () => {
+  // One colour channel, 3 columns. Rows: none, left (sub), above (up), average, Paeth.
+  const packed = Uint8Array.from([0, 10, 20, 30,  1, 5, 5, 5,  2, 1, 1, 1,  3, 1, 1, 1,  4, 1, 1, 1]);
+  assert.deepEqual([...unpredict(packed, 3, 1)], [10, 20, 30,  5, 10, 15,  6, 11, 16,  4, 8, 13,  5, 9, 14]);
+  // Three channels: "left" means the same channel of the pixel to the left.
+  assert.deepEqual([...unpredict(Uint8Array.from([1, 1, 2, 3, 1, 1, 1]), 2, 3)], [1, 2, 3, 2, 3, 4]);
+  assert.throws(() => unpredict(Uint8Array.from([9, 0]), 1, 1));
+});
+test("compress: pixel conversion, greying and the stated saving", () => {
+  assert.deepEqual([...toRgba(Uint8Array.from([7, 9]), 2, 1, 1)], [7, 7, 7, 255, 9, 9, 9, 255]);
+  assert.deepEqual([...toRgba(Uint8Array.from([1, 2, 3]), 1, 1, 3)], [1, 2, 3, 255]);
+  assert.throws(() => toRgba(Uint8Array.from([1]), 2, 2, 1));
+  const px = Uint8ClampedArray.from([255, 0, 0, 255, 255, 255, 255, 200]); greyInPlace(px);
+  assert.deepEqual([...px], [76, 76, 76, 255, 255, 255, 255, 200]);
+  assert.equal(saving(1000, 250), 75); assert.equal(saving(1000, 1000), 0); assert.equal(saving(1000, 1200), 0); assert.equal(saving(0, 0), 0);
+  assert.ok(PRESETS.light.dpi > PRESETS.recommended.dpi && PRESETS.recommended.dpi > PRESETS.strong.dpi);
+  assert.equal(NO_COMPRESSION.mode, "none");
+});
+test("settings: compression options are kept, and older files without them still load", () => {
+  let s = addSource(emptySession(), { name: "a.pdf", size: 10, sha256: SHA("a"), pages: 1, kind: "pdf" }).session;
+  s = { ...s, output: { ...s.output, compress: { mode: "images", dpi: 120, quality: 0.5, grey: true } } };
+  assert.deepEqual(parseSettings(serialise(s)).output.compress, { mode: "images", dpi: 120, quality: 0.5, grey: true });
+  const old = JSON.parse(serialise(s)); delete old.output.compress;
+  assert.deepEqual(parseSettings(JSON.stringify(old)).output.compress, NO_COMPRESSION);
+  old.output.compress = { mode: "explode", dpi: 5, quality: 9, grey: "yes" };
+  assert.deepEqual(parseSettings(JSON.stringify(old)).output.compress, NO_COMPRESSION);
 });

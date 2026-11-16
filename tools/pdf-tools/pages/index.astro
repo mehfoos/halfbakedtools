@@ -5,7 +5,7 @@ import { TASKS, WORKSPACE, NOT_BUILT } from "../web/tasks.ts";
 const base = import.meta.env.BASE_URL;
 const home = `${base}tools/pdf-tools/`;
 const policy = import.meta.env.PROD ? CSP : "";
-const groups = ["Organise", "Convert from PDF", "Convert to PDF"] as const;
+const groups = ["Organise", "Optimise", "Convert from PDF", "Convert to PDF"] as const;
 ---
 <ToolLayout slug="pdf-tools" page="index" description="Merge, split, rotate, reorder and resize PDFs, turn PDFs into images or text, and images into PDFs, all inside your browser. Your files are never uploaded.">
   {policy && <meta slot="head" http-equiv="Content-Security-Policy" content={policy} />}

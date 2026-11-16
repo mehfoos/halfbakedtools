@@ -1,7 +1,7 @@
 {
   "slug": "pdf-tools",
   "name": "PDF tools",
-  "summary": "Merge, split, reorder, rotate and resize PDFs, turn PDF pages into images or plain text, and turn images into a PDF. Everything is done inside your browser: your files are never uploaded.",
+  "summary": "Merge, split, compress, reorder, rotate and resize PDFs, turn PDF pages into images or plain text, and turn images into a PDF. Everything is done inside your browser: your files are never uploaded.",
   "topic": "Documents",
   "status": "alpha",
   "added": "2026-11-16",
@@ -43,6 +43,11 @@
     {
       "page": "resize",
       "label": "Resize pages",
+      "nav": false
+    },
+    {
+      "page": "compress",
+      "label": "Compress PDF",
       "nav": false
     },
     {

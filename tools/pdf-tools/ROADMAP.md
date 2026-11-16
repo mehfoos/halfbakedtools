@@ -18,7 +18,7 @@ button. The current single workspace page can stay as the "organise" task and th
 (`session.ts`, `build.ts`, `render.ts` need no change). **Done 2026-11-16**: see `web/tasks.ts` (the task list),
 `components/Task.astro` (the shared page) and `pages/index.astro` (the grid). To add a task: add an entry to
 `TASKS`, a one-line page in `pages/`, and a `"nav": false` entry in `tool.json`. When a "Not built yet" task is
-built, move it from `NOT_BUILT` to `TASKS`. The owner stressed again that, unlike that
+built, move it from `NOT_BUILT` to `TASKS` (done for Compress PDF). The owner stressed again that, unlike that
 site, **everything must be processed locally and nothing may go to a server or cloud**.
 
 ## Where things stand
@@ -26,7 +26,7 @@ site, **everything must be processed locally and nothing may go to a server or c
 | Phase | Scope | Status |
 |---|---|---|
 | 1 | Skeleton, no-upload enforcement, merge, reorder, duplicate, remove, rotate, resize page with contents, split, extract, PDF → images (PNG, JPEG, WebP, TIFF, BMP) and text, images → PDF, settings file | **Done 2026-11-16** (alpha) |
-| 2 | Compression with options and size preview; resize images inside scanned PDFs independently of page size; named paper sizes | Not started |
+| 2 | Compression with options and size preview; resize images inside scanned PDFs independently of page size; named paper sizes | **Compression done 2026-11-16** (`web/compress-core.ts`, `web/compress.ts`); it also covers shrinking scan pictures without changing page size. Named paper sizes still wait for a source |
 | 3 | Edit page content: add text and images, move/resize/rotate them, remove or redact content | Not started |
 | 4 | Text and HTML ↔ PDF; Word, PowerPoint, Excel (and OpenDocument) ↔ PDF; PDF → SVG | Office → PDF **on hold by the owner (2026-11-16)**, work kept on branch `office-to-pdf`; rest not started |
 | 5 | Task-first interface in the style of ilovepdf.com, in this site's theme | **Done 2026-11-16** |
@@ -65,7 +65,19 @@ New features should stay **non-destructive and serialisable** so undo and the se
 - Anything that can't be expressed without content (for example an image the visitor places on a page) must be
   treated as another *source*, fingerprinted and re-added like the PDFs, not embedded in the settings file.
 
-## Phase 2: compression and scanned images
+## Phase 2: what is left
+
+- [ ] Use each picture's real drawn size (from the page's content stream transform) instead of the page-based
+      estimate, so small pictures on big pages are shrunk as far as the setting allows.
+- [ ] Handle more picture kinds: 1-bit (CCITT/JBIG2) scans, indexed palettes, CMYK, pictures inside nested
+      drawings (form XObjects are not walked for the page-size lookup; they fall back to the largest page).
+- [ ] Keep colour profiles and store grey pictures as grey JPEGs (the browser canvas only writes colour JPEGs;
+      would need a JPEG encoder library).
+- [ ] Preview any page, not just the first, and run compression in a worker so the page stays responsive.
+- [ ] Test in a browser with real-world scans and PDFs using PNG-predictor pictures.
+- [ ] Named paper sizes (needs an archived source for the dimensions).
+
+## Phase 2 (original notes): compression and scanned images
 
 Owner's ask: "a wide variety of options that allows the user to make the trade-off in clarity, loss of
 resolution, etc., along with an estimate of new size", and resizing the images in a scanned PDF separately from

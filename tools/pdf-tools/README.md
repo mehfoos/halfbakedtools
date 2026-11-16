@@ -42,6 +42,7 @@ Never add: a server-side step, a third-party script or font, telemetry, or "reme
 - `web/session.ts`: session model, page edits, split plan, settings file (read and write)
 - `web/build.ts`: writes PDFs (pdf-lib). No DOM, so it is tested in Node
 - `web/render.ts`: browser-only PDF.js wrapper (previews, page images, text)
+- `web/compress-core.ts`: compression rules (pure, tested); `web/compress.ts`: rewrites pictures (browser)
 - `web/bmp.ts`, `web/text.ts`, `web/exif.ts`: small pure helpers
 - `web/csp.ts`: the security policy
 - `web/ui.ts`: wires everything to the page

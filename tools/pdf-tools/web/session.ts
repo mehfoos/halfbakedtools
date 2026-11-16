@@ -4,6 +4,7 @@
 // checksum (a fingerprint of the file), plus the list of edits. That is what the downloadable
 // settings file contains, so a visitor can add the same files again later and carry on.
 import { parseRanges } from "./ranges.ts";
+import { NO_COMPRESSION, type CompressOptions } from "./compress-core.ts";
 
 export const FORMAT = "halfbakedtools.pdf-tools.settings";
 export const VERSION = 1;
@@ -24,16 +25,17 @@ export type Output = {
   dpi: number;           // dots per inch when saving pages as images
   quality: number;       // 0.1-1 for JPEG and WebP
   imageDpi: number;      // dots per inch assumed when placing an added image on a page
+  compress: CompressOptions; // PDF only: shrink the pictures inside the saved PDF (added later; absent in older settings files)
 };
 export type Session = { sources: SourceRef[]; pages: PageItem[]; output: Output };
 
 export const DEFAULT_OUTPUT: Output = {
-  name: "document", format: "pdf", split: "none", every: 1, ranges: "", dpi: 150, quality: 0.85, imageDpi: 96,
+  name: "document", format: "pdf", split: "none", every: 1, ranges: "", dpi: 150, quality: 0.85, imageDpi: 96, compress: { ...NO_COMPRESSION },
 };
 export const SCALE_MIN = 0.1, SCALE_MAX = 10;
 export const DPI_MIN = 36, DPI_MAX = 600;
 
-export const emptySession = (): Session => ({ sources: [], pages: [], output: { ...DEFAULT_OUTPUT } });
+export const emptySession = (): Session => ({ sources: [], pages: [], output: { ...DEFAULT_OUTPUT, compress: { ...NO_COMPRESSION } } });
 
 /** Adds a source and appends all its pages. If the session is already waiting for this file
  *  (same checksum, from a loaded settings file), it is matched instead and no pages are added. */
@@ -147,6 +149,16 @@ const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object
 const int = (v: unknown, min: number, max = Number.MAX_SAFE_INTEGER) => typeof v === "number" && Number.isInteger(v) && v >= min && v <= max;
 const num = (v: unknown, min: number, max: number) => typeof v === "number" && Number.isFinite(v) && v >= min && v <= max;
 
+function parseCompress(c: unknown): CompressOptions {
+  if (!isObj(c)) return { ...NO_COMPRESSION };
+  return {
+    mode: (["none", "tidy", "images", "flatten"] as const).find((m) => m === c.mode) ?? "none",
+    dpi: num(c.dpi, DPI_MIN, DPI_MAX) ? (c.dpi as number) : NO_COMPRESSION.dpi,
+    quality: num(c.quality, 0.1, 1) ? (c.quality as number) : NO_COMPRESSION.quality,
+    grey: c.grey === true,
+  };
+}
+
 /** Reads a settings file, checking every field. Throws an Error with a plain-English message if it isn't valid. */
 export function parseSettings(text: string): Session {
   let j: unknown;
@@ -185,6 +197,7 @@ export function parseSettings(text: string): Session {
     dpi: num(o.dpi, DPI_MIN, DPI_MAX) ? (o.dpi as number) : d.dpi,
     quality: num(o.quality, 0.1, 1) ? (o.quality as number) : d.quality,
     imageDpi: num(o.imageDpi, DPI_MIN, DPI_MAX) ? (o.imageDpi as number) : d.imageDpi,
+    compress: parseCompress(o.compress),
   };
   return { sources, pages, output };
 }

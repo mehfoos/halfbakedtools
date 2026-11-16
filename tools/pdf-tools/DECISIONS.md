@@ -26,6 +26,12 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-16 | Compress PDF shows the real size of the finished file, plus a before-and-after first page, before anything is downloaded | Owner asked for an "estimate of new size"; the true size is better than a guess (principle 2), and compression is fast enough to just do |
+| 2026-11-16 | Default compression shrinks pictures only and never touches text; turning pages into pictures is a separate, clearly warned custom method | Keeps text sharp, selectable and accessible |
+| 2026-11-16 | A picture's detail is estimated against its page, erring towards shrinking too little; unusual pictures are skipped and counted, not guessed at | Never damage what isn't understood; say what was skipped |
+| 2026-11-16 | A recompressed picture is kept only if smaller, and a file that didn't shrink is not offered for download | Never hand back something worse |
+| 2026-11-16 | Compression presets (200/150/100 dpi at 80/65/50% quality) are the tool's own choices | No standard defines them; labelled as such |
+| 2026-11-16 | Compression options are stored in the settings file as an optional field; the format version stays 1 | Older files load with compression off; older code ignores the field |
 | 2026-11-16 | Interface is task-first, after ilovepdf.com's way of working but in this site's own theme: a home grid of named tasks, each a focused page with one "select files" button, then previews with that task's few options and one action button. No branding, icons or colours are copied | Owner's request. People arrive wanting one job done; a single do-everything page made them find it |
 | 2026-11-16 | Every task page is the same workspace (`components/Task.astro`, `web/ui.ts`) configured by `web/tasks.ts`; task pages are hidden from the tab row with `"nav": false` | One engine to test; adding a task is a few lines |
 | 2026-11-16 | Tasks asked for but not built are shown on the home grid, greyed and labelled "Not built yet" | Honest about gaps; saves people hunting |

@@ -2,6 +2,9 @@
 // them to the page. Nothing here sends data anywhere: files are read with the browser's File API, kept in
 // memory, and results are handed back as downloads created inside the page.
 import { zipSync } from "fflate";
+import { PDFDocument } from "@cantoo/pdf-lib";
+import { NO_COMPRESSION, PRESETS, saving, greyInPlace, type CompressOptions, type CompressStats } from "./compress-core.ts";
+import { recompressImages } from "./compress.ts";
 import {
   emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName,
   serialise, parseSettings, SCALE_MIN, SCALE_MAX, DPI_MIN, DPI_MAX,
@@ -24,7 +27,10 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   const task = taskBySlug(taskSlug);
   const can = (p: Part) => task.parts.includes(p);
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => root.querySelector<T>(`#${id}`)!;
-  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none" } }; };
+  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none", compress: { ...(task.perFile ? PRESETS.recommended : NO_COMPRESSION) } } }; };
+  type Level = "none" | keyof typeof PRESETS | "custom";
+  const levelOf = (c: CompressOptions): Level => c.mode === "none" ? "none" : (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).find((k) => JSON.stringify(PRESETS[k]) === JSON.stringify(c)) ?? "custom";
+  let level: Level = task.perFile ? "recommended" : "none";
   let session: Session = fresh();
   const loaded = new Map<string, Loaded>();      // by SHA-256 of the file, so it survives loading a settings file
   let sel = new Set<number>();
@@ -108,6 +114,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   async function addFiles(files: File[]) {
     if (!files.length) return;
+    clearResult();
     await work("Reading files…", async (progress) => {
       const notes: string[] = [];
       for (const f of files) {
@@ -263,6 +270,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const put = (id: string, v: string) => { const e = root.querySelector<HTMLInputElement>(`#${id}`); if (e) e.value = v; };
     put("split", o.split); put("every", String(o.every)); put("ranges", o.ranges); put("dpi", String(o.dpi));
     put("quality", String(Math.round(o.quality * 100))); put("imageDpi", String(o.imageDpi));
+    put("cLevel", level); put("cDpi", String(o.compress.dpi)); put("cQuality", String(Math.round(o.compress.quality * 100)));
+    if (o.compress.mode !== "none") put("cMode", o.compress.mode);
+    const grey = root.querySelector<HTMLInputElement>("#cGrey"); if (grey) grey.checked = o.compress.grey;
     showOptions(); refreshButtons();
   }
   const fmtSize = (n: number) => n < 1e6 ? `${Math.max(1, Math.round(n / 1e3))} kB` : `${(n / 1e6).toFixed(1)} MB`;
@@ -338,7 +348,17 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const fallback: Record<string, string> = { split: o.split, every: String(o.every), ranges: o.ranges, imageDpi: String(o.imageDpi) };
     const v = (id: string) => root.querySelector<HTMLInputElement>(`#${id}`)?.value ?? fallback[id] ?? "";
     const clamp = (x: number, lo: number, hi: number, d: number) => (Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d);
+    let compress = o.compress;
+    const lv = root.querySelector<HTMLSelectElement>("#cLevel");
+    if (lv) {
+      level = lv.value as Level;
+      compress = level === "none" ? { ...NO_COMPRESSION } : level !== "custom" ? { ...PRESETS[level] } : {
+        mode: v("cMode") as CompressOptions["mode"], dpi: clamp(Number(v("cDpi")), DPI_MIN, DPI_MAX, o.compress.dpi),
+        quality: clamp(Number(v("cQuality")) / 100, 0.1, 1, o.compress.quality), grey: !!root.querySelector<HTMLInputElement>("#cGrey")?.checked,
+      };
+    }
     session = { ...session, output: {
+      compress,
       name: safeName(v("outName")), format: v("format") as OutputFormat, split: v("split") as SplitMode,
       every: Math.max(1, Math.round(Number(v("every")) || 1)), ranges: v("ranges"),
       dpi: clamp(Number(v("dpi")), DPI_MIN, DPI_MAX, o.dpi), quality: clamp(Number(v("quality")) / 100, 0.1, 1, o.quality),
@@ -350,12 +370,19 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const hide = (id: string, off: boolean) => { const e = root.querySelector<HTMLElement>(`#${id}`); if (e) e.hidden = off; };
     hide("optPdf", f !== "pdf"); hide("optEvery", f !== "pdf" || s !== "every"); hide("optRanges", f !== "pdf" || s !== "ranges");
     hide("optImage", f === "pdf" || f === "txt"); hide("optQuality", f !== "jpeg" && f !== "webp"); hide("optText", f !== "txt");
+    const c = session.output.compress;
+    hide("optCompress", f !== "pdf"); hide("cCustom", level !== "custom");
+    hide("cDpiRow", c.mode === "tidy"); hide("cQualityRow", c.mode === "tidy"); hide("cGreyRow", c.mode === "tidy"); hide("cFlattenWarn", c.mode !== "flatten");
+    const sum = root.querySelector<HTMLElement>("#cSummary");
+    if (sum) sum.textContent = level === "none" ? "Pictures are kept exactly as they are." : level === "custom" ? "" :
+      `Pictures are kept at up to ${c.dpi} dots per inch, at ${Math.round(c.quality * 100)}% quality. Text and line drawings are not changed.`;
     const dpiBox = root.querySelector<HTMLElement>("#optImageDpi"); if (dpiBox) dpiBox.hidden = f === "txt" || !session.sources.some((x) => x.kind === "image");
   }
-  $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); });
+  $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); if (task.perFile) clearResult(); });
 
   // ---------- this page's task: show only its controls ----------
   root.querySelectorAll<HTMLElement>("[data-part]").forEach((e) => { if (!can(e.dataset.part as Part)) e.remove(); });
+  if (task.perFile) { root.querySelector("#cLevel option[value=none]")?.remove(); $("outName").closest("p")!.hidden = true; }
   const fmt = $<HTMLSelectElement>("format");
   [...fmt.options].forEach((o) => { if (!task.formats.includes(o.value as OutputFormat)) o.remove(); });
   $("formatField").hidden = task.formats.length < 2;
@@ -377,7 +404,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   }
 
   async function save(which: "all" | "selected") {
-    readOptions();
+    readOptions(); clearResult();
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);
     await work("Working…", async (progress) => {
@@ -390,10 +417,30 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (o.format === "pdf") {
         const data = new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
         const build = makeBuilder(data, { imageDpi: o.imageDpi });
-        const plan = planFiles(pages, o), files = [];
-        for (const [i, f] of plan.entries()) { progress(`Writing file ${i + 1} of ${plan.length}…`); files.push({ name: f.name, bytes: await build(f.pages) }); }
-        await deliver(files, o.name);
-        note = `Saved ${plan.length === 1 ? `${plan[0].name} (${fmtSize(files[0].bytes.length)})` : `${plan.length} PDFs in ${o.name}.zip`}.`;
+        const c = o.compress;
+        const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
+          if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };
+          const built = await build(pp);
+          if (c.mode === "none") return { bytes: built };
+          return recompressImages(built, c, (i, n) => progress(`${label}: picture ${i + 1} of ${n}…`));
+        };
+        if (task.perFile) {
+          const done: Compressed[] = [];
+          for (const s of session.sources) {
+            const pp = pages.filter((x) => x.src === s.id);
+            if (!pp.length) continue;
+            const r = await make(pp, s.name);
+            done.push({ source: s, name: `${safeName(s.name.replace(/\.[^.]+$/, ""))}-compressed.pdf`, bytes: r.bytes, stats: r.stats, first: pp[0] });
+          }
+          progress("Preparing the preview…");
+          await showResult(done);
+          note = "";
+        } else {
+          const plan = planFiles(pages, o), files = [];
+          for (const [i, f] of plan.entries()) { progress(`Writing file ${i + 1} of ${plan.length}…`); files.push({ name: f.name, bytes: (await make(f.pages, f.name)).bytes }); }
+          await deliver(files, o.name);
+          note = `Saved ${plan.length === 1 ? `${plan[0].name} (${fmtSize(files[0].bytes.length)})` : `${plan.length} PDFs in ${o.name}.zip`}.`;
+        }
       } else if (o.format === "txt") {
         const texts: string[] = [];
         for (const [i, p] of pages.entries()) { progress(`Reading text: page ${i + 1} of ${pages.length}…`); texts.push(await pageText(loaded.get(src(p.src).sha256)!.handle, p.page)); }
@@ -422,6 +469,64 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       say(note);
     });
   }
+  /** Strongest compression: every page becomes one JPEG picture of itself. */
+  async function flatten(pp: PageItem[], c: CompressOptions, step: (i: number) => void): Promise<Uint8Array> {
+    const out = await PDFDocument.create();
+    for (const [i, p] of pp.entries()) {
+      step(i);
+      const h = loaded.get(src(p.src).sha256)!.handle, pxPerPoint = c.dpi / 72;
+      const canvas = await drawPage(h, p.page, p.rotate, { pxPerPoint, pxPerImagePx: pxPerPoint * (72 / session.output.imageDpi) });
+      if (c.grey) { const ctx = canvas.getContext("2d")!, d = ctx.getImageData(0, 0, canvas.width, canvas.height); greyInPlace(d.data); ctx.putImageData(d, 0, 0); }
+      const img = await out.embedJpg(new Uint8Array(await (await canvasBlob(canvas, "image/jpeg", c.quality)).arrayBuffer()));
+      const w = (canvas.width / pxPerPoint) * p.scale, ht = (canvas.height / pxPerPoint) * p.scale;
+      out.addPage([w, ht]).drawImage(img, { x: 0, y: 0, width: w, height: ht });
+    }
+    return out.save({ useObjectStreams: true });
+  }
+
+  // ---------- Compress PDF: show the real result before anything is downloaded ----------
+  type Compressed = { source: SourceRef; name: string; bytes: Uint8Array; stats?: CompressStats; first: PageItem };
+  const result = $("result");
+  function clearResult() { result.hidden = true; result.replaceChildren(); }
+  async function showResult(done: Compressed[]) {
+    const better = done.filter((d) => d.bytes.length < d.source.size);
+    const before = done.reduce((n, d) => n + d.source.size, 0), after = done.reduce((n, d) => n + Math.min(d.bytes.length, d.source.size), 0);
+    result.replaceChildren(); result.className = `result sans${better.length ? "" : " same"}`;
+    if (!better.length) {
+      result.append(el("p", {}, el("strong", {}, "These settings didn't make the file smaller, so there is nothing to download.")),
+        el("p", { className: "small" }, "It may already be well compressed, or be mostly text and drawings, which this tool doesn't change. You could try a stronger setting."));
+    } else {
+      result.append(el("p", { className: "big-number" }, `${saving(before, after)}% smaller`),
+        el("p", {}, `${fmtSize(before)} → ${fmtSize(after)}`));
+      if (done.length > 1) result.append(el("table", {}, el("tbody", {}, ...done.map((d) => el("tr", {},
+        el("td", {}, d.source.name), el("td", { className: "num" }, fmtSize(d.source.size)), el("td", { className: "num" }, d.bytes.length < d.source.size ? `${fmtSize(d.bytes.length)} (−${saving(d.source.size, d.bytes.length)}%)` : "not smaller: left out"))))));
+    }
+    const st = done.map((d) => d.stats).filter((x): x is CompressStats => !!x);
+    if (session.output.compress.mode === "images" && st.length && !st.some((x) => x.images)) {
+      result.append(el("p", { className: "small" }, "There are no pictures in this PDF to shrink."));
+    } else if (session.output.compress.mode === "images" && st.length) {
+      const changed = st.reduce((n, x) => n + x.changed, 0), total = st.reduce((n, x) => n + x.images, 0);
+      const why = new Map<string, number>(); for (const x of st) for (const [k, n] of Object.entries(x.skipped)) why.set(k, (why.get(k) ?? 0) + n);
+      result.append(el("p", { className: "small" }, `${changed} of ${total} picture${total === 1 ? "" : "s"} made smaller.` +
+        (why.size ? ` Left as they were: ${[...why].map(([k, n]) => `${n} that ${k}`).join("; ")}.` : "")));
+    }
+    if (better.length) {
+      try {
+        const d = better[0], zoom = { pxPerPoint: 1.5, pxPerImagePx: 1.5 };
+        const was = await drawPage(loaded.get(d.source.sha256)!.handle, d.first.page, d.first.rotate, zoom);
+        const now = await drawPage({ kind: "pdf", doc: await openPdf(d.bytes, vendor) }, 0, 0, zoom);
+        const pair = el("div", { className: "pair" }, el("figure", {}, was, el("figcaption", {}, "Before")), el("figure", {}, now, el("figcaption", {}, "After")));
+        pair.title = "Click to enlarge";
+        pair.addEventListener("click", () => pair.classList.toggle("zoom"));
+        result.append(el("p", { className: "small" }, `First page of ${d.source.name}. Click the pictures to enlarge them, and check the quality is good enough before you download.`), pair);
+      } catch (e) { console.error(e); }
+      const go = el("button", { type: "button", className: "primary big" }, better.length === 1 ? `Download ${fmtSize(better[0].bytes.length)} PDF` : `Download ${better.length} PDFs (.zip)`);
+      go.addEventListener("click", () => deliver(better.map((d) => ({ name: d.name, bytes: d.bytes })), "compressed"));
+      result.append(el("div", { className: "go-result" }, go));
+    }
+    result.hidden = false; result.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
   const ext = (f: OutputFormat) => (f === "jpeg" ? "jpg" : f === "tiff" ? "tif" : f);
   $("saveAll").addEventListener("click", () => save(task.which));
   root.querySelector("#saveSel")?.addEventListener("click", () => save("selected"));
@@ -444,6 +549,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       for (const k of [...loaded.keys()]) if (!wanted.has(k)) loaded.delete(k);
       if (!task.formats.includes(next.output.format)) next.output.format = task.formats[0];
       if (!can("split")) next.output.split = "none";
+      if (!can("compress")) next.output.compress = { ...NO_COMPRESSION };
+      else if (task.perFile && next.output.compress.mode === "none") next.output.compress = { ...PRESETS.recommended };
+      level = levelOf(next.output.compress);
       session = next; sel = new Set(); undo.length = 0;
       render();
       say(session.sources.every((s) => loaded.has(s.sha256)) ? "Settings loaded." : "Settings loaded. Now add the files they refer to.");
@@ -452,7 +560,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   $("startOver").addEventListener("click", () => {
     if (busy) return;
     for (const u of thumbs.values()) URL.revokeObjectURL(u);
-    thumbs.clear(); loaded.clear(); undo.length = 0; sel = new Set(); session = fresh(); render(); say("");
+    thumbs.clear(); loaded.clear(); undo.length = 0; sel = new Set(); session = fresh(); level = levelOf(session.output.compress); clearResult(); render(); say("");
   });
 
   render();
