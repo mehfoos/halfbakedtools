@@ -9,7 +9,7 @@ What the tool relies on, what it was checked against, and when.
 | Default PDF unit = 1/72 inch (used to size image pages and page images) | Checked | PDF 32000-1:2008 (Adobe's edition of ISO 32000-1), section 8.3.2.3 "User Space", p. 115, and Table 30 (UserUnit), p. 79. Copy uploaded by the owner, SHA-256 `9de0ca9e8570d6209e8bd48a355be8eb6ec376acfc3fc3ae97cd8730351417ff`. **Not yet in `sources/`**: its copyright notice says permission to reproduce must be arranged with ISO, so the owner decided on 2026-11-16 not to commit it. There is therefore no `references.json` entry | 2026-11-16 |
 | 1 inch = 0.0254 m (BMP resolution field) | Not yet checked | Needs an archived source | – |
 | Grey conversion weights 0.299, 0.587, 0.114 (compression's "make pictures grey") | Not yet checked | Needs an archived source (ITU-R BT.601 is the usual attribution) | – |
-| Compression presets (200/150/100 dots per inch; 80/65/50% quality) | Not a sourced value | This tool's own choices | – |
+| Compression presets (200/150/100/72 dots per inch; 80/65/50/30% quality; "Maximum" redraws pages at 72 dots per inch, 30%) | Not a sourced value | This tool's own choices | – |
 
 ## Behaviour: automated (`npm test`, every change)
 
@@ -65,6 +65,7 @@ small generated PDFs and images. **Not yet run:** Firefox, Safari, phones, large
 | Compress PDF (generated files: a 2-page 300 dpi JPEG "scan", colour and grey, 5.5 MB; a text page with a 1600 x 1200 PNG-style picture, 1.9 MB). Recommended: 7.3 MB → 1.4 MB; scan pictures stored at 1240 x 1754 (150 dpi); page sizes and text unchanged, checked with pypdf | Pass |
 | Strong (pictures 827 x 1169) and custom 72 dpi grey (595 x 842): smaller each time | Pass |
 | "Turn whole pages into pictures": smaller; text gone, as warned | Pass |
+| Extreme (7.3 MB → 237 kB; scan pictures 595 x 842; text kept) and Maximum (7.3 MB → 186 kB; text gone, warning shown) on the same generated files | Pass |
 | "Tidy up only" and a text-only PDF: tool reports nothing gained and offers no download | Pass |
 | Result panel shows the real size before download; changing a setting clears it | Pass |
 | Workspace: merge two files with Light compression, direct download | Pass |

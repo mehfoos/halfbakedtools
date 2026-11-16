@@ -426,7 +426,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     hide("cDpiRow", c.mode === "tidy"); hide("cQualityRow", c.mode === "tidy"); hide("cGreyRow", c.mode === "tidy"); hide("cFlattenWarn", c.mode !== "flatten");
     const sum = root.querySelector<HTMLElement>("#cSummary");
     if (sum) sum.textContent = level === "none" ? "Pictures are kept exactly as they are." : level === "custom" ? "" :
-      `Pictures are kept at up to ${c.dpi} dots per inch, at ${Math.round(c.quality * 100)}% quality. Text and line drawings are not changed.`;
+      c.mode === "flatten" ? `Every page is redrawn as one picture at ${c.dpi} dots per inch and ${Math.round(c.quality * 100)}% quality. Text is lost. This can come out larger than the original for pages that are mostly text.` :
+      `Pictures are kept at up to ${c.dpi} dots per inch, at ${Math.round(c.quality * 100)}% quality.${level === "extreme" ? " Expect visibly rough pictures." : ""} Text and line drawings are not changed.`;
     const dpiBox = root.querySelector<HTMLElement>("#optImageDpi"); if (dpiBox) dpiBox.hidden = f === "txt" || !session.sources.some((x) => x.kind === "image");
   }
   $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); if (task.perFile) clearResult(); });

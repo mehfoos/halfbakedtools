@@ -261,7 +261,9 @@ test("compress: pixel conversion, greying and the stated saving", () => {
   const px = Uint8ClampedArray.from([255, 0, 0, 255, 255, 255, 255, 200]); greyInPlace(px);
   assert.deepEqual([...px], [76, 76, 76, 255, 255, 255, 255, 200]);
   assert.equal(saving(1000, 250), 75); assert.equal(saving(1000, 1000), 0); assert.equal(saving(1000, 1200), 0); assert.equal(saving(0, 0), 0);
-  assert.ok(PRESETS.light.dpi > PRESETS.recommended.dpi && PRESETS.recommended.dpi > PRESETS.strong.dpi);
+  assert.ok(PRESETS.light.dpi > PRESETS.recommended.dpi && PRESETS.recommended.dpi > PRESETS.strong.dpi && PRESETS.strong.dpi > PRESETS.extreme.dpi);
+  assert.ok(PRESETS.strong.quality > PRESETS.extreme.quality);
+  assert.equal(PRESETS.extreme.mode, "images"); assert.equal(PRESETS.maximum.mode, "flatten", "only the level that says so turns pages into pictures");
   assert.equal(NO_COMPRESSION.mode, "none");
 });
 test("settings: compression options are kept, and older files without them still load", () => {

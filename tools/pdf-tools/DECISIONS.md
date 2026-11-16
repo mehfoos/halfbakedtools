@@ -26,6 +26,7 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-16 | Two stronger compression levels added: Extreme (pictures at 72 dpi, 30% quality, text kept) and Maximum (whole pages redrawn as pictures, with the text-loss warning shown) | Owner asked for more extreme options in addition to the existing ones |
 | 2026-11-16 | Edit PDF (first part) adds text and pictures only. No "cover with a box" tool is offered | A covered word is still in the file and can be copied out; offering it would look like removal (principle 2). True removal needs content-stream rewriting: see `ROADMAP.md` |
 | 2026-11-16 | The editor shows the page rebuilt as a real PDF after every change; on-screen boxes are only handles | Guarantees what is seen is what is saved, with no second text-layout engine to drift out of step |
 | 2026-11-16 | Additions are stored per page, in points from the top-left of the page as the file shows it, before any turn or resize made in the tool | They then turn, resize, duplicate and move with their page, and survive the settings file |

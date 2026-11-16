@@ -8,10 +8,12 @@ export type CompressOptions = { mode: CompressMode; dpi: number; quality: number
 export const NO_COMPRESSION: CompressOptions = { mode: "none", dpi: 150, quality: 0.65, grey: false };
 
 /** Ready-made settings. These are this tool's own choices, not taken from a standard. */
-export const PRESETS: Record<"light" | "recommended" | "strong", CompressOptions> = {
+export const PRESETS: Record<"light" | "recommended" | "strong" | "extreme" | "maximum", CompressOptions> = {
   light: { mode: "images", dpi: 200, quality: 0.8, grey: false },
   recommended: { mode: "images", dpi: 150, quality: 0.65, grey: false },
   strong: { mode: "images", dpi: 100, quality: 0.5, grey: false },
+  extreme: { mode: "images", dpi: 72, quality: 0.3, grey: false },      // pictures get visibly rough; text is untouched
+  maximum: { mode: "flatten", dpi: 72, quality: 0.3, grey: false },     // whole pages become rough pictures; text is lost
 };
 
 /**

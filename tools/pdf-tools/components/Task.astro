@@ -130,7 +130,9 @@ const policy = import.meta.env.PROD ? CSP : "";
                 <option value="none">None</option>
                 <option value="light">Light: best quality</option>
                 <option value="recommended">Recommended</option>
-                <option value="strong">Strong: smallest pictures</option>
+                <option value="strong">Strong: smaller pictures</option>
+                <option value="extreme">Extreme: rough pictures, text kept</option>
+                <option value="maximum">Maximum: pages become pictures</option>
                 <option value="custom">Custom…</option>
               </select></label></p>
             <p class="small muted" id="cSummary"></p>
@@ -144,8 +146,8 @@ const policy = import.meta.env.PROD ? CSP : "";
               <p id="cDpiRow"><label class="field">Keep at most <input id="cDpi" type="number" min="36" max="600" step="1" inputmode="numeric" /> dots per inch</label><br /><span class="small muted">Fewer dots: smaller file, blurrier pictures.</span></p>
               <p id="cQualityRow"><label class="field">Picture quality <input id="cQuality" type="number" min="10" max="100" step="1" inputmode="numeric" /> %</label><br /><span class="small muted">Lower: smaller file, more blockiness.</span></p>
               <p id="cGreyRow"><label><input id="cGrey" type="checkbox" /> Make pictures grey (no colour)</label></p>
-              <p class="small notice" id="cFlattenWarn"><strong>Text will become part of a picture:</strong> it can no longer be selected, searched or read aloud by a screen reader, and links stop working.</p>
             </div>
+            <p class="small notice" id="cFlattenWarn"><strong>Text will become part of a picture:</strong> it can no longer be selected, searched or read aloud by a screen reader, and links stop working. Small print may become hard to read.</p>
           </div>
           <details id="optImageDpi" data-part="imageDpi">
             <summary>Size of images on the page</summary>
