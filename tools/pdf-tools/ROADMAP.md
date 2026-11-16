@@ -8,6 +8,16 @@ requirements) first.
 request. `web/privacy.test.ts` and the security policy in `web/csp.ts` enforce it; never weaken either to make a
 feature work. Any new worker must be started from a blob, or the policy won't bind it (see `README.md`). If a feature can't be done locally, don't offer it, and say so.
 
+## Interface direction (owner, 2026-11-16)
+
+The owner wants the interface to **emulate ilovepdf.com's way of working, in this site's own theme** (Averia
+fonts, navy on beige; do not copy their branding, icons or colours). That means task-first: a grid of named
+tasks (Merge PDF, Split PDF, Rotate, PDF to JPG, JPG to PDF, Word to PDF, ...), each opening a focused page with
+one large "select files" button, then previews with the task's few options beside them and one clear action
+button. The current single workspace page can stay as the "organise" task and the engine behind all of them
+(`session.ts`, `build.ts`, `render.ts` need no change). Not started. The owner stressed again that, unlike that
+site, **everything must be processed locally and nothing may go to a server or cloud**.
+
 ## Where things stand
 
 | Phase | Scope | Status |
@@ -15,7 +25,8 @@ feature work. Any new worker must be started from a blob, or the policy won't bi
 | 1 | Skeleton, no-upload enforcement, merge, reorder, duplicate, remove, rotate, resize page with contents, split, extract, PDF → images (PNG, JPEG, WebP, TIFF, BMP) and text, images → PDF, settings file | **Done 2026-11-16** (alpha) |
 | 2 | Compression with options and size preview; resize images inside scanned PDFs independently of page size; named paper sizes | Not started |
 | 3 | Edit page content: add text and images, move/resize/rotate them, remove or redact content | Not started |
-| 4 | Text and HTML ↔ PDF; Word, PowerPoint, Excel (and OpenDocument) ↔ PDF; PDF → SVG | Not started |
+| 4 | Text and HTML ↔ PDF; Word, PowerPoint, Excel (and OpenDocument) ↔ PDF; PDF → SVG | Office → PDF in progress on branch `office-to-pdf`; rest not started |
+| 5 | Task-first interface in the style of ilovepdf.com, in this site's theme | Not started |
 
 Owner requirements not yet met are exactly phases 2 to 4. Nothing in phase 1 is known to be broken; the unchecked
 items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
@@ -105,13 +116,22 @@ Be strict about principle 2 here: most "PDF to Word" tools overclaim.
 | PDF → Word / PowerPoint / Excel | Partly | Can write files (candidates: `docx`, `pptxgenjs`, a spreadsheet writer) from extracted text, or page pictures on slides. Reconstructing paragraphs, tables and columns from a PDF is heuristic; label results as rough. Tables → Excel needs table detection |
 | Word / PowerPoint / Excel → PDF | Only roughly without a big engine | Pure-JS routes (`mammoth` for .docx → HTML, then print) lose layout, fonts and pagination |
 
-**Decision needed from the owner before building Office → PDF:** faithful conversion needs a real office engine.
-LibreOffice compiled to WebAssembly exists and runs fully in the browser, but it is a very large download (tens of
-megabytes), would have to be self-hosted on this site (never loaded from its vendor's CDN), needs
-cross-origin-isolation headers that GitHub Pages can't set directly, and is licensed MPL-2.0. The alternatives
-are a rough pure-JS conversion with plainly stated limits, or not offering that direction. Check current facts
-(size, licence, hosting needs) from primary sources before deciding; the details above are from general
-knowledge and are **not yet checked**.
+**Office → PDF: owner's decision (2026-11-16): yes, faithful conversion, provided it stays within GitHub's
+free limits and breaks no licence or legal terms.** Others have done this by compiling LibreOffice to WebAssembly.
+Work so far is on branch `office-to-pdf` (not merged); read `tools/pdf-tools/OFFICE-WIP.md` there. In short:
+
+- **Engine tried:** npm `@matbee/libreoffice-converter` 2.7.2 (MPL-2.0, no CDN use found). In a direct trial in
+  Chrome it converted docx, xlsx and pptx correctly in 1 to 3 seconds with no outside requests.
+- **Hosting:** it needs cross-origin isolation headers GitHub Pages can't send, so a service worker adds them.
+  Published gzip-compressed the engine is about 78 MB (site total 88 MB, limit 1 GB [GitHub Pages limits]).
+  GitHub Pages has a soft limit of 100 GB of traffic a month: roughly 1,250 first-time engine downloads.
+- **Blocker:** through the service worker, conversion is unreliable (sometimes 4 seconds, sometimes hangs).
+- **Other engines found, not yet tried** (all small one-person projects; check licence and provenance first):
+  `eze-paz/libreoffice-wasm` (needs no cross-origin isolation, so no service worker; Chrome/Edge 137+ only;
+  binaries from GitHub releases, not npm), `Skitionek/serverless-office-converter` (runs on GitHub Pages,
+  about 30 MB xz; its own code had no stated licence), ZetaOffice/`zetajs` from allotropia (the most
+  established; by default loads the engine from the vendor's CDN, which this site must not do).
+- **Licence duty if shipped:** LibreOffice is MPL-2.0; say so on the methods page and link to the source.
 
 Also check each candidate library's licence and maintenance from its own repository before adding it, add it to
 the "Software used" table on the methods page (it reads versions from `node_modules` at build time), and make
