@@ -73,19 +73,35 @@
           "render": true
         },
         {
-          "label": "11.3 as saved by the site owner (.mht web archive)",
+          "label": "11.3 saved by the site owner (PDF)",
+          "file": "openstax-ap2e-11-3-owner-saved.pdf"
+        },
+        {
+          "label": "web archive (.mht)",
           "file": "openstax-ap2e-11-3-owner-saved.mht"
         },
         {
-          "label": "11.4 as saved by the site owner (.mht web archive)",
+          "label": "11.4 saved by the site owner (PDF)",
+          "file": "openstax-ap2e-11-4-owner-saved.pdf"
+        },
+        {
+          "label": "web archive (.mht)",
           "file": "openstax-ap2e-11-4-owner-saved.mht"
         },
         {
-          "label": "11.5 as saved by the site owner (.mht web archive)",
+          "label": "11.5 saved by the site owner (PDF)",
+          "file": "openstax-ap2e-11-5-owner-saved.pdf"
+        },
+        {
+          "label": "web archive (.mht)",
           "file": "openstax-ap2e-11-5-owner-saved.mht"
         },
         {
-          "label": "11.6 as saved by the site owner (.mht web archive)",
+          "label": "11.6 saved by the site owner (PDF)",
+          "file": "openstax-ap2e-11-6-owner-saved.pdf"
+        },
+        {
+          "label": "web archive (.mht)",
           "file": "openstax-ap2e-11-6-owner-saved.mht"
         }
       ]

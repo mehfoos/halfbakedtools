@@ -26,8 +26,8 @@ Every number or classification the tool relies on, what it was checked against (
 
 - The rendered PDFs of the OpenStax pages have a cookie banner covering the bottom of each page, hiding a few table
   rows (e.g. part of the hamstring rows). The raw `.html` copies archived beside them contain the full text, and the
-  owner-saved `.mht` copies have no banner. The `.mht` copies lack the table images (they weren't loaded when saved),
-  but OpenStax's text description of each table is included.
+  owner-saved copies (saved 16 Nov 2026 after scrolling so every image loaded; `.mht` web archive plus a PDF printed
+  from it) have no banner and include every figure and table image.
 - The Pelland et al. archived copy is the preprint (version 2). The owner supplied the published *Sports Medicine*
   article on 16 Nov 2026 and it was checked, but it is published "under exclusive licence to Springer Nature", so it is
   not stored in this public repository. Its Table 1 matches the preprint's Table 1A for every exercise the tool uses.

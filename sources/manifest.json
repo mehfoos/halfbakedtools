@@ -149,7 +149,13 @@
     "source": "openstax-ap2e",
     "retrieved": null,
     "note": "uploaded by the site owner",
-    "sha256": "d93e6210fb39d412813e7b6d10d88f2e2765be7b29b48a07776c5884d599dcd5"
+    "sha256": "f896a6b250d71c0f3db66640ae20d8f9563c013c0157759c04b4eebbfda82726"
+  },
+  "openstax-ap2e-11-3-owner-saved.pdf": {
+    "source": "openstax-ap2e",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "373a7488ec43270ce332effd4c22cc9617af87bbc09ed050808d03f44d5794bd"
   },
   "openstax-ap2e-11-4-abdomen-thorax.html": {
     "source": "openstax-ap2e",
@@ -169,13 +175,25 @@
     "source": "openstax-ap2e",
     "retrieved": null,
     "note": "uploaded by the site owner",
-    "sha256": "dc80d954dfec5c504411e82ab6e69b2124dae5b509399239b641e8516d1cbf80"
+    "sha256": "a6b4a71f32639dfe3bf4386f95a75df6b2c28bf13ee80bd48b4bab66af589b35"
+  },
+  "openstax-ap2e-11-4-owner-saved.pdf": {
+    "source": "openstax-ap2e",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "62a4d71a18b1219168e45e9024a8cb5db453b6690008c3427af5cc23b5af616b"
   },
   "openstax-ap2e-11-5-owner-saved.mht": {
     "source": "openstax-ap2e",
     "retrieved": null,
     "note": "uploaded by the site owner",
-    "sha256": "5f7b00b86cbdf9f7488b87500544fc190bf307ac732b2d45cfa521249fe336ea"
+    "sha256": "f2992cc624171e8de9daeadc5e4faa921a5294712996d270b5aac13dba1272c6"
+  },
+  "openstax-ap2e-11-5-owner-saved.pdf": {
+    "source": "openstax-ap2e",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "c82584f3e47d82ce3b07011470cbe55637080ba786b7a2436c3aeb2a18f76ab7"
   },
   "openstax-ap2e-11-5-upper-limbs.html": {
     "source": "openstax-ap2e",
@@ -209,7 +227,13 @@
     "source": "openstax-ap2e",
     "retrieved": null,
     "note": "uploaded by the site owner",
-    "sha256": "ebeb44a03f300f01eb8241fae211986c6bd615553987728d55f9738c288cfb22"
+    "sha256": "89d7f903de94a51faa0335c30334d85e2433d9b0628a85852893db34c457ce37"
+  },
+  "openstax-ap2e-11-6-owner-saved.pdf": {
+    "source": "openstax-ap2e",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "ca8e45dbc5fdde823c4deb97485d3790dd9ac6a5130a0ad26c24a90748d6de30"
   },
   "pelland-2024-dose-response-preprint-v2.pdf": {
     "source": "pelland-2026",
