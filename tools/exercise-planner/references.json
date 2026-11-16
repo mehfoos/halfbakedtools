@@ -49,31 +49,7 @@
       "usedFor": "What each muscle does (which joint movement it produces), used to decide which muscles an exercise works",
       "archive": [
         {
-          "label": "Archived copy (11.3 head, neck and back)",
-          "file": "openstax-ap2e-11-3-head-neck-back.pdf",
-          "fetch": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
-          "render": true
-        },
-        {
-          "label": "11.4 abdominal wall and thorax",
-          "file": "openstax-ap2e-11-4-abdomen-thorax.pdf",
-          "fetch": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
-          "render": true
-        },
-        {
-          "label": "11.5 pectoral girdle and upper limbs",
-          "file": "openstax-ap2e-11-5-upper-limbs.pdf",
-          "fetch": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
-          "render": true
-        },
-        {
-          "label": "11.6 pelvic girdle and lower limbs",
-          "file": "openstax-ap2e-11-6-lower-limbs.pdf",
-          "fetch": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
-          "render": true
-        },
-        {
-          "label": "11.3 saved by the site owner (PDF)",
+          "label": "Archived copy: 11.3 saved by the site owner (PDF)",
           "file": "openstax-ap2e-11-3-owner-saved.pdf"
         },
         {

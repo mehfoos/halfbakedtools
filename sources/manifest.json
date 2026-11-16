@@ -131,20 +131,6 @@
     "retrieved": "2026-11-10",
     "sha256": "a14edd6b845823e2150e04669ee3280cfbb9a23f33722e9de6b48bd2a1bb3656"
   },
-  "openstax-ap2e-11-3-head-neck-back.html": {
-    "source": "openstax-ap2e",
-    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
-    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
-    "retrieved": "2026-11-15",
-    "sha256": "87211a32f7bb2ee38e28330949bf074b39f33cbbe5952252047deb3c68930798"
-  },
-  "openstax-ap2e-11-3-head-neck-back.pdf": {
-    "source": "openstax-ap2e",
-    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
-    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
-    "retrieved": "2026-11-15",
-    "sha256": "2d4349b872465f4c2888da2774cdeee28e65d7bd037919cdc8e64c8720a3ccb1"
-  },
   "openstax-ap2e-11-3-owner-saved.mht": {
     "source": "openstax-ap2e",
     "retrieved": null,
@@ -156,20 +142,6 @@
     "retrieved": null,
     "note": "uploaded by the site owner",
     "sha256": "373a7488ec43270ce332effd4c22cc9617af87bbc09ed050808d03f44d5794bd"
-  },
-  "openstax-ap2e-11-4-abdomen-thorax.html": {
-    "source": "openstax-ap2e",
-    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
-    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
-    "retrieved": "2026-11-15",
-    "sha256": "c6deea86da255a55bba9c7d531ce34935380d59744d1f520af228c6504718bc3"
-  },
-  "openstax-ap2e-11-4-abdomen-thorax.pdf": {
-    "source": "openstax-ap2e",
-    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
-    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
-    "retrieved": "2026-11-15",
-    "sha256": "317f566cae937269a2d265acb0991ffb2bc2b3473b65496173efb31c479137dd"
   },
   "openstax-ap2e-11-4-owner-saved.mht": {
     "source": "openstax-ap2e",
@@ -194,34 +166,6 @@
     "retrieved": null,
     "note": "uploaded by the site owner",
     "sha256": "c82584f3e47d82ce3b07011470cbe55637080ba786b7a2436c3aeb2a18f76ab7"
-  },
-  "openstax-ap2e-11-5-upper-limbs.html": {
-    "source": "openstax-ap2e",
-    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
-    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
-    "retrieved": "2026-11-15",
-    "sha256": "34cd301c269c74935cc58a548336578b3300d2a612ce876f091f828a4f5e3400"
-  },
-  "openstax-ap2e-11-5-upper-limbs.pdf": {
-    "source": "openstax-ap2e",
-    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
-    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
-    "retrieved": "2026-11-15",
-    "sha256": "386cb9fcb99b351aad0451a63b4263889fbbe67f88ef5ef5e9c80b798176b202"
-  },
-  "openstax-ap2e-11-6-lower-limbs.html": {
-    "source": "openstax-ap2e",
-    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
-    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
-    "retrieved": "2026-11-15",
-    "sha256": "73ff220bc8d37f813613c9a0f30c90bf9634a5abbac9b445ca8dc167a5d2ec89"
-  },
-  "openstax-ap2e-11-6-lower-limbs.pdf": {
-    "source": "openstax-ap2e",
-    "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
-    "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
-    "retrieved": "2026-11-15",
-    "sha256": "c865c916484f3833f5134b1c4af45186066803537a18ce9c0862a8982cf81e88"
   },
   "openstax-ap2e-11-6-owner-saved.mht": {
     "source": "openstax-ap2e",
