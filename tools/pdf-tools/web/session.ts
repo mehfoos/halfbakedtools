@@ -130,6 +130,20 @@ export function planFiles(pages: PageItem[], out: Pick<Output, "name" | "split" 
   return groups.map((g, i) => ({ name: `${base}-${String(i + 1).padStart(width, "0")}.pdf`, pages: g }));
 }
 
+/** The default output name for work started from `fileName`: its name without the extension, plus a suffix
+ *  ("report.pdf" + "merged" -> "report-merged"), so the result can't be mistaken for, or saved over, the original. */
+export function defaultName(fileName: string, suffix: string): string {
+  const base = safeName(fileName.replace(/\.[^.]+$/, ""));
+  return suffix ? `${base}-${suffix}` : base;
+}
+
+/** Output file names that match the name of a file the visitor added (ignoring capitals). Saving one of these
+ *  into the same folder as the original could replace it, so the tool asks first. */
+export function clashes(outputs: string[], sourceNames: string[]): string[] {
+  const taken = new Set(sourceNames.map((n) => n.trim().toLowerCase()));
+  return [...new Set(outputs.filter((n) => taken.has(n.trim().toLowerCase())))];
+}
+
 /** A file name without characters that file systems reject. */
 export function safeName(name: string): string {
   const s = name.replace(/[\\/:*?"<>|\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim().replace(/\.+$/, "");

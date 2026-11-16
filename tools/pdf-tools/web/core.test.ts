@@ -4,7 +4,7 @@ import { PDFDocument, PDFName, degrees } from "@cantoo/pdf-lib";
 import { parseRanges, parsePageList, formatRanges } from "./ranges.ts";
 import {
   emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName,
-  serialise, parseSettings, FORMAT, type PageItem,
+  serialise, parseSettings, FORMAT, defaultName, clashes, type PageItem,
 } from "./session.ts";
 import { makeBuilder, inspectPdf, type SourceData } from "./build.ts";
 import { encodeBmp } from "./bmp.ts";
@@ -272,4 +272,17 @@ test("settings: compression options are kept, and older files without them still
   assert.deepEqual(parseSettings(JSON.stringify(old)).output.compress, NO_COMPRESSION);
   old.output.compress = { mode: "explode", dpi: 5, quality: 9, grey: "yes" };
   assert.deepEqual(parseSettings(JSON.stringify(old)).output.compress, NO_COMPRESSION);
+});
+
+// ---- output names never match an original by default ----
+test("names: defaults carry a suffix, and clashes with added files are found whatever the capitals", () => {
+  assert.equal(defaultName("Report 2026.pdf", "merged"), "Report 2026-merged");
+  assert.equal(defaultName("archive.tar.gz", "pages"), "archive.tar-pages");
+  assert.equal(defaultName("a/b:c.pdf", ""), "a b c");
+  assert.deepEqual(clashes(["Report.PDF", "x.pdf", "report.pdf"], ["report.pdf", "other.pdf"]), ["Report.PDF", "report.pdf"]);
+  assert.deepEqual(clashes(["report-merged.pdf"], ["report.pdf"]), []);
+  for (const t of ALL_TASKS) {
+    assert.ok(/^[a-z-]+$/.test(t.suffix), `${t.slug} needs a suffix`);
+    assert.deepEqual(clashes([`${defaultName("scan.pdf", t.suffix)}.pdf`], ["scan.pdf"]), [], `${t.slug}: default name must differ from the original`);
+  }
 });

@@ -20,6 +20,7 @@ What the tool relies on, what it was checked against, and when.
 | Split plans (one file, every N, chosen ranges, one per page) and file names | `core.test.ts` "session: planFiles…" |
 | Settings file round trip; rejection of foreign, damaged and newer files; no content keys | `core.test.ts` "settings: …" |
 | Written PDFs: merge order, repeated pages independent, rotation adds to existing, resize, image pages, several files from one builder, fonts kept | `core.test.ts` "build: …" |
+| Default names carry a suffix on every task; name clashes found whatever the capitals | `core.test.ts` "names: …" |
 | BMP writer; text joining; JPEG orientation note | `core.test.ts` "bmp", "text", "exif" |
 | Compression rules: detail estimate, target size, eligibility, row-prediction decoding, pixel conversion, stated saving; settings round trip and older files | `core.test.ts` "compress: …", "settings: compression…" |
 | No network APIs in the tool's code; no off-site loads in pages; security policy present and strict | `privacy.test.ts` |
@@ -67,4 +68,5 @@ small generated PDFs and images. **Not yet run:** Firefox, Safari, phones, large
 | Result panel shows the real size before download; changing a setting clears it | Pass |
 | Workspace: merge two files with Light compression, direct download | Pass |
 | Row-prediction (PNG predictor) pictures in a real PDF; black-and-white, CMYK and palette pictures being skipped | **Not yet checked** in a browser (rules are unit-tested) |
+| Default file names differ from the original's on every task; a name matching an added file (any capitals) brings up a question and saves nothing until answered; Cancel saves nothing; "Save anyway" saves | Pass |
 | Phone-width layout | Looked at in screenshots only; **not checked on a real phone** |

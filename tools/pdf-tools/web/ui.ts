@@ -7,7 +7,7 @@ import { NO_COMPRESSION, PRESETS, saving, greyInPlace, type CompressOptions, typ
 import { recompressImages } from "./compress.ts";
 import {
   emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName,
-  serialise, parseSettings, SCALE_MIN, SCALE_MAX, DPI_MIN, DPI_MAX,
+  serialise, parseSettings, defaultName, clashes, SCALE_MIN, SCALE_MAX, DPI_MIN, DPI_MAX,
   type Session, type PageItem, type Edit, type OutputFormat, type SplitMode, type Rotation, type SourceRef,
 } from "./session.ts";
 import { parsePageList, formatRanges } from "./ranges.ts";
@@ -149,7 +149,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         }
         loaded.set(sha, item);
         const r = addSource(session, { name: f.name, size: bytes.length, sha256: sha, pages, kind: item.data.kind });
-        if (!r.matched) { remember(); if (!session.pages.length && session.output.name === "document") r.session.output.name = safeName(f.name.replace(/\.[^.]+$/, "")); }
+        if (!r.matched) { remember(); if (!session.pages.length && session.output.name === "document") r.session.output.name = defaultName(f.name, task.suffix); }
         session = r.session;
       }
       render();
@@ -403,10 +403,48 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     download(`${zipName}.zip`, new Blob([zip as BlobPart], { type: "application/zip" }));
   }
 
+  // ---------- never replace an original without being told to ----------
+  // A web page can't look in the visitor's folders, so it can't know what is already there. What it can check is
+  // whether a file it is about to hand over has the same name as one the visitor added: saved next to the
+  // original, that could replace it. Default names carry a suffix so this only happens if the visitor chooses it.
+  const ask = $("ask");
+  function consent(names: string[]): Promise<boolean> {
+    const hit = clashes(names, session.sources.map((s) => s.name));
+    if (!hit.length) return Promise.resolve(true);
+    return new Promise((done) => {
+      const answer = (ok: boolean) => { ask.hidden = true; ask.replaceChildren(); done(ok); };
+      const yes = el("button", { type: "button", className: "small" }, "Save with this name anyway");
+      const no = el("button", { type: "button", className: "small primary" }, "Cancel, I'll change the name");
+      yes.addEventListener("click", () => answer(true)); no.addEventListener("click", () => { answer(false); $<HTMLInputElement>("outName").closest("p")!.hidden = false; $<HTMLInputElement>("outName").focus(); });
+      ask.replaceChildren(
+        el("p", {}, el("strong", {}, `${hit.length === 1 ? `"${hit[0]}" has` : `${hit.map((h) => `"${h}"`).join(", ")} have`} the same name as ${hit.length === 1 ? "a file" : "files"} you added.`)),
+        el("p", { className: "small" }, "If you save into the same folder as the original, the original could be replaced. Your browser may or may not warn you."),
+        el("p", { className: "row" }, no, yes));
+      ask.hidden = false; say(""); ask.scrollIntoView({ block: "nearest", behavior: "smooth" }); no.focus();
+    });
+  }
+  /** Name for a file saved on its own (Compress PDF). There is no name box there, so steer clear of the names of added files. */
+  function perFileName(s: SourceRef): string {
+    let name = defaultName(s.name, task.suffix);
+    while (clashes([`${name}.pdf`], session.sources.map((x) => x.name)).length) name += "-new";
+    return `${name}.pdf`;
+  }
+  /** The names of the files a save would produce, including those inside a .zip. */
+  function outputNames(pages: PageItem[]): string[] {
+    const o = session.output;
+    try {
+      if (o.format === "pdf") return task.perFile ? session.sources.filter((s) => pages.some((p) => p.src === s.id)).map(perFileName) : planFiles(pages, o).map((f) => f.name);
+      if (o.format === "txt") return [`${o.name}.txt`];
+      const width = String(pages.length).length;
+      return pages.map((_, i) => (pages.length === 1 ? `${o.name}.${ext(o.format)}` : `${o.name}-${String(i + 1).padStart(width, "0")}.${ext(o.format)}`));
+    } catch { return []; }   // a bad split range etc.: the save itself reports it
+  }
+
   async function save(which: "all" | "selected") {
-    readOptions(); clearResult();
+    readOptions(); clearResult(); if (busy || !ask.hidden) return;
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);
+    if (!(await consent(outputNames(pages)))) return say("Nothing was saved. Change the file name and try again.");
     await work("Working…", async (progress) => {
       if (!pages.length) throw new Error("There are no pages to save.");
       const missing = [...new Set(pages.filter((p) => !has(p)).map((p) => src(p.src).name))];
@@ -430,7 +468,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
             const pp = pages.filter((x) => x.src === s.id);
             if (!pp.length) continue;
             const r = await make(pp, s.name);
-            done.push({ source: s, name: `${safeName(s.name.replace(/\.[^.]+$/, ""))}-compressed.pdf`, bytes: r.bytes, stats: r.stats, first: pp[0] });
+            done.push({ source: s, name: perFileName(s), bytes: r.bytes, stats: r.stats, first: pp[0] });
           }
           progress("Preparing the preview…");
           await showResult(done);

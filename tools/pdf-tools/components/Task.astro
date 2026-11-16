@@ -126,10 +126,11 @@ const policy = import.meta.env.PROD ? CSP : "";
               <p class="small muted">An image has pixels but no fixed paper size. At 96 dots per inch, an image 960 pixels wide becomes a page 10 inches (25.4 cm) wide. A higher number makes a smaller page; the image's detail is unchanged.</p>
             </div>
           </details>
-          <p><label class="field">File name <input id="outName" type="text" size="16" /></label></p>
+          <p><label class="field">File name <input id="outName" type="text" size="16" /></label><br /><span class="small muted">Starts out different from your original's name, so the original isn't replaced.</span></p>
         </div>
 
         <p id="status" class="notice info small" role="status" aria-live="polite" hidden></p>
+        <div id="ask" class="notice sans ask" role="alertdialog" aria-label="Same name as an original file" hidden></div>
         <div id="result" class="result sans" hidden></div>
         <div class="go">
           <button type="button" class="primary big" id="saveAll">{task.action}</button>
@@ -211,6 +212,8 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .result .pair.zoom canvas { cursor: zoom-out; }
     #pdftools .result figcaption { font-size: 0.8rem; text-align: center; }
     #pdftools .result .go-result .big { width: 100%; }
+    #pdftools .ask { border-width: 2px; }
+    #pdftools .ask p { margin: 0 0 0.5em; }
     #pdftools .row { display: flex; flex-wrap: wrap; gap: 8px; }
     @media (max-width: 760px) {
       #pdftools .work { grid-template-columns: 1fr; }

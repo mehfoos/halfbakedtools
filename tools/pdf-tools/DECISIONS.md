@@ -26,6 +26,7 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-16 | Default output names carry a task suffix (`report-merged.pdf`, `scan-compressed.pdf`). If the visitor's chosen name matches a file they added, the tool stops and asks before saving | Owner's request: never overwrite an original by accident. A web page can't see the visitor's folders, so matching against the names of added files is the check that is possible; the page says so |
 | 2026-11-16 | Compress PDF shows the real size of the finished file, plus a before-and-after first page, before anything is downloaded | Owner asked for an "estimate of new size"; the true size is better than a guess (principle 2), and compression is fast enough to just do |
 | 2026-11-16 | Default compression shrinks pictures only and never touches text; turning pages into pictures is a separate, clearly warned custom method | Keeps text sharp, selectable and accessible |
 | 2026-11-16 | A picture's detail is estimated against its page, erring towards shrinking too little; unusual pictures are skipped and counted, not guessed at | Never damage what isn't understood; say what was skipped |
