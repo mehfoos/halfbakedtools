@@ -1,11 +1,11 @@
 ---
 import ToolLayout from "@site/layouts/ToolLayout.astro";
 import { CSP } from "../web/csp.ts";
-import { TASKS, WORKSPACE, NOT_BUILT } from "../web/tasks.ts";
+import { TASKS, WORKSPACE, NOT_BUILT, NOT_POSSIBLE_LOCALLY, GROUPS } from "../web/tasks.ts";
 const base = import.meta.env.BASE_URL;
 const home = `${base}tools/pdf-tools/`;
 const policy = import.meta.env.PROD ? CSP : "";
-const groups = ["Organise", "Optimise", "Convert from PDF", "Convert to PDF"] as const;
+const id = (g: string) => g.replace(/\s+/g, "-");
 ---
 <ToolLayout slug="pdf-tools" page="index" description="Merge, split, rotate, reorder and resize PDFs, turn PDFs into images or text, and images into PDFs, all inside your browser. Your files are never uploaded.">
   {policy && <meta slot="head" http-equiv="Content-Security-Policy" content={policy} />}
@@ -14,9 +14,13 @@ const groups = ["Organise", "Optimise", "Convert from PDF", "Convert to PDF"] as
       <h1>PDF tools that keep your files on your device</h1>
       <p class="lede">Merge, split, rotate and convert PDFs. Everything is done by your own browser: nothing is uploaded, because this site has nowhere to upload to. <a href={`${home}methods/`}>How to check that</a>.</p>
     </div>
-    {groups.map((g) => (
-      <section aria-labelledby={`g-${g.replace(/\s+/g, "-")}`}>
-        <h2 id={`g-${g.replace(/\s+/g, "-")}`}>{g}</h2>
+    <div class="filters sans" role="group" aria-label="Show tools by category">
+      <button type="button" class="chip on" data-filter="all" aria-pressed="true">All</button>
+      {GROUPS.map((g) => <button type="button" class="chip" data-filter={id(g)} aria-pressed="false">{g}</button>)}
+    </div>
+    {GROUPS.map((g) => (
+      <section data-group={id(g)} aria-labelledby={`g-${id(g)}`}>
+        <h2 id={`g-${id(g)}`}>{g}</h2>
         <ul class="tasks">
           {TASKS.filter((t) => t.group === g).map((t) => (
             <li><a class="task" href={`${home}${t.slug}/`}>
@@ -25,10 +29,17 @@ const groups = ["Organise", "Optimise", "Convert from PDF", "Convert to PDF"] as
               <span class="blurb">{t.blurb}</span>
             </a></li>
           ))}
+          {NOT_BUILT.filter((t) => t.group === g).map((t) => (
+            <li><span class="task off">
+              <span class="ico" aria-hidden="true">{t.tag}</span>
+              <span class="name">{t.name}</span>
+              <span class="blurb">Not built yet</span>
+            </span></li>
+          ))}
         </ul>
       </section>
     ))}
-    <section aria-labelledby="g-all">
+    <section data-group="all-only" aria-labelledby="g-all">
       <h2 id="g-all">Several steps at once</h2>
       <ul class="tasks">
         <li class="wide"><a class="task" href={`${home}${WORKSPACE.slug}/`}>
@@ -38,23 +49,33 @@ const groups = ["Organise", "Optimise", "Convert from PDF", "Convert to PDF"] as
         </a></li>
       </ul>
     </section>
-    <section aria-labelledby="g-soon">
-      <h2 id="g-soon">Not built yet</h2>
-      <p class="small sans muted">Planned, and listed here so you don't have to hunt for them. They will only be added if they can be done entirely on your device.</p>
-      <ul class="tasks soon">
-        {NOT_BUILT.map((t) => (
-          <li><span class="task off">
-            <span class="ico" aria-hidden="true">{t.tag}</span>
-            <span class="name">{t.name}</span>
-            <span class="blurb">Not built yet</span>
-          </span></li>
-        ))}
+    <section data-group="all-only" aria-labelledby="g-never">
+      <h2 id="g-never">Not offered, because it would mean uploading your files</h2>
+      <ul class="prose small sans">
+        {NOT_POSSIBLE_LOCALLY.map((x) => <li><strong>{x.name}:</strong> {x.why}.</li>)}
       </ul>
     </section>
+    <p class="small sans muted">Greyed-out tools are planned and not built yet. They will only be added if they can be done entirely on your device.</p>
     <p class="notice small">Early version (alpha). Keep your original files, and check each result before relying on it. See <a href={`${home}methods/`}>Methods and limits</a>.</p>
   </div>
 
+  <script>
+    // Category buttons: show one group of tools, or all. Nothing is loaded or sent; sections are just hidden.
+    const home = document.getElementById("pdfhome")!;
+    home.querySelector(".filters")!.addEventListener("click", (e) => {
+      const chip = (e.target as Element).closest<HTMLElement>("[data-filter]");
+      if (!chip) return;
+      const want = chip.dataset.filter!;
+      home.querySelectorAll<HTMLElement>("[data-filter]").forEach((c) => { const on = c === chip; c.classList.toggle("on", on); c.setAttribute("aria-pressed", String(on)); });
+      home.querySelectorAll<HTMLElement>("section[data-group]").forEach((s) => { s.hidden = want !== "all" && s.dataset.group !== want; });
+    });
+  </script>
+
   <style is:global>
+    #pdfhome .filters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 0.8rem 0 0.2rem; }
+    #pdfhome .chip { border-radius: 999px; padding: 5px 14px; font-size: 0.92rem; background: #fff; }
+    #pdfhome .chip.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+    #pdfhome section[hidden] { display: none; }
     #pdfhome .top { text-align: center; padding: 0.6rem 0 0.4rem; }
     #pdfhome .top .lede { max-width: 40em; margin-left: auto; margin-right: auto; }
     #pdfhome h2 { font-size: 1.15rem; margin: 1.4em 0 0.5em; border-bottom: 1px solid var(--line-soft); padding-bottom: 0.2em; }

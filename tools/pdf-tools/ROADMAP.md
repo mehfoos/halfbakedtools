@@ -21,6 +21,46 @@ button. The current single workspace page can stay as the "organise" task and th
 built, move it from `NOT_BUILT` to `TASKS` (done for Compress PDF and Edit PDF). The owner stressed again that, unlike that
 site, **everything must be processed locally and nothing may go to a server or cloud**.
 
+## Matching ilovepdf.com, in small chunks (owner, 2026-11-16)
+
+The owner wants the interface **and the range of tools** to follow ilovepdf.com, including anything they offer
+that this tool lacks, **built in bite-sized chunks, never all at once**, so work can stop and resume at any point.
+Rules for every chunk: one tool (or two tiny related ones) per chunk; its own branch; unit tests; an end-to-end
+browser run with outputs checked by separate software; methods page, `VERIFICATION.md`, `DECISIONS.md` and this
+list updated; then merged and published before the next chunk starts. Local-only is non-negotiable: if a tool
+can't be done on the visitor's device, it goes in `NOT_POSSIBLE_LOCALLY` in `web/tasks.ts`, not in the queue.
+
+Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of each:
+
+| Their tool | Here | Notes |
+|---|---|---|
+| Merge, Split, Remove pages, Extract pages, Organize | Done | |
+| Compress PDF | Done | Six levels plus custom |
+| Rotate PDF | Done | |
+| JPG to PDF | Done as "Images to PDF" | Theirs also offers orientation and margins: chunk 6 |
+| PDF to JPG | Done | Theirs can also pull out the pictures stored in a PDF: chunk 6 |
+| Edit PDF | Partly | Text and pictures done; shapes and freehand: chunk 5 |
+| Unlock PDF, Protect PDF | **Chunk 1 (next)** | Unlock already happens when a protected file is opened and saved; needs its own page. Protect: the PDF library can encrypt (`doc.encrypt`), check the output opens only with the password |
+| Page numbers, Watermark | Chunk 2 | Reuse `web/marks.ts`: a mark applied to every page, with position presets; watermark needs opacity |
+| Crop PDF | Chunk 3 | Set the crop box. Say plainly that cropped-off content is hidden, not removed |
+| Sign PDF | Chunk 4 | Draw a signature (canvas), place it as a picture mark. Not a cryptographic signature: say so. "Request signatures from others" is not possible locally |
+| Edit PDF: shapes, freehand | Chunk 5 | New mark types |
+| Images to PDF margins/orientation; extract stored pictures | Chunk 6 | Named paper sizes still need an archived source |
+| Repair PDF | Chunk 7 | Re-read leniently and re-save; report honestly what could not be recovered |
+| Compare PDF | Chunk 8 | Side-by-side pages plus a text difference |
+| PDF to Markdown, PDF to HTML, Text/HTML file to PDF | Chunk 9 | Rough by nature; label as such. HTML to PDF from a web address is not possible locally |
+| PDF Forms (fill in) | Chunk 10 | The PDF library has a form API; creating forms is a later question |
+| OCR PDF | Chunk 11 | Needs a text-recognition engine that runs in the browser (for example Tesseract compiled to WebAssembly), served from this site with its language data; check licence and size first |
+| Redact PDF | Chunk 12 | Must truly remove content (see "Phase 3: what is left") |
+| PDF to PDF/A | Chunk 13 | Demanding standard; may only be partly achievable. Don't claim conformance without a validator |
+| Word/PowerPoint/Excel to PDF | On hold (owner) | Branch `office-to-pdf` |
+| PDF to Word/PowerPoint/Excel | Chunk 14 | Rough by nature |
+| Workflows | Later | The all-in-one workspace plus the settings file cover part of this |
+| AI Summarizer, Translate PDF, Scan to PDF (phone to browser) | Not possible locally | Listed on the home page with the reason |
+
+Interface: the home page now has their category buttons (All, Organise, Optimise, Convert to PDF, Convert from
+PDF, Edit, Security) over the grid, and unbuilt tools are shown greyed in their category.
+
 ## Where things stand
 
 | Phase | Scope | Status |

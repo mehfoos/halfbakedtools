@@ -26,6 +26,8 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-16 | The tool list follows ilovepdf.com's, built one small chunk at a time (queue in `ROADMAP.md`). Tools that need a server (AI summary and translation, phone-to-browser scanning, requesting signatures, web address to PDF) are listed on the home page as not offered, with the reason | Owner's request, and local-only outranks parity |
+| 2026-11-16 | Home grid uses their categories with filter buttons; unbuilt tools sit greyed inside their category | Owner's request; people look for a tool where they expect it |
 | 2026-11-16 | Two stronger compression levels added: Extreme (pictures at 72 dpi, 30% quality, text kept) and Maximum (whole pages redrawn as pictures, with the text-loss warning shown) | Owner asked for more extreme options in addition to the existing ones |
 | 2026-11-16 | Edit PDF (first part) adds text and pictures only. No "cover with a box" tool is offered | A covered word is still in the file and can be copied out; offering it would look like removal (principle 2). True removal needs content-stream rewriting: see `ROADMAP.md` |
 | 2026-11-16 | The editor shows the page rebuilt as a real PDF after every change; on-screen boxes are only handles | Guarantees what is seen is what is saved, with no second text-layout engine to drift out of step |

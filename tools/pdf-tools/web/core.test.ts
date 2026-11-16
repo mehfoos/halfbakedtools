@@ -205,7 +205,7 @@ test("exif: reads the orientation in either byte order, and defaults to 1", () =
 });
 
 // ---- tasks ----
-import { TASKS, WORKSPACE, ALL_TASKS, NOT_BUILT, taskBySlug } from "./tasks.ts";
+import { TASKS, WORKSPACE, ALL_TASKS, NOT_BUILT, NOT_POSSIBLE_LOCALLY, GROUPS, taskBySlug } from "./tasks.ts";
 import { existsSync, readFileSync } from "node:fs";
 test("tasks: each has a page, a tool.json entry, a sensible default, and nothing overlaps the not-built list", () => {
   const dir = new URL("..", import.meta.url);
@@ -221,6 +221,9 @@ test("tasks: each has a page, a tool.json entry, a sensible default, and nothing
     assert.equal(taskBySlug(t.slug), t);
   }
   assert.ok(TASKS.every((t) => !NOT_BUILT.some((n) => n.name === t.name)));
+  for (const t of [...TASKS, ...NOT_BUILT]) assert.ok((GROUPS as readonly string[]).includes(t.group), `${t.name} is in an unknown group`);
+  for (const g of GROUPS) assert.ok(TASKS.some((t) => t.group === g) || NOT_BUILT.some((t) => t.group === g), `${g} has nothing in it`);
+  assert.ok(NOT_POSSIBLE_LOCALLY.every((x) => x.name && x.why));
   assert.deepEqual(WORKSPACE.formats.length, 7);
   for (const t of ALL_TASKS) if (t.perFile) assert.ok(t.parts.includes("compress") && t.formats.length === 1 && t.formats[0] === "pdf");
   assert.throws(() => taskBySlug("nope"));

@@ -2,6 +2,10 @@
 // Pure data, so the pages, the home grid and the tests all read the same list.
 import type { OutputFormat, SplitMode } from "./session.ts";
 
+/** The home page's categories, in order (the same split ilovepdf.com uses, so people find things where they expect). */
+export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from PDF", "Edit", "Security"] as const;
+export type Group = (typeof GROUPS)[number];
+
 /** Toolbar and option groups a task can show. */
 export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks";
 
@@ -9,7 +13,7 @@ export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
   name: string;                 // e.g. "Merge PDF"
   blurb: string;                // one line for the home grid and the page
-  group: "Organise" | "Optimise" | "Convert from PDF" | "Convert to PDF";
+  group: Group;
   accept: "pdf" | "image" | "both";
   pick: string;                 // text on the big button
   hint: string;                 // what to do once files are added
@@ -40,14 +44,14 @@ export const TASKS: Task[] = [
   { slug: "organise", name: "Organise PDF", blurb: "Reorder, duplicate, turn and delete pages, across one file or several.", group: "Organise", accept: "both",
     pick: "Select PDF files", hint: "Drag pages into order, or tick pages and use the buttons.",
     parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "organised", tag: "⇄" },
-  { slug: "rotate", name: "Rotate PDF", blurb: "Turn pages the right way up: all of them, or just the ones you tick.", group: "Organise", accept: "pdf",
+  { slug: "rotate", name: "Rotate PDF", blurb: "Turn pages the right way up: all of them, or just the ones you tick.", group: "Edit", accept: "pdf",
     pick: "Select PDF files", hint: "Press a turn button to turn every page, or tick pages first to turn only those.",
     parts: ["select", "turn"], formats: ["pdf"], which: "all", action: "Save PDF", turnAllIfNoneSelected: true, suffix: "rotated", tag: "⟳" },
-  { slug: "resize", name: "Resize pages", blurb: "Make pages larger or smaller, scaling everything on them to match.", group: "Organise", accept: "pdf",
+  { slug: "resize", name: "Resize pages", blurb: "Make pages larger or smaller, scaling everything on them to match.", group: "Edit", accept: "pdf",
     pick: "Select PDF files", hint: "Type a percentage and press Resize. Tick pages first to resize only those.",
     parts: ["select", "scale"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "resized", tag: "⤢" },
 
-  { slug: "edit", name: "Edit PDF", blurb: "Add text and pictures to pages: fill in a form, add a note, a date, a signature picture or a logo.", group: "Organise", accept: "both",
+  { slug: "edit", name: "Edit PDF", blurb: "Add text and pictures to pages: fill in a form, add a note, a date, a signature picture or a logo.", group: "Edit", accept: "both",
     pick: "Select PDF file", hint: "Press ＋ Text or ＋ Picture, then drag it into place. This adds to pages; it can't yet change or remove what is already on them.",
     parts: ["marks"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "edited", tag: "✎" },
   { slug: "compress", name: "Compress PDF", blurb: "Make a PDF smaller by shrinking the pictures inside it. You see the real new size before you download.", group: "Optimise", accept: "pdf",
@@ -77,11 +81,30 @@ export const WORKSPACE: Task = {
   formats: ["pdf", "png", "jpeg", "webp", "tiff", "bmp", "txt"], which: "all", action: "Save all pages", suffix: "edited", tag: "ALL",
 };
 
-/** Asked for by the owner and not built yet. Shown on the home grid, clearly marked, so nobody hunts for them. */
-export const NOT_BUILT: { name: string; tag: string }[] = [
-  { name: "Remove or change existing text and pictures", tag: "▮" },
-  { name: "Word to PDF", tag: "DOC" }, { name: "PowerPoint to PDF", tag: "PPT" }, { name: "Excel to PDF", tag: "XLS" }, { name: "HTML to PDF", tag: "WEB" },
-  { name: "PDF to Word", tag: "DOC" }, { name: "PDF to PowerPoint", tag: "PPT" }, { name: "PDF to Excel", tag: "XLS" }, { name: "PDF to HTML", tag: "WEB" },
+/** Planned and not built yet. Shown on the home grid, clearly marked, so nobody hunts for them. Each will only be
+ *  added if it can be done entirely on the visitor's device. See ROADMAP.md for the order. */
+export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
+  { name: "Repair PDF", tag: "✚", group: "Optimise" },
+  { name: "OCR PDF (make scans searchable)", tag: "OCR", group: "Optimise" },
+  { name: "Word to PDF", tag: "DOC", group: "Convert to PDF" }, { name: "PowerPoint to PDF", tag: "PPT", group: "Convert to PDF" },
+  { name: "Excel to PDF", tag: "XLS", group: "Convert to PDF" }, { name: "HTML file to PDF", tag: "WEB", group: "Convert to PDF" },
+  { name: "Text file to PDF", tag: "TXT", group: "Convert to PDF" },
+  { name: "PDF to Word", tag: "DOC", group: "Convert from PDF" }, { name: "PDF to PowerPoint", tag: "PPT", group: "Convert from PDF" },
+  { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" }, { name: "PDF to HTML", tag: "WEB", group: "Convert from PDF" },
+  { name: "PDF to Markdown", tag: "MD", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
+  { name: "Page numbers", tag: "1,2", group: "Edit" }, { name: "Watermark", tag: "≋", group: "Edit" }, { name: "Crop PDF", tag: "▢", group: "Edit" },
+  { name: "Fill in PDF forms", tag: "☑", group: "Edit" },
+  { name: "Unlock PDF", tag: "🔓", group: "Security" }, { name: "Protect PDF with a password", tag: "🔒", group: "Security" },
+  { name: "Sign PDF (draw your signature)", tag: "✍", group: "Security" }, { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
+  { name: "Compare PDF", tag: "⇆", group: "Security" },
+];
+
+/** Things other PDF sites offer that can't be done without sending files to a server, so this tool won't offer them. */
+export const NOT_POSSIBLE_LOCALLY: { name: string; why: string }[] = [
+  { name: "AI summaries and AI translation", why: "the AI models that do this well run on a company's servers" },
+  { name: "Scan on a phone and send to this computer", why: "passing a scan between two devices needs a server in the middle; on the phone itself, Images to PDF works with the camera" },
+  { name: "Request signatures from other people", why: "it needs a server to pass the document around and keep track" },
+  { name: "Web address to PDF", why: "fetching another site's page from here would need a server; a saved HTML file is planned instead" },
 ];
 
 export const ALL_TASKS = [...TASKS, WORKSPACE];
