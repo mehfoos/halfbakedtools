@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.11.1",
+    "@matbee/libreoffice-converter": "^2.7.2",
     "astro": "^7.4.7",
     "fflate": "^0.8.3",
     "highs": "^1.15.4",

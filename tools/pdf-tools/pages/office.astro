@@ -1,0 +1,58 @@
+---
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
+import { CSP } from "../web/csp.ts";
+import { INPUTS } from "../web/office.ts";
+const base = import.meta.env.BASE_URL;
+const policy = import.meta.env.PROD ? CSP : "";
+// Real sizes of the engine files as published, measured when the site is built.
+const lo = join(process.cwd(), "site", "public", "tools", "pdf-tools", "vendor", "lo");
+const bytes = ["soffice.wasm.gz", "soffice.data.gz"].map((f) => (existsSync(join(lo, f)) ? statSync(join(lo, f)).size : 0)).reduce((a, b) => a + b, 0);
+const megabytes = Math.round(bytes / 1e6);
+const version = JSON.parse(readFileSync(join(process.cwd(), "node_modules", "@matbee", "libreoffice-converter", "package.json"), "utf8")).version as string;
+---
+<ToolLayout slug="pdf-tools" page="office" description="Convert Word, Excel, PowerPoint and OpenDocument files to PDF inside your browser, using LibreOffice. Your files are never uploaded.">
+  {policy && <meta slot="head" http-equiv="Content-Security-Policy" content={policy} />}
+  <h1>Office to PDF</h1>
+  <p class="lede">Convert Word, Excel, PowerPoint and OpenDocument files to PDF, inside your browser.</p>
+  <p class="notice info small"><strong>Your files stay on your device.</strong> The conversion is done by LibreOffice, the free office suite, running inside this page. Nothing is uploaded. <a href={`${base}tools/pdf-tools/methods/`}>How this works, and how to check it</a>.</p>
+  <p class="notice small">Early version (alpha). The PDF is LibreOffice's rendering of your file, which is usually close to, but not always identical to, what Word, Excel or PowerPoint would show: fonts that aren't available are substituted, which can move line and page breaks. Always check the result. It needs a computer with a current browser; most phones and tablets can't run it.</p>
+
+  <div id="office" data-base={base} data-version={version}>
+    <noscript><p class="notice">This tool runs in your browser and needs JavaScript.</p></noscript>
+
+    <section class="panel" id="oSetup" aria-labelledby="h-setup">
+      <h2 id="h-setup">1. Set up the converter</h2>
+      <p class="sans small">The converter is a large download: <strong>about {megabytes} MB</strong>, fetched from this site the first time you convert a file. To avoid downloading it again on every visit, it is then <strong>kept on this device</strong>, in this browser's storage for this site, until you remove it. Only the converter program is kept; your documents never are. Setting up also installs a small helper for this tool's pages (a "service worker") that the converter needs in order to run.</p>
+      <p><button type="button" class="primary" id="oEnable">Set up the converter on this device</button></p>
+    </section>
+
+    <section class="panel" id="oConvert" aria-labelledby="h-convert" hidden>
+      <h2 id="h-convert">Convert files</h2>
+      <p class="sans"><label class="button">Choose files to convert<input id="oPicker" class="sr-only" type="file" multiple accept={INPUTS.map((e) => `.${e}`).join(",")} /></label></p>
+      <p class="sans small muted">Accepts {INPUTS.map((e) => `.${e}`).join(", ")}. The first conversion downloads the converter (about {megabytes} MB) and can take a while; later ones are quick.</p>
+      <ul id="oResults" class="sans results"></ul>
+      <p class="sans small">To merge, reorder or split the PDFs you get, add them to the <a href={`${base}tools/pdf-tools/`}>PDF tools</a>.</p>
+      <p class="sans small"><button type="button" class="link" id="oRemove">Remove the converter from this device</button> (deletes the stored converter and the helper).</p>
+    </section>
+
+    <p id="oStatus" class="notice info" role="status" aria-live="polite" hidden></p>
+  </div>
+
+  <script>
+    import { startOffice } from "../web/office.ts";
+    const root = document.getElementById("office")!;
+    startOffice(root, root.dataset.base!, root.dataset.version!);
+  </script>
+
+  <style is:global>
+    #office label.button { display: inline-block; }
+    #office label.button:focus-within { outline: 2px solid var(--link-hover); outline-offset: 2px; }
+    #office .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    #office .results { padding-left: 1.2em; }
+    #office .results li { margin: 6px 0; overflow-wrap: anywhere; }
+    #office button:disabled { opacity: 0.45; cursor: not-allowed; }
+    #office [hidden] { display: none !important; }
+  </style>
+</ToolLayout>
