@@ -13,6 +13,8 @@ const tool = toolBySlug(slug);
 const base = import.meta.env.BASE_URL;
 const refFiles = import.meta.glob<ReferenceFile>("../../../tools/*/references.json", { eager: true, import: "default" });
 const refs = refFiles[`../../../tools/${slug}/references.json`];
+// Pages marked "nav": false in tool.json are reached from the tool's own pages, not from the tab row.
+const tabs = tool.pages.filter((p) => p.nav !== false || p.page === page);
 const pageLabel = tool.pages.find((p) => p.page === page)?.label;
 ---
 <Base title={title ?? (page === "index" ? tool.name : `${pageLabel} · ${tool.name}`)} description={description ?? tool.summary} current="tool">
@@ -20,9 +22,9 @@ const pageLabel = tool.pages.find((p) => p.page === page)?.label;
   <nav class="tool-bar sans" aria-label={`${tool.name} pages`}>
     <p class="crumbs small"><a href={base}>Tools</a> › <span>{tool.topic}</span></p>
     <p class="tool-name"><a href={pageHref(base, tool, "index")}>{tool.name}</a> <span class="tag">{STATUS_LABEL[tool.status]}</span></p>
-    {tool.pages.length > 1 && (
+    {tabs.length > 1 && (
       <ul class="tool-tabs">
-        {tool.pages.map((p) => (
+        {tabs.map((p) => (
           <li><a href={pageHref(base, tool, p.page)} aria-current={p.page === page ? "page" : undefined}>{p.label}</a></li>
         ))}
       </ul>

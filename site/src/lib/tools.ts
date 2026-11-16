@@ -1,5 +1,5 @@
 // The tool registry: every tools/<slug>/tool.json (folders starting with "_" are templates).
-export type ToolPage = { page: string; label: string };
+export type ToolPage = { page: string; label: string; nav?: boolean };
 export type Tool = {
   slug: string; name: string; summary: string; topic: string;
   status: "alpha" | "beta" | "stable"; added: string; pages: ToolPage[];

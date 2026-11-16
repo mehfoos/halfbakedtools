@@ -26,6 +26,11 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-16 | Interface is task-first, after ilovepdf.com's way of working but in this site's own theme: a home grid of named tasks, each a focused page with one "select files" button, then previews with that task's few options and one action button. No branding, icons or colours are copied | Owner's request. People arrive wanting one job done; a single do-everything page made them find it |
+| 2026-11-16 | Every task page is the same workspace (`components/Task.astro`, `web/ui.ts`) configured by `web/tasks.ts`; task pages are hidden from the tab row with `"nav": false` | One engine to test; adding a task is a few lines |
+| 2026-11-16 | Tasks asked for but not built are shown on the home grid, greyed and labelled "Not built yet" | Honest about gaps; saves people hunting |
+| 2026-11-16 | The PDF standard supplied by the owner is not committed to the repository | Owner's decision: its copyright notice says reproduction needs ISO's permission |
+| 2026-11-16 | Office to PDF is on hold (work kept on branch `office-to-pdf`) | Owner's decision; it was unreliable through the service worker |
 | 2026-11-16 | Built in phases; phase 1 is page arrangement, images and text. See `ROADMAP.md` | Too large for one pass; accuracy before features |
 | 2026-11-16 | A browser security policy (CSP) on the tool page blocks connections to other origins, plus a test that scans the tool's code for network APIs | Makes "never uploaded" enforced and checkable, not just promised; covers third-party libraries |
 | 2026-11-16 | The PDF.js worker's code is bundled as text and started from a blob, not from a web address | Measured in Chrome: a page's security policy does not bind a worker started from a web address, so the first published version's claim that the policy covered the libraries was too strong for PDF.js's worker. Blob workers inherit the policy. Corrected within the hour |

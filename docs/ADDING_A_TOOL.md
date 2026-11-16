@@ -9,7 +9,8 @@ automatically.
 1. **Copy the template:** `cp -r tools/_template tools/<slug>` (lower-case words joined by hyphens, e.g. `solar-payback`).
 2. **Fill in `tool.json`:** set `slug` to the folder name, then the name, a one- or two-sentence summary, a topic (tools
    are grouped by topic on the home page), `status` (`alpha`, `beta` or `stable`) and the date added. List every page
-   in `pages/`, starting with `index`.
+   in `pages/`, starting with `index`. A page marked `"nav": false` is left out of the tab row (for tools with many
+   pages reached from their own home page).
 3. **Write the pages** in `pages/`. `index.astro` is served at `/tools/<slug>/`; any other `<name>.astro` at
    `/tools/<slug>/<name>/`. Wrap each page in `ToolLayout`, which adds the breadcrumb, the page tabs and the
    collapsible reference list. Every tool has a `methods` page covering how it works, what has been checked, and its

@@ -1,0 +1,190 @@
+---
+// One task page (Merge PDF, Split PDF, ...). Every task uses this same workspace; web/tasks.ts says which
+// controls each one shows. Layout: a big "select files" button first, then page previews with the task's
+// options and one action button beside them.
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { CSP } from "../web/csp.ts";
+import { taskBySlug, ACCEPT } from "../web/tasks.ts";
+interface Props { task: string }
+const task = taskBySlug(Astro.props.task);
+const base = import.meta.env.BASE_URL;
+const home = `${base}tools/pdf-tools/`;
+const vendor = `${home}vendor/pdfjs/`;
+// The security policy is left off the development server only, whose live-reload needs connections it would block.
+const policy = import.meta.env.PROD ? CSP : "";
+---
+<ToolLayout slug="pdf-tools" page={task.slug} title={`${task.name} · PDF tools`} description={`${task.blurb} Done inside your browser: your files are never uploaded.`}>
+  {policy && <meta slot="head" http-equiv="Content-Security-Policy" content={policy} />}
+  <div id="pdftools" data-vendor={vendor} data-task={task.slug}>
+    <input id="picker" class="sr-only" type="file" multiple accept={ACCEPT[task.accept]} />
+
+    <section id="hero" class="hero">
+      <h1>{task.name}</h1>
+      <p class="lede">{task.blurb}</p>
+      <noscript><p class="notice">This tool runs in your browser and needs JavaScript.</p></noscript>
+      <div id="drop" class="drop sans">
+        <label class="button big" for="picker">{task.pick}</label>
+        <span class="small muted">or drop {task.accept === "image" ? "images" : task.accept === "pdf" ? "PDFs" : "PDFs or images"} here</span>
+      </div>
+      <p class="lock sans small"><strong>Your files stay on your device.</strong> They are opened and changed by your own browser and are never uploaded. <a href={`${home}methods/`}>How this works, and how to check it</a>.</p>
+      <p class="small sans"><a href={home}>All PDF tools</a></p>
+    </section>
+
+    <div id="work" class="work" hidden>
+      <div class="main">
+        <p class="crumbline sans small"><a href={home}>All PDF tools</a> › <strong>{task.name}</strong> <span class="summary-note" id="selNote"></span></p>
+        <div class="bar sans" role="toolbar" aria-label="Page actions">
+          <label class="button small add" for="picker">＋ Add files</label>
+          <button type="button" class="small" data-part="select" data-act="all">Select all</button>
+          <button type="button" class="small" data-part="select" data-act="none" data-needs-sel>Select none</button>
+          <button type="button" class="small" data-part="move" data-act="earlier" data-needs-sel>◀ Move earlier</button>
+          <button type="button" class="small" data-part="move" data-act="later" data-needs-sel>Move later ▶</button>
+          <button type="button" class="small" data-part="turn" data-act="left" data-needs-sel>⟲ Turn left</button>
+          <button type="button" class="small" data-part="turn" data-act="right" data-needs-sel>⟳ Turn right</button>
+          <button type="button" class="small" data-part="duplicate" data-act="duplicate" data-needs-sel>Duplicate</button>
+          <button type="button" class="small" data-part="remove" data-act="remove" data-needs-sel>Remove</button>
+          <button type="button" class="small" id="undo" data-act="undo">Undo</button>
+        </div>
+        <ul id="grid" class="grid"></ul>
+        <p id="waiting" class="notice small" hidden></p>
+        <details id="filesBox" hidden>
+          <summary>Files added</summary>
+          <div class="details-body"><ul id="files" class="files sans small"></ul></div>
+        </details>
+      </div>
+
+      <aside class="side" aria-labelledby="h-task">
+        <h1 id="h-task" class="side-title">{task.name}</h1>
+        <p class="small sans">{task.hint}</p>
+
+        <div id="more" class="sans opts">
+          <p data-part="selectText"><label class="field">Select pages <input id="selText" type="text" placeholder="1-3, 5, 8-" size="10" /></label>
+            <button type="button" class="small" data-act="selectRange">Select</button><br /><span class="small muted">"8-" means page 8 to the end.</span></p>
+          <p data-part="moveTo"><label class="field">Move selected to position <input id="movePos" type="number" min="1" step="1" inputmode="numeric" /></label>
+            <button type="button" class="small" data-act="moveTo" data-needs-sel>Move</button></p>
+          <p data-part="scale"><label class="field">Resize <span id="scaleWho">all pages</span> to <input id="scalePct" type="number" min="10" max="1000" step="1" value="100" inputmode="decimal" /> %</label>
+            <button type="button" class="small" data-act="scale">Resize</button><br /><span class="small muted">Of the original size. The paper size and everything on the page change together: 50% halves both the width and the height.</span></p>
+        </div>
+
+        <div id="savePanel" class="sans opts">
+          <p id="formatField"><label class="field">Save as
+            <select id="format">
+              <option value="pdf">PDF</option>
+              <option value="png">PNG images</option>
+              <option value="jpeg">JPEG images</option>
+              <option value="webp">WebP images</option>
+              <option value="tiff">TIFF images</option>
+              <option value="bmp">BMP images</option>
+              <option value="txt">Plain text (.txt)</option>
+            </select></label></p>
+          <div id="optPdf" data-part="split">
+            <p><label class="field">Files
+              <select id="split">
+                <option value="none">One PDF</option>
+                <option value="each">One PDF per page</option>
+                <option value="every">A new PDF every few pages</option>
+                <option value="ranges">Split at the pages I choose</option>
+              </select></label></p>
+            <p id="optEvery"><label class="field">Pages in each PDF <input id="every" type="number" min="1" step="1" inputmode="numeric" /></label></p>
+            <p id="optRanges"><label class="field">Pages for each PDF <input id="ranges" type="text" placeholder="1-3, 4-10" size="12" /></label><br /><span class="small muted">One PDF per comma-separated group.</span></p>
+          </div>
+          <div id="optImage">
+            <p><label class="field">Detail <input id="dpi" type="number" min="36" max="600" step="1" inputmode="numeric" /> dots per inch</label><br /><span class="small muted">More dots: sharper pictures and bigger files.</span></p>
+            <p id="optQuality"><label class="field">Quality <input id="quality" type="number" min="10" max="100" step="1" inputmode="numeric" /> %</label><br /><span class="small muted">Lower: smaller files, more blur and blockiness.</span></p>
+            <p class="small muted">Each page becomes a picture; its text can no longer be selected. TIFF and BMP are saved uncompressed, so they are large.</p>
+          </div>
+          <div id="optText">
+            <p class="small muted">Words are saved in the order the PDF stores them, which is usually but not always reading order.</p>
+          </div>
+          <details id="optImageDpi" data-part="imageDpi">
+            <summary>Size of images on the page</summary>
+            <div class="details-body">
+              <label class="field">Treat images as <input id="imageDpi" type="number" min="36" max="600" step="1" inputmode="numeric" /> dots per inch</label>
+              <p class="small muted">An image has pixels but no fixed paper size. At 96 dots per inch, an image 960 pixels wide becomes a page 10 inches (25.4 cm) wide. A higher number makes a smaller page; the image's detail is unchanged.</p>
+            </div>
+          </details>
+          <p><label class="field">File name <input id="outName" type="text" size="16" /></label></p>
+        </div>
+
+        <p id="status" class="notice info small" role="status" aria-live="polite" hidden></p>
+        <div class="go">
+          <button type="button" class="primary big" id="saveAll">{task.action}</button>
+          <button type="button" id="saveSel" data-needs-sel>Save the selected pages</button>
+        </div>
+
+        <details class="later">
+          <summary>Carry on later</summary>
+          <div class="details-body sans">
+            <p class="small">Save a small settings file recording which files you added and every change you made. Later, load it on this page and add the same files again to pick up where you left off. It lists file names, sizes and fingerprints (checksums) only: none of your documents' contents. Nothing is stored on this site or in your browser.</p>
+            <p class="row">
+              <button type="button" class="small" id="saveSettings">Save settings file</button>
+              <label class="button small">Load settings file<input id="settingsPicker" class="sr-only" type="file" accept=".json,application/json" /></label>
+            </p>
+          </div>
+        </details>
+        <p class="small sans"><button type="button" class="link" id="startOver">Start again</button> · <a href={`${home}methods/`}>Limits</a></p>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    import { start } from "../web/ui.ts";
+    const root = document.getElementById("pdftools")!;
+    start(root, root.dataset.vendor!, root.dataset.task!);
+  </script>
+
+  <style is:global>
+    #pdftools .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    #pdftools [hidden] { display: none !important; }
+    #pdftools label.button { display: inline-block; }
+    #pdftools:has(#picker:focus-visible) label[for="picker"] { outline: 2px solid var(--link-hover); outline-offset: 2px; }
+    #pdftools .big { font-size: 1.25rem; padding: 14px 34px; border-radius: 6px; }
+    #pdftools label.big { background: #000; border-color: #000; color: #fff; }
+    #pdftools label.big:hover { background: var(--link-hover); border-color: var(--link-hover); }
+    #pdftools button:disabled { opacity: 0.45; cursor: not-allowed; }
+    #pdftools button.small, #pdftools label.small { padding: 4px 9px; font-size: 0.88rem; }
+
+    #pdftools .hero { text-align: center; padding: 1.5rem 0 1rem; }
+    #pdftools .hero .lede { max-width: 38em; margin-left: auto; margin-right: auto; }
+    #pdftools .drop { border: 2px dashed var(--line-soft); border-radius: 8px; padding: 34px 14px; margin: 1.4rem auto; max-width: 560px; display: flex; flex-direction: column; gap: 12px; align-items: center; background: #fdfdf6; }
+    #pdftools .drop.over { border-color: var(--navy); background: var(--beige); }
+    #pdftools .lock { max-width: 36em; margin: 0 auto 0.8em; }
+
+    #pdftools .work { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; margin-top: 4px; }
+    #pdftools .main { background: #fdfdf6; border: 1px solid var(--line-soft); border-radius: 6px; padding: 10px 12px; min-height: 340px; }
+    #pdftools .crumbline { margin: 0 0 6px; }
+    #pdftools .bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 8px; padding: 6px 0; position: sticky; top: 0; background: #fdfdf6; z-index: 2; border-bottom: 1px solid var(--line-soft); }
+    #pdftools .bar .add { background: var(--navy); color: #fff; }
+    #pdftools .bar .add:hover { background: var(--link-hover); }
+    #pdftools .grid { list-style: none; padding: 0; margin: 10px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
+    #pdftools .tile { border: 2px solid var(--line-soft); border-radius: 4px; background: #fff; }
+    #pdftools .tile.on { border-color: var(--navy); background: #eef0fb; }
+    #pdftools .tile.drop-before { box-shadow: -4px 0 0 var(--link-hover); }
+    #pdftools .tile.drop-after { box-shadow: 4px 0 0 var(--link-hover); }
+    #pdftools .tile label { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px; cursor: pointer; font-family: var(--sans); }
+    #pdftools .thumb { width: 112px; height: 112px; display: flex; align-items: center; justify-content: center; text-align: center; background: var(--beige); }
+    #pdftools .thumb img { max-width: 100%; max-height: 100%; box-shadow: 0 0 0 1px #999; background: #fff; transition: transform 0.15s; }
+    #pdftools .from { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #pdftools .files { list-style: none; padding: 0; margin: 0; }
+    #pdftools .files li { padding: 4px 0; border-bottom: 1px solid var(--line-soft); overflow-wrap: anywhere; }
+    #pdftools .files li.missing { background: var(--warn-soft); padding-left: 6px; }
+
+    #pdftools .side { border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; background: #fff; position: sticky; top: 8px; }
+    #pdftools .side-title { font-size: 1.5rem; margin: 0 0 0.4em; text-align: center; border-bottom: 1px solid var(--line-soft); padding-bottom: 0.4em; }
+    #pdftools .opts p { margin: 0 0 0.7em; }
+    #pdftools .field input, #pdftools .field select { margin: 2px 4px; font: inherit; padding: 3px 5px; max-width: 100%; }
+    #pdftools .field input[type="number"] { width: 5em; }
+    #pdftools .go { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    #pdftools .go .big { width: 100%; }
+    #pdftools .row { display: flex; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 760px) {
+      #pdftools .work { grid-template-columns: 1fr; }
+      #pdftools .side { position: static; }
+      /* On a phone the action button stays at the bottom of the screen, whatever is scrolled. */
+      #pdftools .go { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; padding: 8px 16px; background: #fff; border-top: 1px solid var(--line); z-index: 5; }
+      #pdftools .work { padding-bottom: 130px; }
+      #pdftools .bar { position: static; }
+      #pdftools .big { font-size: 1.1rem; padding: 12px 20px; }
+    }
+  </style>
+</ToolLayout>

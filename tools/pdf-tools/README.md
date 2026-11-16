@@ -4,7 +4,8 @@ Merge, split, reorder, rotate and resize PDF pages; save pages as images or plai
 Everything runs in the visitor's browser. **No file content ever leaves the device**: that is the tool's central
 promise, and it is enforced (see "The no-upload guarantee" below).
 
-**Status: alpha, phase 1 of 4.** Compression, in-page editing and Office/HTML conversions are not built.
+**Status: alpha.** The interface is task-first (one page per job), modelled on how ilovepdf.com works but in this
+site's theme. Compression, in-page editing and Office/HTML conversions are not built.
 **If you are continuing this work, start with [`ROADMAP.md`](ROADMAP.md).**
 
 ## How it works
@@ -34,7 +35,9 @@ Never add: a server-side step, a third-party script or font, telemetry, or "reme
 ## Files
 
 - `tool.json`: name, summary, status, pages, and `vendor` (library folders to serve)
-- `pages/index.astro`: the tool; `pages/methods.astro`: how it works, checks and limits
+- `web/tasks.ts`: the list of tasks (Merge PDF, Split PDF, ...) and which controls each shows
+- `components/Task.astro`: the page every task uses; `pages/<task>.astro` are one-line wrappers
+- `pages/index.astro`: the grid of tasks; `pages/methods.astro`: how it works, checks and limits
 - `web/ranges.ts`: page-range text ("1-3, 5, 8-")
 - `web/session.ts`: session model, page edits, split plan, settings file (read and write)
 - `web/build.ts`: writes PDFs (pdf-lib). No DOM, so it is tested in Node

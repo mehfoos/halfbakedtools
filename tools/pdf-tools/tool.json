@@ -1,13 +1,79 @@
 {
   "slug": "pdf-tools",
   "name": "PDF tools",
-  "summary": "Merge, split, reorder, rotate and resize PDF pages, turn pages into images or plain text, and turn images into a PDF. Everything is done inside your browser: your files are never uploaded.",
+  "summary": "Merge, split, reorder, rotate and resize PDFs, turn PDF pages into images or plain text, and turn images into a PDF. Everything is done inside your browser: your files are never uploaded.",
   "topic": "Documents",
   "status": "alpha",
   "added": "2026-11-16",
   "pages": [
-    { "page": "index", "label": "PDF tools" },
-    { "page": "methods", "label": "Methods and limits" }
+    {
+      "page": "index",
+      "label": "All PDF tools"
+    },
+    {
+      "page": "merge",
+      "label": "Merge PDF",
+      "nav": false
+    },
+    {
+      "page": "split",
+      "label": "Split PDF",
+      "nav": false
+    },
+    {
+      "page": "extract",
+      "label": "Extract pages",
+      "nav": false
+    },
+    {
+      "page": "remove-pages",
+      "label": "Remove pages",
+      "nav": false
+    },
+    {
+      "page": "organise",
+      "label": "Organise PDF",
+      "nav": false
+    },
+    {
+      "page": "rotate",
+      "label": "Rotate PDF",
+      "nav": false
+    },
+    {
+      "page": "resize",
+      "label": "Resize pages",
+      "nav": false
+    },
+    {
+      "page": "pdf-to-jpg",
+      "label": "PDF to JPG",
+      "nav": false
+    },
+    {
+      "page": "pdf-to-image",
+      "label": "PDF to PNG, TIFF, BMP or WebP",
+      "nav": false
+    },
+    {
+      "page": "pdf-to-text",
+      "label": "PDF to text",
+      "nav": false
+    },
+    {
+      "page": "image-to-pdf",
+      "label": "Images to PDF",
+      "nav": false
+    },
+    {
+      "page": "workspace",
+      "label": "All-in-one workspace",
+      "nav": false
+    },
+    {
+      "page": "methods",
+      "label": "Methods and limits"
+    }
   ],
   "vendor": {
     "pdfjs/cmaps": "pdfjs-dist/cmaps",

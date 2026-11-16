@@ -203,3 +203,24 @@ test("exif: reads the orientation in either byte order, and defaults to 1", () =
   assert.equal(jpegOrientation(jpegWithOrientation(6, true).subarray(0, 20)), 1);
   assert.deepEqual([1, 3, 6, 8, 2, 5].map(orientationToRotation), [0, 180, 90, 270, null, null]);
 });
+
+// ---- tasks ----
+import { TASKS, WORKSPACE, ALL_TASKS, NOT_BUILT, taskBySlug } from "./tasks.ts";
+import { existsSync, readFileSync } from "node:fs";
+test("tasks: each has a page, a tool.json entry, a sensible default, and nothing overlaps the not-built list", () => {
+  const dir = new URL("..", import.meta.url);
+  const meta = JSON.parse(readFileSync(new URL("tool.json", dir), "utf8")) as { pages: { page: string; nav?: boolean }[] };
+  assert.equal(new Set(ALL_TASKS.map((t) => t.slug)).size, ALL_TASKS.length);
+  for (const t of ALL_TASKS) {
+    assert.ok(existsSync(new URL(`pages/${t.slug}.astro`, dir)), `missing page for ${t.slug}`);
+    assert.match(readFileSync(new URL(`pages/${t.slug}.astro`, dir), "utf8"), new RegExp(`<Task task="${t.slug}" />`));
+    assert.equal(meta.pages.find((p) => p.page === t.slug)?.nav, false, `${t.slug} must be listed in tool.json with nav: false`);
+    assert.ok(t.formats.length && t.action && t.pick && t.blurb);
+    if (t.split) assert.ok(t.parts.includes("split"));
+    if (t.which === "selected") assert.ok(t.parts.includes("select"), "a task that saves the selection must let pages be selected");
+    assert.equal(taskBySlug(t.slug), t);
+  }
+  assert.ok(TASKS.every((t) => !NOT_BUILT.some((n) => n.name === t.name)));
+  assert.deepEqual(WORKSPACE.formats.length, 7);
+  assert.throws(() => taskBySlug("nope"));
+});

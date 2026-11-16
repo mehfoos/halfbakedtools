@@ -15,7 +15,10 @@ fonts, navy on beige; do not copy their branding, icons or colours). That means 
 tasks (Merge PDF, Split PDF, Rotate, PDF to JPG, JPG to PDF, Word to PDF, ...), each opening a focused page with
 one large "select files" button, then previews with the task's few options beside them and one clear action
 button. The current single workspace page can stay as the "organise" task and the engine behind all of them
-(`session.ts`, `build.ts`, `render.ts` need no change). Not started. The owner stressed again that, unlike that
+(`session.ts`, `build.ts`, `render.ts` need no change). **Done 2026-11-16**: see `web/tasks.ts` (the task list),
+`components/Task.astro` (the shared page) and `pages/index.astro` (the grid). To add a task: add an entry to
+`TASKS`, a one-line page in `pages/`, and a `"nav": false` entry in `tool.json`. When a "Not built yet" task is
+built, move it from `NOT_BUILT` to `TASKS`. The owner stressed again that, unlike that
 site, **everything must be processed locally and nothing may go to a server or cloud**.
 
 ## Where things stand
@@ -25,8 +28,8 @@ site, **everything must be processed locally and nothing may go to a server or c
 | 1 | Skeleton, no-upload enforcement, merge, reorder, duplicate, remove, rotate, resize page with contents, split, extract, PDF → images (PNG, JPEG, WebP, TIFF, BMP) and text, images → PDF, settings file | **Done 2026-11-16** (alpha) |
 | 2 | Compression with options and size preview; resize images inside scanned PDFs independently of page size; named paper sizes | Not started |
 | 3 | Edit page content: add text and images, move/resize/rotate them, remove or redact content | Not started |
-| 4 | Text and HTML ↔ PDF; Word, PowerPoint, Excel (and OpenDocument) ↔ PDF; PDF → SVG | Office → PDF in progress on branch `office-to-pdf`; rest not started |
-| 5 | Task-first interface in the style of ilovepdf.com, in this site's theme | Not started |
+| 4 | Text and HTML ↔ PDF; Word, PowerPoint, Excel (and OpenDocument) ↔ PDF; PDF → SVG | Office → PDF **on hold by the owner (2026-11-16)**, work kept on branch `office-to-pdf`; rest not started |
+| 5 | Task-first interface in the style of ilovepdf.com, in this site's theme | **Done 2026-11-16** |
 
 Owner requirements not yet met are exactly phases 2 to 4. Nothing in phase 1 is known to be broken; the unchecked
 items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
@@ -37,7 +40,7 @@ items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
       (hundreds of pages, scans, forms, CJK text). Record results in `VERIFICATION.md`.
 - [ ] **Sources to archive.** The owner supplied the PDF standard (PDF 32000-1:2008) and the unit was checked
       against it (see `VERIFICATION.md`), but the file is not committed: its copyright notice says permission to
-      reproduce must be arranged with ISO. Awaiting the owner's decision on archiving it publicly. Still needed: a
+      reproduce must be arranged with ISO, and the owner decided not to commit it (2026-11-16). Still needed: a
       source for ISO 216 (A-series) and US Letter/Legal dimensions (downloads are blocked from the build
       environment; ask the owner to upload). Then add `references.json`,
       cite them on the methods page, tick them off in `VERIFICATION.md`, and offer named paper sizes.

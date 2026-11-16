@@ -12,6 +12,7 @@ import { makeBuilder, inspectPdf, type SourceData } from "./build.ts";
 import { encodeBmp } from "./bmp.ts";
 import { pagesToText } from "./text.ts";
 import { jpegOrientation, orientationToRotation } from "./exif.ts";
+import { taskBySlug, type Part } from "./tasks.ts";
 import { openPdf, drawPage, pageText, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle } from "./render.ts";
 
 // The TIFF library is only fetched (from this site) when a TIFF is read or written.
@@ -19,9 +20,12 @@ const utif = async () => { const m = await import("utif2"); return ((m as { defa
 type Loaded = { data: SourceData; handle: Handle; usedPassword: boolean; restricted?: boolean };
 const THUMB = 150; // longest side of a preview, in CSS pixels
 
-export function start(root: HTMLElement, vendor: string) {
+export function start(root: HTMLElement, vendor: string, taskSlug: string) {
+  const task = taskBySlug(taskSlug);
+  const can = (p: Part) => task.parts.includes(p);
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => root.querySelector<T>(`#${id}`)!;
-  let session: Session = emptySession();
+  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none" } }; };
+  let session: Session = fresh();
   const loaded = new Map<string, Loaded>();      // by SHA-256 of the file, so it survives loading a settings file
   let sel = new Set<number>();
   let anchor = -1;                               // last page ticked, for shift-click ranges
@@ -113,6 +117,9 @@ export function start(root: HTMLElement, vendor: string) {
         if (loaded.has(sha)) { notes.push(`"${f.name}" is already added (to repeat pages, use Duplicate).`); continue; }
         let item: Loaded, pages = 1;
         try {
+          if (isPdf(bytes) ? task.accept === "image" : task.accept === "pdf") {
+            notes.push(`"${f.name}" was skipped: this page takes ${task.accept === "pdf" ? "PDF files" : "images"} only.`); continue;
+          }
           if (isPdf(bytes)) {
             const r = await loadPdf(f.name, bytes);
             if (!r) { notes.push(`"${f.name}" was skipped (no password given).`); continue; }
@@ -147,11 +154,17 @@ export function start(root: HTMLElement, vendor: string) {
   function remember() { undo.push({ pages: session.pages, sel: [...sel] }); if (undo.length > 100) undo.shift(); }
   function apply(e: Edit) { remember(); session = { ...session, pages: e.pages }; sel = new Set(e.sel); render(); say(""); }
   const chosen = () => [...sel].sort((a, b) => a - b);
+  const everyPage = () => session.pages.map((_, i) => i);
+  function turn(by: number) {
+    const keep = [...sel];
+    apply(rotate(session.pages, sel.size || !task.turnAllIfNoneSelected ? chosen() : everyPage(), by));
+    sel = new Set(keep); render();
+  }
   const act: Record<string, () => void> = {
     earlier: () => apply(nudge(session.pages, chosen(), -1)),
     later: () => apply(nudge(session.pages, chosen(), 1)),
-    left: () => apply(rotate(session.pages, chosen(), -90)),
-    right: () => apply(rotate(session.pages, chosen(), 90)),
+    left: () => turn(-90),
+    right: () => turn(90),
     duplicate: () => apply(duplicate(session.pages, chosen())),
     remove: () => apply(remove(session.pages, chosen())),
     all: () => { sel = new Set(session.pages.map((_, i) => i)); render(); },
@@ -243,14 +256,13 @@ export function start(root: HTMLElement, vendor: string) {
       if (ok && !thumbs.has(key)) watcher.observe(tile);
       return tile;
     }));
-    $("pagesPanel").hidden = $("savePanel").hidden = !session.pages.length;
-    $("empty").hidden = !!session.sources.length;
+    $("hero").hidden = !!session.sources.length; $("work").hidden = !session.sources.length;
     // outputs
     const o = session.output;
     $<HTMLInputElement>("outName").value = o.name; $<HTMLSelectElement>("format").value = o.format;
-    $<HTMLSelectElement>("split").value = o.split; $<HTMLInputElement>("every").value = String(o.every);
-    $<HTMLInputElement>("ranges").value = o.ranges; $<HTMLInputElement>("dpi").value = String(o.dpi);
-    $<HTMLInputElement>("quality").value = String(Math.round(o.quality * 100)); $<HTMLInputElement>("imageDpi").value = String(o.imageDpi);
+    const put = (id: string, v: string) => { const e = root.querySelector<HTMLInputElement>(`#${id}`); if (e) e.value = v; };
+    put("split", o.split); put("every", String(o.every)); put("ranges", o.ranges); put("dpi", String(o.dpi));
+    put("quality", String(Math.round(o.quality * 100))); put("imageDpi", String(o.imageDpi));
     showOptions(); refreshButtons();
   }
   const fmtSize = (n: number) => n < 1e6 ? `${Math.max(1, Math.round(n / 1e3))} kB` : `${(n / 1e6).toFixed(1)} MB`;
@@ -258,10 +270,11 @@ export function start(root: HTMLElement, vendor: string) {
   function refreshButtons() {
     const n = sel.size, total = session.pages.length;
     $("selNote").textContent = total ? (n ? `${n} of ${total} selected (${formatRanges(chosen())})` : `${total} page${total === 1 ? "" : "s"}; none selected`) : "";
-    root.querySelectorAll<HTMLButtonElement>("[data-needs-sel]").forEach((b) => (b.disabled = busy || !n));
+    root.querySelectorAll<HTMLButtonElement>("[data-needs-sel]").forEach((b) => (b.disabled = busy || (!n && !(task.turnAllIfNoneSelected && (b.dataset.act === "left" || b.dataset.act === "right")))));
+    if (task.which === "selected") $<HTMLButtonElement>("saveAll").disabled = busy || !n;
     $<HTMLButtonElement>("undo").disabled = busy || !undo.length;
-    $<HTMLButtonElement>("saveSel").textContent = `Save the ${n || ""} selected page${n === 1 ? "" : "s"}`;
-    $("scaleWho").textContent = n ? `the ${n} selected page${n === 1 ? "" : "s"}` : "all pages";
+    const saveSel = root.querySelector<HTMLButtonElement>("#saveSel"); if (saveSel) saveSel.textContent = `Save the ${n || ""} selected page${n === 1 ? "" : "s"}`;
+    const who = root.querySelector<HTMLElement>("#scaleWho"); if (who) who.textContent = n ? `the ${n} selected page${n === 1 ? "" : "s"}` : "all pages";
     const waiting = session.sources.filter((s) => !loaded.has(s.sha256));
     $("waiting").hidden = !waiting.length;
     $("waiting").textContent = waiting.length ? `These settings need ${waiting.length === 1 ? "a file that hasn't" : `${waiting.length} files that haven't`} been added yet: ${waiting.map((s) => s.name).join(", ")}. Add ${waiting.length === 1 ? "it" : "them"} above to carry on. Files are matched by their contents, so a renamed copy is fine.` : "";
@@ -321,7 +334,9 @@ export function start(root: HTMLElement, vendor: string) {
 
   // ---------- output options ----------
   function readOptions() {
-    const o = session.output, v = (id: string) => $<HTMLInputElement>(id).value;
+    const o = session.output;
+    const fallback: Record<string, string> = { split: o.split, every: String(o.every), ranges: o.ranges, imageDpi: String(o.imageDpi) };
+    const v = (id: string) => root.querySelector<HTMLInputElement>(`#${id}`)?.value ?? fallback[id] ?? "";
     const clamp = (x: number, lo: number, hi: number, d: number) => (Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d);
     session = { ...session, output: {
       name: safeName(v("outName")), format: v("format") as OutputFormat, split: v("split") as SplitMode,
@@ -331,13 +346,22 @@ export function start(root: HTMLElement, vendor: string) {
     } };
   }
   function showOptions() {
-    const f = $<HTMLSelectElement>("format").value, s = $<HTMLSelectElement>("split").value;
-    $("optPdf").hidden = f !== "pdf"; $("optEvery").hidden = f !== "pdf" || s !== "every"; $("optRanges").hidden = f !== "pdf" || s !== "ranges";
-    $("optImage").hidden = f === "pdf" || f === "txt"; $("optQuality").hidden = f !== "jpeg" && f !== "webp";
-    $("optText").hidden = f !== "txt";
-    $("optImageDpi").hidden = f === "txt" || !session.sources.some((x) => x.kind === "image");
+    const f = $<HTMLSelectElement>("format").value, s = session.output.split;
+    const hide = (id: string, off: boolean) => { const e = root.querySelector<HTMLElement>(`#${id}`); if (e) e.hidden = off; };
+    hide("optPdf", f !== "pdf"); hide("optEvery", f !== "pdf" || s !== "every"); hide("optRanges", f !== "pdf" || s !== "ranges");
+    hide("optImage", f === "pdf" || f === "txt"); hide("optQuality", f !== "jpeg" && f !== "webp"); hide("optText", f !== "txt");
+    const dpiBox = root.querySelector<HTMLElement>("#optImageDpi"); if (dpiBox) dpiBox.hidden = f === "txt" || !session.sources.some((x) => x.kind === "image");
   }
   $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); });
+
+  // ---------- this page's task: show only its controls ----------
+  root.querySelectorAll<HTMLElement>("[data-part]").forEach((e) => { if (!can(e.dataset.part as Part)) e.remove(); });
+  const fmt = $<HTMLSelectElement>("format");
+  [...fmt.options].forEach((o) => { if (!task.formats.includes(o.value as OutputFormat)) o.remove(); });
+  $("formatField").hidden = task.formats.length < 2;
+  $("saveAll").textContent = task.action;
+  if (task.slug !== "workspace") $("saveSel").remove();
+  const more = $("more"); if (!more.querySelector("[data-part]")) more.remove();
 
   // ---------- saving ----------
   function download(name: string, blob: Blob) {
@@ -399,8 +423,8 @@ export function start(root: HTMLElement, vendor: string) {
     });
   }
   const ext = (f: OutputFormat) => (f === "jpeg" ? "jpg" : f === "tiff" ? "tif" : f);
-  $("saveAll").addEventListener("click", () => save("all"));
-  $("saveSel").addEventListener("click", () => save("selected"));
+  $("saveAll").addEventListener("click", () => save(task.which));
+  root.querySelector("#saveSel")?.addEventListener("click", () => save("selected"));
 
   // ---------- settings file ----------
   $("saveSettings").addEventListener("click", () => {
@@ -418,6 +442,8 @@ export function start(root: HTMLElement, vendor: string) {
       // Keep files already added when the settings use them; forget the rest.
       const wanted = new Set(next.sources.map((s: SourceRef) => s.sha256));
       for (const k of [...loaded.keys()]) if (!wanted.has(k)) loaded.delete(k);
+      if (!task.formats.includes(next.output.format)) next.output.format = task.formats[0];
+      if (!can("split")) next.output.split = "none";
       session = next; sel = new Set(); undo.length = 0;
       render();
       say(session.sources.every((s) => loaded.has(s.sha256)) ? "Settings loaded." : "Settings loaded. Now add the files they refer to.");
@@ -426,7 +452,7 @@ export function start(root: HTMLElement, vendor: string) {
   $("startOver").addEventListener("click", () => {
     if (busy) return;
     for (const u of thumbs.values()) URL.revokeObjectURL(u);
-    thumbs.clear(); loaded.clear(); undo.length = 0; sel = new Set(); session = emptySession(); render(); say("");
+    thumbs.clear(); loaded.clear(); undo.length = 0; sel = new Set(); session = fresh(); render(); say("");
   });
 
   render();

@@ -6,7 +6,7 @@ What the tool relies on, what it was checked against, and when.
 
 | Item | Status | Checked against | Date |
 |---|---|---|---|
-| Default PDF unit = 1/72 inch (used to size image pages and page images) | Checked | PDF 32000-1:2008 (Adobe's edition of ISO 32000-1), section 8.3.2.3 "User Space", p. 115, and Table 30 (UserUnit), p. 79. Copy uploaded by the owner, SHA-256 `9de0ca9e8570d6209e8bd48a355be8eb6ec376acfc3fc3ae97cd8730351417ff`. **Not yet in `sources/`**: its copyright notice says permission to reproduce must be arranged with ISO, so archiving it publicly awaits the owner's decision. Until then there is no `references.json` entry | 2026-11-16 |
+| Default PDF unit = 1/72 inch (used to size image pages and page images) | Checked | PDF 32000-1:2008 (Adobe's edition of ISO 32000-1), section 8.3.2.3 "User Space", p. 115, and Table 30 (UserUnit), p. 79. Copy uploaded by the owner, SHA-256 `9de0ca9e8570d6209e8bd48a355be8eb6ec376acfc3fc3ae97cd8730351417ff`. **Not yet in `sources/`**: its copyright notice says permission to reproduce must be arranged with ISO, so the owner decided on 2026-11-16 not to commit it. There is therefore no `references.json` entry | 2026-11-16 |
 | 1 inch = 0.0254 m (BMP resolution field) | Not yet checked | Needs an archived source | – |
 
 ## Behaviour: automated (`npm test`, every change)
@@ -46,3 +46,15 @@ small generated PDFs and images. **Not yet run:** Firefox, Safari, phones, large
 | Same request from a worker started from a blob; request to this site from that worker | Blocked; allowed |
 | The page's only workers after opening a PDF are blob workers; previews still drawn | Pass |
 | Drag-and-drop reordering and dropping files onto the page | **Not yet checked** (buttons and file picker were used) |
+
+### Task pages (2026-11-16, same method, after the interface was split into one page per task)
+
+| Item | Result |
+|---|---|
+| Home grid lists every task; each task page starts with one "select" button and shows only its own controls | Pass |
+| Merge (PDFs; PDF + image), Split (one per page; chosen ranges), Extract, Remove pages, Rotate (all pages; ticked pages), Resize, Organise: saved PDFs have the expected pages, sizes and rotations | Pass |
+| PDF to JPG, PDF to image (TIFF tried), PDF to text, Images to PDF (JPEG with orientation note, PNG, TIFF) | Pass |
+| A task that takes only PDFs skips an image, and the reverse, with a plain message | Pass |
+| Workspace: settings file saved, start again, loaded, file re-added, same result | Pass |
+| Requests made by the pages: same-origin only | Pass |
+| Phone-width layout | Looked at in screenshots only; **not checked on a real phone** |
