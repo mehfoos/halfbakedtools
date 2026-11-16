@@ -6,7 +6,7 @@
       "pre": "J. C. Pelland, J. F. Remmert, Z. P. Robinson, S. R. Hinson and M. C. Zourdos,",
       "title": "The resistance training dose response: Meta-regressions exploring the effects of weekly volume and frequency on muscle hypertrophy and strength gains",
       "style": "quoted",
-      "post": "<i>Sports Medicine</i>, vol. 56, no. 2, pp. 481–505, 2026, doi: 10.1007/s40279-025-02344-w. Archived copy: preprint version 2, SportRχiv, Oct. 2024, doi: 10.51224/SRXIV.460.",
+      "post": "<i>Sports Medicine</i>, vol. 56, no. 2, pp. 481–505, 2026, doi: 10.1007/s40279-025-02344-w. Archived copy: preprint version 2 (the published article is not openly licensed, so it is not stored here), SportRχiv, Oct. 2024, doi: 10.51224/SRXIV.460.",
       "url": "https://doi.org/10.1007/s40279-025-02344-w",
       "licence": "Preprint: CC BY 4.0",
       "usedFor": "Counting sets that train a muscle directly as 1 and indirectly as 0.5 (the 'fractional' method)",
@@ -71,25 +71,46 @@
           "file": "openstax-ap2e-11-6-lower-limbs.pdf",
           "fetch": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs",
           "render": true
+        },
+        {
+          "label": "11.3 as saved by the site owner (.mht web archive)",
+          "file": "openstax-ap2e-11-3-owner-saved.mht"
+        },
+        {
+          "label": "11.4 as saved by the site owner (.mht web archive)",
+          "file": "openstax-ap2e-11-4-owner-saved.mht"
+        },
+        {
+          "label": "11.5 as saved by the site owner (.mht web archive)",
+          "file": "openstax-ap2e-11-5-owner-saved.mht"
+        },
+        {
+          "label": "11.6 as saved by the site owner (.mht web archive)",
+          "file": "openstax-ap2e-11-6-owner-saved.mht"
         }
       ]
     },
     {
       "id": "who-2020",
-      "pre": "F. C. Bull et al.,",
-      "title": "World Health Organization 2020 guidelines on physical activity and sedentary behaviour",
-      "style": "quoted",
-      "post": "<i>British Journal of Sports Medicine</i>, vol. 54, no. 24, pp. 1451–1462, 2020, doi: 10.1136/bjsports-2020-102955.",
-      "url": "https://doi.org/10.1136/bjsports-2020-102955",
-      "licence": "CC BY 4.0",
+      "pre": "World Health Organization,",
+      "title": "WHO Guidelines on Physical Activity and Sedentary Behaviour",
+      "style": "italic",
+      "post": "Geneva, Switzerland, 2020, ISBN 978-92-4-001512-8. Summarised in F. C. Bull et al., <i>British Journal of Sports Medicine</i>, vol. 54, no. 24, pp. 1451–1462, 2020, doi: 10.1136/bjsports-2020-102955.",
+      "url": "https://iris.who.int/handle/10665/336656",
+      "licence": "CC BY-NC-SA 3.0 IGO (guidelines); CC BY 4.0 (journal paper)",
       "usedFor": "Weekly aerobic and muscle-strengthening recommendations for adults; moderate and vigorous intensity in METs",
       "archive": [
+        {
+          "label": "Archived copy",
+          "file": "who-2020-guidelines-physical-activity-sedentary-behaviour.pdf"
+        },
         {
           "file": "bull-2020-who-physical-activity-guidelines.pdf",
           "fetch": [
             "https://ueaeprints.uea.ac.uk/id/eprint/77844/1/Published_Version.pdf",
             "https://bjsm.bmj.com/content/bjsports/54/24/1451.full.pdf"
-          ]
+          ],
+          "label": "journal paper of the guidelines (Bull et al., Br J Sports Med 2020)"
         }
       ]
     },

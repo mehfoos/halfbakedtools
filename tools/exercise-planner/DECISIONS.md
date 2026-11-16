@@ -18,7 +18,9 @@ It suggests exercises; it is not a training programme (no loads, repetitions or 
 | 2026-11-15 | 13 muscle groups, coarse on purpose (e.g. one "Shoulders" group) | Finer splits would claim more precision than the sources support |
 | 2026-11-15 | Search every combination of up to 10 exercises (at most 30 candidates, keeping the best 3 per target), grouping exercises that are identical for the chosen targets; ranked by targets covered, then fewest exercises | Exact and fast (about 0.1 s for a whole-body search with a full gym); the capped score has diminishing returns, so exercises that add nothing can be skipped safely |
 | 2026-11-15 | Aerobic intensity from the 2024 Adult Compendium MET values, unchanged, with codes; WHO 2020 bands (moderate 3–<6, vigorous ≥6 MET) | Measured values from the standard reference; the Compendium asks that values not be altered |
-| 2026-11-15 | WHO 2020 guidelines cited through their open-access BJSM paper (Bull et al. 2020) | The WHO's own PDF could not be downloaded automatically; the paper states the same recommendations and definitions |
+| 2026-11-16 | Cite the WHO 2020 guidelines document itself (owner-supplied copy), keeping the BJSM paper as a second archived copy | Primary source; the WHO PDF couldn't be downloaded automatically |
+| 2026-11-16 | Check against the published Pelland et al. article but archive only the preprint | The published version is under exclusive licence to Springer Nature, so it can't be redistributed in a public repository |
+| 2026-11-15 | WHO 2020 guidelines cited through their open-access BJSM paper (Bull et al. 2020) | Superseded on 2026-11-16 (above) |
 | 2026-11-15 | Fractional set counting: direct 1, indirect 0.5 (Pelland et al. 2026) | Best-supported method in the largest dose-response analysis; Schoenfeld et al. (2019) noted 1:1 can't be assumed |
 | 2026-11-15 | Released as alpha | Exercises classified by analogy are not yet compared with muscle-activity (EMG) reviews |
 

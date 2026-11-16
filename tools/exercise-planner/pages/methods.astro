@@ -55,8 +55,8 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
   <h2>Which muscles each exercise works</h2>
   <p>
     <strong>Exercises classified in the analysis.</strong> Pelland and colleagues list how they classified common exercises
-    for the quadriceps, hamstrings, chest, front of the shoulders, trapezius, triceps and biceps (Table 1A of the archived
-    preprint) <Fragment set:html={cite("pelland-2026")} />. Where an exercise appears there, the planner follows it: for
+    for the quadriceps, hamstrings, chest, front of the shoulders, trapezius, triceps and biceps (Table 1 of the published
+    article; Table 1A of the archived preprint) <Fragment set:html={cite("pelland-2026")} />. Where an exercise appears there, the planner follows it: for
     example the bench press trains the chest directly and the triceps and front shoulders indirectly; rows and pulldowns
     train the biceps and trapezius indirectly; squats, lunges and the leg press don't count for the hamstrings.
   </p>
@@ -88,7 +88,7 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
               <td class="small">{needs(e.needs)}</td>
               <td>{e.direct.map((m) => muscle[m]).join(", ")}</td>
               <td>{e.indirect.map((m) => muscle[m]).join(", ") || "–"}</td>
-              <td class="small">{e.listed ? <>Pelland et al., Table 1A ("{e.listed}")</> : "By analogy (anatomy)"}</td>
+              <td class="small">{e.listed ? <>Pelland et al., Table 1 ("{e.listed}")</> : "By analogy (anatomy)"}</td>
             </tr>
           ))}
         </tbody>

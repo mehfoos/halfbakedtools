@@ -145,6 +145,12 @@
     "retrieved": "2026-11-15",
     "sha256": "2d4349b872465f4c2888da2774cdeee28e65d7bd037919cdc8e64c8720a3ccb1"
   },
+  "openstax-ap2e-11-3-owner-saved.mht": {
+    "source": "openstax-ap2e",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "d93e6210fb39d412813e7b6d10d88f2e2765be7b29b48a07776c5884d599dcd5"
+  },
   "openstax-ap2e-11-4-abdomen-thorax.html": {
     "source": "openstax-ap2e",
     "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
@@ -158,6 +164,18 @@
     "finalUrl": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
     "retrieved": "2026-11-15",
     "sha256": "317f566cae937269a2d265acb0991ffb2bc2b3473b65496173efb31c479137dd"
+  },
+  "openstax-ap2e-11-4-owner-saved.mht": {
+    "source": "openstax-ap2e",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "dc80d954dfec5c504411e82ab6e69b2124dae5b509399239b641e8516d1cbf80"
+  },
+  "openstax-ap2e-11-5-owner-saved.mht": {
+    "source": "openstax-ap2e",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "5f7b00b86cbdf9f7488b87500544fc190bf307ac732b2d45cfa521249fe336ea"
   },
   "openstax-ap2e-11-5-upper-limbs.html": {
     "source": "openstax-ap2e",
@@ -187,6 +205,12 @@
     "retrieved": "2026-11-15",
     "sha256": "c865c916484f3833f5134b1c4af45186066803537a18ce9c0862a8982cf81e88"
   },
+  "openstax-ap2e-11-6-owner-saved.mht": {
+    "source": "openstax-ap2e",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "ebeb44a03f300f01eb8241fae211986c6bd615553987728d55f9738c288cfb22"
+  },
   "pelland-2024-dose-response-preprint-v2.pdf": {
     "source": "pelland-2026",
     "url": "https://sportrxiv.org/index.php/server/preprint/download/460/967/908",
@@ -212,5 +236,11 @@
     "retrieved": null,
     "note": "uploaded by the site owner",
     "sha256": "ad109adebecbace501da1b6d4672821009b4e45ad76b95647bc87017901e89b0"
+  },
+  "who-2020-guidelines-physical-activity-sedentary-behaviour.pdf": {
+    "source": "who-2020",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "50b66c44e7083cc3752849f301ae1d60d9360d511e34c0c948b39bdf6e13dc88"
   }
 }
