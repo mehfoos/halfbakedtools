@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -23,7 +23,7 @@ export type Task = {
   which: "all" | "selected";    // what the main button saves
   action: string;               // text on the main button
   turnAllIfNoneSelected?: boolean;
-  perFile?: boolean;            // each added file is saved as its own PDF, and the result is shown before download
+  perFile?: boolean;            // each added file is saved as its own PDF (Compress also shows the result before download)
   suffix: string;               // added to the default output name so it differs from the original's ("report-merged")
   tag: string;                  // short label drawn on the task's icon
 };
@@ -57,6 +57,13 @@ export const TASKS: Task[] = [
   { slug: "compress", name: "Compress PDF", blurb: "Make a PDF smaller by shrinking the pictures inside it. You see the real new size before you download.", group: "Optimise", accept: "pdf",
     pick: "Select PDF files", hint: "Choose how hard to compress, then press Compress to see the new size and a before-and-after preview.",
     parts: ["compress"], formats: ["pdf"], which: "all", action: "Compress PDF", perFile: true, suffix: "compressed", tag: "↓" },
+
+  { slug: "unlock", name: "Unlock PDF", blurb: "Save a copy of a password-protected PDF that opens without the password. You need to know the password.", group: "Security", accept: "pdf",
+    pick: "Select PDF files", hint: "You'll be asked for each file's password when you add it. Only unlock files you have the right to change.",
+    parts: [], formats: ["pdf"], which: "all", action: "Unlock PDF", perFile: true, suffix: "unlocked", tag: "🔓" },
+  { slug: "protect", name: "Protect PDF", blurb: "Lock a PDF with a password, so it can only be opened by someone who knows it.", group: "Security", accept: "pdf",
+    pick: "Select PDF files", hint: "Choose a password. Everyone who opens the saved PDF will have to type it.",
+    parts: ["protect"], formats: ["pdf"], which: "all", action: "Protect PDF", perFile: true, suffix: "protected", tag: "🔒" },
 
   { slug: "pdf-to-jpg", name: "PDF to JPG", blurb: "Save each page of a PDF as a JPEG picture.", group: "Convert from PDF", accept: "pdf",
     pick: "Select PDF files", hint: "Choose the detail and quality. More than one picture is saved as a .zip file.",
@@ -94,7 +101,6 @@ export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "PDF to Markdown", tag: "MD", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
   { name: "Page numbers", tag: "1,2", group: "Edit" }, { name: "Watermark", tag: "≋", group: "Edit" }, { name: "Crop PDF", tag: "▢", group: "Edit" },
   { name: "Fill in PDF forms", tag: "☑", group: "Edit" },
-  { name: "Unlock PDF", tag: "🔓", group: "Security" }, { name: "Protect PDF with a password", tag: "🔒", group: "Security" },
   { name: "Sign PDF (draw your signature)", tag: "✍", group: "Security" }, { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
   { name: "Compare PDF", tag: "⇆", group: "Security" },
 ];

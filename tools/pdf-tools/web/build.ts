@@ -112,6 +112,19 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
   };
 }
 
+/** A copy of the PDF that can only be opened with `password` (AES-256, the library's default and strongest
+ *  cipher). The same password gives full access; there is no separate "owner" password. */
+export async function protect(bytes: Uint8Array, password: string): Promise<Uint8Array> {
+  if (!password) throw new Error("Type a password first.");
+  const doc = await PDFDocument.load(bytes);
+  doc.encrypt({
+    userPassword: password, ownerPassword: password,
+    // No restrictions: whoever has the password can print, copy and change the document.
+    permissions: { printing: "highResolution", modifying: true, copying: true, annotating: true, fillingForms: true, contentAccessibility: true, documentAssembly: true },
+  });
+  return doc.save();
+}
+
 /** Page count of a PDF; throws if it can't be opened. `needsPassword` errors are reported by name. */
 export async function inspectPdf(bytes: Uint8Array, password?: string): Promise<{ pages: number }> {
   const doc = await PDFDocument.load(bytes, password === undefined ? {} : { password });

@@ -225,7 +225,7 @@ test("tasks: each has a page, a tool.json entry, a sensible default, and nothing
   for (const g of GROUPS) assert.ok(TASKS.some((t) => t.group === g) || NOT_BUILT.some((t) => t.group === g), `${g} has nothing in it`);
   assert.ok(NOT_POSSIBLE_LOCALLY.every((x) => x.name && x.why));
   assert.deepEqual(WORKSPACE.formats.length, 7);
-  for (const t of ALL_TASKS) if (t.perFile) assert.ok(t.parts.includes("compress") && t.formats.length === 1 && t.formats[0] === "pdf");
+  for (const t of ALL_TASKS) if (t.perFile) assert.ok(t.formats.length === 1 && t.formats[0] === "pdf" && !t.parts.includes("split"), "a task that saves each file on its own makes PDFs and doesn't split");
   assert.throws(() => taskBySlug("nope"));
 });
 
@@ -295,7 +295,7 @@ test("names: defaults carry a suffix, and clashes with added files are found wha
 // ---- added text and pictures ----
 import { toUser, turn, textBox, placeText, placeImage, parseColor, unsupported, cleanMark, baseToView, viewToBase, visibleSize, type TextMark, type ImageMark, type Mark } from "./marks.ts";
 import { setMarks, withMarks, usage } from "./session.ts";
-import { fontSet, cantDraw } from "./build.ts";
+import { fontSet, cantDraw, protect } from "./build.ts";
 const near = (a: number, b: number, msg?: string) => assert.ok(Math.abs(a - b) < 1e-6, `${msg ?? ""} ${a} vs ${b}`);
 const BOX = { x: 0, y: 0, width: 200, height: 300 };
 test("marks: displayed points map to the PDF's coordinates for every page rotation", () => {
@@ -387,4 +387,22 @@ test("build: the built-in fonts report which characters they can't draw", async 
   assert.deepEqual(cantDraw("Café – “quoted” £5 €5", f), []);
   assert.deepEqual(cantDraw("Ω and 日", f), ["Ω", "日"]);
   assert.equal(fontSet(doc)("mono", true).name, "Courier-Bold");
+});
+
+// ---- password protection ----
+test("protect: the saved PDF opens only with the password, and holds the same pages", async () => {
+  const locked = await protect(await sample(2), "correct horse");
+  await assert.rejects(PDFDocument.load(locked), "it must not open without a password");
+  await assert.rejects(inspectPdf(locked, "wrong"));
+  assert.equal((await inspectPdf(locked, "correct horse")).pages, 2);
+  assert.ok(!Buffer.from(locked).includes("p0"), "page text is not readable in the file");
+  await assert.rejects(protect(await sample(1), ""), /password/);
+  // unlocking = opening with the password and building a new file
+  const data = new Map<string, SourceData>([["a", { kind: "pdf", bytes: locked, password: "correct horse" }]]);
+  const open = await makeBuilder(data, { imageDpi: 96 })([P("a", 0), P("a", 1)]);
+  assert.equal((await inspectPdf(open)).pages, 2, "the rebuilt copy needs no password");
+});
+test("settings: no password field exists anywhere in the settings file", () => {
+  const s = addSource(emptySession(), { name: "a.pdf", size: 10, sha256: SHA("a"), pages: 1, kind: "pdf" }).session;
+  assert.doesNotMatch(serialise(s), /passw/i);
 });

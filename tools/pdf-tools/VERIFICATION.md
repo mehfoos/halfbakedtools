@@ -20,6 +20,7 @@ What the tool relies on, what it was checked against, and when.
 | Split plans (one file, every N, chosen ranges, one per page) and file names | `core.test.ts` "session: planFiles…" |
 | Settings file round trip; rejection of foreign, damaged and newer files; no content keys | `core.test.ts` "settings: …" |
 | Written PDFs: merge order, repeated pages independent, rotation adds to existing, resize, image pages, several files from one builder, fonts kept | `core.test.ts` "build: …" |
+| Protected output can't be opened without the password and hides page text; rebuilding with the password gives an open copy; the settings file has no password field | `core.test.ts` "protect: …", "settings: no password…" |
 | Default names carry a suffix on every task; name clashes found whatever the capitals | `core.test.ts` "names: …" |
 | BMP writer; text joining; JPEG orientation note | `core.test.ts` "bmp", "text", "exif" |
 | Added text and pictures: displayed position to PDF coordinates for all four page rotations and a shifted crop box; base view to turned view and back; text layout; picture placement; settings checks; marks written by the builder on plain and rotated pages; unsupported characters refused | `core.test.ts` "marks: …", "session: marks…", "build: added…", "build: the built-in fonts…" |
@@ -77,4 +78,6 @@ small generated PDFs and images. **Not yet run:** Firefox, Safari, phones, large
 | Edit PDF: a character the fonts lack (Ω) shows a warning, the page is still drawn, and saving is refused with the reason | Pass |
 | Edit PDF: undo; settings file with additions and a placed picture saved, loaded, files re-added, same PDF content | Pass |
 | Edit PDF on a phone or by touch; keyboard-only use of the editor | **Not yet checked** |
+| Protect PDF: refuses an empty or mismatched password; the saved file is reported encrypted by pypdf and by qpdf (encryption revision 6, AES 256-bit), is rejected with no or a wrong password, and opens with the right one with all pages and text | Pass |
+| Unlock PDF: files protected by this tool and by qpdf, opened with their passwords, are saved unencrypted with all pages; an author-locked file and an unprotected file each get a plain explanation | Pass |
 | Phone-width layout | Looked at in screenshots only; **not checked on a real phone** |

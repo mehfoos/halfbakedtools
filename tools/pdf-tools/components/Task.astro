@@ -124,6 +124,12 @@ const policy = import.meta.env.PROD ? CSP : "";
           <div id="optText">
             <p class="small muted">Words are saved in the order the PDF stores them, which is usually but not always reading order.</p>
           </div>
+          <div id="optProtect" data-part="protect">
+            <p><label class="field">Password <input id="pw1" type="password" autocomplete="off" size="16" /></label></p>
+            <p><label class="field">Type it again <input id="pw2" type="password" autocomplete="off" size="16" /></label></p>
+            <p><label><input id="pwShow" type="checkbox" /> Show the password</label></p>
+            <p class="small muted">Anyone opening the saved PDF must type this password. Keep it safe: if it is lost, the PDF cannot be opened and this tool cannot recover it. The password is not kept anywhere: not in the settings file, and not by this site.</p>
+          </div>
           <div id="optCompress" data-part="compress">
             <p><label class="field">Compression
               <select id="cLevel">

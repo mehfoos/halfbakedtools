@@ -11,7 +11,7 @@ import {
   type Session, type PageItem, type Edit, type OutputFormat, type SplitMode, type Rotation, type SourceRef,
 } from "./session.ts";
 import { parsePageList, formatRanges } from "./ranges.ts";
-import { makeBuilder, inspectPdf, fontSet, cantDraw, type SourceData } from "./build.ts";
+import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
 import { createEditor } from "./editor.ts";
 import type { Mark } from "./marks.ts";
 import { encodeBmp } from "./bmp.ts";
@@ -29,10 +29,10 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   const task = taskBySlug(taskSlug);
   const can = (p: Part) => task.parts.includes(p);
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => root.querySelector<T>(`#${id}`)!;
-  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none", compress: { ...(task.perFile ? PRESETS.recommended : NO_COMPRESSION) } } }; };
+  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none", compress: { ...(task.slug === "compress" ? PRESETS.recommended : NO_COMPRESSION) } } }; };
   type Level = "none" | keyof typeof PRESETS | "custom";
   const levelOf = (c: CompressOptions): Level => c.mode === "none" ? "none" : (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).find((k) => JSON.stringify(PRESETS[k]) === JSON.stringify(c)) ?? "custom";
-  let level: Level = task.perFile ? "recommended" : "none";
+  let level: Level = task.slug === "compress" ? "recommended" : "none";
   let session: Session = fresh();
   const loaded = new Map<string, Loaded>();      // by SHA-256 of the file, so it survives loading a settings file
   let sel = new Set<number>();
@@ -134,6 +134,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
             const r = await loadPdf(f.name, bytes);
             if (!r) { notes.push(`"${f.name}" was skipped (no password given).`); continue; }
             item = r; pages = r.pages;
+            if (task.slug === "unlock" && !r.restricted && !r.usedPassword) notes.push(`"${f.name}" has no password or lock, so there is nothing to unlock.`);
             if (r.restricted) notes.push(`"${f.name}" is locked by its author against some changes, though it opens without a password. Files saved from it will not carry that lock.`);
             if (r.usedPassword) notes.push(`"${f.name}" was opened with its password. Files saved from it will not be password-protected.`);
           } else {
@@ -434,7 +435,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   // ---------- this page's task: show only its controls ----------
   root.querySelectorAll<HTMLElement>("[data-part]").forEach((e) => { if (!can(e.dataset.part as Part)) e.remove(); });
-  if (task.perFile) { root.querySelector("#cLevel option[value=none]")?.remove(); $("outName").closest("p")!.hidden = true; }
+  if (task.slug === "compress") root.querySelector("#cLevel option[value=none]")?.remove();
+  if (task.perFile) $("outName").closest("p")!.hidden = true;
+  root.querySelector<HTMLInputElement>("#pwShow")?.addEventListener("change", (e) => { for (const id of ["pw1", "pw2"]) $<HTMLInputElement>(id).type = (e.target as HTMLInputElement).checked ? "text" : "password"; });
   const fmt = $<HTMLSelectElement>("format");
   [...fmt.options].forEach((o) => { if (!task.formats.includes(o.value as OutputFormat)) o.remove(); });
   $("formatField").hidden = task.formats.length < 2;
@@ -496,6 +499,12 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     readOptions(); clearResult(); if (busy || !ask.hidden) return;
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);
+    let password = "";
+    if (can("protect")) {
+      password = $<HTMLInputElement>("pw1").value;
+      if (!password) return say("Type a password first.", "bad");
+      if (password !== $<HTMLInputElement>("pw2").value) return say("The two passwords don't match. Type them again.", "bad");
+    }
     if (!(await consent(outputNames(pages)))) return say("Nothing was saved. Change the file name and try again.");
     await work("Working…", async (progress) => {
       if (!pages.length) throw new Error("There are no pages to save.");
@@ -510,7 +519,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         const c = o.compress;
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };
-          const built = await build(pp);
+          let built = await build(pp);
+          if (password) built = await protect(built, password);   // last step: nothing rewrites the file afterwards
           if (c.mode === "none") return { bytes: built };
           return recompressImages(built, c, (i, n) => progress(`${label}: picture ${i + 1} of ${n}…`));
         };
@@ -522,9 +532,12 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
             const r = await make(pp, s.name);
             done.push({ source: s, name: perFileName(s), bytes: r.bytes, stats: r.stats, first: pp[0] });
           }
-          progress("Preparing the preview…");
-          await showResult(done);
-          note = "";
+          if (task.slug === "compress") { progress("Preparing the preview…"); await showResult(done); note = ""; }
+          else {
+            await deliver(done.map((d) => ({ name: d.name, bytes: d.bytes })), task.suffix);
+            note = `Saved ${done.length === 1 ? done[0].name : `${done.length} PDFs in ${task.suffix}.zip`}.` +
+              (password ? " Check that it opens with your password before you delete the original." : "");
+          }
         } else {
           const plan = planFiles(pages, o), files = [];
           for (const [i, f] of plan.entries()) { progress(`Writing file ${i + 1} of ${plan.length}…`); files.push({ name: f.name, bytes: (await make(f.pages, f.name)).bytes }); }
@@ -641,7 +654,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (!task.formats.includes(next.output.format)) next.output.format = task.formats[0];
       if (!can("split")) next.output.split = "none";
       if (!can("compress")) next.output.compress = { ...NO_COMPRESSION };
-      else if (task.perFile && next.output.compress.mode === "none") next.output.compress = { ...PRESETS.recommended };
+      else if (task.slug === "compress" && next.output.compress.mode === "none") next.output.compress = { ...PRESETS.recommended };
       level = levelOf(next.output.compress);
       session = next; sel = new Set(); undo.length = 0;
       render();
