@@ -1,0 +1,18 @@
+{
+  "slug": "pdf-tools",
+  "name": "PDF tools",
+  "summary": "Merge, split, reorder, rotate and resize PDF pages, turn pages into images or plain text, and turn images into a PDF. Everything is done inside your browser: your files are never uploaded.",
+  "topic": "Documents",
+  "status": "alpha",
+  "added": "2026-11-16",
+  "pages": [
+    { "page": "index", "label": "PDF tools" },
+    { "page": "methods", "label": "Methods and limits" }
+  ],
+  "vendor": {
+    "pdfjs/cmaps": "pdfjs-dist/cmaps",
+    "pdfjs/standard_fonts": "pdfjs-dist/standard_fonts",
+    "pdfjs/wasm": "pdfjs-dist/wasm",
+    "pdfjs/iccs": "pdfjs-dist/iccs"
+  }
+}

@@ -1,0 +1,162 @@
+---
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { CSP } from "../web/csp.ts";
+const base = import.meta.env.BASE_URL;
+const vendor = `${base}tools/pdf-tools/vendor/pdfjs/`;
+// The security policy is left off the development server only, whose live-reload needs connections it would block.
+const policy = import.meta.env.PROD ? CSP : "";
+---
+<ToolLayout slug="pdf-tools" page="index" description="Merge, split, reorder, rotate and resize PDF pages, save pages as images or text, and turn images into a PDF, all inside your browser. Your files are never uploaded.">
+  {policy && <meta slot="head" http-equiv="Content-Security-Policy" content={policy} />}
+  <h1>PDF tools</h1>
+  <p class="lede">Merge, split, reorder, rotate and resize PDF pages, save pages as images or plain text, and turn images into a PDF.</p>
+  <p class="notice info small"><strong>Your files stay on your device.</strong> They are opened and changed by your own browser and are never uploaded: this site has nowhere to receive them, and the page instructs your browser to block connections to any other site. <a href={`${base}tools/pdf-tools/methods/`}>How this works, and how to check it</a>.</p>
+  <p class="notice small">Early version (alpha). Compressing, editing text and pictures inside a page, and converting to and from Word, PowerPoint, Excel and web pages are not built yet. Keep your original files: check each result before relying on it. See <a href={`${base}tools/pdf-tools/methods/`}>Methods and limits</a>.</p>
+
+  <div id="pdftools" data-vendor={vendor}>
+    <noscript><p class="notice">This tool runs in your browser and needs JavaScript.</p></noscript>
+
+    <section class="panel" aria-labelledby="h-add">
+      <h2 id="h-add">1. Add files</h2>
+      <div id="drop" class="drop sans">
+        <label class="button">Choose PDFs or images<input id="picker" class="sr-only" type="file" multiple accept=".pdf,application/pdf,image/*,.tif,.tiff" /></label>
+        <span class="small muted">or drop them here. Add several files to merge them. Images can be PNG, JPEG, TIFF, BMP, WebP, GIF or SVG.</span>
+      </div>
+      <p id="empty" class="small muted sans">Nothing added yet.</p>
+      <div id="filesBox" hidden>
+        <ul id="files" class="files sans small"></ul>
+      </div>
+      <p id="waiting" class="notice small" hidden></p>
+    </section>
+
+    <section class="panel" id="pagesPanel" aria-labelledby="h-pages" hidden>
+      <h2 id="h-pages">2. Arrange pages <span class="summary-note" id="selNote"></span></h2>
+      <p class="small muted sans">Tick pages to select them (hold Shift to tick a run), then use the buttons. On a computer you can also drag pages to a new place.</p>
+      <div class="bar sans" role="toolbar" aria-label="Page actions">
+        <button type="button" class="small" data-act="all">Select all</button>
+        <button type="button" class="small" data-act="none" data-needs-sel>Select none</button>
+        <span class="gap"></span>
+        <button type="button" class="small" data-act="earlier" data-needs-sel>◀ Move earlier</button>
+        <button type="button" class="small" data-act="later" data-needs-sel>Move later ▶</button>
+        <button type="button" class="small" data-act="left" data-needs-sel>⟲ Turn left</button>
+        <button type="button" class="small" data-act="right" data-needs-sel>⟳ Turn right</button>
+        <button type="button" class="small" data-act="duplicate" data-needs-sel>Duplicate</button>
+        <button type="button" class="small" data-act="remove" data-needs-sel>Remove</button>
+        <span class="gap"></span>
+        <button type="button" class="small" id="undo" data-act="undo">Undo</button>
+      </div>
+      <ul id="grid" class="grid"></ul>
+      <details>
+        <summary>More: select by number, move to a position, resize pages</summary>
+        <div class="details-body sans">
+          <p><label class="field">Select pages <input id="selText" type="text" inputmode="text" placeholder="1-3, 5, 8-" size="14" /></label>
+            <button type="button" class="small" data-act="selectRange">Select</button>
+            <span class="small muted">"8-" means page 8 to the end.</span></p>
+          <p><label class="field">Move the selected pages to position <input id="movePos" type="number" min="1" step="1" inputmode="numeric" /></label>
+            <button type="button" class="small" data-act="moveTo" data-needs-sel>Move</button></p>
+          <p><label class="field">Resize <span id="scaleWho">all pages</span>, with their contents, to <input id="scalePct" type="number" min="10" max="1000" step="1" value="100" inputmode="decimal" /> % of the original size</label>
+            <button type="button" class="small" data-act="scale">Resize</button></p>
+          <p class="small muted">Resizing changes the paper size and everything on the page together: 50% halves both the width and the height. It applies when you save as PDF. Removing a page here never changes your original file.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel" id="savePanel" aria-labelledby="h-save" hidden>
+      <h2 id="h-save">3. Save</h2>
+      <div class="tune-row sans">
+        <label class="field">Save as
+          <select id="format">
+            <option value="pdf">PDF</option>
+            <option value="png">PNG images</option>
+            <option value="jpeg">JPEG images</option>
+            <option value="webp">WebP images</option>
+            <option value="tiff">TIFF images</option>
+            <option value="bmp">BMP images</option>
+            <option value="txt">Plain text (.txt)</option>
+          </select>
+        </label>
+        <label class="field">File name <input id="outName" type="text" size="18" /></label>
+      </div>
+      <div id="optPdf" class="sans">
+        <label class="field">Files
+          <select id="split">
+            <option value="none">One PDF</option>
+            <option value="every">Split: a new PDF every few pages</option>
+            <option value="ranges">Split: at the pages I choose</option>
+            <option value="each">Split: one PDF per page</option>
+          </select>
+        </label>
+        <label class="field" id="optEvery">Pages in each PDF <input id="every" type="number" min="1" step="1" inputmode="numeric" /></label>
+        <label class="field" id="optRanges">Pages for each PDF <input id="ranges" type="text" placeholder="1-3, 4-10" size="16" /> <span class="small muted">one PDF per comma-separated group, counting the pages being saved</span></label>
+      </div>
+      <div id="optImage" class="sans">
+        <label class="field">Detail <input id="dpi" type="number" min="36" max="600" step="1" inputmode="numeric" /> dots per inch <span class="small muted">(more dots: sharper pictures and bigger files)</span></label>
+        <label class="field" id="optQuality">Quality <input id="quality" type="number" min="10" max="100" step="1" inputmode="numeric" /> % <span class="small muted">(lower: smaller files, more blur and blockiness)</span></label>
+        <p class="small muted">One image per page, as a picture of the page: text in it can no longer be selected. TIFF and BMP are saved uncompressed, so they are large.</p>
+      </div>
+      <div id="optText" class="sans">
+        <p class="small muted">Saves the words only, with no layout, in the order the PDF stores them, which is usually but not always reading order. Scanned pages are pictures and have no text to save.</p>
+      </div>
+      <details id="optImageDpi">
+        <summary>Size of added images on the page</summary>
+        <div class="details-body sans">
+          <label class="field">Treat added images as <input id="imageDpi" type="number" min="36" max="600" step="1" inputmode="numeric" /> dots per inch</label>
+          <p class="small muted">An image has pixels but no fixed paper size. At 96 dots per inch, an image 960 pixels wide becomes a page 10 inches (25.4 cm) wide. A higher number makes a smaller page; the image's detail is unchanged.</p>
+        </div>
+      </details>
+      <p class="actions">
+        <button type="button" class="primary" id="saveAll">Save all pages</button>
+        <button type="button" id="saveSel" data-needs-sel>Save the selected pages</button>
+      </p>
+      <p class="small muted sans">Several files are saved together as one .zip file. "Save the selected pages" is how to extract part of a PDF.</p>
+    </section>
+
+    <p id="status" class="notice info" role="status" aria-live="polite" hidden></p>
+
+    <section class="panel" aria-labelledby="h-settings">
+      <h2 id="h-settings">Carry on later</h2>
+      <p class="small sans">Save a small settings file that records which files you added and every change you made. Next time, load it and add the same files again to pick up where you left off. The settings file lists file names, sizes and fingerprints (checksums) only: it holds none of your documents' contents, and nothing is stored on this site or in your browser.</p>
+      <p class="actions sans">
+        <button type="button" id="saveSettings">Save settings file</button>
+        <label class="button">Load settings file<input id="settingsPicker" class="sr-only" type="file" accept=".json,application/json" /></label>
+        <button type="button" class="link small" id="startOver">Start again</button>
+      </p>
+    </section>
+  </div>
+
+  <script>
+    import { start } from "../web/ui.ts";
+    const root = document.getElementById("pdftools")!;
+    start(root, root.dataset.vendor!);
+  </script>
+
+  <style is:global>
+    #pdftools .drop { border: 2px dashed var(--line-soft); border-radius: 4px; padding: 14px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+    #pdftools .drop.over { border-color: var(--navy); background: var(--beige); }
+    #pdftools label.button { display: inline-block; }
+    #pdftools label.button:focus-within { outline: 2px solid var(--link-hover); outline-offset: 2px; }
+    #pdftools .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    #pdftools .files { list-style: none; padding: 0; margin: 10px 0 0; }
+    #pdftools .files li { padding: 4px 0; border-bottom: 1px solid var(--line-soft); overflow-wrap: anywhere; }
+    #pdftools .files li.missing { background: var(--warn-soft); padding-left: 6px; }
+    #pdftools .bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0; position: sticky; top: 0; background: #fff; padding: 6px 0; z-index: 2; border-bottom: 1px solid var(--line-soft); }
+    #pdftools .bar .gap { width: 10px; }
+    #pdftools button.small { padding: 4px 9px; }
+    #pdftools button:disabled { opacity: 0.45; cursor: not-allowed; }
+    #pdftools .grid { list-style: none; padding: 0; margin: 10px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
+    #pdftools .tile { border: 2px solid var(--line-soft); border-radius: 4px; background: #fff; }
+    #pdftools .tile.on { border-color: var(--navy); background: #eef0fb; }
+    #pdftools .tile.drop-before { box-shadow: -4px 0 0 var(--link-hover); }
+    #pdftools .tile.drop-after { box-shadow: 4px 0 0 var(--link-hover); }
+    #pdftools .tile label { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px; cursor: pointer; font-family: var(--sans); }
+    #pdftools .thumb { width: 112px; height: 112px; display: flex; align-items: center; justify-content: center; text-align: center; background: var(--beige); }
+    #pdftools .thumb img { max-width: 100%; max-height: 100%; box-shadow: 0 0 0 1px #999; background: #fff; transition: transform 0.15s; }
+    #pdftools .from { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #pdftools .tune-row { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+    #pdftools .field { display: inline-block; margin: 4px 12px 4px 0; }
+    #pdftools .field input, #pdftools .field select { margin: 0 4px; font: inherit; padding: 3px 5px; }
+    #pdftools .field input[type="number"] { width: 5.5em; }
+    #pdftools .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+    #pdftools [hidden] { display: none !important; }
+  </style>
+</ToolLayout>

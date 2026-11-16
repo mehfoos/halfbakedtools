@@ -25,8 +25,14 @@ automatically.
    and the date. Until something is checked, say so on the methods page.
 7. **Data:** anything in `data/` (`*.json`, any depth) is published at `/tools/<slug>/data/…`. Scripts that build it
    go in `pipeline/`; scheduled jobs go in `.github/workflows/<slug>-*.yml`.
-8. **Record the tool's intent and design decisions** in `DECISIONS.md`, with reasons.
-9. **Run** `npm test` and `npm run dev`, then delete anything left over from the template.
+8. **Library files and page-level extras (rarely needed):**
+   - If a library must load some of its own files by address at run time, list the folders under `"vendor"` in
+     `tool.json` (for example `{ "pdfjs/cmaps": "pdfjs-dist/cmaps" }`); they are copied from `node_modules` and
+     served at `/tools/<slug>/vendor/…`. Never load them from another site.
+   - A page can add tags to the document head by giving them `slot="head"` inside `ToolLayout` (the PDF tools use
+     this for a stricter security policy).
+9. **Record the tool's intent and design decisions** in `DECISIONS.md`, with reasons.
+10. **Run** `npm test` and `npm run dev`, then delete anything left over from the template.
 
 ## Rules every tool follows
 

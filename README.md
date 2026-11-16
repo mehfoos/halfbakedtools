@@ -12,6 +12,7 @@ calculations run in the visitor's browser. The intent and the reasons behind the
 | Tool | Folder | Status |
 |---|---|---|
 | Nutrient planner: a few everyday foods that together meet UK, US or EU daily nutrient recommendations, or check your own day | [`tools/nutrient-planner/`](tools/nutrient-planner/) | Beta |
+| PDF tools: merge, split, reorder, rotate and resize pages, pages to images or text, images to PDF, all in the browser with no upload (phase 1 of 4; see its `ROADMAP.md`) | [`tools/pdf-tools/`](tools/pdf-tools/) | Alpha |
 
 ## Repository layout
 

@@ -10,8 +10,12 @@
     "test": "node --test --experimental-strip-types \"tools/*/web/*.test.ts\" \"site/src/**/*.test.ts\""
   },
   "dependencies": {
+    "@cantoo/pdf-lib": "^2.11.1",
     "astro": "^7.4.7",
-    "highs": "^1.15.4"
+    "fflate": "^0.8.3",
+    "highs": "^1.15.4",
+    "pdfjs-dist": "^6.5.438",
+    "utif2": "^4.1.0"
   },
   "devDependencies": {
     "typescript": "^7.0.2"

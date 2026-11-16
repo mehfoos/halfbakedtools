@@ -1,0 +1,72 @@
+---
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { CSP } from "../web/csp.ts";
+// Library versions and licences are read from the installed packages when the site is built, so this list can't go stale.
+const lib = (name: string) => {
+  const p = JSON.parse(readFileSync(join(process.cwd(), "node_modules", name, "package.json"), "utf8"));
+  return { name, version: p.version as string, licence: p.license as string };
+};
+const libs = [
+  { ...lib("pdfjs-dist"), what: "PDF.js, Mozilla's PDF reader (the one inside Firefox). Shows the page previews, draws pages as images and reads their text." },
+  { ...lib("@cantoo/pdf-lib"), what: "pdf-lib (a maintained fork). Writes the new PDFs: copies, reorders, rotates and resizes pages, and places images on pages." },
+  { ...lib("fflate"), what: "Packs several output files into one .zip file." },
+  { ...lib("utif2"), what: "Reads and writes TIFF images." },
+];
+const repo = "https://github.com/mehfoos/halfbakedtools/blob/main/tools/pdf-tools";
+---
+<ToolLayout slug="pdf-tools" page="methods">
+  <h1>Methods and limits</h1>
+
+  <h2>Your files are not uploaded</h2>
+  <p>Most online PDF tools send your file to a company's computer, change it there and send it back. This one doesn't. When you choose a file, your browser reads it into the page's memory, the code on this page changes it there, and the result is handed back to you as a download made inside the page. Closing or reloading the tab discards everything.</p>
+  <p>You don't have to take that on trust. Three things back it up:</p>
+  <ul class="prose">
+    <li><strong>There is nowhere to upload to.</strong> This site is a set of fixed files served by GitHub Pages. It has no server program that could receive or store a file.</li>
+    <li><strong>The browser is told to block it.</strong> The tool page carries a security policy (a Content-Security-Policy) that makes your browser refuse any connection from the page to any other site, and any form submission. This also covers the libraries listed below: if one of them tried to send data elsewhere, the browser would stop it. The policy is: <code>{CSP}</code></li>
+    <li><strong>The code is open and tested for it.</strong> All of the tool's <a href={`${repo}/web`}>source code</a> is public, and an <a href={`${repo}/web/privacy.test.ts`}>automated check</a> fails, and stops the site being published, if the tool's own code ever contains a way of sending data over the network or loses the policy above.</li>
+  </ul>
+  <p>To check for yourself: open your browser's developer tools (F12), choose the Network tab, then use the tool. You will see the page's own files being fetched from this site, and nothing being sent. Or load the page, add a file to check the previews work, switch off your internet connection, and carry on. One caveat for working offline: a few parts are fetched from this site only when first needed (TIFF support, and extra fonts and decoders for some unusual PDFs), so those can fail offline if you haven't used them yet.</p>
+  <p>Two honest limits to this promise. It covers this page, not your device: browser extensions and other software on your computer can see what you open, as with any website. And like any website, GitHub, which hosts the site, sees that your browser requested the page (your internet address and the time), though never your files. See the <a href={`${import.meta.env.BASE_URL}privacy/`}>privacy page</a>.</p>
+
+  <h2>How it works</h2>
+  <ul class="prose">
+    <li><strong>Arranging, merging, splitting and extracting.</strong> Pages are copied into a new PDF exactly as they are. Text stays as text, and pictures are not compressed again, so nothing loses quality. Only the order, rotation and size of pages change.</li>
+    <li><strong>Turning pages.</strong> A turn is recorded as the page's rotation setting, added to any rotation the file already had. The page's contents are not redrawn.</li>
+    <li><strong>Resizing.</strong> The paper size and everything on the page are scaled by the same percentage, so the page looks the same, only larger or smaller.</li>
+    <li><strong>Pages to images.</strong> Each page is drawn at the detail you choose (dots per inch) and saved as a picture. PNG, TIFF and BMP keep every pixel; JPEG and WebP make smaller files by discarding fine detail, more so at lower quality.</li>
+    <li><strong>Pages to text.</strong> The words are read out of the PDF in the order the file stores them.</li>
+    <li><strong>Images to PDF.</strong> Each image becomes one page, sized from its pixels and the dots-per-inch setting. JPEG files are placed in the PDF unchanged. PNG files keep every pixel. Other formats are converted to PNG first, which also keeps every pixel. A phone photo's orientation note is respected, so photos come out the right way up.</li>
+    <li><strong>The settings file.</strong> It lists each file you added (name, size and a SHA-256 checksum, which is a fingerprint of the file's contents) and every page of your arrangement (which file and page it came from, its rotation and its size), plus your save options. It contains no document content and no passwords. When you load it and add the files again, they are matched by fingerprint, so a renamed copy still matches and a changed file doesn't.</li>
+  </ul>
+
+  <h2>Software used</h2>
+  <p>These open-source libraries are bundled into the site and served from it; nothing is loaded from another site.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Library</th><th>Version</th><th>Licence</th><th>Used for</th></tr></thead>
+    <tbody>{libs.map((l) => <tr><td><code>{l.name}</code></td><td>{l.version}</td><td>{l.licence}</td><td>{l.what}</td></tr>)}</tbody>
+  </table></div>
+
+  <h2>What has been checked</h2>
+  <ul class="prose">
+    <li><strong>Checked by automated tests</strong> on every change: page-range typing, every page edit, the split plans, the settings file (including rejecting damaged files), and the written PDFs (page order, repeated pages, rotation, resizing, images placed as pages). See the <a href={`${repo}/VERIFICATION.md`}>verification log</a>.</li>
+    <li><strong>Run end to end in one browser so far</strong> (Chrome on a computer, 16 November 2026, with small test files): every feature above, and that the browser blocked a deliberate attempt to contact another site. Firefox, Safari and phones are <strong>not yet checked</strong>, and nor are large or complicated real-world PDFs.</li>
+    <li><strong>Not yet checked against a source:</strong> the tool relies on one fixed number, that a PDF's unit of length (a point) is 1/72 of an inch. That comes from the PDF standard, a copy of which has not yet been archived in this site's repository, so no reference is given here yet.</li>
+  </ul>
+
+  <h2>Limits</h2>
+  <ul class="prose">
+    <li><strong>Not built yet:</strong> compressing PDFs; resizing the pictures inside scanned PDFs; editing text and pictures within a page; converting to and from Word, PowerPoint, Excel and web pages; text files to PDF; saving pages as SVG drawings. These are planned; see the <a href={`${repo}/ROADMAP.md`}>roadmap</a>.</li>
+    <li><strong>Things a new PDF doesn't keep.</strong> Saved PDFs are made of copied pages. Parts of a PDF that belong to the whole document rather than to a page may be lost or stop working: bookmarks (the outline), fillable form fields, attached files, and the document's title and author. Links that jump to another page may stop working.</li>
+    <li><strong>Digital signatures</strong> are invalidated by any change, as they are meant to be.</li>
+    <li><strong>Password-protected PDFs</strong> can be opened if you know the password, but the PDFs you save are not password-protected. The same goes for PDFs their author has locked against changes or copying: saved copies don't carry the lock. Only work on files you have the right to change.</li>
+    <li><strong>Removing a page is not redaction of a page's contents.</strong> A removed page is truly absent from the saved PDF, but this tool can't yet remove words or pictures from within a page.</li>
+    <li><strong>Scans have no text.</strong> A scanned page is a photograph of text. This tool does not do text recognition (OCR), so saving such pages as text gives nothing.</li>
+    <li><strong>Text order and layout.</strong> Saved text has no columns, tables or formatting, and can come out in an odd order for pages with complex layouts.</li>
+    <li><strong>Images.</strong> Only the first image in a multi-image TIFF is used. An SVG drawing is placed as a picture at its stated size, not as a scalable drawing. Animated images use one frame. Saved TIFF and BMP files are uncompressed and large.</li>
+    <li><strong>Large files.</strong> Everything is held in your device's memory. Very large PDFs, or saving many pages as high-detail images, can be slow or fail, especially on phones.</li>
+    <li><strong>Unusual or damaged PDFs</strong> may fail to open, or show a preview that differs slightly from other PDF viewers.</li>
+  </ul>
+  <p>Found a file that comes out wrong? Please <a href="https://github.com/mehfoos/halfbakedtools/issues">report it</a>, without attaching anything private.</p>
+</ToolLayout>
