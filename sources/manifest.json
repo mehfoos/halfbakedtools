@@ -89,6 +89,20 @@
     "retrieved": "2026-11-10",
     "sha256": "303e37625ff2a7531e6f63d3f3017f133458855c957e15564a2a38a098052db2"
   },
+  "nhs-fish-and-shellfish.html": {
+    "source": "nhs-fish",
+    "url": "https://www.nhs.uk/live-well/eat-well/food-types/fish-and-shellfish-nutrition/",
+    "finalUrl": "https://www.nhs.uk/live-well/eat-well/food-types/fish-and-shellfish-nutrition/",
+    "retrieved": "2026-11-17",
+    "sha256": "045064998d92f6e619d3fe61674bf07a5aed21ffc399cf7e15f78626637dbecd"
+  },
+  "nhs-fish-and-shellfish.pdf": {
+    "source": "nhs-fish",
+    "url": "https://www.nhs.uk/live-well/eat-well/food-types/fish-and-shellfish-nutrition/",
+    "finalUrl": "https://www.nhs.uk/live-well/eat-well/food-types/fish-and-shellfish-nutrition/",
+    "retrieved": "2026-11-17",
+    "sha256": "8f51ad6d17263598abd8b01942d0e9968a327512cd063f20c32c7475a8ff96c7"
+  },
   "nhs-iodine.html": {
     "source": "nhs-iodine",
     "url": "https://www.nhs.uk/conditions/vitamins-and-minerals/iodine/",
@@ -102,6 +116,20 @@
     "finalUrl": "https://www.nhs.uk/conditions/vitamins-and-minerals/iodine/",
     "retrieved": "2026-11-10",
     "sha256": "77e3b0fd4eabc6e7f9a8854ec656fbc6f8fe3348f4b285a38459df61b344bed4"
+  },
+  "nhs-meat-in-your-diet.html": {
+    "source": "nhs-meat",
+    "url": "https://www.nhs.uk/live-well/eat-well/food-types/meat-nutrition/",
+    "finalUrl": "https://www.nhs.uk/live-well/eat-well/food-types/meat-nutrition/",
+    "retrieved": "2026-11-17",
+    "sha256": "6c4305f589dc2614a4b80fe36385fb49f17762b6084a7cda10a8daa9d9aeb0c3"
+  },
+  "nhs-meat-in-your-diet.pdf": {
+    "source": "nhs-meat",
+    "url": "https://www.nhs.uk/live-well/eat-well/food-types/meat-nutrition/",
+    "finalUrl": "https://www.nhs.uk/live-well/eat-well/food-types/meat-nutrition/",
+    "retrieved": "2026-11-17",
+    "sha256": "36478a94f805bc3a276e97284444eec18c518f74ff3b3de35b211681e36b0814"
   },
   "nhs-vegan-diet.html": {
     "source": "nhs-vegan",
@@ -198,6 +226,13 @@
     "finalUrl": "https://vuir.vu.edu.au/42522/1/sports-07-00177.pdf",
     "retrieved": "2026-11-15",
     "sha256": "e5fdd58cf4e1a7b4bd6406a0a7af1c4e048f092d578f1a4fde3ff8600c4784bb"
+  },
+  "usda-sr-legacy-documentation.pdf": {
+    "source": "usda-sr-doc",
+    "url": "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf",
+    "finalUrl": "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf",
+    "retrieved": "2026-11-17",
+    "sha256": "fdc33442adb5707d448676e92b54f9adeaad63b6df267b683b5fe728307391cf"
   },
   "who-2007-trs-935.pdf": {
     "source": "who-2007",
