@@ -100,3 +100,34 @@ test("LP text has no exponent notation", () => {
   const tiny = food("T", { energy: 1, protein: 0.0000001, vitaminC: 0 });
   assert.doesNotMatch(buildLp({ foods: [tiny, A], targets, energyLow: 0, energyHigh: 10, maxIngredients: 1, options: 1 }), /\de[-+]\d/);
 });
+
+test("targets set as a share of energy follow the plan's own calories", async () => {
+  // Fixture: FAT is pure fat (900 kcal/100 g), CARB is fat-free (400 kcal/100 g). Limit: fat at most 35% of energy.
+  const FAT = food("FAT", { energy: 900, fat: 100, protein: 0 });
+  const CARB = food("CARB", { energy: 400, fat: 0, protein: 5 });
+  const [fat] = resolveTargets({ fat: { max: { value: 35, basis: "pctEnergy", source: "x" } } }, nutrients, 2000, 70, "uk");
+  assert.ok(Math.abs(fat.maxPerKcal! - 0.35 / 9) < 1e-12);
+  // Protein can only come from CARB; the calorie band is wide. Whatever calories the plan lands on,
+  // fat must stay within 35% of *those* calories.
+  for (const [lo, hi] of [[1000, 3000], [1500, 1600], [2400, 2600]]) {
+    const [p] = await plan({ foods: [FAT, CARB], targets: [fat, { key: "protein", label: "Protein", unit: "g", min: 10 }],
+      energyLow: lo, energyHigh: hi, maxIngredients: 2, options: 1 }, solve, keys);
+    assert.ok(p, `a plan exists for ${lo}-${hi}`);
+    assert.ok(p.totals.fat * 9 <= 0.35 * p.energy + 1e-6, `fat ${p.totals.fat} g in ${p.energy} kcal`);
+  }
+});
+
+test("a minimum set as a share of energy is measured against the plan's calories", async () => {
+  const CARB = food("CARB", { energy: 400, carbohydrate: 100 });
+  const OIL = food("OIL", { energy: 900, carbohydrate: 0 });
+  const [carb] = resolveTargets({ carbohydrate: { min: { value: 50, basis: "pctEnergy", source: "x" } } }, [...nutrients, { key: "carbohydrate", label: "Carbohydrate", unit: "g" }], 2000, 70, "eu");
+  const [p] = await plan({ foods: [CARB, OIL], targets: [carb], energyLow: 1800, energyHigh: 2200, maxIngredients: 2, options: 1 }, solve, [...keys, "carbohydrate"]);
+  assert.ok(p.totals.carbohydrate * 4 >= 0.5 * p.energy - 1e-6);
+  assert.equal(p.score, 0);
+});
+
+test("a custom target is an absolute amount", () => {
+  const [fat] = resolveTargets({ fat: { max: { value: 35, basis: "pctEnergy", source: "x" } } }, nutrients, 2000, 70, "uk", { fat: { max: 60 } });
+  assert.equal(fat.max, 60);
+  assert.equal(fat.maxPerKcal, undefined);
+});

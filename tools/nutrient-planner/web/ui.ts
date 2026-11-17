@@ -130,7 +130,9 @@ export async function start(root: HTMLElement) {
       const off = official.get(t.key)?.[bound];
       return `<input type="number" step="any" min="0" data-key="${t.key}" data-bound="${bound}" aria-label="${esc(t.label)} ${bound === "min" ? "minimum" : "maximum"}" value="${o ?? ""}" placeholder="${off !== undefined ? fmt(off) : "none"}" />`;
     };
-    const range = (t?: ResolvedTarget) => t ? [t.min !== undefined ? `≥ ${fmt(t.min)}` : "", t.max !== undefined ? `≤ ${fmt(t.max)}` : ""].filter(Boolean).join(", ") || "–" : "–";
+    const range = (t?: ResolvedTarget) => t ? ([t.min !== undefined ? `≥ ${fmt(t.min)}` : "", t.max !== undefined ? `≤ ${fmt(t.max)}` : ""].filter(Boolean).join(", ") || "–")
+      + (t.minPerKcal !== undefined || t.maxPerKcal !== undefined ? " *" : "") : "–";
+    const midKcal = Math.round((band().low + band().high) / 2).toLocaleString("en-GB");
     const notes: Record<string, string> = { amino: isAdult(s.age) ? `Amino acid safe intakes per kg of body weight (WHO 2007 ${cite("who-2007")}) worked out for ${weight()} kg.` : "Amino acid targets are given for adults only." };
     $(root, "#targetGroups").innerHTML = GROUPS.map((g) => {
       const ts = current.filter((t) => g.keys.includes(t.key));
@@ -141,7 +143,7 @@ export async function start(root: HTMLElement) {
         <thead><tr><th>Nutrient</th><th class="num">Official</th><th>Your minimum</th><th>Your maximum</th></tr></thead><tbody>
         ${ts.map((t) => `<tr><td>${esc(t.label)} <span class="muted">${esc(t.unit)}</span>${t.custom ? '<span class="badge">custom</span>' : ""}</td>
           <td class="num">${range(official.get(t.key))}</td><td>${input(t, "min")}</td><td>${input(t, "max")}</td></tr>`).join("")}
-        </tbody></table></div></div></details>`;
+        </tbody></table></div>${ts.some((t) => t.minPerKcal !== undefined || t.maxPerKcal !== undefined) ? `<p class="small muted sans">* Set as a share of energy. Shown here for ${midKcal} kcal (the middle of your calorie range); each plan is checked against its own calories.</p>` : ""}</div></details>`;
     }).join("");
   }
 
@@ -314,8 +316,8 @@ export async function start(root: HTMLElement) {
   };
   const target = (r: Row) => [r.min !== undefined ? `≥ ${fmt(r.min)}` : "", r.max !== undefined ? `≤ ${fmt(r.max)}` : ""].filter(Boolean).join(", ") || "–";
   const tableHtml = (rows: Row[]) => `<div class="table-scroll"><table><thead><tr><th>Nutrient</th><th class="num">Amount</th><th class="num">Target</th><th></th></tr></thead><tbody>${
-    rows.map((r) => `<tr><td>${esc(r.label)}${r.custom ? '<span class="badge">custom</span>' : ""}</td><td class="num">${fmt(r.value)} <span class="muted">${esc(r.unit)}</span></td><td class="num muted">${target(r)}</td><td>${chip(r)}</td></tr>`).join("")
-  }</tbody></table></div>`;
+    rows.map((r) => `<tr><td>${esc(r.label)}${r.custom ? '<span class="badge">custom</span>' : ""}</td><td class="num">${fmt(r.value)} <span class="muted">${esc(r.unit)}</span></td><td class="num muted">${target(r)}${r.ofEnergy ? " *" : ""}</td><td>${chip(r)}</td></tr>`).join("")
+  }</tbody></table></div>${rows.some((r) => r.ofEnergy) ? `<p class="small muted sans">* Set as a share of energy, so worked out for this day's calories.</p>` : ""}`;
 
   // ---------- other standards' targets, for comparison on the charts
   const OVERLAY_STYLE: Record<string, { color: string; dash: string }> = {
@@ -323,8 +325,9 @@ export async function start(root: HTMLElement) {
   };
   const others = () => standards.filter((x) => x.status === "available" && x.id !== std().id);
   const overlays = (): Overlay[] => (s.compare ? others().map((x) => ({ id: x.id, label: x.name, ...OVERLAY_STYLE[x.id] })) : []);
-  function otherTargets() {
-    const b = band(), mid = (b.low + b.high) / 2;
+  // Targets tied to energy are worked out for the day's own calories, like the main standard's.
+  function otherTargets(dayKcal = 0) {
+    const b = band(), mid = dayKcal > 0 ? dayKcal : (b.low + b.high) / 2;
     return others().map((x) => {
       const p = pickProfile(x, s.sex, s.age, s.life).profile;
       const t = new Map(resolveTargets(p.targets, data.nutrients, mid, weight(), x.id, {}, s.age).map((r) => [r.key, r]));
@@ -342,7 +345,7 @@ export async function start(root: HTMLElement) {
   }
 
   function axesFor(rep: Report, keys: string[]): Axis[] {
-    const cmp = otherTargets();
+    const cmp = otherTargets(rep.energy);
     return keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined)
       .map((r) => withOthers({ label: SHORT_LABEL[r.key] ?? r.label, pct: r.pctOfMin!, kind: "min" as const, ok: r.status === "met", detail: `${fmt(r.value)} of ${fmt(r.min)} ${r.unit}` }, r.key, r.min, "min", cmp));
   }
@@ -353,7 +356,7 @@ export async function start(root: HTMLElement) {
   const ADULT_RI: Record<string, number> = { fat: 70, satfat: 20, carbohydrate: 260, sugars: 90, protein: 50, salt: 6 };
   function overviewAxes(rep: Report): Axis[] {
     const b = band();
-    const cmp = otherTargets();
+    const cmp = otherTargets(rep.energy);
     const e = rep.energy, mid = (b.low + b.high) / 2;
     const axes: Axis[] = [withOthers({ label: "Energy", pct: (e / mid) * 100, kind: "range", ok: e >= b.low && e <= b.high,
       detail: `${fmt(e)} kcal; target range ${fmt(b.low)}–${fmt(b.high)}` }, "energy", mid, "min", cmp)];

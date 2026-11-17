@@ -1,6 +1,6 @@
 // Turns a day's food into a per-nutrient report against the targets, grouped
 // for display (overview, vitamins, minerals, amino acids, fats and limits).
-import type { Food, ResolvedTarget } from "./solver.ts";
+import { boundsAt, type Food, type ResolvedTarget } from "./solver.ts";
 
 export const GROUPS: { id: string; title: string; keys: string[] }[] = [
   { id: "macros", title: "Energy and macronutrients", keys: ["energy", "protein", "carbohydrate", "sugars", "fibre", "fat", "satfat", "salt", "sodium"] },
@@ -19,6 +19,7 @@ export const SHORT_LABEL: Record<string, string> = {
 export type Row = {
   key: string; label: string; unit: string; value: number;
   min?: number; max?: number; custom?: boolean;
+  ofEnergy?: boolean;       // the target is a share of the day's energy
   pctOfMin?: number;        // share of the minimum reached
   pctOfMax?: number;        // share of the upper limit used
   status: "met" | "short" | "low" | "over" | "within" | "info" | "unassessed";
@@ -55,16 +56,19 @@ export function analyse(
     const value = sums[key] ?? 0;
     const row: Row = { key, label: meta.label, unit: meta.unit, value, status: "info" };
     if (t) {
-      row.min = t.min; row.max = t.max; row.custom = t.custom;
+      // targets tied to energy (% of energy, per MJ) are judged against this day's own calories
+      const b = boundsAt(t, sums.energy ?? 0);
+      row.min = b.min; row.max = b.max; row.custom = t.custom;
+      row.ofEnergy = t.minPerKcal !== undefined || t.maxPerKcal !== undefined;
       if (notAssessed.has(key)) row.status = "unassessed";
       else {
-        if (t.min && t.min > 0) {
-          row.pctOfMin = (value / t.min) * 100;
+        if (b.min && b.min > 0) {
+          row.pctOfMin = (value / b.min) * 100;
           row.status = row.pctOfMin >= 99.5 ? "met" : row.pctOfMin >= 66 ? "short" : "low";
         }
-        if (t.max !== undefined && t.max > 0) {
-          row.pctOfMax = (value / t.max) * 100;
-          if (value > t.max * 1.001) row.status = "over";
+        if (b.max !== undefined && b.max > 0) {
+          row.pctOfMax = (value / b.max) * 100;
+          if (value > b.max * 1.001) row.status = "over";
           else if (row.status === "info") row.status = "within";
         }
       }

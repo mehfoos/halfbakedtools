@@ -22,6 +22,13 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   value changed. Before this, carbohydrate was overstated by the amount of fibre (about 50 g a day in a typical
   suggested plan). Not yet done: USDA's own documentation of "by difference" is not yet archived (chunk 8).
 
+- **Targets set as a share of energy now follow the day's own calories.** Fat, saturated fat and carbohydrate limits
+  (% of energy), EU linoleic and alpha-linolenic acid (% of energy) and EU thiamin and niacin (per MJ) were worked
+  out once, for the middle of the calorie range, and applied as fixed gram amounts. A plan at the low end of the range
+  could then exceed the percentage while showing as within it (seen: a US plan with 38% of energy from fat shown as
+  exactly on the 35% limit). The optimiser and the reports now use each plan's actual calories. A custom target typed
+  by the visitor stays an absolute amount.
+
 ## Changes made on 10 Nov 2026
 
 - **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of

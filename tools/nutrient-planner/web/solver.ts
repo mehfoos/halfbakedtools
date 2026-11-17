@@ -29,6 +29,10 @@ export type Food = {
 export type ResolvedTarget = {
   key: string; label: string; unit: string;
   min?: number; max?: number;
+  // Set when the source gives the target as a share of energy (% of energy, or per MJ): the amount per kcal.
+  // min/max then hold the amount at the middle of the calorie range (for display); a plan is judged
+  // against its own calories.
+  minPerKcal?: number; maxPerKcal?: number;
   minSource?: string; maxSource?: string;
   custom?: boolean;
 };
@@ -53,25 +57,40 @@ export function resolveTargets(
     const v = age !== undefined && b.byAge?.[String(Math.floor(age))] !== undefined ? b.byAge[String(Math.floor(age))] : b.value;
     if (b.basis === "abs") return v;
     if (b.basis === "perKg") return (v * weightKg) / 1000 + (b.extraG ?? 0); // mg/kg -> g/day
-    if (b.basis === "perMJ") return v * energyKcal * 0.004184;              // per MJ of energy
+    return energyKcal * perKcal(key, b)!;
+  };
+  /** Amount per kcal for targets tied to energy; undefined for the rest. */
+  const perKcal = (key: string, b: Bound) => {
+    const v = age !== undefined && b.byAge?.[String(Math.floor(age))] !== undefined ? b.byAge[String(Math.floor(age))] : b.value;
+    if (b.basis === "perMJ") return v * 0.004184;
+    if (b.basis !== "pctEnergy") return undefined;
     // PHE converts carbohydrate energy at 3.75 kcal/g; others use 4.
     const perG = key === "carbohydrate" && standardId === "uk" ? 3.75 : KCAL_PER_G[key] ?? 4;
-    return (energyKcal * v) / 100 / perG;
+    return v / 100 / perG;
   };
   for (const [key, spec] of Object.entries(specs)) {
     const def = byKey.get(key);
     if (!def) continue;
     const t: ResolvedTarget = { key, label: def.label, unit: def.unit };
-    if (spec.min) { t.min = toAbs(key, spec.min); t.minSource = spec.min.source; }
-    if (spec.max) { t.max = toAbs(key, spec.max); t.maxSource = spec.max.source; }
+    if (spec.min) { t.min = toAbs(key, spec.min); t.minSource = spec.min.source; t.minPerKcal = perKcal(key, spec.min); }
+    if (spec.max) { t.max = toAbs(key, spec.max); t.maxSource = spec.max.source; t.maxPerKcal = perKcal(key, spec.max); }
     const o = overrides[key];
     if (o) {
-      if (o.min !== undefined) { t.min = o.min ?? undefined; t.custom = true; }
-      if (o.max !== undefined) { t.max = o.max ?? undefined; t.custom = true; }
+      // a custom value is an absolute amount, so it no longer follows the plan's calories
+      if (o.min !== undefined) { t.min = o.min ?? undefined; t.minPerKcal = undefined; t.custom = true; }
+      if (o.max !== undefined) { t.max = o.max ?? undefined; t.maxPerKcal = undefined; t.custom = true; }
     }
     if (t.min !== undefined || t.max !== undefined) out.push(t);
   }
   return out;
+}
+
+/** A target's minimum and maximum for a day with this many calories. */
+export function boundsAt(t: ResolvedTarget, energyKcal: number): { min?: number; max?: number } {
+  return {
+    min: t.minPerKcal !== undefined && energyKcal > 0 ? t.minPerKcal * energyKcal : t.min,
+    max: t.maxPerKcal !== undefined && energyKcal > 0 ? t.maxPerKcal * energyKcal : t.max,
+  };
 }
 
 /**
@@ -128,19 +147,29 @@ export function buildLp(input: PlanInput, forbidden: string[][] = []): string {
     obj.push(`${num(1e-6 * stepGrams(f))} n${i}`);
     obj.push(`0.0001 y${i}`);
   });
-  targets.forEach((t, j) => { if (t.min && t.min > 0) obj.push(`${num(1 / t.min)} s${j}`); });
+  // Shortfalls are relative to the target. For a target tied to energy the shortfall is measured against
+  // the plan's own calories; its weight uses the middle of the calorie range (the objective must be linear).
+  const eMid = (input.energyLow + input.energyHigh) / 2;
+  targets.forEach((t, j) => { if (t.min && t.min > 0) obj.push(`${num(1 / (t.minPerKcal !== undefined ? t.minPerKcal * eMid : t.min))} s${j}`); });
 
   lines.push("Minimize", " obj: " + obj.join(" + "), "Subject To");
   const coef = (f: Food, key: string) => ((f.per100g[key] ?? 0) * stepGrams(f)) / 100;
-  const row = (key: string) => foods
-    .map((f, i) => [coef(f, key), i] as const)
+  // Σ (nutrient − perKcal × energy) × amount: zero when the day's nutrient is exactly its share of the day's energy.
+  const row = (key: string, perKcal = 0) => foods
+    .map((f, i) => [coef(f, key) - perKcal * coef(f, "energy"), i] as const)
     .filter(([c]) => Math.abs(c) > 1e-12)
     .map(([c, i]) => `${num(c)} n${i}`);
+  const sum = (r: string[]) => r.join(" + ").replace(/\+ -/g, "- ");
 
   targets.forEach((t, j) => {
-    const r = row(t.key);
-    if (t.min && t.min > 0) lines.push(` min${j}: ${[...r, `s${j}`].join(" + ")} >= ${num(t.min)}`);
-    if (t.max !== undefined && r.length) lines.push(` max${j}: ${r.join(" + ")} <= ${num(t.max)}`);
+    if (t.min && t.min > 0) {
+      if (t.minPerKcal !== undefined) lines.push(` min${j}: ${sum([...row(t.key, t.minPerKcal), `s${j}`])} >= 0`);
+      else lines.push(` min${j}: ${sum([...row(t.key), `s${j}`])} >= ${num(t.min)}`);
+    }
+    if (t.max !== undefined) {
+      const r = t.maxPerKcal !== undefined ? row(t.key, t.maxPerKcal) : row(t.key);
+      if (r.length) lines.push(` max${j}: ${sum(r)} <= ${t.maxPerKcal !== undefined ? "0" : num(t.max)}`);
+    }
   });
   const e = row("energy");
   lines.push(` elo: ${e.join(" + ")} >= ${num(input.energyLow)}`);
@@ -155,7 +184,7 @@ export function buildLp(input: PlanInput, forbidden: string[][] = []): string {
 
   lines.push("Bounds");
   foods.forEach((f, i) => lines.push(` 0 <= n${i} <= ${maxSteps(f)}`));
-  targets.forEach((t, j) => { if (t.min && t.min > 0) lines.push(` 0 <= s${j} <= ${num(t.min)}`); });
+  targets.forEach((t, j) => { if (t.min && t.min > 0) lines.push(` 0 <= s${j} <= ${num(t.minPerKcal !== undefined ? t.minPerKcal * input.energyHigh : t.min)}`); });
   lines.push("General", " " + foods.map((_, i) => `n${i}`).join(" "));
   lines.push("Binary", " " + foods.map((_, i) => `y${i}`).join(" "));
   lines.push("End");
@@ -177,7 +206,10 @@ export function totalsFor(items: { food: Food; grams: number }[], keys: string[]
 }
 
 export function shortfallScore(targets: ResolvedTarget[], totals: Record<string, number>) {
-  return targets.reduce((s, t) => (t.min && t.min > 0 ? s + Math.max(0, 1 - (totals[t.key] ?? 0) / t.min) : s), 0);
+  return targets.reduce((s, t) => {
+    const min = boundsAt(t, totals.energy ?? 0).min;
+    return min && min > 0 ? s + Math.max(0, 1 - (totals[t.key] ?? 0) / min) : s;
+  }, 0);
 }
 
 /** Find up to `options` distinct plans. Returns [] if the constraints cannot all be met. */
