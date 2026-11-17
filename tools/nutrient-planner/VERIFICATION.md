@@ -69,6 +69,11 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   UK's. Dried pulses and uncooked grains are labelled "dry (uncooked weight)". Daily caps lowered for powders (30 g),
   breadcrumbs and crackers (60 g) and condensed milk (40 g). Coconut cream is now classed as vegan.
 
+- **UK folate note added:** the food data's folate unit overstates folic-acid-fortified foods against the UK target
+  (National Academies vitamins table, footnote f). No numbers changed.
+- **Not done: EU sodium.** The EU standard still borrows the US sodium limit. EFSA's 2019 sodium opinion could not be
+  downloaded automatically (publisher returns 403), so it has not been checked or used.
+
 ## Changes made on 10 Nov 2026
 
 - **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of

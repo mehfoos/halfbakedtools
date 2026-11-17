@@ -283,6 +283,7 @@ def build_uk() -> dict:
         "sources": [ref("phe-2016"), ref("nasem-dri", "Safety upper limits (the UK has no complete set)"), ref("who-2007", "Amino acids")],
         "notes": [
             "The UK target is in retinol equivalents; the food data is in retinol activity equivalents, which count carotenes from plants at half the value (US tables, vitamin A footnote). So vitamin A from plant foods is understated against this target, by up to half; vitamin A from animal foods is unaffected.",
+            "Folate: the food data is in dietary folate equivalents, which count folic acid added to foods at about 1.7 times its weight (1 equivalent = 0.6 µg of added folic acid; US tables, folate footnote). The UK target is in plain micrograms, so foods fortified with folic acid are overstated against it; unfortified foods are unaffected.",
             "Free sugars (limit 5% of energy) are not assessed because food databases do not separate free from intrinsic sugars.",
             "Children under 5 are advised to take vitamin A, C and D supplements; women who could become pregnant are advised to take 400 µg folic acid daily.",
         ],
