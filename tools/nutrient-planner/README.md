@@ -26,6 +26,8 @@ pipeline/             Python (standard library only)
   auto_foods.py       rules for adding the other USDA foods (categories, UK names, portion caps)
   nutrients.json      nutrient keys ↔ USDA nutrient ids
   check_age.py        is the snapshot due for a refresh?
+  crosswalk/          links from planner foods to records in other food tables (UK CoFID, ...), reviewed by
+                      hand; method in crosswalk/README.md. Not merged into foods.json yet
 ```
 
 ## Code map (`web/`)
