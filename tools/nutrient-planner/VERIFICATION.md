@@ -59,6 +59,11 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   65–74. Example: woman aged 35, 2,000 → 1,815 kcal. EFSA gives none for 80+, so the 70–79 value is used and
   the page says so.
 
+- **Pregnancy and children:** liver and liver products are left out of suggestions in pregnancy, and swordfish
+  (the only one of shark, swordfish and marlin in the food data) in pregnancy and under 16, per the archived NHS meat
+  and fish pages. Children's portion limits are scaled by calories (a rule of thumb, not an official figure), and a
+  warning is shown for under-18s, stronger for under-5s (PHE Table 3 and 5 notes).
+
 ## Changes made on 10 Nov 2026
 
 - **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of

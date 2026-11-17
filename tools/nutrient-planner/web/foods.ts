@@ -54,3 +54,31 @@ export function matches(f: PlannerFood, query: string) {
  * a day in total (NHS "Fish and shellfish": a portion is around 140 g; weekly limits apply on top).
  */
 export const GROUP_CAPS: Record<string, number> = { "oily-fish": 140 };
+
+/**
+ * Foods the NHS says a group should not eat. Suggestions leave them out; the builder warns.
+ *  - liver and liver products: pregnant women should avoid them (NHS "Meat in your diet");
+ *  - shark, swordfish and marlin: not if pregnant, and not for children under 16 (NHS "Fish and shellfish").
+ */
+export function avoidReason(f: { usdaName: string }, who: { age: number; life: string }): { text: string; ref: string } | null {
+  const name = f.usdaName.toLowerCase();
+  if (who.life === "pregnancy" && /\bliver\b|\bpate\b|pâté|liverwurst|braunschweiger/.test(name))
+    return { text: "The NHS advises pregnant women to avoid liver and liver products, which are very high in vitamin A.", ref: "nhs-meat" };
+  if (/\b(shark|swordfish|marlin)\b/.test(name)) {
+    if (who.life === "pregnancy") return { text: "The NHS advises not eating shark, swordfish or marlin when pregnant or trying to get pregnant.", ref: "nhs-fish" };
+    if (who.age < 16) return { text: "The NHS advises that children under 16 avoid shark, swordfish and marlin.", ref: "nhs-fish" };
+  }
+  return null;
+}
+
+/**
+ * Portion limits for children. The daily caps in the food data are sized for adults, so for under-18s they are
+ * scaled by the child's calories relative to a 2,000 kcal adult day (a planner rule of thumb, not an official figure).
+ */
+export function portionFactor(age: number, kcal: number) {
+  return age < 18 ? Math.min(1, kcal / 2000) : 1;
+}
+export function scaledMax(f: { maxGrams: number; step: number; unitGrams: number }, factor: number) {
+  const step = f.step * f.unitGrams;
+  return factor >= 1 ? f.maxGrams : Math.max(step, Math.floor((f.maxGrams * factor) / step + 1e-9) * step);
+}

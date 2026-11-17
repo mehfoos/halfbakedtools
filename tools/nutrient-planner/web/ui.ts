@@ -2,7 +2,7 @@
 // network requests are for the site's own data files.
 import { resolveTargets, splitAssessable, describeAmount, type Plan, type ResolvedTarget } from "./solver.ts";
 import { pickProfile, isAdult, refWeight, energyFor, type Standard } from "./profiles.ts";
-import { unpack, isOn, setOn, dietOk, matches, GROUP_CAPS, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
+import { unpack, isOn, setOn, dietOk, matches, GROUP_CAPS, avoidReason, portionFactor, scaledMax, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
 import { GROUPS, ORDER, SHORT_LABEL, analyse, totals, type Report, type Row } from "./analysis.ts";
 import { radarSvg, scaleMax, type Axis, type Overlay } from "./radar.ts";
 import { decode, encode, exportFile, forget, fresh, importFile, loadRemembered, remember, DEFAULTS, type Settings } from "./state.ts";
@@ -109,6 +109,10 @@ export async function start(root: HTMLElement) {
       + (v ? `<br>${v.checked ? `<b>Checked</b> against the original document (${esc(v.against)}) on ${esc(new Date(v.date + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }))}.` : `<b>Not yet checked against the original document.</b> ${esc(v.against)}.`}` : "");
     $(root, "#unverified").hidden = !!v?.checked;
     if (v?.pending) $(root, "#sourceLine").innerHTML += ` <b>Not yet checked:</b> ${esc(v.pending)}`;
+    const child = $(root, "#childNote");
+    child.hidden = s.age >= 18;
+    if (s.age < 5) child.innerHTML = `<b>Under 5:</b> treat this as a rough guide only. The UK tables note that reference values for certain nutrients aren't available for children under 5, and that children up to 5 should be given vitamin A, C and D supplements ${cite("phe-2016")}. Suggested amounts are adult portion limits scaled down by calories, and the planner knows nothing about textures, choking risks or foods unsuitable for young children. Ask a health visitor or GP.`;
+    else if (s.age < 18) child.innerHTML = `<b>Planning for a child:</b> suggested amounts are adult portion limits scaled down by the child's calories, which is a rule of thumb. For anything beyond general interest, ask a GP or registered dietitian.`;
     $<HTMLInputElement>(root, "#energyLow").value = String(b.low);
     $<HTMLInputElement>(root, "#energyHigh").value = String(b.high);
     $(root, "#energyNote").textContent = `Recommended: ${energy().low.toLocaleString("en-GB")}–${energy().high.toLocaleString("en-GB")} kcal. ${energy().note}`;
@@ -508,7 +512,10 @@ export async function start(root: HTMLElement) {
     const seen = new Set<string>();
     const out = items.filter((i) => i.food.notes && !seen.has(i.food.notes) && seen.add(i.food.notes))
       .map((i) => esc(i.food.notes) + (i.food.noteRef ? ` ${cite(i.food.noteRef)}` : ""));
-    return out.length ? `<p class="small muted sans">${out.join(" ")}</p>` : "";
+    // warnings for foods this person is advised to avoid (matters in the builder; suggestions leave them out)
+    const warn = [...new Map(items.map((i) => avoidReason(i.food, { age: s.age, life: s.life })).filter((r) => !!r).map((r) => [r!.text, r!])).values()]
+      .map((r) => `<p class="notice bad small"><b>Advised to avoid:</b> ${esc(r.text)} ${cite(r.ref)}</p>`).join("");
+    return warn + (out.length ? `<p class="small muted sans">${out.join(" ")}</p>` : "");
   }
 
   // ---------- 3a. Suggest
@@ -568,10 +575,20 @@ export async function start(root: HTMLElement) {
         worker?.terminate(); worker = null;
       }
     };
+    // Foods the NHS says this person should avoid are left out; children's portion limits are scaled down.
+    const who = { age: s.age, life: s.life };
+    const avoided = foods.filter((f) => avoidReason(f, who));
+    const factor = portionFactor(s.age, (b.low + b.high) / 2);
+    const planFoods = foods.filter((f) => !avoidReason(f, who)).map((f) => (factor < 1 ? { ...f, maxGrams: scaledMax(f, factor) } : f));
+    const caps = Object.fromEntries(Object.entries(GROUP_CAPS).map(([g, v]) => [g, factor < 1 ? Math.max(10, Math.floor((v * factor) / 10) * 10) : v]));
+    if (avoided.length) {
+      const reasons = [...new Map(avoided.map((f) => { const r = avoidReason(f, who)!; return [r.text, r]; })).values()];
+      results.insertAdjacentHTML("beforeend", `<p class="small muted sans">Left out of these suggestions: ${reasons.map((r) => `${esc(r.text)} ${cite(r.ref)}`).join(" ")}</p>`);
+    }
     worker.postMessage({
       // Vitamin D is left to the notice (sunlight and supplements) unless the person asks for it from food.
-      input: { foods, targets: assessable.filter((t) => s.vitaminD || t.key !== "vitaminD"), energyLow: b.low, energyHigh: b.high,
-        maxIngredients: s.n, options: s.options, groupCaps: GROUP_CAPS },
+      input: { foods: planFoods, targets: assessable.filter((t) => s.vitaminD || t.key !== "vitaminD"), energyLow: b.low, energyHigh: b.high,
+        maxIngredients: s.n, options: s.options, groupCaps: caps },
       keys: ORDER,
     });
   });

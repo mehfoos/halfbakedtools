@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { pickProfile, groupRange, energyFor, type Standard } from "./profiles.ts";
 import { resolveTargets } from "./solver.ts";
+import { avoidReason, portionFactor, scaledMax } from "./foods.ts";
 import { decode, encode, fresh } from "./state.ts";
 import { isOn, setOn, type PlannerFood } from "./foods.ts";
 import { analyse } from "./analysis.ts";
@@ -211,4 +212,26 @@ test("EU calories come from EFSA Table 1 for the exact age and sex", () => {
   assert.equal(e("female", 1), 716);     // 3.0 MJ
   assert.equal(e("male", 12), 2173);     // 9.1 MJ, PAL 1.6 (lowest given for ages 10-17)
   assert.equal(e("female", 30, "pregnancy"), 1815);
+});
+
+test("foods the NHS says to avoid: liver in pregnancy; swordfish in pregnancy and under 16", () => {
+  const liver = { usdaName: "Beef, variety meats and by-products, liver, cooked, braised" };
+  const sword = { usdaName: "Fish, swordfish, cooked, dry heat" };
+  const salmon = { usdaName: "Fish, salmon, Atlantic, farmed, cooked, dry heat" };
+  assert.equal(avoidReason(liver, { age: 30, life: "pregnancy" })?.ref, "nhs-meat");
+  assert.equal(avoidReason(liver, { age: 30, life: "none" }), null);
+  assert.equal(avoidReason(liver, { age: 30, life: "lactation" }), null);
+  assert.equal(avoidReason(sword, { age: 30, life: "pregnancy" })?.ref, "nhs-fish");
+  assert.equal(avoidReason(sword, { age: 15, life: "none" })?.ref, "nhs-fish");
+  assert.equal(avoidReason(sword, { age: 16, life: "none" }), null);
+  assert.equal(avoidReason(salmon, { age: 5, life: "none" }), null);
+});
+
+test("children's portion limits are scaled by calories; adults' are not", () => {
+  assert.equal(portionFactor(35, 1500), 1);
+  assert.equal(portionFactor(5, 1400), 0.7);
+  assert.equal(portionFactor(16, 2600), 1);
+  assert.equal(scaledMax({ maxGrams: 300, step: 10, unitGrams: 1 }, 0.7), 210);
+  assert.equal(scaledMax({ maxGrams: 200, step: 0.5, unitGrams: 50 }, 0.33), 50);   // eggs: 200 g x 0.33 = 66 g -> 1 egg
+  assert.equal(scaledMax({ maxGrams: 5, step: 5, unitGrams: 1 }, 0.3), 5);          // never below one step
 });
