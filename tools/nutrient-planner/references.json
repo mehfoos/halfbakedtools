@@ -244,39 +244,26 @@
     {
       "id": "usda-sr-doc",
       "pre": "U.S. Department of Agriculture, Agricultural Research Service, Nutrient Data Laboratory,",
-      "title": "USDA National Nutrient Database for Standard Reference, Legacy (2018): Documentation and User Guide",
+      "title": "Composition of Foods Raw, Processed, Prepared: USDA National Nutrient Database for Standard Reference, Release 28: Documentation and User Guide",
       "style": "italic",
-      "post": "Beltsville, MD, USA, Apr. 2018, revised Jul. 2018.",
-      "url": "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf",
+      "post": "Beltsville, MD, USA, Sep. 2015, revised May 2016. (The 2018 Legacy release's guide refers to this one for how nutrients are defined.)",
+      "url": "https://agdatacommons.nal.usda.gov/articles/dataset/Composition_of_Foods_Raw_Processed_Prepared_USDA_National_Nutrient_Database_for_Standard_Reference_Release_27/25060841",
       "licence": "Public domain (US government work)",
       "usedFor": "How the food data defines carbohydrate and other values",
       "archive": [
         {
-          "file": "usda-sr-legacy-documentation.pdf",
+          "label": "Archived copy (Release 28 guide)",
+          "file": "usda-sr28-documentation.pdf",
           "fetch": [
-            "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf",
-            "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.pdf"
+            "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf",
+            "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR28/sr28_doc.pdf",
+            "https://ndownloader.figshare.com/files/44291228"
           ]
-        }
-      ]
-    },
-    {
-      "id": "efsa-sodium-2019",
-      "pre": "EFSA Panel on Nutrition, Novel Foods and Food Allergens,",
-      "title": "Dietary reference values for sodium",
-      "style": "quoted",
-      "post": "<i>EFSA Journal</i>, vol. 17, no. 9, Art. no. e05778, Sep. 2019, doi: 10.2903/j.efsa.2019.5778.",
-      "url": "https://doi.org/10.2903/j.efsa.2019.5778",
-      "licence": "© EFSA; open access, CC BY-ND 4.0",
-      "usedFor": "EU sodium value",
-      "archive": [
+        },
         {
-          "file": "efsa-2019-sodium.pdf",
-          "fetch": [
-            "https://efsa.onlinelibrary.wiley.com/doi/pdfdirect/10.2903/j.efsa.2019.5778",
-            "https://efsa.onlinelibrary.wiley.com/doi/pdf/10.2903/j.efsa.2019.5778",
-            "https://www.efsa.europa.eu/sites/default/files/2019-09/5778.pdf"
-          ]
+          "label": "Legacy (2018) guide",
+          "file": "usda-sr-legacy-documentation.pdf",
+          "fetch": "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf"
         }
       ]
     }
