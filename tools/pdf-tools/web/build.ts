@@ -2,7 +2,8 @@
 // Pages are copied from the source files as they are (text stays text, images are not re-compressed);
 // only the page order, rotation and size change.
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
-import { placeText, placeImage, parseColor, unsupported, type FontKey, type Mark, type Quarter } from "./marks.ts";
+import { placeText, placeImage, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
+import { numberMark, type NumberOptions } from "./stamps.ts";
 import type { PageItem, Rotation } from "./session.ts";
 
 export type SourceData =
@@ -10,7 +11,9 @@ export type SourceData =
   /** `turn`: degrees clockwise the stored pixels must be turned to look right (a photo's orientation note). */
   | { kind: "image"; bytes: Uint8Array; type: "png" | "jpeg"; turn?: Rotation };
 
-export type BuildOptions = { imageDpi: number };
+export type BuildOptions = { imageDpi: number; numbers?: NumberOptions };
+/** For building one page out of a longer document (a preview): its position, and the document's length. */
+export type Place = { index: number; total: number };
 
 const FONT_NAMES: Record<FontKey, [StandardFonts, StandardFonts]> = {
   sans: [StandardFonts.Helvetica, StandardFonts.HelveticaBold],
@@ -42,7 +45,7 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
     return doc;
   };
 
-  return async function build(pages: PageItem[]): Promise<Uint8Array> {
+  return async function build(pages: PageItem[], place?: Place): Promise<Uint8Array> {
     if (!pages.length) throw new Error("There are no pages to save.");
     const out = await PDFDocument.create();
 
@@ -90,7 +93,7 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
         }
       }
     }
-    for (const p of pages) {
+    for (const [i, p] of pages.entries()) {
       const d = data.get(p.src)!;
       let page;
       if (d.kind === "pdf") page = out.addPage(copies.get(p)!);
@@ -107,6 +110,12 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       if (p.marks?.length) await drawMarks(page, p.marks);
       if (p.rotate) page.setRotation(degrees((page.getRotation().angle + p.rotate) % 360));
       if (p.scale !== 1) page.scale(p.scale, p.scale);
+      // Stamps go on last, placed on the page as it will finally be seen, so they are the same size on every page.
+      if (opts.numbers?.on) {
+        const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
+        const n = numberMark(opts.numbers, (place?.index ?? 0) + i, place?.total ?? pages.length, visibleSize(page.getCropBox(), rotation), fonts(opts.numbers.font, opts.numbers.bold));
+        if (n) await drawMarks(page, [n]);
+      }
     }
     return out.save();
   };

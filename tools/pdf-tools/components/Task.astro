@@ -47,6 +47,10 @@ const policy = import.meta.env.PROD ? CSP : "";
           <div id="edStage" class="stage"><canvas></canvas><div id="edLayer" class="layer"></div></div>
           <p class="small muted sans">Drag an addition to move it; drag a picture's corner square to resize it. With one selected, the arrow keys nudge it and Delete removes it. What you see is the page exactly as it will be saved.</p>
         </div>
+        <div id="preview" class="preview" data-part="preview" hidden>
+          <p class="small sans muted" id="previewNote"></p>
+          <div class="stage"><canvas></canvas></div>
+        </div>
         <div id="gridView">
         <div class="bar sans" role="toolbar" aria-label="Page actions">
           <label class="button small add" for="picker">＋ Add files</label>
@@ -123,6 +127,34 @@ const policy = import.meta.env.PROD ? CSP : "";
           </div>
           <div id="optText">
             <p class="small muted">Words are saved in the order the PDF stores them, which is usually but not always reading order.</p>
+          </div>
+          <div id="optNumbers" data-part="numbers">
+            <p id="nOnRow"><label><input id="nOn" type="checkbox" /> Add page numbers</label></p>
+            <div id="nFields">
+              <p><label class="field">Position
+                <select id="nPos">
+                  <option value="bottom-center">Bottom, centre</option><option value="bottom-right">Bottom, right</option><option value="bottom-left">Bottom, left</option>
+                  <option value="top-center">Top, centre</option><option value="top-right">Top, right</option><option value="top-left">Top, left</option>
+                </select></label></p>
+              <p><label class="field">Style
+                <select id="nStyle">
+                  <option value="n">1</option><option value="n-of-total">1 / 5</option><option value="page-n">Page 1</option><option value="page-n-of-total">Page 1 of 5</option>
+                </select></label></p>
+              <p><label class="field">First number <input id="nStart" type="number" min="0" step="1" inputmode="numeric" /></label></p>
+              <p><label class="field">Start on page <input id="nFrom" type="number" min="1" step="1" inputmode="numeric" /></label><br /><span class="small muted">2 leaves a cover page without a number.</span></p>
+              <details>
+                <summary>Size, margin and typeface</summary>
+                <div class="details-body">
+                  <p><label class="field">Size <input id="nSize" type="number" min="4" max="400" step="1" inputmode="decimal" /> points</label></p>
+                  <p><label class="field">From the edge <input id="nMargin" type="number" min="0" max="400" step="1" inputmode="decimal" /> points</label><br /><span class="small muted">72 points is one inch (2.54 cm).</span></p>
+                  <p><label class="field">Typeface
+                    <select id="nFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option></select></label></p>
+                  <p><label><input id="nBold" type="checkbox" /> Bold</label></p>
+                  <p><label class="field">Colour <input id="nColor" type="color" /></label></p>
+                </div>
+              </details>
+              <p class="small muted">Numbers count within each saved file. They are added on top of the page; if a page already has a number printed there, both will show.</p>
+            </div>
           </div>
           <div id="optProtect" data-part="protect">
             <p><label class="field">Password <input id="pw1" type="password" autocomplete="off" size="16" /></label></p>
@@ -257,6 +289,8 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .props { border: 1px solid var(--navy); border-radius: 6px; padding: 10px; margin-bottom: 12px; background: #f6f7fd; }
     #pdftools .props textarea { width: 100%; font: inherit; padding: 4px; box-sizing: border-box; }
     #pdftools .tile .edit { margin-top: 2px; }
+    #pdftools .preview { max-width: 440px; margin: 0 auto 14px; }
+    #pdftools .preview p { text-align: center; margin: 0 0 4px; }
     #pdftools .result .go-result .big { width: 100%; }
     #pdftools .ask { border-width: 2px; }
     #pdftools .ask p { margin: 0 0 0.5em; }

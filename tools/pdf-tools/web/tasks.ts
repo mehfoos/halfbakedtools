@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "preview";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -54,6 +54,9 @@ export const TASKS: Task[] = [
   { slug: "edit", name: "Edit PDF", blurb: "Add text and pictures to pages: fill in a form, add a note, a date, a signature picture or a logo.", group: "Edit", accept: "both",
     pick: "Select PDF file", hint: "Press ＋ Text or ＋ Picture, then drag it into place. This adds to pages; it can't yet change or remove what is already on them.",
     parts: ["marks"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "edited", tag: "✎" },
+  { slug: "page-numbers", name: "Page numbers", blurb: "Add page numbers to a PDF: choose where they go, how they read, and which page they start on.", group: "Edit", accept: "pdf",
+    pick: "Select PDF files", hint: "Choose the position and style. The preview shows a page exactly as it will be saved.",
+    parts: ["numbers", "preview"], formats: ["pdf"], which: "all", action: "Add page numbers", perFile: true, suffix: "numbered", tag: "1,2" },
   { slug: "compress", name: "Compress PDF", blurb: "Make a PDF smaller by shrinking the pictures inside it. You see the real new size before you download.", group: "Optimise", accept: "pdf",
     pick: "Select PDF files", hint: "Choose how hard to compress, then press Compress to see the new size and a before-and-after preview.",
     parts: ["compress"], formats: ["pdf"], which: "all", action: "Compress PDF", perFile: true, suffix: "compressed", tag: "↓" },
@@ -84,7 +87,7 @@ export const TASKS: Task[] = [
 export const WORKSPACE: Task = {
   slug: "workspace", name: "All-in-one workspace", blurb: "Every tool on one page, for jobs that need several steps: arrange, then split or convert, and save your settings to carry on later.", group: "Organise", accept: "both",
   pick: "Select PDFs or images", hint: "Tick pages to select them, then use the buttons. Drag pages to reorder them.",
-  parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo", "scale", "split", "imageDpi", "compress", "marks"],
+  parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo", "scale", "split", "imageDpi", "compress", "marks", "numbers"],
   formats: ["pdf", "png", "jpeg", "webp", "tiff", "bmp", "txt"], which: "all", action: "Save all pages", suffix: "edited", tag: "ALL",
 };
 
@@ -99,7 +102,7 @@ export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "PDF to Word", tag: "DOC", group: "Convert from PDF" }, { name: "PDF to PowerPoint", tag: "PPT", group: "Convert from PDF" },
   { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" }, { name: "PDF to HTML", tag: "WEB", group: "Convert from PDF" },
   { name: "PDF to Markdown", tag: "MD", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
-  { name: "Page numbers", tag: "1,2", group: "Edit" }, { name: "Watermark", tag: "≋", group: "Edit" }, { name: "Crop PDF", tag: "▢", group: "Edit" },
+  { name: "Watermark", tag: "≋", group: "Edit" }, { name: "Crop PDF", tag: "▢", group: "Edit" },
   { name: "Fill in PDF forms", tag: "☑", group: "Edit" },
   { name: "Sign PDF (draw your signature)", tag: "✍", group: "Security" }, { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
   { name: "Compare PDF", tag: "⇆", group: "Security" },

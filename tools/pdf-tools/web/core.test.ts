@@ -406,3 +406,49 @@ test("settings: no password field exists anywhere in the settings file", () => {
   const s = addSource(emptySession(), { name: "a.pdf", size: 10, sha256: SHA("a"), pages: 1, kind: "pdf" }).session;
   assert.doesNotMatch(serialise(s), /passw/i);
 });
+
+// ---- page numbers ----
+import { numberText, numberMark, cleanNumbers, NO_NUMBERS, type NumberOptions } from "./stamps.ts";
+const NUM: NumberOptions = { ...NO_NUMBERS, on: true };
+test("numbers: text for each style, start number and first numbered page", () => {
+  assert.equal(numberText(NUM, 0, 5), "1"); assert.equal(numberText(NUM, 4, 5), "5");
+  assert.equal(numberText({ ...NUM, style: "n-of-total" }, 1, 5), "2 / 5");
+  assert.equal(numberText({ ...NUM, style: "page-n" }, 2, 5), "Page 3");
+  assert.equal(numberText({ ...NUM, style: "page-n-of-total" }, 4, 5), "Page 5 of 5");
+  // Skip a cover page: page 2 carries "1", and the total counts numbered pages only.
+  const cover = { ...NUM, from: 2, style: "page-n-of-total" as const };
+  assert.equal(numberText(cover, 0, 5), null); assert.equal(numberText(cover, 1, 5), "Page 1 of 4"); assert.equal(numberText(cover, 4, 5), "Page 4 of 4");
+  // Start at another number (a document that continues from an earlier one).
+  assert.equal(numberText({ ...NUM, start: 10, style: "n-of-total" }, 0, 3), "10 / 12");
+});
+test("numbers: placed by corner and margin on the page as seen", () => {
+  const view = { w: 200, h: 300 }, o = { ...NUM, size: 10, margin: 20 };   // FONT: each character is 5 points wide at size 10; the line is 12 high
+  const at = (position: NumberOptions["position"]) => { const m = numberMark({ ...o, position }, 0, 9, view, FONT)!; return [m.x, m.y]; };
+  assert.deepEqual(at("bottom-center"), [97.5, 268]); assert.deepEqual(at("bottom-left"), [20, 268]); assert.deepEqual(at("bottom-right"), [175, 268]);
+  assert.deepEqual(at("top-center"), [97.5, 20]); assert.deepEqual(at("top-left"), [20, 20]); assert.deepEqual(at("top-right"), [175, 20]);
+  assert.equal(numberMark({ ...o, on: false }, 0, 9, view, FONT), null);
+  assert.equal(numberMark({ ...o, from: 3 }, 1, 9, view, FONT), null);
+});
+test("numbers: settings are checked, and older files without them load with numbers off", () => {
+  assert.deepEqual(cleanNumbers(undefined), NO_NUMBERS);
+  assert.deepEqual(cleanNumbers({ on: true, position: "top-right", style: "page-n", start: 3, from: 2, size: 9, margin: 10, font: "serif", bold: true, color: "#112233" }),
+    { on: true, position: "top-right", style: "page-n", start: 3, from: 2, size: 9, margin: 10, font: "serif", bold: true, color: "#112233" });
+  assert.deepEqual(cleanNumbers({ on: "yes", position: "middle", style: "roman", start: -1, from: 0, size: 9999, margin: -5, font: "comic", bold: 1, color: "red" }), NO_NUMBERS);
+  let s = addSource(emptySession(), { name: "a.pdf", size: 10, sha256: SHA("a"), pages: 1, kind: "pdf" }).session;
+  s = { ...s, output: { ...s.output, numbers: { ...NUM, from: 2 } } };
+  assert.deepEqual(parseSettings(serialise(s)).output.numbers, { ...NUM, from: 2 });
+  const old = JSON.parse(serialise(s)); delete old.output.numbers;
+  assert.deepEqual(parseSettings(JSON.stringify(old)).output.numbers, NO_NUMBERS);
+});
+test("build: numbers are written on the pages they should be, counting within the file or from a given place", async () => {
+  const data = new Map<string, SourceData>([["a", { kind: "pdf", bytes: await sample(3) }]]);
+  const fontCount = async (bytes: Uint8Array) => (await PDFDocument.load(bytes)).getPages().map((pg) => (pg.node.Resources()?.lookup(PDFName.of("Font")) as any)?.keys().length ?? 0);
+  const all = await makeBuilder(data, { imageDpi: 96, numbers: NUM })([P("a", 0), P("a", 1), { ...P("a", 2), rotate: 90, scale: 2 }]);
+  assert.deepEqual(await fontCount(all), [2, 2, 2], "each page gains the number's font");
+  const skip = await makeBuilder(data, { imageDpi: 96, numbers: { ...NUM, from: 2 } })([P("a", 0), P("a", 1)]);
+  assert.deepEqual(await fontCount(skip), [1, 2], "the page before the first numbered one is untouched");
+  const off = await makeBuilder(data, { imageDpi: 96, numbers: { ...NUM, on: false } })([P("a", 0)]);
+  assert.deepEqual(await fontCount(off), [1]);
+  const preview = await makeBuilder(data, { imageDpi: 96, numbers: { ...NUM, from: 2 } })([P("a", 0)], { index: 0, total: 3 });
+  assert.deepEqual(await fontCount(preview), [1], "a one-page preview knows where the page sits in the document");
+});

@@ -14,6 +14,8 @@ import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
 import { createEditor } from "./editor.ts";
 import type { Mark } from "./marks.ts";
+import { NO_NUMBERS, MARGIN_MAX, COUNT_MAX, type NumberOptions } from "./stamps.ts";
+import { SIZE_MIN, SIZE_MAX } from "./marks.ts";
 import { encodeBmp } from "./bmp.ts";
 import { pagesToText } from "./text.ts";
 import { jpegOrientation, orientationToRotation } from "./exif.ts";
@@ -29,7 +31,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   const task = taskBySlug(taskSlug);
   const can = (p: Part) => task.parts.includes(p);
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => root.querySelector<T>(`#${id}`)!;
-  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none", compress: { ...(task.slug === "compress" ? PRESETS.recommended : NO_COMPRESSION) } } }; };
+  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none", compress: { ...(task.slug === "compress" ? PRESETS.recommended : NO_COMPRESSION) }, numbers: { ...NO_NUMBERS, on: task.slug === "page-numbers" } } }; };
   type Level = "none" | keyof typeof PRESETS | "custom";
   const levelOf = (c: CompressOptions): Level => c.mode === "none" ? "none" : (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).find((k) => JSON.stringify(PRESETS[k]) === JSON.stringify(c)) ?? "custom";
   let level: Level = task.slug === "compress" ? "recommended" : "none";
@@ -277,11 +279,17 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const put = (id: string, v: string) => { const e = root.querySelector<HTMLInputElement>(`#${id}`); if (e) e.value = v; };
     put("split", o.split); put("every", String(o.every)); put("ranges", o.ranges); put("dpi", String(o.dpi));
     put("quality", String(Math.round(o.quality * 100))); put("imageDpi", String(o.imageDpi));
+    const nb = o.numbers;
+    put("nPos", nb.position); put("nStyle", nb.style); put("nStart", String(nb.start)); put("nFrom", String(nb.from));
+    put("nSize", String(nb.size)); put("nMargin", String(nb.margin)); put("nFont", nb.font); put("nColor", nb.color);
+    const tick = (id: string, on: boolean) => { const e = root.querySelector<HTMLInputElement>(`#${id}`); if (e) e.checked = on; };
+    tick("nOn", nb.on); tick("nBold", nb.bold);
     put("cLevel", level); put("cDpi", String(o.compress.dpi)); put("cQuality", String(Math.round(o.compress.quality * 100)));
     if (o.compress.mode !== "none") put("cMode", o.compress.mode);
     const grey = root.querySelector<HTMLInputElement>("#cGrey"); if (grey) grey.checked = o.compress.grey;
     showOptions(); refreshButtons();
     if (editor?.isOpen()) editor.refresh();
+    schedulePreview();
   }
   const fmtSize = (n: number) => n < 1e6 ? `${Math.max(1, Math.round(n / 1e3))} kB` : `${(n / 1e6).toFixed(1)} MB`;
 
@@ -409,8 +417,20 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         quality: clamp(Number(v("cQuality")) / 100, 0.1, 1, o.compress.quality), grey: !!root.querySelector<HTMLInputElement>("#cGrey")?.checked,
       };
     }
+    let numbers = o.numbers;
+    if (root.querySelector("#nPos")) {
+      const ticked = (id: string) => !!root.querySelector<HTMLInputElement>(`#${id}`)?.checked;
+      const int = (id: string, lo: number, d: number) => { const x = Math.round(Number(v(id))); return Number.isFinite(x) && v(id) !== "" ? Math.min(COUNT_MAX, Math.max(lo, x)) : d; };
+      numbers = {
+        on: task.slug === "page-numbers" || ticked("nOn"),
+        position: v("nPos") as NumberOptions["position"], style: v("nStyle") as NumberOptions["style"],
+        start: int("nStart", 0, o.numbers.start), from: int("nFrom", 1, o.numbers.from),
+        size: clamp(Number(v("nSize")), SIZE_MIN, SIZE_MAX, o.numbers.size), margin: clamp(Number(v("nMargin")), 0, MARGIN_MAX, o.numbers.margin),
+        font: v("nFont") as NumberOptions["font"], bold: ticked("nBold"), color: v("nColor") || o.numbers.color,
+      };
+    }
     session = { ...session, output: {
-      compress,
+      compress, numbers,
       name: safeName(v("outName")), format: v("format") as OutputFormat, split: v("split") as SplitMode,
       every: Math.max(1, Math.round(Number(v("every")) || 1)), ranges: v("ranges"),
       dpi: clamp(Number(v("dpi")), DPI_MIN, DPI_MAX, o.dpi), quality: clamp(Number(v("quality")) / 100, 0.1, 1, o.quality),
@@ -423,6 +443,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     hide("optPdf", f !== "pdf"); hide("optEvery", f !== "pdf" || s !== "every"); hide("optRanges", f !== "pdf" || s !== "ranges");
     hide("optImage", f === "pdf" || f === "txt"); hide("optQuality", f !== "jpeg" && f !== "webp"); hide("optText", f !== "txt");
     const c = session.output.compress;
+    hide("optNumbers", f !== "pdf"); hide("nFields", !session.output.numbers.on); hide("nOnRow", task.slug === "page-numbers");
     hide("optCompress", f !== "pdf"); hide("cCustom", level !== "custom");
     hide("cDpiRow", c.mode === "tidy"); hide("cQualityRow", c.mode === "tidy"); hide("cGreyRow", c.mode === "tidy"); hide("cFlattenWarn", c.mode !== "flatten");
     const sum = root.querySelector<HTMLElement>("#cSummary");
@@ -431,7 +452,32 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       `Pictures are kept at up to ${c.dpi} dots per inch, at ${Math.round(c.quality * 100)}% quality.${level === "extreme" ? " Expect visibly rough pictures." : ""} Text and line drawings are not changed.`;
     const dpiBox = root.querySelector<HTMLElement>("#optImageDpi"); if (dpiBox) dpiBox.hidden = f === "txt" || !session.sources.some((x) => x.kind === "image");
   }
-  $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); if (task.perFile) clearResult(); });
+  $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); if (task.perFile) clearResult(); schedulePreview(); });
+  $("savePanel").addEventListener("input", (e) => { if ((e.target as HTMLElement).closest("#optNumbers")) { readOptions(); schedulePreview(); } });
+
+  // ---------- preview of a page with everything that is added when saving (page numbers) ----------
+  let previewTimer = 0, previewRun = 0;
+  function schedulePreview() { if (!can("preview")) return; clearTimeout(previewTimer); previewTimer = window.setTimeout(drawPreview, 250); }
+  async function drawPreview() {
+    const box = $("preview"), o = session.output, mine = ++previewRun;
+    const first = session.sources.find((s) => loaded.has(s.sha256) && session.pages.some((p) => p.src === s.id));
+    if (!first || busy) { box.hidden = !first; return; }
+    const pp = task.perFile ? session.pages.filter((p) => p.src === first.id) : session.pages.filter(has);
+    const index = Math.min(pp.length - 1, Math.max(0, o.numbers.on ? o.numbers.from - 1 : 0));
+    try {
+      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, numbers: o.numbers })([pp[index]], { index, total: pp.length });
+      const doc = await openPdf(bytes, vendor);
+      let canvas: HTMLCanvasElement;
+      try {
+        const size = await pageSize({ kind: "pdf", doc }, 0, 72), z = (440 * Math.min(2, window.devicePixelRatio || 1)) / size.w;
+        canvas = await drawPage({ kind: "pdf", doc }, 0, 0, { pxPerPoint: z, pxPerImagePx: z });
+      } finally { closePdf(doc); }
+      if (mine !== previewRun) return;
+      box.querySelector("canvas")!.replaceWith(canvas);
+      $("previewNote").textContent = `Preview: page ${index + 1} of ${pp.length}${task.perFile && session.sources.length > 1 ? ` in ${first.name}` : ""}, as it will be saved.`;
+      box.hidden = false;
+    } catch (e) { console.error(e); box.hidden = true; }
+  }
 
   // ---------- this page's task: show only its controls ----------
   root.querySelectorAll<HTMLElement>("[data-part]").forEach((e) => { if (!can(e.dataset.part as Part)) e.remove(); });
@@ -515,7 +561,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
       if (o.format === "pdf") {
         const data = new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
-        const build = makeBuilder(data, { imageDpi: o.imageDpi });
+        const build = makeBuilder(data, { imageDpi: o.imageDpi, numbers: o.numbers });
         const c = o.compress;
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };
@@ -653,6 +699,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       for (const k of [...loaded.keys()]) if (!wanted.has(k)) loaded.delete(k);
       if (!task.formats.includes(next.output.format)) next.output.format = task.formats[0];
       if (!can("split")) next.output.split = "none";
+      if (!can("numbers")) next.output.numbers = { ...NO_NUMBERS };
+      else if (task.slug === "page-numbers") next.output.numbers.on = true;
       if (!can("compress")) next.output.compress = { ...NO_COMPRESSION };
       else if (task.slug === "compress" && next.output.compress.mode === "none") next.output.compress = { ...PRESETS.recommended };
       level = levelOf(next.output.compress);

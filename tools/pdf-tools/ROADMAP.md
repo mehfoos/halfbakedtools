@@ -41,7 +41,8 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | PDF to JPG | Done | Theirs can also pull out the pictures stored in a PDF: chunk 6 |
 | Edit PDF | Partly | Text and pictures done; shapes and freehand: chunk 5 |
 | Unlock PDF, Protect PDF | **Done 2026-11-16** (chunk 1) | `protect()` in `web/build.ts`; both are per-file tasks. Possible follow-up: offer protection as a last step in the all-in-one workspace |
-| Page numbers, Watermark | **Chunk 2 (next)** | Reuse `web/marks.ts`: a mark applied to every page, with position presets; watermark needs opacity |
+| Page numbers | **Done 2026-11-17** (chunk 2a) | `web/stamps.ts`; live preview in `ui.ts` (`drawPreview`) |
+| Watermark | **Chunk 2b (next)** | Add to `web/stamps.ts` beside page numbers: text (and later a picture) on every page, centred or tiled, with angle and opacity. Marks need an optional `opacity`; pdf-lib's `drawText`/`drawImage` accept one. Reuse the preview |
 | Crop PDF | Chunk 3 | Set the crop box. Say plainly that cropped-off content is hidden, not removed |
 | Sign PDF | Chunk 4 | Draw a signature (canvas), place it as a picture mark. Not a cryptographic signature: say so. "Request signatures from others" is not possible locally |
 | Edit PDF: shapes, freehand | Chunk 5 | New mark types |
