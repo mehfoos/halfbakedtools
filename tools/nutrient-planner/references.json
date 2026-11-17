@@ -206,6 +206,79 @@
           "render": true
         }
       ]
+    },
+    {
+      "id": "nhs-fish",
+      "pre": "NHS,",
+      "title": "Fish and shellfish",
+      "style": "quoted",
+      "post": "Eat well.",
+      "url": "https://www.nhs.uk/live-well/eat-well/food-types/fish-and-shellfish-nutrition/",
+      "licence": "© Crown copyright, Open Government Licence v3.0",
+      "usedFor": "Oily fish portion size and weekly limits",
+      "archive": [
+        {
+          "file": "nhs-fish-and-shellfish.pdf",
+          "fetch": "https://www.nhs.uk/live-well/eat-well/food-types/fish-and-shellfish-nutrition/",
+          "render": true
+        }
+      ]
+    },
+    {
+      "id": "nhs-meat",
+      "pre": "NHS,",
+      "title": "Meat in your diet",
+      "style": "quoted",
+      "post": "Eat well.",
+      "url": "https://www.nhs.uk/live-well/eat-well/food-types/meat-nutrition/",
+      "licence": "© Crown copyright, Open Government Licence v3.0",
+      "usedFor": "Red and processed meat advice; liver and vitamin A",
+      "archive": [
+        {
+          "file": "nhs-meat-in-your-diet.pdf",
+          "fetch": "https://www.nhs.uk/live-well/eat-well/food-types/meat-nutrition/",
+          "render": true
+        }
+      ]
+    },
+    {
+      "id": "usda-sr-doc",
+      "pre": "U.S. Department of Agriculture, Agricultural Research Service, Nutrient Data Laboratory,",
+      "title": "USDA National Nutrient Database for Standard Reference, Legacy (2018): Documentation and User Guide",
+      "style": "italic",
+      "post": "Beltsville, MD, USA, Apr. 2018, revised Jul. 2018.",
+      "url": "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf",
+      "licence": "Public domain (US government work)",
+      "usedFor": "How the food data defines carbohydrate and other values",
+      "archive": [
+        {
+          "file": "usda-sr-legacy-documentation.pdf",
+          "fetch": [
+            "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf",
+            "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.pdf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "efsa-sodium-2019",
+      "pre": "EFSA Panel on Nutrition, Novel Foods and Food Allergens,",
+      "title": "Dietary reference values for sodium",
+      "style": "quoted",
+      "post": "<i>EFSA Journal</i>, vol. 17, no. 9, Art. no. e05778, Sep. 2019, doi: 10.2903/j.efsa.2019.5778.",
+      "url": "https://doi.org/10.2903/j.efsa.2019.5778",
+      "licence": "© EFSA; open access, CC BY-ND 4.0",
+      "usedFor": "EU sodium value",
+      "archive": [
+        {
+          "file": "efsa-2019-sodium.pdf",
+          "fetch": [
+            "https://efsa.onlinelibrary.wiley.com/doi/pdfdirect/10.2903/j.efsa.2019.5778",
+            "https://efsa.onlinelibrary.wiley.com/doi/pdf/10.2903/j.efsa.2019.5778",
+            "https://www.efsa.europa.eu/sites/default/files/2019-09/5778.pdf"
+          ]
+        }
+      ]
     }
   ]
 }
