@@ -10,7 +10,7 @@ and see how it measures up. Live at https://halfbakedtools.com/tools/nutrient-pl
 tool.json             name, summary, status, pages
 pages/index.astro     the planner
 pages/methods.astro   methods, sources, verification status and limitations
-web/                  solver (mixed-integer programme, HiGHS in a Web Worker), UI, charts, settings links; tests
+web/                  browser code and tests (see "Code map" below)
 references.json       references, in citation order
 VERIFICATION.md       what was checked against which document, and when
 data/
@@ -25,6 +25,44 @@ pipeline/             Python (standard library only)
   nutrients.json      nutrient keys ↔ USDA nutrient ids
   check_age.py        is the snapshot due for a refresh?
 ```
+
+## Code map (`web/`)
+
+Calculations are in plain modules that never touch the page, each with tests beside it. The page code is in `web/ui/`,
+one file per section of the planner.
+
+```
+main.ts          entry point: loads the data, wires the sections together
+solver.ts        targets -> numbers for one person; builds the mixed-integer programme; picks plans
+highsSolver.ts   runs the programme with HiGHS (WebAssembly); time limit and tolerances
+worker.ts        runs the search off the main thread
+profiles.ts      which age band of a standard fits a person; calories; reference weight
+person.ts        settings -> the person's standard, calorie range, weight and targets
+foods.ts         the food list: presets, diet filter, search, foods to avoid, child portions, familiarity
+plan-input.ts    settings + chosen foods -> what the optimiser is given (the rules applied before a search)
+analysis.ts      a day's foods measured against the targets (met, short, over, not checked)
+chart-axes.ts    a day's report -> the axes of the radar charts
+radar.ts         draws a radar chart as SVG
+state.ts         settings: defaults, link encoding, file export/import, opt-in remembering
+*.test.ts        tests (run with `npm test`)
+ui/app.ts        shared state for the page: data, settings, and the values derived from them
+ui/you.ts        section 1: about you, and "Fine-tune targets"
+ui/food-list.ts  section 2: choose foods
+ui/suggest.ts    section 3: suggest foods for me
+ui/builder.ts    section 3: build my own
+ui/report.ts     a day's results as HTML (used by both modes)
+ui/charts.ts     charts on the page: zoom, compare, "which foods provide" tables
+ui/notices.ts    advice and caveats shown with results, each with its reference
+ui/share.ts      copy link, export/import, remember on this device
+ui/dom.ts        small helpers: element lookup, escaping, number formatting
+```
+
+Where to change things:
+
+- a target or its source: `pipeline/build_targets.py` (never the generated JSON), then `VERIFICATION.md`;
+- a rule about which foods or amounts are allowed: `foods.ts` and `plan-input.ts`;
+- the optimiser's objective or constraints: `solver.ts` (`buildLp`);
+- wording of advice shown with results: `ui/notices.ts`; every factual statement needs a `cite("id")`.
 
 ## Building the data
 

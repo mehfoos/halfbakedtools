@@ -86,6 +86,12 @@ export function avoidReason(f: { usdaName: string }, who: { age: number; life: s
   return null;
 }
 
+/** The distinct reasons any of these foods should be avoided by this person. */
+export function avoidReasons(foods: { usdaName: string }[], who: { age: number; life: string }) {
+  const reasons = foods.map((f) => avoidReason(f, who)).filter((r) => r !== null);
+  return [...new Map(reasons.map((r) => [r.text, r])).values()];
+}
+
 /**
  * Portion limits for children. The daily caps in the food data are sized for adults, so for under-18s they are
  * scaled by the child's calories relative to a 2,000 kcal adult day (a planner rule of thumb, not an official figure).
