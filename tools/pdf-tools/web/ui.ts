@@ -14,7 +14,7 @@ import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
 import { createEditor } from "./editor.ts";
 import type { Mark } from "./marks.ts";
-import { NO_NUMBERS, MARGIN_MAX, COUNT_MAX, type NumberOptions } from "./stamps.ts";
+import { NO_NUMBERS, NO_WATERMARK, OPACITY_MIN, MARGIN_MAX, COUNT_MAX, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import { SIZE_MIN, SIZE_MAX } from "./marks.ts";
 import { encodeBmp } from "./bmp.ts";
 import { pagesToText } from "./text.ts";
@@ -31,7 +31,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   const task = taskBySlug(taskSlug);
   const can = (p: Part) => task.parts.includes(p);
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => root.querySelector<T>(`#${id}`)!;
-  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none", compress: { ...(task.slug === "compress" ? PRESETS.recommended : NO_COMPRESSION) }, numbers: { ...NO_NUMBERS, on: task.slug === "page-numbers" } } }; };
+  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none", compress: { ...(task.slug === "compress" ? PRESETS.recommended : NO_COMPRESSION) }, numbers: { ...NO_NUMBERS, on: task.slug === "page-numbers" }, watermark: { ...NO_WATERMARK, on: task.slug === "watermark" } } }; };
   type Level = "none" | keyof typeof PRESETS | "custom";
   const levelOf = (c: CompressOptions): Level => c.mode === "none" ? "none" : (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).find((k) => JSON.stringify(PRESETS[k]) === JSON.stringify(c)) ?? "custom";
   let level: Level = task.slug === "compress" ? "recommended" : "none";
@@ -284,6 +284,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     put("nSize", String(nb.size)); put("nMargin", String(nb.margin)); put("nFont", nb.font); put("nColor", nb.color);
     const tick = (id: string, on: boolean) => { const e = root.querySelector<HTMLInputElement>(`#${id}`); if (e) e.checked = on; };
     tick("nOn", nb.on); tick("nBold", nb.bold);
+    const wm = o.watermark;
+    put("wText", wm.text); put("wLayout", wm.layout); put("wAngle", String(wm.angle)); put("wOpacity", String(Math.round(wm.opacity * 100)));
+    put("wSize", String(wm.size)); put("wFont", wm.font); put("wColor", wm.color); tick("wOn", wm.on); tick("wBold", wm.bold);
     put("cLevel", level); put("cDpi", String(o.compress.dpi)); put("cQuality", String(Math.round(o.compress.quality * 100)));
     if (o.compress.mode !== "none") put("cMode", o.compress.mode);
     const grey = root.querySelector<HTMLInputElement>("#cGrey"); if (grey) grey.checked = o.compress.grey;
@@ -429,8 +432,17 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         font: v("nFont") as NumberOptions["font"], bold: ticked("nBold"), color: v("nColor") || o.numbers.color,
       };
     }
+    let watermark = o.watermark;
+    if (root.querySelector("#wText")) {
+      const ticked = (id: string) => !!root.querySelector<HTMLInputElement>(`#${id}`)?.checked;
+      watermark = {
+        on: task.slug === "watermark" || ticked("wOn"), text: v("wText"), layout: v("wLayout") as WatermarkOptions["layout"],
+        angle: clamp(Number(v("wAngle")), -360, 360, o.watermark.angle), opacity: clamp(Number(v("wOpacity")) / 100, OPACITY_MIN, 1, o.watermark.opacity),
+        size: clamp(Number(v("wSize")), SIZE_MIN, SIZE_MAX, o.watermark.size), font: v("wFont") as WatermarkOptions["font"], bold: ticked("wBold"), color: v("wColor") || o.watermark.color,
+      };
+    }
     session = { ...session, output: {
-      compress, numbers,
+      compress, numbers, watermark,
       name: safeName(v("outName")), format: v("format") as OutputFormat, split: v("split") as SplitMode,
       every: Math.max(1, Math.round(Number(v("every")) || 1)), ranges: v("ranges"),
       dpi: clamp(Number(v("dpi")), DPI_MIN, DPI_MAX, o.dpi), quality: clamp(Number(v("quality")) / 100, 0.1, 1, o.quality),
@@ -443,6 +455,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     hide("optPdf", f !== "pdf"); hide("optEvery", f !== "pdf" || s !== "every"); hide("optRanges", f !== "pdf" || s !== "ranges");
     hide("optImage", f === "pdf" || f === "txt"); hide("optQuality", f !== "jpeg" && f !== "webp"); hide("optText", f !== "txt");
     const c = session.output.compress;
+    hide("optWatermark", f !== "pdf"); hide("wFields", !session.output.watermark.on); hide("wOnRow", task.slug === "watermark");
+    const wNote = root.querySelector<HTMLElement>("#wOpacityNote"); if (wNote) wNote.textContent = `${Math.round(session.output.watermark.opacity * 100)}%`;
     hide("optNumbers", f !== "pdf"); hide("nFields", !session.output.numbers.on); hide("nOnRow", task.slug === "page-numbers");
     hide("optCompress", f !== "pdf"); hide("cCustom", level !== "custom");
     hide("cDpiRow", c.mode === "tidy"); hide("cQualityRow", c.mode === "tidy"); hide("cGreyRow", c.mode === "tidy"); hide("cFlattenWarn", c.mode !== "flatten");
@@ -453,7 +467,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const dpiBox = root.querySelector<HTMLElement>("#optImageDpi"); if (dpiBox) dpiBox.hidden = f === "txt" || !session.sources.some((x) => x.kind === "image");
   }
   $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); if (task.perFile) clearResult(); schedulePreview(); });
-  $("savePanel").addEventListener("input", (e) => { if ((e.target as HTMLElement).closest("#optNumbers")) { readOptions(); schedulePreview(); } });
+  $("savePanel").addEventListener("input", (e) => { if ((e.target as HTMLElement).closest("#optNumbers, #optWatermark")) { readOptions(); showOptions(); schedulePreview(); } });
 
   // ---------- preview of a page with everything that is added when saving (page numbers) ----------
   let previewTimer = 0, previewRun = 0;
@@ -465,7 +479,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const pp = task.perFile ? session.pages.filter((p) => p.src === first.id) : session.pages.filter(has);
     const index = Math.min(pp.length - 1, Math.max(0, o.numbers.on ? o.numbers.from - 1 : 0));
     try {
-      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, numbers: o.numbers })([pp[index]], { index, total: pp.length });
+      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, numbers: o.numbers, watermark: o.watermark })([pp[index]], { index, total: pp.length });
       const doc = await openPdf(bytes, vendor);
       let canvas: HTMLCanvasElement;
       try {
@@ -476,7 +490,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       box.querySelector("canvas")!.replaceWith(canvas);
       $("previewNote").textContent = `Preview: page ${index + 1} of ${pp.length}${task.perFile && session.sources.length > 1 ? ` in ${first.name}` : ""}, as it will be saved.`;
       box.hidden = false;
-    } catch (e) { console.error(e); box.hidden = true; }
+    } catch (e) { console.error(e); if (mine === previewRun) { box.hidden = true; say(e instanceof Error ? e.message : String(e), "bad"); } }
   }
 
   // ---------- this page's task: show only its controls ----------
@@ -561,7 +575,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
       if (o.format === "pdf") {
         const data = new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
-        const build = makeBuilder(data, { imageDpi: o.imageDpi, numbers: o.numbers });
+        if (o.watermark.on && !o.watermark.text.trim()) throw new Error("Type the words for the watermark first.");
+        const build = makeBuilder(data, { imageDpi: o.imageDpi, numbers: o.numbers, watermark: o.watermark });
         const c = o.compress;
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };
@@ -699,6 +714,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       for (const k of [...loaded.keys()]) if (!wanted.has(k)) loaded.delete(k);
       if (!task.formats.includes(next.output.format)) next.output.format = task.formats[0];
       if (!can("split")) next.output.split = "none";
+      if (!can("watermark")) next.output.watermark = { ...NO_WATERMARK };
+      else if (task.slug === "watermark") next.output.watermark.on = true;
       if (!can("numbers")) next.output.numbers = { ...NO_NUMBERS };
       else if (task.slug === "page-numbers") next.output.numbers.on = true;
       if (!can("compress")) next.output.compress = { ...NO_COMPRESSION };

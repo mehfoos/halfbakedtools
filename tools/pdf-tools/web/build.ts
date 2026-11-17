@@ -3,7 +3,7 @@
 // only the page order, rotation and size change.
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
 import { placeText, placeImage, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
-import { numberMark, type NumberOptions } from "./stamps.ts";
+import { numberMark, watermarkMarks, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import type { PageItem, Rotation } from "./session.ts";
 
 export type SourceData =
@@ -11,7 +11,7 @@ export type SourceData =
   /** `turn`: degrees clockwise the stored pixels must be turned to look right (a photo's orientation note). */
   | { kind: "image"; bytes: Uint8Array; type: "png" | "jpeg"; turn?: Rotation };
 
-export type BuildOptions = { imageDpi: number; numbers?: NumberOptions };
+export type BuildOptions = { imageDpi: number; numbers?: NumberOptions; watermark?: WatermarkOptions };
 /** For building one page out of a longer document (a preview): its position, and the document's length. */
 export type Place = { index: number; total: number };
 
@@ -86,10 +86,10 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
           const font = fonts(m.font, m.bold), bad = cantDraw(m.text, font);
           if (bad.length) throw new Error(`Added text contains characters this tool can't write yet: ${bad.slice(0, 12).join(" ")}. It can write Western European letters, digits and common punctuation.`);
           const placed = placeText(m, font, box, rotation), c = parseColor(m.color);
-          for (const l of placed.lines) if (l.text) page.drawText(l.text, { x: l.x, y: l.y, size: m.size, font, color: rgb(c.r, c.g, c.b), rotate: degrees(placed.angle) });
+          for (const l of placed.lines) if (l.text) page.drawText(l.text, { x: l.x, y: l.y, size: m.size, font, color: rgb(c.r, c.g, c.b), rotate: degrees(placed.angle), opacity: m.opacity ?? 1 });
         } else {
           const at = placeImage(m, box, rotation);
-          page.drawImage(await picture(m.src), { x: at.x, y: at.y, width: at.width, height: at.height, rotate: degrees(at.angle) });
+          page.drawImage(await picture(m.src), { x: at.x, y: at.y, width: at.width, height: at.height, rotate: degrees(at.angle), opacity: m.opacity ?? 1 });
         }
       }
     }
@@ -111,6 +111,10 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       if (p.rotate) page.setRotation(degrees((page.getRotation().angle + p.rotate) % 360));
       if (p.scale !== 1) page.scale(p.scale, p.scale);
       // Stamps go on last, placed on the page as it will finally be seen, so they are the same size on every page.
+      if (opts.watermark?.on && opts.watermark.text.trim()) {
+        const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
+        await drawMarks(page, watermarkMarks(opts.watermark, visibleSize(page.getCropBox(), rotation), fonts(opts.watermark.font, opts.watermark.bold)));
+      }
       if (opts.numbers?.on) {
         const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
         const n = numberMark(opts.numbers, (place?.index ?? 0) + i, place?.total ?? pages.length, visibleSize(page.getCropBox(), rotation), fonts(opts.numbers.font, opts.numbers.bold));

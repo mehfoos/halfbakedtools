@@ -1,7 +1,7 @@
 // Things applied to every page when saving: page numbers (and, later, a watermark). Pure; no DOM.
 // A stamp is worked out for each page as that page will finally be seen (turned and resized), and is then
 // drawn like any other added text (marks.ts).
-import { LINE_HEIGHT, SIZE_MIN, SIZE_MAX, type FontKey, type Measurer, type TextMark } from "./marks.ts";
+import { LINE_HEIGHT, SIZE_MIN, SIZE_MAX, turn, type FontKey, type Measurer, type TextMark } from "./marks.ts";
 
 export type Corner = "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
 export const CORNERS: Corner[] = ["bottom-center", "bottom-right", "bottom-left", "top-center", "top-right", "top-left"];
@@ -55,6 +55,54 @@ export function cleanNumbers(v: unknown): NumberOptions {
     margin: real(o.margin, 0, MARGIN_MAX) ? o.margin : d.margin,
     font: (["sans", "serif", "mono"] as const).find((f) => f === o.font) ?? d.font,
     bold: o.bold === true,
+    color: typeof o.color === "string" && /^#[0-9a-f]{6}$/i.test(o.color) ? o.color : d.color,
+  };
+}
+
+// ---------- watermark ----------
+export type WatermarkLayout = "center" | "tile";
+export type WatermarkOptions = {
+  on: boolean;
+  text: string;
+  layout: WatermarkLayout;   // once in the middle, or repeated across the page
+  angle: number;             // degrees clockwise; -45 runs from bottom-left up to top-right
+  opacity: number;           // 0.05 (faint) to 1 (solid)
+  size: number; font: FontKey; bold: boolean; color: string;
+};
+export const NO_WATERMARK: WatermarkOptions = { on: false, text: "CONFIDENTIAL", layout: "center", angle: -45, opacity: 0.3, size: 48, font: "sans", bold: true, color: "#808080" };
+export const OPACITY_MIN = 0.05, TILES_MAX = 300;
+
+/** A one-line text mark whose middle sits at (cx, cy) when turned by `angle` about its top-left corner. */
+function centred(o: WatermarkOptions, text: string, w: number, h: number, cx: number, cy: number): TextMark {
+  const off = turn(w / 2, h / 2, o.angle);
+  return { type: "text", x: cx - off.dx, y: cy - off.dy, rotate: o.angle, text, size: o.size, color: o.color, font: o.font, bold: o.bold, opacity: o.opacity };
+}
+
+/** The watermark as pieces of added text for a page of size `view` (points, as finally seen). */
+export function watermarkMarks(o: WatermarkOptions, view: { w: number; h: number }, font: Measurer): TextMark[] {
+  const text = o.text.replace(/\s+/g, " ").trim();
+  if (!o.on || !text) return [];
+  const w = font.widthOfTextAtSize(text, o.size), h = o.size * LINE_HEIGHT;
+  if (o.layout === "center") return [centred(o, text, w, h, view.w / 2, view.h / 2)];
+  // Repeated: a brick pattern of copies, spaced by the text's own size, covering the page.
+  const stepX = w + o.size * 2, stepY = Math.max(o.size * 4, h * 2), out: TextMark[] = [];
+  for (let row = 0, cy = stepY / 2; cy < view.h + stepY / 2 && out.length < TILES_MAX; row++, cy += stepY) {
+    for (let cx = row % 2 ? 0 : stepX / 2; cx < view.w + stepX / 2 && out.length < TILES_MAX; cx += stepX) out.push(centred(o, text, w, h, cx, cy));
+  }
+  return out;
+}
+
+export function cleanWatermark(v: unknown): WatermarkOptions {
+  const o = (typeof v === "object" && v !== null ? v : {}) as Record<string, unknown>, d = NO_WATERMARK;
+  return {
+    on: o.on === true,
+    text: typeof o.text === "string" && o.text.length <= 200 ? o.text : d.text,
+    layout: o.layout === "tile" ? "tile" : "center",
+    angle: real(o.angle, -360, 360) ? o.angle : d.angle,
+    opacity: real(o.opacity, OPACITY_MIN, 1) ? o.opacity : d.opacity,
+    size: real(o.size, SIZE_MIN, SIZE_MAX) ? o.size : d.size,
+    font: (["sans", "serif", "mono"] as const).find((f) => f === o.font) ?? d.font,
+    bold: typeof o.bold === "boolean" ? o.bold : d.bold,
     color: typeof o.color === "string" && /^#[0-9a-f]{6}$/i.test(o.color) ? o.color : d.color,
   };
 }

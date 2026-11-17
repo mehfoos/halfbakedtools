@@ -7,9 +7,10 @@
 
 export type FontKey = "sans" | "serif" | "mono";
 /** x, y: top-left corner. rotate: degrees clockwise about that corner. */
-export type TextMark = { type: "text"; x: number; y: number; rotate: number; text: string; size: number; color: string; font: FontKey; bold: boolean };
+export type TextMark = { type: "text"; x: number; y: number; rotate: number; text: string; size: number; color: string; font: FontKey; bold: boolean; opacity?: number };
 /** src: id of an image source in the session. w, h: size on the page in points. */
-export type ImageMark = { type: "image"; x: number; y: number; rotate: number; w: number; h: number; src: string };
+export type ImageMark = { type: "image"; x: number; y: number; rotate: number; w: number; h: number; src: string; opacity?: number };
+/** `opacity`: 1 or absent = solid; lower lets the page show through. */
 export type Mark = TextMark | ImageMark;
 
 /** The two font measurements needed to lay text out (pdf-lib's fonts provide them). */
@@ -93,14 +94,16 @@ export function cleanMark(v: unknown, isImageSource: (id: string) => boolean): M
   if (typeof v !== "object" || v === null) return null;
   const m = v as Record<string, unknown>;
   if (!finite(m.x, -FAR, FAR) || !finite(m.y, -FAR, FAR) || !finite(m.rotate, -360, 360)) return null;
+  if (m.opacity !== undefined && !finite(m.opacity, 0.01, 1)) return null;
+  const see = m.opacity === undefined || m.opacity === 1 ? {} : { opacity: m.opacity };
   if (m.type === "text") {
     if (typeof m.text !== "string" || m.text.length > 20000 || !finite(m.size, SIZE_MIN, SIZE_MAX) || typeof m.color !== "string" || !/^#[0-9a-f]{6}$/i.test(m.color)
       || (m.font !== "sans" && m.font !== "serif" && m.font !== "mono") || typeof m.bold !== "boolean") return null;
-    return { type: "text", x: m.x, y: m.y, rotate: m.rotate, text: m.text, size: m.size, color: m.color, font: m.font, bold: m.bold };
+    return { type: "text", x: m.x, y: m.y, rotate: m.rotate, text: m.text, size: m.size, color: m.color, font: m.font, bold: m.bold, ...see };
   }
   if (m.type === "image") {
     if (!finite(m.w, 1, FAR) || !finite(m.h, 1, FAR) || typeof m.src !== "string" || !isImageSource(m.src)) return null;
-    return { type: "image", x: m.x, y: m.y, rotate: m.rotate, w: m.w, h: m.h, src: m.src };
+    return { type: "image", x: m.x, y: m.y, rotate: m.rotate, w: m.w, h: m.h, src: m.src, ...see };
   }
   return null;
 }

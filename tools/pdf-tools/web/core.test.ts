@@ -452,3 +452,51 @@ test("build: numbers are written on the pages they should be, counting within th
   const preview = await makeBuilder(data, { imageDpi: 96, numbers: { ...NUM, from: 2 } })([P("a", 0)], { index: 0, total: 3 });
   assert.deepEqual(await fontCount(preview), [1], "a one-page preview knows where the page sits in the document");
 });
+
+// ---- watermark ----
+import { watermarkMarks, cleanWatermark, NO_WATERMARK, TILES_MAX, type WatermarkOptions } from "./stamps.ts";
+const WM: WatermarkOptions = { ...NO_WATERMARK, on: true, text: "DRAFT", size: 10 };   // FONT: 25 points wide, 12 high
+test("watermark: one copy sits with its middle at the middle of the page, at any angle", () => {
+  for (const angle of [0, -45, 45, 90, 30]) {
+    const [m] = watermarkMarks({ ...WM, angle }, { w: 200, h: 300 }, FONT);
+    const mid = turn(12.5, 6, angle);
+    near(m.x + mid.dx, 100, `angle ${angle} x`); near(m.y + mid.dy, 150, `angle ${angle} y`);
+    assert.equal(m.rotate, angle); assert.equal(m.opacity, 0.3); assert.equal(m.text, "DRAFT");
+  }
+  assert.deepEqual(watermarkMarks({ ...WM, on: false }, { w: 200, h: 300 }, FONT), []);
+  assert.deepEqual(watermarkMarks({ ...WM, text: "  " }, { w: 200, h: 300 }, FONT), []);
+  assert.equal(watermarkMarks({ ...WM, text: " two   words\n" }, { w: 200, h: 300 }, FONT)[0].text, "two words");
+});
+test("watermark: repeated copies cover the page in staggered rows, up to a limit", () => {
+  const tiles = watermarkMarks({ ...WM, layout: "tile", angle: 0 }, { w: 200, h: 300 }, FONT);
+  assert.ok(tiles.length > 10, `${tiles.length} copies`);
+  const mids = tiles.map((m) => [m.x + 12.5, m.y + 6]);
+  assert.ok(mids.some(([x, y]) => x < 40 && y < 40) && mids.some(([x, y]) => x > 160 && y > 260), "copies reach opposite corners");
+  assert.notEqual(mids[0][0], mids.find(([, y]) => y !== mids[0][1])![0], "the next row is offset");
+  assert.equal(watermarkMarks({ ...WM, layout: "tile", size: 4 }, { w: 5000, h: 5000 }, FONT).length, TILES_MAX);
+});
+test("watermark: settings are checked; older files load with it off; marks may carry an opacity", () => {
+  assert.deepEqual(cleanWatermark(undefined), NO_WATERMARK);
+  assert.deepEqual(cleanWatermark({ on: true, text: "x", layout: "tile", angle: 10, opacity: 0.5, size: 20, font: "mono", bold: false, color: "#abcdef" }),
+    { on: true, text: "x", layout: "tile", angle: 10, opacity: 0.5, size: 20, font: "mono", bold: false, color: "#abcdef" });
+  assert.deepEqual(cleanWatermark({ on: 1, text: 5, layout: "wave", angle: 999, opacity: 0, size: 0, font: "x", bold: "no", color: "blue" }), NO_WATERMARK);
+  let s = addSource(emptySession(), { name: "a.pdf", size: 10, sha256: SHA("a"), pages: 1, kind: "pdf" }).session;
+  s = { ...s, output: { ...s.output, watermark: WM } };
+  assert.deepEqual(parseSettings(serialise(s)).output.watermark, WM);
+  assert.deepEqual(cleanMark({ ...T, opacity: 0.4 }, () => false), { ...T, opacity: 0.4 });
+  assert.deepEqual(cleanMark({ ...T, opacity: 1 }, () => false), T);
+  assert.equal(cleanMark({ ...T, opacity: 0 }, () => false), null);
+});
+test("build: the watermark is written on every page, see-through, under the page number", async () => {
+  const data = new Map<string, SourceData>([["a", { kind: "pdf", bytes: await sample(2) }]]);
+  const out = await makeBuilder(data, { imageDpi: 96, watermark: WM, numbers: NUM })([P("a", 0), { ...P("a", 1), rotate: 90 }]);
+  const doc = await PDFDocument.load(out);
+  for (const pg of doc.getPages()) {
+    const res = pg.node.Resources()!;
+    assert.ok(((res.lookup(PDFName.of("ExtGState")) as any)?.keys().length ?? 0) >= 1, "a transparency setting is present");
+    assert.equal((res.lookup(PDFName.of("Font")) as any).keys().length, 3, "page font, watermark font (bold) and number font");
+  }
+  const none = await makeBuilder(data, { imageDpi: 96, watermark: { ...WM, text: "" } })([P("a", 0)]);
+  assert.equal(((await PDFDocument.load(none)).getPage(0).node.Resources()!.lookup(PDFName.of("Font")) as any).keys().length, 1);
+  await assert.rejects(makeBuilder(data, { imageDpi: 96, watermark: { ...WM, text: "機密" } })([P("a", 0)]), /can't write yet/);
+});

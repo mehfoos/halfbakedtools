@@ -156,6 +156,28 @@ const policy = import.meta.env.PROD ? CSP : "";
               <p class="small muted">Numbers count within each saved file. They are added on top of the page; if a page already has a number printed there, both will show.</p>
             </div>
           </div>
+          <div id="optWatermark" data-part="watermark">
+            <p id="wOnRow"><label><input id="wOn" type="checkbox" /> Add a watermark</label></p>
+            <div id="wFields">
+              <p><label class="field">Words <input id="wText" type="text" maxlength="200" size="16" /></label></p>
+              <p><label class="field">Layout
+                <select id="wLayout"><option value="center">Once, in the middle</option><option value="tile">Repeated across the page</option></select></label></p>
+              <p><label class="field">Direction
+                <select id="wAngle"><option value="-45">Diagonal, rising</option><option value="0">Level</option><option value="45">Diagonal, falling</option><option value="-90">Up the page</option></select></label></p>
+              <p><label class="field">Strength <input id="wOpacity" type="range" min="5" max="100" step="5" /> <span id="wOpacityNote" class="small"></span></label><br /><span class="small muted">Fainter lets more of the page show through.</span></p>
+              <p><label class="field">Size <input id="wSize" type="number" min="4" max="400" step="1" inputmode="decimal" /> points</label></p>
+              <details>
+                <summary>Typeface and colour</summary>
+                <div class="details-body">
+                  <p><label class="field">Typeface
+                    <select id="wFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option></select></label></p>
+                  <p><label><input id="wBold" type="checkbox" /> Bold</label></p>
+                  <p><label class="field">Colour <input id="wColor" type="color" /></label></p>
+                </div>
+              </details>
+              <p class="small muted">The watermark is drawn on top of each page as ordinary see-through text. It marks a document; it does not protect it: someone with PDF software can remove it.</p>
+            </div>
+          </div>
           <div id="optProtect" data-part="protect">
             <p><label class="field">Password <input id="pw1" type="password" autocomplete="off" size="16" /></label></p>
             <p><label class="field">Type it again <input id="pw2" type="password" autocomplete="off" size="16" /></label></p>

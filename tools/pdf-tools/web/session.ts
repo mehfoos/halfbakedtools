@@ -6,7 +6,7 @@
 import { parseRanges } from "./ranges.ts";
 import { NO_COMPRESSION, type CompressOptions } from "./compress-core.ts";
 import { cleanMark, type Mark } from "./marks.ts";
-import { NO_NUMBERS, cleanNumbers, type NumberOptions } from "./stamps.ts";
+import { NO_NUMBERS, cleanNumbers, NO_WATERMARK, cleanWatermark, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 
 export const FORMAT = "halfbakedtools.pdf-tools.settings";
 export const VERSION = 1;
@@ -28,17 +28,18 @@ export type Output = {
   quality: number;       // 0.1-1 for JPEG and WebP
   imageDpi: number;      // dots per inch assumed when placing an added image on a page
   numbers: NumberOptions;    // PDF only: page numbers added when saving (absent in older settings files)
+  watermark: WatermarkOptions; // PDF only: text drawn across every page when saving (absent in older settings files)
   compress: CompressOptions; // PDF only: shrink the pictures inside the saved PDF (added later; absent in older settings files)
 };
 export type Session = { sources: SourceRef[]; pages: PageItem[]; output: Output };
 
 export const DEFAULT_OUTPUT: Output = {
-  name: "document", format: "pdf", split: "none", every: 1, ranges: "", dpi: 150, quality: 0.85, imageDpi: 96, compress: { ...NO_COMPRESSION }, numbers: { ...NO_NUMBERS },
+  name: "document", format: "pdf", split: "none", every: 1, ranges: "", dpi: 150, quality: 0.85, imageDpi: 96, compress: { ...NO_COMPRESSION }, numbers: { ...NO_NUMBERS }, watermark: { ...NO_WATERMARK },
 };
 export const SCALE_MIN = 0.1, SCALE_MAX = 10;
 export const DPI_MIN = 36, DPI_MAX = 600;
 
-export const emptySession = (): Session => ({ sources: [], pages: [], output: { ...DEFAULT_OUTPUT, compress: { ...NO_COMPRESSION }, numbers: { ...NO_NUMBERS } } });
+export const emptySession = (): Session => ({ sources: [], pages: [], output: { ...DEFAULT_OUTPUT, compress: { ...NO_COMPRESSION }, numbers: { ...NO_NUMBERS }, watermark: { ...NO_WATERMARK } } });
 
 /** Adds a source and appends all its pages. If the session is already waiting for this file
  *  (same checksum, from a loaded settings file), it is matched instead and no pages are added. */
@@ -236,6 +237,7 @@ export function parseSettings(text: string): Session {
     imageDpi: num(o.imageDpi, DPI_MIN, DPI_MAX) ? (o.imageDpi as number) : d.imageDpi,
     compress: parseCompress(o.compress),
     numbers: cleanNumbers(o.numbers),
+    watermark: cleanWatermark(o.watermark),
   };
   return { sources, pages, output };
 }

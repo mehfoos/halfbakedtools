@@ -26,6 +26,7 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | Watermark is text only for now, drawn on top of the page, and the page says it is a label that can be removed, not protection | Drawing behind existing content and picture watermarks are follow-ups; claiming protection would mislead |
 | 2026-11-17 | Page numbers (and later the watermark) are "stamps": save options applied to every page as it will finally be seen, after turning and resizing, drawn with the same code as added text (`web/stamps.ts`). The task shows a live preview built as a real PDF | Same size and place on every page whatever its rotation; one drawing path to test; what is previewed is what is saved |
 | 2026-11-16 | Protect PDF sets one password that grants full access, encrypts with the library's default (AES-256), and is the last step applied to a file. The password is never stored, including in the settings file | Simple to understand; separate "owner" restrictions are not real security, since this very tool removes them |
 | 2026-11-16 | Unlock PDF only opens files with a password the visitor supplies; it never guesses | It is for people's own files |

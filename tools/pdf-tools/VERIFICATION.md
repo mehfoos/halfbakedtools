@@ -21,6 +21,7 @@ What the tool relies on, what it was checked against, and when.
 | Settings file round trip; rejection of foreign, damaged and newer files; no content keys | `core.test.ts` "settings: …" |
 | Written PDFs: merge order, repeated pages independent, rotation adds to existing, resize, image pages, several files from one builder, fonts kept | `core.test.ts` "build: …" |
 | Page numbers: text for every style, first number, first numbered page; placement by corner and margin; settings checks and older files; written by the builder only on the right pages, including a one-page preview | `core.test.ts` "numbers: …", "build: numbers…" |
+| Watermark: one copy centred at any angle; repeated copies cover the page, staggered, capped; settings checks; written see-through on every page under the number; unsupported characters refused | `core.test.ts` "watermark: …", "build: the watermark…" |
 | Protected output can't be opened without the password and hides page text; rebuilding with the password gives an open copy; the settings file has no password field | `core.test.ts` "protect: …", "settings: no password…" |
 | Default names carry a suffix on every task; name clashes found whatever the capitals | `core.test.ts` "names: …" |
 | BMP writer; text joining; JPEG orientation note | `core.test.ts` "bmp", "text", "exif" |
@@ -82,4 +83,5 @@ small generated PDFs and images. **Not yet run:** Firefox, Safari, phones, large
 | Protect PDF: refuses an empty or mismatched password; the saved file is reported encrypted by pypdf and by qpdf (encryption revision 6, AES 256-bit), is rejected with no or a wrong password, and opens with the right one with all pages and text | Pass |
 | Unlock PDF: files protected by this tool and by qpdf, opened with their passwords, are saved unencrypted with all pages; an author-locked file and an unprotected file each get a plain explanation | Pass |
 | Page numbers: default, each corner tried in the preview, "Page n of total", start on page 2, first number 10, size and margin; positions read back from the saved PDFs with pypdf match the settings, on plain, sideways, cropped and tool-turned pages; two files numbered separately; off by default in the workspace; kept in the settings file | Pass |
+| Watermark: default, repeated, full strength, level and smaller, shown in the preview; saved PDFs contain the words once per page (or several times when repeated) and keep the page's own text; sideways pages; two files; empty words and unsupported characters refused with a reason; off by default in the workspace; with page numbers together; kept in the settings file | Pass |
 | Phone-width layout | Looked at in screenshots only; **not checked on a real phone** |
