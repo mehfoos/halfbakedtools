@@ -13,6 +13,7 @@ and shoppers at ordinary UK supermarkets. It is for thinking about food, not a m
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | Vitamin D is reported on its own line and left out of the "targets met" count unless the visitor asks to plan for it | Otherwise almost every result read "short on vitamin D", burying shortfalls the plan was actually trying to avoid. Its amount, status and the supplement advice are still shown |
 | 2026-11-17 | US-fortified products are flagged and left out of the "Everything" preset (still selectable one by one) | A UK shopper's version may not have the added nutrients, so a plan built on them could mislead |
 | 2026-11-17 | Children: a warning (stronger under 5) and portion limits scaled by calories relative to a 2,000 kcal day. No minimum age | Adult portion caps gave toddler plans with 130 g of kale; the scaling is a rule of thumb and is labelled as one |
 | 2026-11-17 | Suggestions leave out foods the NHS says a group should avoid (liver in pregnancy; shark, swordfish, marlin in pregnancy and under 16); the builder warns | The vitamin A limit alone only capped liver at about 30 g |

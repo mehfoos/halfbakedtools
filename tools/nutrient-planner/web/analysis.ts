@@ -20,6 +20,7 @@ export type Row = {
   key: string; label: string; unit: string; value: number;
   min?: number; max?: number; custom?: boolean;
   ofEnergy?: boolean;       // the target is a share of the day's energy
+  aside?: boolean;          // reported on its own line, not counted among the targets met or missed
   pctOfMin?: number;        // share of the minimum reached
   pctOfMax?: number;        // share of the upper limit used
   status: "met" | "short" | "low" | "over" | "within" | "info" | "unassessed";
@@ -33,6 +34,7 @@ export type Report = {
   minCount: number;
   shortfalls: Row[];
   unassessed: Row[];
+  aside: Row[];             // targets reported separately (vitamin D, unless the person asks to plan for it)
 };
 
 export function totals(items: { food: Food; grams: number }[], keys: string[]) {
@@ -46,6 +48,7 @@ export function analyse(
   targets: ResolvedTarget[],
   notAssessed: Set<string>,
   nutrientMeta: Map<string, { label: string; unit: string }>,
+  aside: Set<string> = new Set(),
 ): Report {
   const byTarget = new Map(targets.map((t) => [t.key, t]));
   const rows: Row[] = [];
@@ -59,6 +62,7 @@ export function analyse(
       // targets tied to energy (% of energy, per MJ) are judged against this day's own calories
       const b = boundsAt(t, sums.energy ?? 0);
       row.min = b.min; row.max = b.max; row.custom = t.custom;
+      row.aside = aside.has(key) || undefined;
       row.ofEnergy = t.minPerKcal !== undefined || t.maxPerKcal !== undefined;
       if (notAssessed.has(key)) row.status = "unassessed";
       else {
@@ -75,7 +79,7 @@ export function analyse(
     }
     rows.push(row);
   }
-  const mins = rows.filter((r) => r.pctOfMin !== undefined);
+  const mins = rows.filter((r) => r.pctOfMin !== undefined && !r.aside);
   return {
     rows,
     byKey: new Map(rows.map((r) => [r.key, r])),
@@ -84,5 +88,6 @@ export function analyse(
     minCount: mins.length,
     shortfalls: mins.filter((r) => r.status === "short" || r.status === "low").sort((a, b) => a.pctOfMin! - b.pctOfMin!),
     unassessed: rows.filter((r) => r.status === "unassessed"),
+    aside: rows.filter((r) => r.aside && r.pctOfMin !== undefined),
   };
 }

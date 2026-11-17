@@ -314,7 +314,8 @@ export async function start(root: HTMLElement) {
     const current = resolve(true);
     const { notAssessed } = splitAssessable(current, selectedFoods().length ? selectedFoods() : dietFoods());
     const sums = totals(items, ORDER);
-    return analyse(sums, current, new Set(notAssessed.map((t) => t.key)), meta);
+    // Vitamin D is reported on its own line unless the person has asked for it to be planned from food.
+    return analyse(sums, current, new Set(notAssessed.map((t) => t.key)), meta, new Set(s.vitaminD ? [] : ["vitaminD"]));
   }
 
   const chip = (r: Row) => {
@@ -382,7 +383,7 @@ export async function start(root: HTMLElement) {
 
   function sideHtml(rep: Report) {
     const groups = GROUPS.filter((g) => ["vitamins", "minerals", "amino"].includes(g.id)).map((g) => {
-      const rs = g.keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined);
+      const rs = g.keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined && !r.aside);
       if (!rs.length) return "";
       const met = rs.filter((r) => r.status === "met").length;
       return `<li><span class="chip ${met === rs.length ? "met" : "short"}">${met} of ${rs.length}</span> ${esc(g.title)}</li>`;
@@ -407,7 +408,7 @@ export async function start(root: HTMLElement) {
   function noticesHtml(rep: Report) {
     const short = (k: string) => { const r = rep.byKey.get(k); return r ? r.status === "short" || r.status === "low" : false; };
     const out: string[] = [];
-    if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much${s.vitaminD ? "" : ", so suggestions don't try to reach this target from food unless you ask them to (tick the box under “Suggest foods for me”)"}. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (NHS ${cite("nhs-vitd")}).`);
+    if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much${s.vitaminD ? "" : ", so suggestions don't try to reach this target from food and it isn't counted above, unless you ask (tick the box under “Suggest foods for me”)"}. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (NHS ${cite("nhs-vitd")}).`);
     if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products${s.diet === "none" ? "" : ", so a fortified food or supplement may be needed"} (NHS ${cite("nhs-vegan")}).`);
     if ((rep.byKey.get("epaDha")?.value ?? 0) < 250 && rep.byKey.get("epaDha")?.min === undefined) out.push(s.diet === "none"
       ? `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish such as salmon, mackerel and sardines; the NHS advises at least one portion (about 140 g) of oily fish a week ${cite("nhs-fish")}. Plant omega-3 (ALA) converts to them poorly.`
@@ -493,7 +494,8 @@ export async function start(root: HTMLElement) {
       if (id === "fats" && !rows.some((r) => r.min !== undefined)) return "";
       if (!rows.length) return id === "amino" ? `<details><summary>${esc(g.title)}</summary><div class="details-body"><p class="small sans">Amino acid targets are given for adults only.</p></div></details>` : "";
       const axes = axesFor(rep, g.keys);
-      const met = rows.filter((r) => r.status === "met").length, mins = rows.filter((r) => r.pctOfMin !== undefined).length;
+      const counted = rows.filter((r) => r.pctOfMin !== undefined && !r.aside);
+      const met = counted.filter((r) => r.status === "met").length, mins = counted.length;
       return `<details><summary>${esc(g.title)} <span class="summary-note">${mins ? `${met} of ${mins} met` : `${rows.length} values`}</span></summary><div class="details-body">
         ${chart(axes, `${g.title}: share of each target reached`)}
         ${id === "vitamins" ? `<p class="small sans muted">Vitamin D targets cover all vitamin D from food (D2 and D3 together). The difference matters mainly for supplements, where D3 raises blood levels more effectively. B5 (pantothenic acid) has a US target only; biotin (B7) isn't shown because the food data rarely includes it.</p>` : ""}
@@ -501,7 +503,8 @@ export async function start(root: HTMLElement) {
         ${contribSection(items, g.keys, g.id === "amino" ? "these amino acids" : `these ${g.title.toLowerCase()}`)}</div></details>`;
     };
     const notChecked = rep.unassessed.length ? ` Not checked (no food data): ${rep.unassessed.map((r) => esc(r.label)).join(", ")}.` : "";
-    return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> checked targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}${notChecked}
+    const asideTxt = rep.aside.map((r) => ` ${esc(r.label)}, which suggestions don't plan for: ${fmt(r.value)} of ${fmt(r.min)} ${esc(r.unit)} (see the note below).`).join("");
+    return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> checked targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}${asideTxt}${notChecked}
         ${over.length ? ` <span class="chip over">Over the limit for ${over.map((r) => esc(r.label)).join(", ")}</span>` : ""}</p>
       ${custom ? `<p class="small muted sans">Using some custom targets.</p>` : ""}
       <h4 class="chart-title">At a glance <span class="muted small">(laid out like a food label)</span></h4>
@@ -564,7 +567,8 @@ export async function start(root: HTMLElement) {
         const notes = notesHtmlFor(items);
         results.insertAdjacentHTML("beforeend", `<article class="result">
           <h3><span>Option ${k}</span><span class="result-actions"><button type="button" class="small" data-edit="${k - 1}">Adjust in builder</button></span></h3>
-          <ul class="ingredients">${items.map((i) => `<li><b>${esc(i.food.name)}</b> · ${esc(describeAmount(i.food, i.grams))}</li>`).join("")}</ul>
+          <p class="small muted sans day-note">Amounts are totals for the whole day, to spread across meals and snacks as you like.</p>
+          <ul class="ingredients">${items.map((i) => `<li><b>${esc(i.food.name)}</b> · ${esc(describeAmount(i.food, i.grams))} · <span class="kcal">${Math.round(((i.food.per100g.energy ?? 0) * i.grams) / 100).toLocaleString("en-GB")} kcal</span></li>`).join("")}</ul>
           ${(d.plan as Plan).timedOut ? `<p class="notice info small">The search for this option was stopped at its 5-second limit, so this is the best combination found in that time; a better one may exist. Switching fewer foods on makes the search faster.</p>` : ""}
           ${reportHtml(report(items), items)}
           ${notes}

@@ -254,3 +254,13 @@ test("EU sodium is EFSA's own value (2019, Table 12), not the borrowed US one", 
   assert.deepEqual([na(2).value, na(5).value, na(8).value, na(12).value, na(16).value, na(40).value, na(30, "pregnancy").value], [1100, 1300, 1700, 2000, 2000, 2000, 2000]);
   assert.equal(na(40).source, "efsa-sodium-2019");
 });
+
+test("a target set aside (vitamin D) is reported separately and not counted as met or missed", () => {
+  const targets = [{ key: "protein", label: "Protein", unit: "g", min: 50 }, { key: "vitaminD", label: "Vitamin D", unit: "µg", min: 10 }];
+  const m = new Map([["protein", { label: "Protein", unit: "g" }], ["vitaminD", { label: "Vitamin D", unit: "µg" }]]);
+  const counted = analyse({ protein: 60, vitaminD: 2 }, targets, new Set(), m);
+  assert.deepEqual([counted.metCount, counted.minCount, counted.shortfalls.map((r) => r.key), counted.aside.length], [1, 2, ["vitaminD"], 0]);
+  const aside = analyse({ protein: 60, vitaminD: 2 }, targets, new Set(), m, new Set(["vitaminD"]));
+  assert.deepEqual([aside.metCount, aside.minCount, aside.shortfalls.length, aside.aside.map((r) => r.key)], [1, 1, 0, ["vitaminD"]]);
+  assert.equal(aside.byKey.get("vitaminD")!.status, "low");   // still shown with its real status in tables and charts
+});
