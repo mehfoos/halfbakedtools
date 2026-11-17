@@ -1,1830 +1,1836 @@
 {
- "_comment": "Curated list of common, cheap, UK-available whole foods. Each entry is matched against USDA SR Legacy descriptions: every 'include' term must appear (case-insensitive), no 'exclude' term may appear; among matches, entries containing 'prefer' terms win, then the shortest description. 'unitGrams' is the weight of one unit; 'step' is the smallest amount of that unit the planner will suggest; 'maxGrams' is a realism cap per day. Values are for the food as eaten (e.g. pulses cooked). Review data/foods/match_report.md after each pipeline run. Optionally add a 'foundation' object with its own include/exclude/prefer terms to use USDA Foundation Foods data (newer analyses) for that food; SR Legacy fills any nutrient Foundation lacks. data/foods/foundation_candidates.md lists likely Foundation records.",
- "foods": [
-  {
-   "id": "lentils",
-   "name": "Lentils (cooked)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Lentils",
-    "mature seeds",
-    "cooked",
-    "boiled",
-    "without salt"
-   ],
-   "exclude": [
-    "sprouted"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "chickpeas",
-   "name": "Chickpeas (cooked)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Chickpeas",
-    "mature seeds",
-    "cooked",
-    "boiled",
-    "without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "kidney-beans",
-   "name": "Red kidney beans (cooked)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Beans, kidney, red",
-    "mature seeds",
-    "cooked",
-    "boiled",
-    "without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "black-beans",
-   "name": "Black beans (cooked)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Beans, black",
-    "mature seeds",
-    "cooked",
-    "boiled",
-    "without salt"
-   ],
-   "exclude": [
-    "turtle"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "baked-beans",
-   "name": "Baked beans (tinned)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Beans, baked, canned",
-    "plain or vegetarian"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 415
-  },
-  {
-   "id": "split-peas",
-   "name": "Split peas (cooked)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Peas, split",
-    "mature seeds",
-    "cooked",
-    "boiled",
-    "without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "edamame",
-   "name": "Edamame beans (frozen, cooked)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Edamame",
-    "frozen",
-    "prepared"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "tofu",
-   "name": "Firm tofu (calcium-set)",
-   "group": "Soya",
-   "diet": "vegan",
-   "include": [
-    "Tofu",
-    "firm",
-    "calcium sulfate"
-   ],
-   "exclude": [
-    "fried",
-    "dried-frozen",
-    "salted"
-   ],
-   "prefer": [
-    "raw"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "soy-milk",
-   "name": "Soya drink (calcium-fortified)",
-   "group": "Soya",
-   "diet": "vegan",
-   "include": [
-    "Soymilk",
-    "original and vanilla",
-    "added calcium"
-   ],
-   "exclude": [
-    "light",
-    "unfortified"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 50,
-   "maxGrams": 800,
-   "notes": "US data; check your brand's label for calcium, B12, vitamin D and iodine."
-  },
-  {
-   "id": "oats",
-   "name": "Porridge oats (dry)",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Cereals, oats",
-    "regular and quick",
-    "not fortified",
-    "dry"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 150
-  },
-  {
-   "id": "brown-rice",
-   "name": "Brown rice (cooked)",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Rice, brown",
-    "long-grain",
-    "cooked"
-   ],
-   "exclude": [
-    "parboiled"
-   ],
-   "prefer": [
-    "without salt"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 500
-  },
-  {
-   "id": "white-rice",
-   "name": "White rice (cooked)",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Rice, white",
-    "long-grain",
-    "regular",
-    "unenriched",
-    "cooked"
-   ],
-   "exclude": [
-    "parboiled",
-    "instant"
-   ],
-   "prefer": [
-    "without salt"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 500
-  },
-  {
-   "id": "wholemeal-bread",
-   "name": "Wholemeal bread",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Bread, whole-wheat",
-    "commercially prepared"
-   ],
-   "exclude": [
-    "toasted"
-   ],
-   "unit": "slice",
-   "unitGrams": 36,
-   "step": 1,
-   "maxGrams": 288,
-   "notes": "US bread data; UK wholemeal bread is not fortified, US values for some vitamins may differ."
-  },
-  {
-   "id": "wholewheat-pasta",
-   "name": "Wholewheat pasta (cooked)",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Pasta, whole-wheat, cooked"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 450
-  },
-  {
-   "id": "quinoa",
-   "name": "Quinoa (cooked)",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Quinoa",
-    "cooked"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "barley",
-   "name": "Pearl barley (cooked)",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Barley, pearled",
-    "cooked"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "potato",
-   "name": "Potato (baked, with skin)",
-   "group": "Starchy veg",
-   "diet": "vegan",
-   "include": [
-    "Potatoes, baked",
-    "flesh and skin",
-    "without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 600
-  },
-  {
-   "id": "sweet-potato",
-   "name": "Sweet potato (baked)",
-   "group": "Starchy veg",
-   "diet": "vegan",
-   "include": [
-    "Sweet potato",
-    "cooked",
-    "baked in skin",
-    "without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 500
-  },
-  {
-   "id": "egg",
-   "name": "Eggs",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Egg, whole",
-    "raw, fresh"
-   ],
-   "exclude": [
-    "frozen",
-    "dried"
-   ],
-   "unit": "egg",
-   "unitGrams": 50,
-   "step": 0.5,
-   "maxGrams": 200,
-   "foundation": {
-    "include": [
-     "Eggs, Grade A, Large, egg whole"
-    ]
-   }
-  },
-  {
-   "id": "milk",
-   "name": "Semi-skimmed milk",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Milk, reduced fat, fluid, 2% milkfat"
-   ],
-   "exclude": [
-    "protein fortified",
-    "lactose"
-   ],
-   "prefer": [
-    "without added vitamin A"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 50,
-   "maxGrams": 800,
-   "notes": "UK milk is not vitamin D fortified; the unfortified US entry is used where available."
-  },
-  {
-   "id": "yogurt",
-   "name": "Plain yoghurt (whole milk)",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Yogurt, plain, whole milk"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 500
-  },
-  {
-   "id": "greek-yogurt",
-   "name": "Greek yoghurt (plain, fat-free)",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Yogurt, Greek, plain, nonfat"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 500
-  },
-  {
-   "id": "cheddar",
-   "name": "Cheddar cheese",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Cheese, cheddar"
-   ],
-   "exclude": [
-    "reduced",
-    "low",
-    "nonfat",
-    "sharp",
-    "imitation"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 100
-  },
-  {
-   "id": "cottage-cheese",
-   "name": "Cottage cheese (low fat)",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Cheese, cottage",
-    "lowfat",
-    "2% milkfat"
-   ],
-   "exclude": [
-    "lactose",
-    "sodium",
-    "fruit"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "spinach",
-   "name": "Spinach (frozen, cooked)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Spinach, frozen",
-    "cooked",
-    "boiled",
-    "drained",
-    "without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "kale",
-   "name": "Kale (raw)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Kale, raw"
-   ],
-   "exclude": [
-    "scotch"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  },
-  {
-   "id": "broccoli",
-   "name": "Broccoli (cooked)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Broccoli",
-    "cooked",
-    "boiled",
-    "drained",
-    "without salt"
-   ],
-   "exclude": [
-    "frozen",
-    "raab",
-    "chinese"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "carrot",
-   "name": "Carrots (raw)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Carrots, raw"
-   ],
-   "exclude": [
-    "baby"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "peas",
-   "name": "Garden peas (frozen, cooked)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Peas, green, frozen",
-    "cooked",
-    "boiled",
-    "drained",
-    "without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "tinned-tomatoes",
-   "name": "Chopped tomatoes (tinned)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Tomatoes, red, ripe, canned",
-    "packed in tomato juice"
-   ],
-   "exclude": [
-    "no salt",
-    "stewed"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "onion",
-   "name": "Onions (raw)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Onions, raw"
-   ],
-   "exclude": [
-    "spring",
-    "welsh",
-    "young",
-    "sweet",
-    "dehydrated"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  },
-  {
-   "id": "red-pepper",
-   "name": "Red pepper (raw)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Peppers, sweet, red, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "cabbage",
-   "name": "Cabbage (raw)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Cabbage, raw"
-   ],
-   "exclude": [
-    "chinese",
-    "red",
-    "savoy",
-    "japanese"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "mushrooms",
-   "name": "Mushrooms (white, raw)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Mushrooms, white, raw"
-   ],
-   "exclude": [
-    "ultraviolet"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "uv-mushrooms",
-   "name": "Mushrooms (UV-exposed, 'vitamin D' mushrooms)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Mushrooms",
-    "ultraviolet"
-   ],
-   "exclude": [],
-   "prefer": [
-    "raw"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  },
-  {
-   "id": "banana",
-   "name": "Bananas",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Bananas, raw"
-   ],
-   "exclude": [],
-   "unit": "banana",
-   "unitGrams": 118,
-   "step": 0.5,
-   "maxGrams": 354
-  },
-  {
-   "id": "apple",
-   "name": "Apples (with skin)",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Apples, raw, with skin"
-   ],
-   "exclude": [
-    "gala",
-    "fuji",
-    "granny",
-    "golden",
-    "red delicious"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "orange",
-   "name": "Oranges",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Oranges, raw",
-    "all commercial varieties"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "blueberries",
-   "name": "Blueberries (frozen)",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Blueberries, frozen, unsweetened"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "strawberries",
-   "name": "Strawberries",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Strawberries, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "raisins",
-   "name": "Raisins",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Raisins, dark, seedless"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 60
-  },
-  {
-   "id": "dried-apricots",
-   "name": "Dried apricots",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Apricots, dried",
-    "sulfured",
-    "uncooked"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 80
-  },
-  {
-   "id": "walnuts",
-   "name": "Walnuts",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Nuts, walnuts, english"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 60
-  },
-  {
-   "id": "almonds",
-   "name": "Almonds",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Nuts, almonds"
-   ],
-   "exclude": [
-    "blanched",
-    "roasted",
-    "paste",
-    "butter",
-    "honey"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 60
-  },
-  {
-   "id": "peanuts",
-   "name": "Peanuts (dry roasted, unsalted)",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Peanuts",
-    "dry-roasted",
-    "without salt"
-   ],
-   "exclude": [
-    "spanish",
-    "valencia",
-    "virginia"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 60
-  },
-  {
-   "id": "peanut-butter",
-   "name": "Peanut butter (smooth)",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Peanut butter, smooth style"
-   ],
-   "exclude": [
-    "reduced fat",
-    "with salt",
-    "vitamin"
-   ],
-   "prefer": [
-    "without salt"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 50
-  },
-  {
-   "id": "sunflower-seeds",
-   "name": "Sunflower seeds",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Seeds, sunflower seed kernels, dried"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 40
-  },
-  {
-   "id": "pumpkin-seeds",
-   "name": "Pumpkin seeds",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Seeds, pumpkin and squash seed kernels, dried"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 40
-  },
-  {
-   "id": "flaxseed",
-   "name": "Ground flaxseed (linseed)",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Seeds, flaxseed"
-   ],
-   "exclude": [
-    "oil"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 30
-  },
-  {
-   "id": "chia",
-   "name": "Chia seeds",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Seeds, chia seeds, dried"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 30
-  },
-  {
-   "id": "tahini",
-   "name": "Tahini",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Seeds, sesame butter, tahini"
-   ],
-   "exclude": [],
-   "prefer": [
-    "roasted and toasted"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 40
-  },
-  {
-   "id": "rapeseed-oil",
-   "name": "Rapeseed oil",
-   "group": "Oils",
-   "diet": "vegan",
-   "include": [
-    "Oil, canola"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 40
-  },
-  {
-   "id": "olive-oil",
-   "name": "Olive oil",
-   "group": "Oils",
-   "diet": "vegan",
-   "include": [
-    "Oil, olive, salad or cooking"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 40
-  },
-  {
-   "id": "yeast-extract",
-   "name": "Yeast extract (e.g. Marmite)",
-   "group": "Fortified",
-   "diet": "vegan",
-   "include": [
-    "Yeast extract spread"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 2,
-   "maxGrams": 8,
-   "notes": "Fortification differs by brand and country; check your jar's label for B12."
-  },
-  {
-   "id": "cauliflower",
-   "name": "Cauliflower (cooked)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Cauliflower, cooked, boiled, drained, without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "courgette",
-   "name": "Courgette (raw)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Squash, summer, zucchini, includes skin, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "cucumber",
-   "name": "Cucumber",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Cucumber, with peel, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "lettuce",
-   "name": "Lettuce (cos)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Lettuce, cos or romaine, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  },
-  {
-   "id": "green-beans",
-   "name": "Green beans (frozen, cooked)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Beans, snap, green, frozen, cooked, boiled, drained without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "sweetcorn",
-   "name": "Sweetcorn (frozen, cooked)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Corn, sweet, yellow, frozen, kernels cut off cob, boiled, drained, without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "brussels",
-   "name": "Brussels sprouts (cooked)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Brussels sprouts, cooked, boiled, drained, without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "leeks",
-   "name": "Leeks (raw)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Leeks, (bulb and lower leaf-portion), raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  },
-  {
-   "id": "garlic",
-   "name": "Garlic",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Garlic, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 3,
-   "maxGrams": 15
-  },
-  {
-   "id": "beetroot",
-   "name": "Beetroot (cooked)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Beets, cooked, boiled, drained"
-   ],
-   "exclude": [
-    "with salt"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "parsnip",
-   "name": "Parsnips (cooked)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Parsnips, cooked, boiled, drained, without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "celery",
-   "name": "Celery",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Celery, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  },
-  {
-   "id": "red-cabbage",
-   "name": "Red cabbage (raw)",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Cabbage, red, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "watercress",
-   "name": "Watercress",
-   "group": "Vegetables",
-   "diet": "vegan",
-   "include": [
-    "Watercress, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 100
-  },
-  {
-   "id": "avocado",
-   "name": "Avocado",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Avocados, raw, all commercial varieties"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  },
-  {
-   "id": "pear",
-   "name": "Pears",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Pears, raw, bartlett"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "grapes",
-   "name": "Grapes",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Grapes, red or green (European type"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "kiwi",
-   "name": "Kiwi fruit",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Kiwifruit, green, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "mango",
-   "name": "Mango",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Mangos, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "plums",
-   "name": "Plums",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Plums, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "melon",
-   "name": "Melon (cantaloupe)",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Melons, cantaloupe, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "raspberries",
-   "name": "Raspberries",
-   "group": "Fruit",
-   "diet": "vegan",
-   "include": [
-    "Raspberries, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "haricot",
-   "name": "Haricot beans (cooked)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Beans, navy, mature seeds, cooked, boiled, without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "butter-beans",
-   "name": "Butter beans (cooked)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Lima beans, large, mature seeds, cooked, boiled, without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "pinto",
-   "name": "Pinto beans (cooked)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Beans, pinto, mature seeds, cooked, boiled, without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "red-lentils",
-   "name": "Red lentils (dry)",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Lentils, pink or red, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 150
-  },
-  {
-   "id": "hummus",
-   "name": "Hummus",
-   "group": "Pulses",
-   "diet": "vegan",
-   "include": [
-    "Hummus, commercial"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 150
-  },
-  {
-   "id": "tempeh",
-   "name": "Tempeh",
-   "group": "Soya",
-   "diet": "vegan",
-   "include": [
-    "Tempeh"
-   ],
-   "exclude": [
-    "cooked"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "mozzarella",
-   "name": "Mozzarella",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Cheese, mozzarella, whole milk"
-   ],
-   "exclude": [
-    "low moisture"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 100
-  },
-  {
-   "id": "feta",
-   "name": "Feta",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Cheese, feta"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 100
-  },
-  {
-   "id": "parmesan",
-   "name": "Parmesan",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Cheese, parmesan, hard"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 40,
-   "notes": "Traditional Parmesan uses animal rennet; vegetarian hard cheeses are available."
-  },
-  {
-   "id": "whole-milk",
-   "name": "Whole milk",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 50,
-   "maxGrams": 800
-  },
-  {
-   "id": "skimmed-milk",
-   "name": "Skimmed milk",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Milk, nonfat, fluid, without added vitamin A and vitamin D"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 50,
-   "maxGrams": 800
-  },
-  {
-   "id": "greek-yogurt-full",
-   "name": "Greek yoghurt (plain, full-fat)",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Yogurt, Greek, plain, whole milk"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 500
-  },
-  {
-   "id": "butter",
-   "name": "Butter (unsalted)",
-   "group": "Eggs & dairy",
-   "diet": "vegetarian",
-   "include": [
-    "Butter, without salt"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 30
-  },
-  {
-   "id": "couscous",
-   "name": "Couscous (cooked)",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Couscous, cooked"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "bulgur",
-   "name": "Bulgur wheat (cooked)",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Bulgur, cooked"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 400
-  },
-  {
-   "id": "wholemeal-flour",
-   "name": "Wholemeal flour",
-   "group": "Grains",
-   "diet": "vegan",
-   "include": [
-    "Wheat flour, whole-grain"
-   ],
-   "exclude": [
-    "soft wheat"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 150
-  },
-  {
-   "id": "cashews",
-   "name": "Cashews",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Nuts, cashew nuts, raw"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 60
-  },
-  {
-   "id": "hazelnuts",
-   "name": "Hazelnuts",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Nuts, hazelnuts or filberts"
-   ],
-   "exclude": [
-    "blanched",
-    "roasted"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 60
-  },
-  {
-   "id": "brazil-nuts",
-   "name": "Brazil nuts",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Nuts, brazilnuts, dried, unblanched"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 30,
-   "notes": "Very high in selenium; a couple a day is plenty."
-  },
-  {
-   "id": "sesame",
-   "name": "Sesame seeds",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Seeds, sesame seeds, whole, dried"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 30
-  },
-  {
-   "id": "hemp-seeds",
-   "name": "Hemp seeds (hulled)",
-   "group": "Nuts & seeds",
-   "diet": "vegan",
-   "include": [
-    "Seeds, hemp seed, hulled"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 5,
-   "maxGrams": 40
-  },
-  {
-   "id": "almond-drink",
-   "name": "Almond drink (unsweetened)",
-   "group": "Plant drinks",
-   "diet": "vegan",
-   "include": [
-    "Beverages, almond milk, unsweetened, shelf stable"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 50,
-   "maxGrams": 800,
-   "notes": "US data; check your brand for added calcium, B12, vitamin D and iodine."
-  },
-  {
-   "id": "chicken-breast",
-   "name": "Chicken breast (roasted)",
-   "group": "Meat",
-   "diet": "meat",
-   "include": [
-    "Chicken, broilers or fryers, breast, meat only, cooked, roasted"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "chicken-thigh",
-   "name": "Chicken thigh (roasted)",
-   "group": "Meat",
-   "diet": "meat",
-   "include": [
-    "Chicken, broilers or fryers, thigh, meat only, cooked, roasted"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "turkey-mince",
-   "name": "Turkey mince (cooked)",
-   "group": "Meat",
-   "diet": "meat",
-   "include": [
-    "Turkey, Ground, cooked"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "beef-mince",
-   "name": "Beef mince, 15% fat (cooked)",
-   "group": "Meat",
-   "diet": "meat",
-   "include": [
-    "Beef, ground, 85% lean meat / 15% fat, patty, cooked, broiled"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "beef-steak",
-   "name": "Beef sirloin steak (lean, grilled)",
-   "group": "Meat",
-   "diet": "meat",
-   "include": [
-    "Beef, top sirloin, steak, separable lean only",
-    "cooked, broiled"
-   ],
-   "exclude": [
-    "select",
-    "prime",
-    "1/4"
-   ],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "pork-loin",
-   "name": "Pork tenderloin (lean, roasted)",
-   "group": "Meat",
-   "diet": "meat",
-   "include": [
-    "Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "lamb-leg",
-   "name": "Lamb leg (lean, roasted)",
-   "group": "Meat",
-   "diet": "meat",
-   "include": [
-    "Lamb, New Zealand, imported, frozen, leg, whole (shank and sirloin), separable lean only, cooked, roasted"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "ham",
-   "name": "Ham (sliced)",
-   "group": "Meat",
-   "diet": "meat",
-   "include": [
-    "Ham, sliced, regular"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 100,
-   "notes": "Processed meat: the NHS advises keeping red and processed meat to about 70 g a day."
-  },
-  {
-   "id": "beef-liver",
-   "name": "Beef liver (cooked)",
-   "group": "Meat",
-   "diet": "meat",
-   "include": [
-    "Beef, variety meats and by-products, liver, cooked, braised"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 100,
-   "notes": "Very high in vitamin A: the NHS advises avoiding liver in pregnancy."
-  },
-  {
-   "id": "salmon",
-   "name": "Salmon (farmed, cooked)",
-   "group": "Fish",
-   "diet": "meat",
-   "include": [
-    "Fish, salmon, Atlantic, farmed, cooked, dry heat"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300,
-   "notes": "NHS advice: up to 4 portions of oily fish a week (2 if pregnant or trying for a baby)."
-  },
-  {
-   "id": "tinned-salmon",
-   "name": "Tinned pink salmon (with bones)",
-   "group": "Fish",
-   "diet": "meat",
-   "include": [
-    "Fish, salmon, pink, canned, total can contents"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200,
-   "notes": "NHS advice: up to 4 portions of oily fish a week (2 if pregnant or trying for a baby)."
-  },
-  {
-   "id": "tuna",
-   "name": "Tinned tuna in water",
-   "group": "Fish",
-   "diet": "meat",
-   "include": [
-    "Fish, tuna, light, canned in water, drained solids"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  },
-  {
-   "id": "sardines",
-   "name": "Sardines in oil (tinned)",
-   "group": "Fish",
-   "diet": "meat",
-   "include": [
-    "Fish, sardine, Atlantic, canned in oil, drained solids with bone"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 150,
-   "notes": "NHS advice: up to 4 portions of oily fish a week (2 if pregnant or trying for a baby)."
-  },
-  {
-   "id": "mackerel",
-   "name": "Mackerel (cooked)",
-   "group": "Fish",
-   "diet": "meat",
-   "include": [
-    "Fish, mackerel, Atlantic, cooked, dry heat"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200,
-   "notes": "NHS advice: up to 4 portions of oily fish a week (2 if pregnant or trying for a baby)."
-  },
-  {
-   "id": "cod",
-   "name": "Cod (cooked)",
-   "group": "Fish",
-   "diet": "meat",
-   "include": [
-    "Fish, cod, Atlantic, cooked, dry heat"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "haddock",
-   "name": "Haddock (cooked)",
-   "group": "Fish",
-   "diet": "meat",
-   "include": [
-    "Fish, haddock, cooked, dry heat"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 300
-  },
-  {
-   "id": "prawns",
-   "name": "Prawns (cooked)",
-   "group": "Fish",
-   "diet": "meat",
-   "include": [
-    "Crustaceans, shrimp, mixed species, cooked, moist heat"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  },
-  {
-   "id": "mussels",
-   "name": "Mussels (cooked)",
-   "group": "Fish",
-   "diet": "meat",
-   "include": [
-    "Mollusks, mussel, blue, cooked, moist heat"
-   ],
-   "exclude": [],
-   "unit": "g",
-   "unitGrams": 1,
-   "step": 10,
-   "maxGrams": 200
-  }
- ]
+  "_comment": "Curated list of common, cheap, UK-available whole foods. Each entry is matched against USDA SR Legacy descriptions: every 'include' term must appear (case-insensitive), no 'exclude' term may appear; among matches, entries containing 'prefer' terms win, then the shortest description. 'unitGrams' is the weight of one unit; 'step' is the smallest amount of that unit the planner will suggest; 'maxGrams' is a realism cap per day. Values are for the food as eaten (e.g. pulses cooked). Review data/foods/match_report.md after each pipeline run. Optionally add a 'foundation' object with its own include/exclude/prefer terms to use USDA Foundation Foods data (newer analyses) for that food; SR Legacy fills any nutrient Foundation lacks. data/foods/foundation_candidates.md lists likely Foundation records. 'noteRef' names the reference (in references.json) that a food's note rests on.",
+  "foods": [
+    {
+      "id": "lentils",
+      "name": "Lentils (cooked)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Lentils",
+        "mature seeds",
+        "cooked",
+        "boiled",
+        "without salt"
+      ],
+      "exclude": [
+        "sprouted"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "chickpeas",
+      "name": "Chickpeas (cooked)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Chickpeas",
+        "mature seeds",
+        "cooked",
+        "boiled",
+        "without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "kidney-beans",
+      "name": "Red kidney beans (cooked)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Beans, kidney, red",
+        "mature seeds",
+        "cooked",
+        "boiled",
+        "without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "black-beans",
+      "name": "Black beans (cooked)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Beans, black",
+        "mature seeds",
+        "cooked",
+        "boiled",
+        "without salt"
+      ],
+      "exclude": [
+        "turtle"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "baked-beans",
+      "name": "Baked beans (tinned)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Beans, baked, canned",
+        "plain or vegetarian"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 415
+    },
+    {
+      "id": "split-peas",
+      "name": "Split peas (cooked)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Peas, split",
+        "mature seeds",
+        "cooked",
+        "boiled",
+        "without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "edamame",
+      "name": "Edamame beans (frozen, cooked)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Edamame",
+        "frozen",
+        "prepared"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "tofu",
+      "name": "Firm tofu (calcium-set)",
+      "group": "Soya",
+      "diet": "vegan",
+      "include": [
+        "Tofu",
+        "firm",
+        "calcium sulfate"
+      ],
+      "exclude": [
+        "fried",
+        "dried-frozen",
+        "salted"
+      ],
+      "prefer": [
+        "raw"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "soy-milk",
+      "name": "Soya drink (calcium-fortified)",
+      "group": "Soya",
+      "diet": "vegan",
+      "include": [
+        "Soymilk",
+        "original and vanilla",
+        "added calcium"
+      ],
+      "exclude": [
+        "light",
+        "unfortified"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 50,
+      "maxGrams": 800,
+      "notes": "US data; check your brand's label for calcium, B12, vitamin D and iodine."
+    },
+    {
+      "id": "oats",
+      "name": "Porridge oats (dry)",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Cereals, oats",
+        "regular and quick",
+        "not fortified",
+        "dry"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 150
+    },
+    {
+      "id": "brown-rice",
+      "name": "Brown rice (cooked)",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Rice, brown",
+        "long-grain",
+        "cooked"
+      ],
+      "exclude": [
+        "parboiled"
+      ],
+      "prefer": [
+        "without salt"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 500
+    },
+    {
+      "id": "white-rice",
+      "name": "White rice (cooked)",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Rice, white",
+        "long-grain",
+        "regular",
+        "unenriched",
+        "cooked"
+      ],
+      "exclude": [
+        "parboiled",
+        "instant"
+      ],
+      "prefer": [
+        "without salt"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 500
+    },
+    {
+      "id": "wholemeal-bread",
+      "name": "Wholemeal bread",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Bread, whole-wheat",
+        "commercially prepared"
+      ],
+      "exclude": [
+        "toasted"
+      ],
+      "unit": "slice",
+      "unitGrams": 36,
+      "step": 1,
+      "maxGrams": 288,
+      "notes": "US bread data; UK wholemeal bread is not fortified, US values for some vitamins may differ."
+    },
+    {
+      "id": "wholewheat-pasta",
+      "name": "Wholewheat pasta (cooked)",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Pasta, whole-wheat, cooked"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 450
+    },
+    {
+      "id": "quinoa",
+      "name": "Quinoa (cooked)",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Quinoa",
+        "cooked"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "barley",
+      "name": "Pearl barley (cooked)",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Barley, pearled",
+        "cooked"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "potato",
+      "name": "Potato (baked, with skin)",
+      "group": "Starchy veg",
+      "diet": "vegan",
+      "include": [
+        "Potatoes, baked",
+        "flesh and skin",
+        "without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 600
+    },
+    {
+      "id": "sweet-potato",
+      "name": "Sweet potato (baked)",
+      "group": "Starchy veg",
+      "diet": "vegan",
+      "include": [
+        "Sweet potato",
+        "cooked",
+        "baked in skin",
+        "without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 500
+    },
+    {
+      "id": "egg",
+      "name": "Eggs",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Egg, whole",
+        "raw, fresh"
+      ],
+      "exclude": [
+        "frozen",
+        "dried"
+      ],
+      "unit": "egg",
+      "unitGrams": 50,
+      "step": 0.5,
+      "maxGrams": 200,
+      "foundation": {
+        "include": [
+          "Eggs, Grade A, Large, egg whole"
+        ]
+      }
+    },
+    {
+      "id": "milk",
+      "name": "Semi-skimmed milk",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Milk, reduced fat, fluid, 2% milkfat"
+      ],
+      "exclude": [
+        "protein fortified",
+        "lactose"
+      ],
+      "prefer": [
+        "without added vitamin A"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 50,
+      "maxGrams": 800,
+      "notes": "UK milk is not vitamin D fortified; the unfortified US entry is used where available."
+    },
+    {
+      "id": "yogurt",
+      "name": "Plain yoghurt (whole milk)",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Yogurt, plain, whole milk"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 500
+    },
+    {
+      "id": "greek-yogurt",
+      "name": "Greek yoghurt (plain, fat-free)",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Yogurt, Greek, plain, nonfat"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 500
+    },
+    {
+      "id": "cheddar",
+      "name": "Cheddar cheese",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Cheese, cheddar"
+      ],
+      "exclude": [
+        "reduced",
+        "low",
+        "nonfat",
+        "sharp",
+        "imitation"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 100
+    },
+    {
+      "id": "cottage-cheese",
+      "name": "Cottage cheese (low fat)",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Cheese, cottage",
+        "lowfat",
+        "2% milkfat"
+      ],
+      "exclude": [
+        "lactose",
+        "sodium",
+        "fruit"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "spinach",
+      "name": "Spinach (frozen, cooked)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Spinach, frozen",
+        "cooked",
+        "boiled",
+        "drained",
+        "without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "kale",
+      "name": "Kale (raw)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Kale, raw"
+      ],
+      "exclude": [
+        "scotch"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    },
+    {
+      "id": "broccoli",
+      "name": "Broccoli (cooked)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Broccoli",
+        "cooked",
+        "boiled",
+        "drained",
+        "without salt"
+      ],
+      "exclude": [
+        "frozen",
+        "raab",
+        "chinese"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "carrot",
+      "name": "Carrots (raw)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Carrots, raw"
+      ],
+      "exclude": [
+        "baby"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "peas",
+      "name": "Garden peas (frozen, cooked)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Peas, green, frozen",
+        "cooked",
+        "boiled",
+        "drained",
+        "without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "tinned-tomatoes",
+      "name": "Chopped tomatoes (tinned)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Tomatoes, red, ripe, canned",
+        "packed in tomato juice"
+      ],
+      "exclude": [
+        "no salt",
+        "stewed"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "onion",
+      "name": "Onions (raw)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Onions, raw"
+      ],
+      "exclude": [
+        "spring",
+        "welsh",
+        "young",
+        "sweet",
+        "dehydrated"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    },
+    {
+      "id": "red-pepper",
+      "name": "Red pepper (raw)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Peppers, sweet, red, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "cabbage",
+      "name": "Cabbage (raw)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Cabbage, raw"
+      ],
+      "exclude": [
+        "chinese",
+        "red",
+        "savoy",
+        "japanese"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "mushrooms",
+      "name": "Mushrooms (white, raw)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Mushrooms, white, raw"
+      ],
+      "exclude": [
+        "ultraviolet"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "uv-mushrooms",
+      "name": "Mushrooms (UV-exposed, 'vitamin D' mushrooms)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Mushrooms",
+        "ultraviolet"
+      ],
+      "exclude": [],
+      "prefer": [
+        "raw"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    },
+    {
+      "id": "banana",
+      "name": "Bananas",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Bananas, raw"
+      ],
+      "exclude": [],
+      "unit": "banana",
+      "unitGrams": 118,
+      "step": 0.5,
+      "maxGrams": 354
+    },
+    {
+      "id": "apple",
+      "name": "Apples (with skin)",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Apples, raw, with skin"
+      ],
+      "exclude": [
+        "gala",
+        "fuji",
+        "granny",
+        "golden",
+        "red delicious"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "orange",
+      "name": "Oranges",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Oranges, raw",
+        "all commercial varieties"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "blueberries",
+      "name": "Blueberries (frozen)",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Blueberries, frozen, unsweetened"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "strawberries",
+      "name": "Strawberries",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Strawberries, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "raisins",
+      "name": "Raisins",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Raisins, dark, seedless"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 60
+    },
+    {
+      "id": "dried-apricots",
+      "name": "Dried apricots",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Apricots, dried",
+        "sulfured",
+        "uncooked"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 80
+    },
+    {
+      "id": "walnuts",
+      "name": "Walnuts",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Nuts, walnuts, english"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 60
+    },
+    {
+      "id": "almonds",
+      "name": "Almonds",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Nuts, almonds"
+      ],
+      "exclude": [
+        "blanched",
+        "roasted",
+        "paste",
+        "butter",
+        "honey"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 60
+    },
+    {
+      "id": "peanuts",
+      "name": "Peanuts (dry roasted, unsalted)",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Peanuts",
+        "dry-roasted",
+        "without salt"
+      ],
+      "exclude": [
+        "spanish",
+        "valencia",
+        "virginia"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 60
+    },
+    {
+      "id": "peanut-butter",
+      "name": "Peanut butter (smooth)",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Peanut butter, smooth style"
+      ],
+      "exclude": [
+        "reduced fat",
+        "with salt",
+        "vitamin"
+      ],
+      "prefer": [
+        "without salt"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 50
+    },
+    {
+      "id": "sunflower-seeds",
+      "name": "Sunflower seeds",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Seeds, sunflower seed kernels, dried"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 40
+    },
+    {
+      "id": "pumpkin-seeds",
+      "name": "Pumpkin seeds",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Seeds, pumpkin and squash seed kernels, dried"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 40
+    },
+    {
+      "id": "flaxseed",
+      "name": "Ground flaxseed (linseed)",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Seeds, flaxseed"
+      ],
+      "exclude": [
+        "oil"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 30
+    },
+    {
+      "id": "chia",
+      "name": "Chia seeds",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Seeds, chia seeds, dried"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 30
+    },
+    {
+      "id": "tahini",
+      "name": "Tahini",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Seeds, sesame butter, tahini"
+      ],
+      "exclude": [],
+      "prefer": [
+        "roasted and toasted"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 40
+    },
+    {
+      "id": "rapeseed-oil",
+      "name": "Rapeseed oil",
+      "group": "Oils",
+      "diet": "vegan",
+      "include": [
+        "Oil, canola"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 40
+    },
+    {
+      "id": "olive-oil",
+      "name": "Olive oil",
+      "group": "Oils",
+      "diet": "vegan",
+      "include": [
+        "Oil, olive, salad or cooking"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 40
+    },
+    {
+      "id": "yeast-extract",
+      "name": "Yeast extract (e.g. Marmite)",
+      "group": "Fortified",
+      "diet": "vegan",
+      "include": [
+        "Yeast extract spread"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 2,
+      "maxGrams": 8,
+      "notes": "Fortification differs by brand and country; check your jar's label for B12."
+    },
+    {
+      "id": "cauliflower",
+      "name": "Cauliflower (cooked)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Cauliflower, cooked, boiled, drained, without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "courgette",
+      "name": "Courgette (raw)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Squash, summer, zucchini, includes skin, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "cucumber",
+      "name": "Cucumber",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Cucumber, with peel, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "lettuce",
+      "name": "Lettuce (cos)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Lettuce, cos or romaine, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    },
+    {
+      "id": "green-beans",
+      "name": "Green beans (frozen, cooked)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Beans, snap, green, frozen, cooked, boiled, drained without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "sweetcorn",
+      "name": "Sweetcorn (frozen, cooked)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Corn, sweet, yellow, frozen, kernels cut off cob, boiled, drained, without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "brussels",
+      "name": "Brussels sprouts (cooked)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Brussels sprouts, cooked, boiled, drained, without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "leeks",
+      "name": "Leeks (raw)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Leeks, (bulb and lower leaf-portion), raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    },
+    {
+      "id": "garlic",
+      "name": "Garlic",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Garlic, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 3,
+      "maxGrams": 15
+    },
+    {
+      "id": "beetroot",
+      "name": "Beetroot (cooked)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Beets, cooked, boiled, drained"
+      ],
+      "exclude": [
+        "with salt"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "parsnip",
+      "name": "Parsnips (cooked)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Parsnips, cooked, boiled, drained, without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "celery",
+      "name": "Celery",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Celery, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    },
+    {
+      "id": "red-cabbage",
+      "name": "Red cabbage (raw)",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Cabbage, red, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "watercress",
+      "name": "Watercress",
+      "group": "Vegetables",
+      "diet": "vegan",
+      "include": [
+        "Watercress, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 100
+    },
+    {
+      "id": "avocado",
+      "name": "Avocado",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Avocados, raw, all commercial varieties"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    },
+    {
+      "id": "pear",
+      "name": "Pears",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Pears, raw, bartlett"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "grapes",
+      "name": "Grapes",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Grapes, red or green (European type"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "kiwi",
+      "name": "Kiwi fruit",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Kiwifruit, green, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "mango",
+      "name": "Mango",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Mangos, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "plums",
+      "name": "Plums",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Plums, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "melon",
+      "name": "Melon (cantaloupe)",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Melons, cantaloupe, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "raspberries",
+      "name": "Raspberries",
+      "group": "Fruit",
+      "diet": "vegan",
+      "include": [
+        "Raspberries, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "haricot",
+      "name": "Haricot beans (cooked)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Beans, navy, mature seeds, cooked, boiled, without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "butter-beans",
+      "name": "Butter beans (cooked)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Lima beans, large, mature seeds, cooked, boiled, without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "pinto",
+      "name": "Pinto beans (cooked)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Beans, pinto, mature seeds, cooked, boiled, without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "red-lentils",
+      "name": "Red lentils (dry)",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Lentils, pink or red, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 150
+    },
+    {
+      "id": "hummus",
+      "name": "Hummus",
+      "group": "Pulses",
+      "diet": "vegan",
+      "include": [
+        "Hummus, commercial"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 150
+    },
+    {
+      "id": "tempeh",
+      "name": "Tempeh",
+      "group": "Soya",
+      "diet": "vegan",
+      "include": [
+        "Tempeh"
+      ],
+      "exclude": [
+        "cooked"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "mozzarella",
+      "name": "Mozzarella",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Cheese, mozzarella, whole milk"
+      ],
+      "exclude": [
+        "low moisture"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 100
+    },
+    {
+      "id": "feta",
+      "name": "Feta",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Cheese, feta"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 100
+    },
+    {
+      "id": "parmesan",
+      "name": "Parmesan",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Cheese, parmesan, hard"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 40,
+      "notes": "Traditional Parmesan uses animal rennet; vegetarian hard cheeses are available."
+    },
+    {
+      "id": "whole-milk",
+      "name": "Whole milk",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 50,
+      "maxGrams": 800
+    },
+    {
+      "id": "skimmed-milk",
+      "name": "Skimmed milk",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Milk, nonfat, fluid, without added vitamin A and vitamin D"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 50,
+      "maxGrams": 800
+    },
+    {
+      "id": "greek-yogurt-full",
+      "name": "Greek yoghurt (plain, full-fat)",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Yogurt, Greek, plain, whole milk"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 500
+    },
+    {
+      "id": "butter",
+      "name": "Butter (unsalted)",
+      "group": "Eggs & dairy",
+      "diet": "vegetarian",
+      "include": [
+        "Butter, without salt"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 30
+    },
+    {
+      "id": "couscous",
+      "name": "Couscous (cooked)",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Couscous, cooked"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "bulgur",
+      "name": "Bulgur wheat (cooked)",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Bulgur, cooked"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 400
+    },
+    {
+      "id": "wholemeal-flour",
+      "name": "Wholemeal flour",
+      "group": "Grains",
+      "diet": "vegan",
+      "include": [
+        "Wheat flour, whole-grain"
+      ],
+      "exclude": [
+        "soft wheat"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 150
+    },
+    {
+      "id": "cashews",
+      "name": "Cashews",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Nuts, cashew nuts, raw"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 60
+    },
+    {
+      "id": "hazelnuts",
+      "name": "Hazelnuts",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Nuts, hazelnuts or filberts"
+      ],
+      "exclude": [
+        "blanched",
+        "roasted"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 60
+    },
+    {
+      "id": "brazil-nuts",
+      "name": "Brazil nuts",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Nuts, brazilnuts, dried, unblanched"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 30,
+      "notes": "Very high in selenium; a couple a day is plenty."
+    },
+    {
+      "id": "sesame",
+      "name": "Sesame seeds",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Seeds, sesame seeds, whole, dried"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 30
+    },
+    {
+      "id": "hemp-seeds",
+      "name": "Hemp seeds (hulled)",
+      "group": "Nuts & seeds",
+      "diet": "vegan",
+      "include": [
+        "Seeds, hemp seed, hulled"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 5,
+      "maxGrams": 40
+    },
+    {
+      "id": "almond-drink",
+      "name": "Almond drink (unsweetened)",
+      "group": "Plant drinks",
+      "diet": "vegan",
+      "include": [
+        "Beverages, almond milk, unsweetened, shelf stable"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 50,
+      "maxGrams": 800,
+      "notes": "US data; check your brand for added calcium, B12, vitamin D and iodine."
+    },
+    {
+      "id": "chicken-breast",
+      "name": "Chicken breast (roasted)",
+      "group": "Meat",
+      "diet": "meat",
+      "include": [
+        "Chicken, broilers or fryers, breast, meat only, cooked, roasted"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "chicken-thigh",
+      "name": "Chicken thigh (roasted)",
+      "group": "Meat",
+      "diet": "meat",
+      "include": [
+        "Chicken, broilers or fryers, thigh, meat only, cooked, roasted"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "turkey-mince",
+      "name": "Turkey mince (cooked)",
+      "group": "Meat",
+      "diet": "meat",
+      "include": [
+        "Turkey, Ground, cooked"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "beef-mince",
+      "name": "Beef mince, 15% fat (cooked)",
+      "group": "Meat",
+      "diet": "meat",
+      "include": [
+        "Beef, ground, 85% lean meat / 15% fat, patty, cooked, broiled"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "beef-steak",
+      "name": "Beef sirloin steak (lean, grilled)",
+      "group": "Meat",
+      "diet": "meat",
+      "include": [
+        "Beef, top sirloin, steak, separable lean only",
+        "cooked, broiled"
+      ],
+      "exclude": [
+        "select",
+        "prime",
+        "1/4"
+      ],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "pork-loin",
+      "name": "Pork tenderloin (lean, roasted)",
+      "group": "Meat",
+      "diet": "meat",
+      "include": [
+        "Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "lamb-leg",
+      "name": "Lamb leg (lean, roasted)",
+      "group": "Meat",
+      "diet": "meat",
+      "include": [
+        "Lamb, New Zealand, imported, frozen, leg, whole (shank and sirloin), separable lean only, cooked, roasted"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "ham",
+      "name": "Ham (sliced)",
+      "group": "Meat",
+      "diet": "meat",
+      "include": [
+        "Ham, sliced, regular"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 100,
+      "notes": "Processed meat: the NHS advises anyone eating more than 90 g of red or processed meat a day to cut down to 70 g.",
+      "noteRef": "nhs-meat"
+    },
+    {
+      "id": "beef-liver",
+      "name": "Beef liver (cooked)",
+      "group": "Meat",
+      "diet": "meat",
+      "include": [
+        "Beef, variety meats and by-products, liver, cooked, braised"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 100,
+      "notes": "Liver is very high in vitamin A: the NHS advises pregnant women to avoid it, and says eating it every week may give more vitamin A than recommended.",
+      "noteRef": "nhs-meat"
+    },
+    {
+      "id": "salmon",
+      "name": "Salmon (farmed, cooked)",
+      "group": "Fish",
+      "diet": "meat",
+      "include": [
+        "Fish, salmon, Atlantic, farmed, cooked, dry heat"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300,
+      "notes": "Oily fish: the NHS advises no more than 4 portions (about 140 g each) a week, or 2 for girls and for women who are pregnant, breastfeeding or may have a child one day.",
+      "noteRef": "nhs-fish"
+    },
+    {
+      "id": "tinned-salmon",
+      "name": "Tinned pink salmon (with bones)",
+      "group": "Fish",
+      "diet": "meat",
+      "include": [
+        "Fish, salmon, pink, canned, total can contents"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200,
+      "notes": "Oily fish: the NHS advises no more than 4 portions (about 140 g each) a week, or 2 for girls and for women who are pregnant, breastfeeding or may have a child one day.",
+      "noteRef": "nhs-fish"
+    },
+    {
+      "id": "tuna",
+      "name": "Tinned tuna in water",
+      "group": "Fish",
+      "diet": "meat",
+      "include": [
+        "Fish, tuna, light, canned in water, drained solids"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    },
+    {
+      "id": "sardines",
+      "name": "Sardines in oil (tinned)",
+      "group": "Fish",
+      "diet": "meat",
+      "include": [
+        "Fish, sardine, Atlantic, canned in oil, drained solids with bone"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 150,
+      "notes": "Oily fish: the NHS advises no more than 4 portions (about 140 g each) a week, or 2 for girls and for women who are pregnant, breastfeeding or may have a child one day.",
+      "noteRef": "nhs-fish"
+    },
+    {
+      "id": "mackerel",
+      "name": "Mackerel (cooked)",
+      "group": "Fish",
+      "diet": "meat",
+      "include": [
+        "Fish, mackerel, Atlantic, cooked, dry heat"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200,
+      "notes": "Oily fish: the NHS advises no more than 4 portions (about 140 g each) a week, or 2 for girls and for women who are pregnant, breastfeeding or may have a child one day.",
+      "noteRef": "nhs-fish"
+    },
+    {
+      "id": "cod",
+      "name": "Cod (cooked)",
+      "group": "Fish",
+      "diet": "meat",
+      "include": [
+        "Fish, cod, Atlantic, cooked, dry heat"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "haddock",
+      "name": "Haddock (cooked)",
+      "group": "Fish",
+      "diet": "meat",
+      "include": [
+        "Fish, haddock, cooked, dry heat"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 300
+    },
+    {
+      "id": "prawns",
+      "name": "Prawns (cooked)",
+      "group": "Fish",
+      "diet": "meat",
+      "include": [
+        "Crustaceans, shrimp, mixed species, cooked, moist heat"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    },
+    {
+      "id": "mussels",
+      "name": "Mussels (cooked)",
+      "group": "Fish",
+      "diet": "meat",
+      "include": [
+        "Mollusks, mussel, blue, cooked, moist heat"
+      ],
+      "exclude": [],
+      "unit": "g",
+      "unitGrams": 1,
+      "step": 10,
+      "maxGrams": 200
+    }
+  ]
 }

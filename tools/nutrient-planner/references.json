@@ -246,10 +246,10 @@
       "pre": "U.S. Department of Agriculture, Agricultural Research Service, Nutrient Data Laboratory,",
       "title": "Composition of Foods Raw, Processed, Prepared: USDA National Nutrient Database for Standard Reference, Release 28: Documentation and User Guide",
       "style": "italic",
-      "post": "Beltsville, MD, USA, Sep. 2015, revised May 2016. (The 2018 Legacy release's guide refers to this one for how nutrients are defined.)",
-      "url": "https://agdatacommons.nal.usda.gov/articles/dataset/Composition_of_Foods_Raw_Processed_Prepared_USDA_National_Nutrient_Database_for_Standard_Reference_Release_27/25060841",
+      "post": "Beltsville, MD, USA, Sep. 2015, revised May 2016, p. 13. (The 2018 Legacy release's guide refers to this one for how nutrients are defined.)",
+      "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf",
       "licence": "Public domain (US government work)",
-      "usedFor": "How the food data defines carbohydrate and other values",
+      "usedFor": "How the food data defines carbohydrate",
       "archive": [
         {
           "label": "Archived copy (Release 28 guide)",

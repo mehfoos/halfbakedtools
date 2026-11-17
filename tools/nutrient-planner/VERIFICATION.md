@@ -20,7 +20,8 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   and the food-label layout count carbohydrate without it. The pipeline now subtracts each food's fibre
   (`build_foods.py`, `derive`). 1,315 foods changed, for example cooked lentils 20.13 → 12.23 g per 100 g; no other
   value changed. Before this, carbohydrate was overstated by the amount of fibre (about 50 g a day in a typical
-  suggested plan). Not yet done: USDA's own documentation of "by difference" is not yet archived (chunk 8).
+  suggested plan). USDA's definition ("Values for carbohydrate
+  by difference include total dietary fiber") is in the Release 28 guide, page 13, now archived.
 
 - **Targets set as a share of energy now follow the day's own calories.** Fat, saturated fat and carbohydrate limits
   (% of energy), EU linoleic and alpha-linolenic acid (% of energy) and EU thiamin and niacin (per MJ) were worked
@@ -41,6 +42,11 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   table, footnote a), so plant vitamin A is understated, by up to half. No numbers changed.
 - **EU omega-3 at age 1:** EFSA's adequate intake is 100 mg DHA (summary report Table 2, page 23), not the 250 mg
   EPA+DHA that applies from age 2. Now applied by exact age.
+
+- **NHS advice in food notes now cited and archived.** Checked against the archived NHS pages and reworded to match
+  them: oily fish (no more than 4 portions of about 140 g a week; 2 for girls and for women who are pregnant,
+  breastfeeding or may have a child one day), red and processed meat (cut down to 70 g a day if eating more than 90 g),
+  liver (avoid in pregnancy; weekly liver may exceed recommended vitamin A).
 
 ## Changes made on 10 Nov 2026
 

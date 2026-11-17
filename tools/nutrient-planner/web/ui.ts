@@ -403,7 +403,7 @@ export async function start(root: HTMLElement) {
     if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (NHS ${cite("nhs-vitd")}).`);
     if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products${s.diet === "none" ? "" : ", so a fortified food or supplement may be needed"} (NHS ${cite("nhs-vegan")}).`);
     if ((rep.byKey.get("epaDha")?.value ?? 0) < 250 && rep.byKey.get("epaDha")?.min === undefined) out.push(s.diet === "none"
-      ? `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish such as salmon, mackerel and sardines; the NHS advises at least one portion of oily fish a week. Plant omega-3 (ALA) converts to them poorly.`
+      ? `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish such as salmon, mackerel and sardines; the NHS advises at least one portion (about 140 g) of oily fish a week ${cite("nhs-fish")}. Plant omega-3 (ALA) converts to them poorly.`
       : `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish; plant omega-3 (ALA) converts to them poorly. The UK and US set no target; EFSA (EU) advises 250 mg a day ${cite("efsa-2017")}. An algae-based supplement is the vegetarian and vegan source.`);
     if (rep.unassessed.some((r) => r.key === "iodine")) out.push(`<b>Iodine</b> isn't in the food database, so it isn't checked. Milk and yoghurt are the main UK sources; if you use plant drinks, choose one with added iodine (NHS ${cite("nhs-iodine")}).`);
     return out.length ? `<div class="notice small">${out.map((x) => `<p>${x}</p>`).join("")}</div>` : "";
@@ -503,6 +503,14 @@ export async function start(root: HTMLElement) {
       <details><summary>All values <span class="summary-note">including fats and values without targets</span></summary><div class="details-body">${tableHtml(rep.rows.filter((r) => r.key !== "energy"))}</div></details>`;
   }
 
+  // Notes attached to foods (advice and data caveats), each with its reference where it has one.
+  function notesHtmlFor(items: Item[]) {
+    const seen = new Set<string>();
+    const out = items.filter((i) => i.food.notes && !seen.has(i.food.notes) && seen.add(i.food.notes))
+      .map((i) => esc(i.food.notes) + (i.food.noteRef ? ` ${cite(i.food.noteRef)}` : ""));
+    return out.length ? `<p class="small muted sans">${out.join(" ")}</p>` : "";
+  }
+
   // ---------- 3a. Suggest
   const results = $(root, "#results");
   const status = $(root, "#status");
@@ -538,12 +546,12 @@ export async function start(root: HTMLElement) {
         lastPlans.push(d.plan);
         const k = lastPlans.length;
         const items = (d.plan as Plan).items.map((i) => ({ food: foodById.get(i.id)!, grams: i.grams }));
-        const notes = items.map((i) => i.food.notes).filter(Boolean) as string[];
+        const notes = notesHtmlFor(items);
         results.insertAdjacentHTML("beforeend", `<article class="result">
           <h3><span>Option ${k}</span><span class="result-actions"><button type="button" class="small" data-edit="${k - 1}">Adjust in builder</button></span></h3>
           <ul class="ingredients">${items.map((i) => `<li><b>${esc(i.food.name)}</b> · ${esc(describeAmount(i.food, i.grams))}</li>`).join("")}</ul>
           ${reportHtml(report(items), items)}
-          ${notes.length ? `<p class="small muted sans">${notes.map(esc).join(" ")}</p>` : ""}
+          ${notes}
         </article>`);
         status.textContent = k < s.options ? `Finding option ${k + 1} of ${s.options}…` : "";
       } else {
@@ -597,7 +605,7 @@ export async function start(root: HTMLElement) {
     renderBuilderResult(items);
   }
   function renderBuilderResult(items = s.builder.map((b) => ({ food: foodById.get(b.id)!, grams: b.grams })).filter((x) => x.food)) {
-    builderResult.innerHTML = items.length ? `${CAVEAT}<article class="result"><h3><span>Your day</span></h3>${reportHtml(report(items), items)}</article>` : "";
+    builderResult.innerHTML = items.length ? `${CAVEAT}<article class="result"><h3><span>Your day</span></h3>${reportHtml(report(items), items)}${notesHtmlFor(items)}</article>` : "";
   }
   builderList.addEventListener("input", (e) => {
     const inp = e.target as HTMLInputElement;

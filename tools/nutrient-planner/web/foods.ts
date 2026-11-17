@@ -3,6 +3,7 @@ import type { Food, NutrientDef } from "./solver.ts";
 
 export type PlannerFood = Food & {
   cat: string; label: string; common: boolean; fdcId: string; usdaName: string;
+  noteRef?: string | null;   // the reference a food's note rests on
 };
 export type FoodsData = {
   generated?: string; missing?: boolean;

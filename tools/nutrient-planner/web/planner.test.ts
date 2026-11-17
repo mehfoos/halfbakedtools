@@ -184,3 +184,11 @@ test("EU omega-3: 100 mg DHA at age 1, 250 mg EPA+DHA from age 2", () => {
   assert.deepEqual([...at(2)], [["epaDha", 250]]);
   assert.deepEqual([...at(30)], [["epaDha", 250]]);
 });
+
+test("every food note's reference is in the reference list", () => {
+  const ids = new Set(JSON.parse(readFileSync(new URL("../references.json", import.meta.url), "utf8")).sources.map((s: { id: string }) => s.id));
+  const raw = JSON.parse(readFileSync(new URL("../data/foods/foods.json", import.meta.url), "utf8"));
+  const refs = raw.foods.filter((f: { noteRef?: string }) => f.noteRef).map((f: { noteRef: string }) => f.noteRef);
+  assert.ok(refs.length >= 6);
+  for (const r of refs) assert.ok(ids.has(r), `unknown reference ${r}`);
+});

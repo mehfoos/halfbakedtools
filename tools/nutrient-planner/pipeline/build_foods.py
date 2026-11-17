@@ -260,7 +260,7 @@ def main() -> int:
             "cat": auto_foods.CURATED_CATEGORY.get(food["group"], "other"), "group": food.get("listGroup") or group,
             "label": food["name"], "diet": food["diet"], "common": True,
             "unit": food["unit"], "unitGrams": food["unitGrams"], "step": food["step"], "maxGrams": food["maxGrams"],
-            "notes": food.get("notes"), "fdcId": primary[0], "usdaName": primary[1],
+            "notes": food.get("notes"), "noteRef": food.get("noteRef"), "fdcId": primary[0], "usdaName": primary[1],
             "dataset": "foundation" if m_fn else "sr", "v": pack(vals),
         })
         fn_txt = f"{m_fn[1]} ({m_fn[0]})" if m_fn else "–"
