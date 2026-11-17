@@ -37,6 +37,8 @@ export type Report = {
   byKey: Map<string, Row>;
   energy: number;
   metCount: number;
+  minUnclear: number;       // of the checked minimums, how many can't be confirmed because some foods have no data
+  minNa: number;            // minimum targets with no amount at all (NA); not part of minCount
   minCount: number;
   shortfalls: Row[];
   unassessed: Row[];
@@ -109,6 +111,8 @@ export function analyse(
   }
   const mins = rows.filter((r) => r.pctOfMin !== undefined && !r.aside);
   return {
+    minUnclear: mins.filter((r) => r.status === "unclear").length,
+    minNa: rows.filter((r) => r.status === "na" && (r.min ?? 0) > 0 && !r.aside).length,
     rows,
     byKey: new Map(rows.map((r) => [r.key, r])),
     energy: sums.energy ?? 0,
@@ -121,3 +125,18 @@ export function analyse(
     aside: rows.filter((r) => r.aside && r.pctOfMin !== undefined),
   };
 }
+
+/** How many of these rows' minimum targets are met, can't be confirmed (some foods have no data) or are NA (no food has data). */
+export function tally(rows: Row[]) {
+  const counted = rows.filter((r) => r.pctOfMin !== undefined && !r.aside);
+  return {
+    met: counted.filter((r) => r.status === "met").length,
+    of: counted.length,
+    unclear: counted.filter((r) => r.status === "unclear").length,
+    na: rows.filter((r) => r.status === "na" && (r.min ?? 0) > 0 && !r.aside).length,
+  };
+}
+
+/** "3 unclear · 2 NA" for the counts above (empty when there are none). */
+export const gapWords = (t: { unclear: number; na: number }) =>
+  [t.unclear ? `${t.unclear} unclear` : "", t.na ? `${t.na} NA` : ""].filter(Boolean).join(" · ");

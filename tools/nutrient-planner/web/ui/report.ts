@@ -1,6 +1,6 @@
 // A day's results as HTML: the headline, the "At a glance" chart with its side panel, the notices,
 // and one collapsible section per nutrient group. Used by both suggestions and the builder.
-import { GROUPS, type Report, type Row } from "../analysis.ts";
+import { GROUPS, gapWords, tally, type Report, type Row } from "../analysis.ts";
 import { detailAxes, noDataLabels, overviewAxes } from "../chart-axes.ts";
 import { isAdult } from "../profiles.ts";
 import { comparisonTargets, otherStandards } from "../person.ts";
@@ -44,10 +44,12 @@ export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[])
   // Legend, the compare tick box, how many targets each group meets, and anything near a safety limit.
   function sidePanel() {
     const groups = GROUPS.filter((g) => ["vitamins", "minerals", "amino"].includes(g.id)).map((g) => {
-      const rs = g.keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined && !r.aside);
-      if (!rs.length) return "";
-      const met = rs.filter((r) => r.status === "met").length;
-      return `<li><span class="chip ${met === rs.length ? "met" : "short"}">${met} of ${rs.length}</span> ${esc(g.title)}</li>`;
+      const t = tally(g.keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r));
+      if (!t.of) return "";
+      // Amber only for a target that is really short; targets that can't be confirmed are grey, not "not met".
+      const real = t.of - t.met - t.unclear;
+      const gaps = gapWords(t);
+      return `<li><span class="chip ${t.met === t.of ? "met" : real > 0 ? "short" : "unclear"}">${t.met} of ${t.of}</span> ${esc(g.title)}${gaps ? ` <span class="muted">(${gaps})</span>` : ""}</li>`;
     }).join("");
     const close = rep.rows.filter((r) => r.max !== undefined && r.status !== "unassessed"
       && !["fat", "satfat", "salt", "sodium"].includes(r.key) && (r.pctOfMax ?? 0) >= 80);
@@ -72,9 +74,9 @@ export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[])
     const rows = rep.rows.filter((r) => g.keys.includes(r.key) && (r.min !== undefined || r.max !== undefined || id === "fats"));
     if (id === "fats" && !rows.some((r) => r.min !== undefined)) return "";
     if (!rows.length) return id === "amino" ? `<details><summary>${esc(g.title)}</summary><div class="details-body"><p class="small sans">Amino acid targets are given for adults only.</p></div></details>` : "";
-    const counted = rows.filter((r) => r.pctOfMin !== undefined && !r.aside);
-    const met = counted.filter((r) => r.status === "met").length, mins = counted.length;
-    return `<details><summary>${esc(g.title)} <span class="summary-note">${mins ? `${met} of ${mins} met` : `${rows.length} values`}</span></summary><div class="details-body">
+    const t = tally(rows);
+    const gaps = gapWords(t);
+    return `<details><summary>${esc(g.title)} <span class="summary-note">${t.of ? `${t.met} of ${t.of} met${gaps ? `, ${gaps}` : ""}` : gaps ? gaps : `${rows.length} values`}</span></summary><div class="details-body">
         ${charts.chart(detailAxes(rep, g.keys, cmp, fmt), `${g.title}: share of each target reached`, noDataLabels(rep, g.keys, true))}
         ${id === "vitamins" ? `<p class="small sans muted">Vitamin D targets cover all vitamin D from food (D2 and D3 together). The difference matters mainly for supplements, where D3 raises blood levels more effectively. B5 (pantothenic acid) has a US target only; biotin (B7) isn't shown because the food data rarely includes it.</p>` : ""}
         ${table(rows)}
@@ -95,7 +97,7 @@ export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[])
   const asideTxt = rep.aside.map((r) => ` ${esc(r.label)}, which suggestions don't plan for: ${fmt(r.value)} of ${fmt(r.min)} ${esc(r.unit)} (see the note below).`).join("");
 
   const overview = charts.chart(overviewAxes(rep, person, isAdult(app.s.age), cmp, fmt), "Overview: energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt as a share of target", noDataLabels(rep, ["fat", "satfat", "carbohydrate", "sugars", "fibre", "protein", rep.byKey.get("salt")?.max !== undefined ? "salt" : "sodium"]));
-  return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> checked targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}${unknownTxt}${asideTxt}${notChecked}
+  return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> checked targets met${gapWords({ unclear: rep.minUnclear, na: rep.minNa }) ? ` (${gapWords({ unclear: rep.minUnclear, na: rep.minNa })}: see below)` : ""} · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}${unknownTxt}${asideTxt}${notChecked}
         ${over.length ? ` <span class="chip over">Over the limit for ${over.map((r) => esc(r.label)).join(", ")}</span>` : ""}</p>
       ${custom ? `<p class="small muted sans">Using some custom targets.</p>` : ""}
       <h4 class="chart-title">At a glance <span class="muted small">(laid out like a food label)</span></h4>

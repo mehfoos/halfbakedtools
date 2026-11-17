@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyse, gapsOf, totals } from "./analysis.ts";
+import { analyse, gapsOf, gapWords, tally, totals } from "./analysis.ts";
 import { detailAxes, noDataLabels } from "./chart-axes.ts";
 import type { Food, ResolvedTarget } from "./solver.ts";
 
@@ -89,4 +89,13 @@ test("a nutrient with no data in the day gets no chart axis, and is named as not
   assert.equal(detailAxes(rep, ["iron"], [], String as never).length, 0);
   assert.deepEqual(noDataLabels(rep, ["iron", "sodium"], true), ["Iron"]); // sodium has only a limit: no axis in the detail charts
   assert.deepEqual(noDataLabels(rep, ["iron", "sodium"]), ["Iron", "Sodium"]);
+});
+
+test("counts say how many minimums are met, how many can't be confirmed and how many are NA", () => {
+  const rep = day([withData, noIron, noData], [target("iron", { min: 5 }), target("sodium", { min: 100 }), target("zinc", { min: 1 })]);
+  const t = tally(["iron", "sodium", "zinc"].map((k) => rep.byKey.get(k)!));
+  assert.deepEqual(t, { met: 1, of: 2, unclear: 1, na: 1 }); // sodium met; iron unclear (some foods lack it); zinc NA
+  assert.equal(gapWords(t), "1 unclear · 1 NA");
+  assert.equal(rep.minUnclear, 1);
+  assert.equal(rep.minNa, 1);
 });
