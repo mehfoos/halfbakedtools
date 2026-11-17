@@ -171,6 +171,44 @@ def derive(v: dict) -> dict:
     return d
 
 
+def mark_wider(auto_foods_out: list[dict]) -> list[dict]:
+    """Flag the foods of the 'Wider selection' preset (rules in wider_selection.json)."""
+    spec = json.loads((PIPELINE / "wider_selection.json").read_text())
+    exclude = [w.lower() for w in spec["exclude"]]
+    by_group: dict[tuple[str, str], list[dict]] = {}
+    for f in auto_foods_out:
+        groups = {g.lower() for g in spec["groups"].get(f["cat"], [])}
+        if not groups or f.get("fortified"):
+            continue
+        d = f["usdaName"].lower()
+        if any(w in d for w in exclude):
+            continue
+        if "*" in groups or f["group"].lower() in groups:
+            by_group.setdefault((f["cat"], f["group"]), []).append(f)
+    chosen = []
+    for (_cat, _group), foods in sorted(by_group.items()):
+        # simplest description first: unsalted and plain preparations, then the shortest name
+        foods.sort(key=lambda f: ("without salt" not in f["usdaName"].lower() and "raw" not in f["usdaName"].lower(), len(f["usdaName"])))
+        for f in foods[: spec["maxPerGroup"]]:
+            f["wider"] = True
+            chosen.append(f)
+    return chosen
+
+
+def write_wider_report(chosen: list[dict]) -> None:
+    cat_names = dict(auto_foods.CATEGORIES)
+    lines = ["# Wider selection", "",
+             "Foods switched on by the planner's \"Wider selection\" preset, in addition to the common foods.",
+             "This is a judgement list for the site owner to review; the rules are in `pipeline/wider_selection.json`.", "",
+             f"{len(chosen)} foods.", ""]
+    for cat, name in auto_foods.CATEGORIES:
+        foods = [f for f in chosen if f["cat"] == cat]
+        if not foods:
+            continue
+        lines += [f"## {name} ({len(foods)})", ""] + [f"- {f['name']}" for f in sorted(foods, key=lambda f: f["name"])] + [""]
+    (OUT_DIR / "wider_selection.md").write_text("\n".join(lines))
+
+
 def write_foundation_candidates(catalogue: list[dict], fnd: Dataset) -> None:
     """List Foundation records that look like each catalogue food, to help add "foundation" queries."""
     lines = ["# Foundation Foods candidates", "",
@@ -268,6 +306,7 @@ def main() -> int:
         report.append(f"| {food['name']} | {fn_txt} | {sr_txt} | {len(vals)} |")
 
     auto_counts: dict[str, int] = {}
+    first_auto = len(foods_out)
     for fid, desc, cat in auto:
         vals = extract(nutrients, sr_vals.get(fid, {}), sr.nutrient_meta)
         if "energy" not in vals:
@@ -284,6 +323,9 @@ def main() -> int:
             "fdcId": fid, "usdaName": desc, "dataset": "sr", "v": pack(vals),
         })
         auto_counts[cat] = auto_counts.get(cat, 0) + 1
+
+    wider = mark_wider(foods_out[first_auto:])
+    write_wider_report(wider)
 
     if fnd:
         write_foundation_candidates(catalogue, fnd)

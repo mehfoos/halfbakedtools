@@ -151,3 +151,28 @@ test("a plan found when the search hit its time limit is marked", async () => {
   const [q] = await plan({ foods: [A, B, C, D], targets, energyLow: 0, energyHigh: 5000, maxIngredients: 3, options: 1 }, solve, keys);
   assert.equal(q.timedOut, undefined);
 });
+
+test("a food's penalty breaks near-ties but never outweighs a real shortfall", async () => {
+  // Fixture: PLAIN and ODD are identical except ODD carries a penalty; RARE is the only source of vitamin C.
+  const PLAIN = food("PLAIN", { energy: 100, protein: 20 });
+  const ODD = food("ODD", { energy: 100, protein: 20 }, { penalty: 0.005 });
+  const RARE = food("RARE", { energy: 50, vitaminC: 50 }, { penalty: 0.005 });
+  const t = [{ key: "protein", label: "Protein", unit: "g", min: 40 }, { key: "vitaminC", label: "Vitamin C", unit: "mg", min: 40 }];
+  const [p] = await plan({ foods: [ODD, PLAIN, RARE], targets: t, energyLow: 0, energyHigh: 5000, maxIngredients: 2, options: 1 }, solve, keys);
+  assert.deepEqual(p.items.map((i) => i.id).sort(), ["PLAIN", "RARE"]);   // PLAIN preferred to ODD; RARE still used
+  assert.equal(p.score, 0);
+});
+
+test("if the full search runs out of time, the quick list is searched too and the better plan is kept", async () => {
+  // A stand-in solver: "times out" with a poor plan on the long list, solves the short list properly.
+  const GOOD = food("GOOD", { energy: 100, protein: 20, vitaminC: 20 });
+  const POOR = food("POOR", { energy: 100, protein: 1, vitaminC: 0 });
+  const t = [{ key: "protein", label: "Protein", unit: "g", min: 40 }];
+  const input = { foods: [POOR, GOOD], quickFoods: [GOOD], targets: t, energyLow: 0, energyHigh: 5000, maxIngredients: 1, options: 1 };
+  const stuck: typeof solve = async (lp) => (lp.includes("n1") ? { status: "Time limit reached", values: { n0: 1 } } : solve(lp));
+  const [p] = await plan(input, stuck, keys);
+  assert.deepEqual(p.items.map((i) => i.id), ["GOOD"]);
+  assert.equal(p.timedOut, true);    // the full list was never searched to the end
+  const [q] = await plan(input, solve, keys);
+  assert.equal(q.timedOut, undefined);
+});

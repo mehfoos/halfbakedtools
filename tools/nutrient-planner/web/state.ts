@@ -83,7 +83,7 @@ export function decode(query: string): Settings {
   s.energyLow = clampInt(p.get("el"), 300, 6000);
   s.energyHigh = clampInt(p.get("eh"), 300, 6000);
   const f = p.get("f");
-  if (f === "all" || f === "none") s.base = f;
+  if (f === "all" || f === "none" || f === "wider") s.base = f;
   if (p.get("x")) s.toggled = p.get("x")!.split(".").filter((id) => ID_RE.test(id));
   if (p.get("t")) {
     try {

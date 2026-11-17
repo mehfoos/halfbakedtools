@@ -26,6 +26,7 @@ export type Food = {
   id: string; name: string; group: string; diet: "vegan" | "vegetarian" | "meat";
   unit: string; unitGrams: number; step: number; maxGrams: number; notes?: string | null;
   capGroup?: string | null;           // foods in the same group share one daily cap (PlanInput.groupCaps)
+  penalty?: number;                   // small cost of including this food at all (same units as a relative shortfall)
   per100g: Record<string, number>;
 };
 
@@ -119,6 +120,7 @@ export type PlanInput = {
   maxIngredients: number;
   options: number;            // how many distinct plans to return
   groupCaps?: Record<string, number>;   // grams a day, in total, for all foods of a capGroup
+  quickFoods?: Food[];                  // a shorter list to fall back on if the full search runs out of time
 };
 
 export type PlanItem = { id: string; name: string; grams: number; amountLabel: string };
@@ -151,7 +153,7 @@ export function buildLp(input: PlanInput, forbidden: string[][] = []): string {
   // tie-breakers: prefer fewer grams and fewer ingredients, far smaller than any real shortfall
   foods.forEach((f, i) => {
     obj.push(`${num(1e-6 * stepGrams(f))} n${i}`);
-    obj.push(`0.0001 y${i}`);
+    obj.push(`${num(0.0001 + (f.penalty ?? 0))} y${i}`);
   });
   // Shortfalls are relative to the target. For a target tied to energy the shortfall is measured against
   // the plan's own calories; its weight uses the middle of the calorie range (the objective must be linear).
@@ -188,6 +190,7 @@ export function buildLp(input: PlanInput, forbidden: string[][] = []): string {
   });
   forbidden.forEach((ids, k) => {
     const idx = ids.map((id) => foods.findIndex((f) => f.id === id)).filter((i) => i >= 0);
+    if (!idx.length) return;   // none of that option's foods are in this list
     const keepAtMost = idx.length - Math.max(1, Math.ceil(idx.length / 3));
     lines.push(` cut${k}: ${idx.map((i) => `y${i}`).join(" + ")} <= ${keepAtMost}`);
   });
@@ -222,20 +225,46 @@ export function shortfallScore(targets: ResolvedTarget[], totals: Record<string,
   }, 0);
 }
 
-/** Find up to `options` distinct plans. Returns [] if the constraints cannot all be met. */
+type Chosen = { food: Food; grams: number }[];
+
+/** One search: the foods and amounts chosen, and whether the search was stopped by its time limit. */
+async function solveOnce(input: PlanInput, forbidden: string[][], solve: Solver): Promise<{ chosen: Chosen; timedOut: boolean } | null> {
+  const res = await solve(buildLp(input, forbidden));
+  if (res.status !== "Optimal" && res.status !== "Time limit reached") return null;
+  const chosen = input.foods
+    .map((food, i) => ({ food, grams: Math.round(res.values[`n${i}`] ?? 0) * stepGrams(food) }))
+    .filter((x) => x.grams > 0);
+  return chosen.length ? { chosen, timedOut: res.status === "Time limit reached" } : null;
+}
+
+/** What the optimiser minimises, worked out for a finished plan: relative shortfalls plus the foods' penalties. */
+function planCost(input: PlanInput, chosen: Chosen) {
+  const totals = totalsFor(chosen, [...input.targets.map((t) => t.key), "energy"]);
+  return shortfallScore(input.targets, totals) + chosen.reduce((s, c) => s + (c.food.penalty ?? 0), 0);
+}
+
+/**
+ * Find up to `options` distinct plans. Returns [] if the constraints cannot all be met.
+ *
+ * If a search over the full food list is stopped by its time limit and `input.quickFoods` names a smaller
+ * list (the common foods), that smaller list is searched too and the better of the two plans is kept, so a
+ * long food list can never give a worse suggestion than the short one would have.
+ */
 export async function plan(input: PlanInput, solve: Solver, allKeys: string[], onPlan?: (p: Plan) => void): Promise<Plan[]> {
   const plans: Plan[] = [];
   const forbidden: string[][] = [];
+  const quick = input.quickFoods && input.quickFoods.length < input.foods.length ? { ...input, foods: input.quickFoods } : null;
   for (let k = 0; k < input.options; k++) {
-    const res = await solve(buildLp(input, forbidden));
-    if (res.status !== "Optimal" && res.status !== "Time limit reached") break;
-    const chosen = input.foods
-      .map((food, i) => ({ food, grams: Math.round((res.values[`n${i}`] ?? 0)) * stepGrams(food) }))
-      .filter((x) => x.grams > 0);
-    if (!chosen.length) break;
+    let best = await solveOnce(input, forbidden, solve);
+    if (quick && (!best || best.timedOut)) {
+      const alt = await solveOnce(quick, forbidden, solve);
+      if (alt && (!best || planCost(input, alt.chosen) < planCost(input, best.chosen))) best = { chosen: alt.chosen, timedOut: true };
+    }
+    if (!best) break;
+    const { chosen } = best;
     const totals = totalsFor(chosen, Array.from(new Set([...allKeys, "energy"])));
     plans.push({
-      ...(res.status === "Time limit reached" ? { timedOut: true } : {}),
+      ...(best.timedOut ? { timedOut: true } : {}),
       items: chosen.map(({ food, grams }) => ({ id: food.id, name: food.name, grams, amountLabel: describeAmount(food, grams) })),
       totals,
       energy: totals.energy,

@@ -20,7 +20,7 @@ const standards = [uk, us, eu];
     friendly names and practical units, and switched on by default. Around 2,100 more vegetables, fruits, pulses,
     grains, breads, nuts, seeds, meat, fish, dairy foods, eggs, oils, herbs and spices are added automatically by
     rules that keep cooked lean cuts of meat and leave out baby foods, branded and heavily processed products;
-    these are off by default and can be switched on in the planner's food list. US products with added nutrients (enriched or fortified) are marked "US-fortified" and aren't included when you switch on everything, because the UK versions may differ. Choosing vegetarian hides meat and
+    these are off by default and can be switched on in the planner's food list, one by one, all at once, or as a "wider selection" of about 400 ordinary foods (a list chosen by judgement, not taken from a source; it is in the repository). US products with added nutrients (enriched or fortified) are marked "US-fortified" and aren't included when you switch on everything, because the UK versions may differ. Choosing vegetarian hides meat and
     fish; choosing vegan also hides dairy, eggs and honey. The food list, the rules and a match report live in the repository's
     <code>tools/nutrient-planner/</code> folder so anyone can check them.
   </p>
@@ -69,7 +69,11 @@ const standards = [uk, us, eu];
   </p>
   <p>
     Among combinations that meet the targets equally well, the planner prefers the one with less food, so
-    suggestions tend to sit near the bottom of your calorie range.
+    suggestions tend to sit near the bottom of your calorie range. It also has a mild preference for familiar
+    foods: each food from outside the common list counts slightly against a combination, by no more in total
+    than 1% of one target, so common foods are chosen unless another food does a noticeably better job.
+    If a search over a long food list runs out of time, the common foods are searched as well and the better
+    result is shown.
     Each search is limited to 5 seconds. If that limit is reached, the best combination found so far is shown and
     marked as such.
   </p>

@@ -57,7 +57,8 @@ EXCLUDE_ANY = [
 ]
 # Meat and fish words: these keep the vegetarian categories free of meat.
 MEAT_WORDS = ["lard", "tallow", "beef", "pork", "chicken", "turkey", "duck", "goose", "mutton", "fish", "cod liver",
-              "menhaden", "salmon", "sardine", "herring", "anchov", "bacon", "ham,", "gelatin", "meat,"]
+              "menhaden", "salmon", "sardine", "herring", "anchov", "bacon", "ham,", "gelatin", "meat,",
+              "franks", "frankfurter", "sausage", "wiener"]
 # Meat and fish: cooked or canned foods only, lean cuts, no exotic species.
 MEAT_KEEP_ANY = ("cooked", "canned", "smoked", "roasted", "broiled", "braised")
 MEAT_EXCLUDE = ("raw", "separable lean and fat", "select,", "prime,", "trimmed to 1/4", "ostrich", "emu,", "squab",

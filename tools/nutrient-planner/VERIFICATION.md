@@ -77,6 +77,10 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   2.0 g from 11 and for adults, including pregnancy and breastfeeding. Used as a level to stay at or below. Before,
   the US limit (2.3 g for adults) was borrowed.
 
+- **Diet label fixed:** "Beans, baked, canned, with franks" contains meat but was listed as vegan (the meat-word list
+  missed "franks"). It is now excluded, along with any other non-meat-category food naming franks, frankfurters,
+  sausage or wieners (it was the only one).
+
 ## Changes made on 10 Nov 2026
 
 - **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of

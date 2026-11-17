@@ -6,7 +6,7 @@ import { pickProfile, groupRange, energyFor, type Standard } from "./profiles.ts
 import { resolveTargets } from "./solver.ts";
 import { avoidReason, portionFactor, scaledMax } from "./foods.ts";
 import { decode, encode, fresh } from "./state.ts";
-import { isOn, setOn, unpack, type PlannerFood } from "./foods.ts";
+import { isOn, setOn, unpack, familiarityPenalty, FAMILIARITY_BUDGET, type PlannerFood } from "./foods.ts";
 import { analyse } from "./analysis.ts";
 
 const load = (id: string) => JSON.parse(readFileSync(new URL(`../data/targets/${id}.json`, import.meta.url), "utf8")) as Standard;
@@ -263,4 +263,24 @@ test("a target set aside (vitamin D) is reported separately and not counted as m
   const aside = analyse({ protein: 60, vitaminD: 2 }, targets, new Set(), m, new Set(["vitaminD"]));
   assert.deepEqual([aside.metCount, aside.minCount, aside.shortfalls.length, aside.aside.map((r) => r.key)], [1, 1, 0, ["vitaminD"]]);
   assert.equal(aside.byKey.get("vitaminD")!.status, "low");   // still shown with its real status in tables and charts
+});
+
+test("the Wider selection preset: common foods plus a few hundred ordinary ones, none US-fortified", () => {
+  const data = unpack(JSON.parse(readFileSync(new URL("../data/foods/foods.json", import.meta.url), "utf8")));
+  const on = data.foods.filter((f) => isOn(f, "wider", new Set()));
+  const extra = on.filter((f) => !f.common);
+  assert.ok(extra.length >= 300 && extra.length <= 500, `${extra.length} extra foods`);
+  assert.ok(data.foods.filter((f) => f.common).every((f) => isOn(f, "wider", new Set())));
+  assert.ok(extra.every((f) => f.wider && !f.fortified));
+  assert.ok(!extra.some((f) => /liver|dehydrated|powder|isolate|concentrate/i.test(f.usdaName)));
+  assert.equal(data.foods.find((f) => /with franks/.test(f.usdaName)), undefined);   // contains meat; was listed as vegan
+});
+
+test("the preference for familiar foods can cost at most 1% of one target per plan", () => {
+  const f = (o: Partial<PlannerFood>) => ({ common: false, ...o }) as PlannerFood;
+  for (const n of [1, 6, 15]) {
+    assert.equal(familiarityPenalty(f({ common: true }), n), 0);
+    assert.ok(familiarityPenalty(f({ wider: true }), n) < familiarityPenalty(f({}), n));
+    assert.ok(n * familiarityPenalty(f({}), n) <= FAMILIARITY_BUDGET + 1e-12);
+  }
 });

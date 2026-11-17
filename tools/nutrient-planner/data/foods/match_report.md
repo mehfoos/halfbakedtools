@@ -131,7 +131,7 @@ Rules are in `auto_foods.py`.
 |---|---|
 | Vegetables | 517 |
 | Fruit | 245 |
-| Beans, lentils & soya | 149 |
+| Beans, lentils & soya | 148 |
 | Grains, bread & pasta | 304 |
 | Breakfast cereals | 15 |
 | Nuts & seeds | 88 |

@@ -2,7 +2,7 @@
 // network requests are for the site's own data files.
 import { resolveTargets, splitAssessable, describeAmount, type Plan, type ResolvedTarget } from "./solver.ts";
 import { pickProfile, isAdult, refWeight, energyFor, type Standard } from "./profiles.ts";
-import { unpack, isOn, setOn, dietOk, matches, GROUP_CAPS, avoidReason, portionFactor, scaledMax, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
+import { unpack, isOn, setOn, dietOk, matches, GROUP_CAPS, avoidReason, portionFactor, scaledMax, familiarityPenalty, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
 import { GROUPS, ORDER, SHORT_LABEL, analyse, totals, type Report, type Row } from "./analysis.ts";
 import { radarSvg, scaleMax, type Axis, type Overlay } from "./radar.ts";
 import { decode, encode, exportFile, forget, fresh, importFile, loadRemembered, remember, DEFAULTS, type Settings } from "./state.ts";
@@ -205,7 +205,7 @@ export async function start(root: HTMLElement) {
     $$<HTMLInputElement>(root, 'input[name="diet"]').forEach((r) => (r.checked = r.value === s.diet));
     const all = dietFoods();
     const on = all.filter((f) => isOn(f, s.base, toggled)).length;
-    const baseText = { common: "common foods", all: "everything except US-fortified products", none: "nothing" }[s.base];
+    const baseText = { common: "common foods", wider: "the wider selection", all: "everything except US-fortified products", none: "nothing" }[s.base];
     $(root, "#foodCount").innerHTML = `<b>${on.toLocaleString("en-GB")}</b> of ${all.length.toLocaleString("en-GB")} foods switched on`;
     $(root, "#foodsNote").textContent = `starting from ${baseText}${toggled.size ? `, ${toggled.size} changed` : ""}`;
   }
@@ -589,7 +589,8 @@ export async function start(root: HTMLElement) {
     const who = { age: s.age, life: lifeStage() };
     const avoided = foods.filter((f) => avoidReason(f, who));
     const factor = portionFactor(s.age, (b.low + b.high) / 2);
-    const planFoods = foods.filter((f) => !avoidReason(f, who)).map((f) => (factor < 1 ? { ...f, maxGrams: scaledMax(f, factor) } : f));
+    const planFoods = foods.filter((f) => !avoidReason(f, who))
+      .map((f) => ({ ...f, maxGrams: factor < 1 ? scaledMax(f, factor) : f.maxGrams, penalty: familiarityPenalty(f, s.n) }));
     const caps = Object.fromEntries(Object.entries(GROUP_CAPS).map(([g, v]) => [g, factor < 1 ? Math.max(10, Math.floor((v * factor) / 10) * 10) : v]));
     if (avoided.length) {
       const reasons = [...new Map(avoided.map((f) => { const r = avoidReason(f, who)!; return [r.text, r]; })).values()];
@@ -598,7 +599,7 @@ export async function start(root: HTMLElement) {
     worker.postMessage({
       // Vitamin D is left to the notice (sunlight and supplements) unless the person asks for it from food.
       input: { foods: planFoods, targets: assessable.filter((t) => s.vitaminD || t.key !== "vitaminD"), energyLow: b.low, energyHigh: b.high,
-        maxIngredients: s.n, options: s.options, groupCaps: caps },
+        maxIngredients: s.n, options: s.options, groupCaps: caps, quickFoods: planFoods.filter((f) => f.common) },
       keys: ORDER,
     });
   });

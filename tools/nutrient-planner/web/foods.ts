@@ -5,6 +5,7 @@ export type PlannerFood = Food & {
   cat: string; label: string; common: boolean; fdcId: string; usdaName: string;
   noteRef?: string | null;   // the reference a food's note rests on
   fortified?: boolean | null; // a US product with nutrients added; not part of the "Everything" preset
+  wider?: boolean | null;     // part of the "Wider selection" preset (rules in pipeline/wider_selection.json)
 };
 export type FoodsData = {
   generated?: string; missing?: boolean;
@@ -25,10 +26,20 @@ export function unpack(raw: { keys: string[]; foods: RawFood[]; nutrients: Nutri
   return { generated: raw.generated, missing: raw.missing, nutrients: raw.nutrients ?? [], categories: raw.categories ?? [], foods };
 }
 
-export type Base = "common" | "all" | "none";
+export type Base = "common" | "wider" | "all" | "none";
 
 /** What a preset switches on. "Everything" leaves out US-fortified products (they can be switched on one by one). */
-export const inPreset = (f: PlannerFood, base: Base) => (base === "all" ? !f.fortified : base === "none" ? false : f.common);
+export const inPreset = (f: PlannerFood, base: Base) =>
+  base === "all" ? !f.fortified : base === "none" ? false : base === "wider" ? f.common || !!f.wider : f.common;
+
+/**
+ * A mild preference for familiar foods in suggestions: each less familiar food in a plan costs a little, so that
+ * among near-equal plans the one built from common foods wins. The whole plan's cost is capped at 0.01, which is
+ * 1% of one target, so the preference can never cost more than that in targets met.
+ */
+export const FAMILIARITY_BUDGET = 0.01;
+export const familiarityPenalty = (f: PlannerFood, maxIngredients: number) =>
+  ((f.common ? 0 : f.wider ? 0.4 : 1) * FAMILIARITY_BUDGET) / Math.max(1, maxIngredients);
 
 /** A food is on if the preset says so, unless the person has toggled it. */
 export function isOn(f: PlannerFood, base: Base, toggled: Set<string>) {

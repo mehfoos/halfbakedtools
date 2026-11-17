@@ -1,0 +1,452 @@
+# Wider selection
+
+Foods switched on by the planner's "Wider selection" preset, in addition to the common foods.
+This is a judgement list for the site owner to review; the rules are in `pipeline/wider_selection.json`.
+
+413 foods.
+
+## Vegetables (94)
+
+- Artichokes, (globe or french), cooked, boiled, drained, without salt
+- Artichokes, (globe or french), raw
+- Asparagus, frozen, cooked, boiled, drained, without salt
+- Asparagus, raw
+- Aubergine, cooked, boiled, drained, without salt
+- Aubergine, raw
+- Beetroot, canned, drained solids
+- Beetroot, raw
+- Broadbeans, immature seeds, cooked, boiled, drained, without salt
+- Broccoli, frozen, chopped, cooked, boiled, drained, without salt
+- Broccoli, frozen, spears, cooked, boiled, drained, without salt
+- Broccoli, raw
+- Brussels sprouts, frozen, cooked, boiled, drained, without salt
+- Brussels sprouts, raw
+- Butter beans (lima), immature seeds, cooked, boiled, drained, without salt
+- Butter beans (lima), immature seeds, frozen, baby, cooked, boiled, drained, without salt
+- Cabbage, chinese (pak-choi), cooked, boiled, drained, without salt
+- Cabbage, chinese (pak-choi), raw
+- Cabbage, cooked, boiled, drained, without salt
+- Cabbage, red, cooked, boiled, drained, without salt
+- Cabbage, savoy, cooked, boiled, drained, without salt
+- Cabbage, savoy, raw
+- Carrots, baby, raw
+- Carrots, cooked, boiled, drained, without salt
+- Carrots, frozen, cooked, boiled, drained, without salt
+- Cauliflower, green, raw
+- Cauliflower, raw
+- Celeriac, cooked, boiled, drained, without salt
+- Celeriac, raw
+- Chard, swiss, cooked, boiled, drained, without salt
+- Chard, swiss, raw
+- Chicory, witloof, raw
+- Chives, raw
+- Courgette, includes skin, cooked, boiled, drained, without salt
+- Courgette, includes skin, frozen, cooked, boiled, drained, without salt
+- Fennel, bulb, raw
+- Green beans, raw
+- Green beans, yellow, raw
+- Kale, cooked, boiled, drained, without salt
+- Kale, frozen, cooked, boiled, drained, without salt
+- Lettuce, butterhead, raw
+- Lettuce, green leaf, raw
+- Lettuce, iceberg, raw
+- Lettuce, red leaf, raw
+- Mangetout, boiled, drained, without salt
+- Mangetout, raw
+- Mushrooms, brown, italian, or crimini, raw
+- Mushrooms, oyster, raw
+- Mushrooms, portabella, grilled
+- Mushrooms, portabella, raw
+- Mushrooms, shiitake, cooked, without salt
+- Mushrooms, shiitake, raw
+- Mushrooms, white, cooked, boiled, drained, without salt
+- Okra, cooked, boiled, drained, without salt
+- Okra, raw
+- Onions, cooked, boiled, drained, without salt
+- Onions, yellow, sauteed
+- Onions, young green, tops only
+- Parsley, fresh
+- Peas, green, cooked, boiled, drained, without salt
+- Peas, green, raw
+- Peppers, green, cooked, boiled, drained, without salt
+- Peppers, green, raw
+- Peppers, red, cooked, boiled, drained, without salt
+- Peppers, red, frozen, chopped, boiled, drained, without salt
+- Peppers, yellow, raw
+- Potatoes, baked, flesh, without salt
+- Potatoes, boiled, cooked in skin, flesh, without salt
+- Potatoes, boiled, cooked without skin, flesh, without salt
+- Pumpkin, canned, without salt
+- Pumpkin, raw
+- Radishes, raw
+- Radishes, white icicle, raw
+- Rocket, raw
+- Sauerkraut, canned, solids and liquids
+- Shallots, raw
+- Spinach, cooked, boiled, drained, without salt
+- Spinach, raw
+- Spring onions, raw
+- Squash, summer, all varieties, raw
+- Squash, summer, scallop, raw
+- Squash, winter, acorn, raw
+- Squash, winter, hubbard, raw
+- Swede, cooked, boiled, drained, without salt
+- Swede, raw
+- Sweet potato, cooked, boiled, without skin
+- Sweet potato, frozen, cooked, baked, without salt
+- Sweetcorn, raw
+- Sweetcorn, white, raw
+- Tomatoes, crushed, canned
+- Tomatoes, red, ripe, cooked
+- Tomatoes, red, ripe, raw, year round average
+- Turnips, cooked, boiled, drained, without salt
+- Turnips, raw
+
+## Fruit (44)
+
+- Apples, raw, golden delicious, with skin
+- Apples, raw, without skin
+- Apricots, canned, water pack, with skin, solids and liquids
+- Apricots, raw
+- Avocados, raw, California
+- Avocados, raw, Florida
+- Blackberries, raw
+- Blueberries, raw
+- Cherries, sour, red, raw
+- Cherries, sweet, raw
+- Clementines, raw
+- Cranberries, raw
+- Currants, european black, raw
+- Currants, red and white, raw
+- Dates, deglet noor
+- Dates, medjool
+- Figs, dried, uncooked
+- Figs, raw
+- Grapefruit, raw, white, Florida
+- Grapefruit, raw, white, all areas
+- Lemons, raw, without peel
+- Limes, raw
+- Melons, honeydew, raw
+- Olives, ripe, canned (jumbo-super colossal)
+- Olives, ripe, canned (small-extra large)
+- Oranges, raw, Florida
+- Oranges, raw, with peel
+- Papayas, raw
+- Passion-fruit, (granadilla), purple, raw
+- Peaches, dried, sulfured, uncooked
+- Peaches, yellow, raw
+- Pears, asian, raw
+- Pears, raw
+- Pineapple, raw, all varieties
+- Pineapple, raw, extra sweet variety
+- Plums, dried (prunes), uncooked
+- Pomegranates, raw
+- Raisins, golden, seedless
+- Raisins, seeded
+- Rhubarb, frozen, uncooked
+- Rhubarb, raw
+- Tangerines, (mandarin oranges), canned, juice pack
+- Tangerines, (mandarin oranges), raw
+- Watermelon, raw
+
+## Beans, lentils & soya (32)
+
+- Beans, adzuki, mature seeds, cooked, boiled, without salt
+- Beans, baked, home prepared
+- Beans, black turtle, mature seeds, canned
+- Beans, black turtle, mature seeds, cooked, boiled, without salt
+- Beans, kidney, all types, mature seeds, cooked, boiled, without salt
+- Beans, kidney, royal red, mature seeds, cooked, boiled, without salt
+- Beans, pinto, canned, drained solids
+- Beans, pinto, mature seeds, canned, solids and liquids
+- Beans, white, mature seeds, canned
+- Beans, white, mature seeds, cooked, boiled, without salt
+- Broadbeans (fava beans), mature seeds, canned
+- Broadbeans (fava beans), mature seeds, cooked, boiled, without salt
+- Butter beans (lima), large, mature seeds, canned
+- Butter beans (lima), thin seeded (baby), mature seeds, cooked, boiled, without salt
+- Chickpeas, mature seeds, canned, drained solids
+- Chickpeas, mature seeds, canned, solids and liquids
+- Cowpeas, catjang, mature seeds, cooked, boiled, without salt
+- Cowpeas, common (blackeyes, crowder, southern), mature seeds, cooked, boiled, without salt
+- Falafel, home-prepared
+- Haricot beans (navy), mature seeds, canned
+- Hummus, home prepared
+- Lentils, dry (uncooked weight)
+- Miso
+- Mung beans, mature seeds, cooked, boiled, without salt
+- Peanut butter, chunk style, without salt
+- Peanuts, spanish, raw
+- Peanuts, valencia, raw
+- Soybeans, mature cooked, boiled, without salt
+- Soybeans, mature seeds, dry roasted
+- Tempeh, cooked
+- Tofu, hard, prepared with nigari
+- Tofu, raw, regular, prepared with calcium sulfate
+
+## Grains, bread & pasta (69)
+
+- Bagels, egg
+- Bagels, wheat
+- Barley, hulled, dry (uncooked weight)
+- Barley, pearled, dry (uncooked weight)
+- Bread, Italian
+- Bread, chapati or roti, plain, commercially prepared
+- Bread, chapati or roti, whole wheat, commercially prepared, frozen
+- Bread, french or vienna
+- Bread, french or vienna, whole wheat
+- Bread, multi-grain
+- Bread, naan, plain, commercially prepared, refrigerated
+- Bread, naan, whole wheat, commercially prepared, refrigerated
+- Bread, oatmeal
+- Bread, pita, white, unenriched
+- Bread, pita, whole-wheat
+- Bread, pumpernickel
+- Bread, rye
+- Bread, wheat
+- Bread, white, commercially prepared
+- Bread, whole-wheat, prepared from recipe
+- Buckwheat groats, roasted, cooked
+- Buckwheat groats, roasted, dry
+- Bulgur, dry
+- Couscous, dry
+- Crackers, crispbread, rye
+- Crackers, matzo, egg
+- Crackers, matzo, plain
+- Crackers, rye, wafers, plain
+- Crackers, water biscuits
+- Crackers, whole-wheat
+- Crackers, whole-wheat, low salt
+- English muffins, plain, unenriched, with calcium propionate
+- English muffins, whole grain white
+- Millet, cooked
+- Millet, dry (uncooked weight)
+- Noodles, egg, cooked, unenriched, with added salt
+- Noodles, egg, dry, unenriched
+- Noodles, japanese, soba, dry
+- Noodles, japanese, somen, dry
+- Oat bran, cooked
+- Oat bran, dry (uncooked weight)
+- Pasta, cooked, enriched, without added salt
+- Pasta, cooked, unenriched, with added salt
+- Pasta, dry, unenriched
+- Pasta, fresh-refrigerated, plain, cooked
+- Pasta, fresh-refrigerated, spinach, cooked
+- Pasta, whole grain, 51% whole wheat, remaining unenriched semolina, cooked
+- Pasta, whole grain, 51% whole wheat, remaining unenriched semolina, dry
+- Quinoa, uncooked
+- Rice noodles, cooked
+- Rice noodles, dry
+- Rice, white, medium-grain, dry (uncooked weight), unenriched
+- Rice, white, short-grain, dry (uncooked weight), unenriched
+- Rolls, dinner, egg
+- Rolls, dinner, rye
+- Rolls, hamburger or hot dog, wheat/cracked wheat
+- Rolls, hamburger or hot dog, whole wheat
+- Rolls, hamburger or hotdog, mixed-grain
+- Rolls, hamburger or hotdog, plain
+- Spaghetti, spinach, cooked
+- Spaghetti, spinach, dry
+- Spelt, cooked
+- Spelt, uncooked
+- Tortillas, ready-to-bake or -fry, corn
+- Tortillas, ready-to-bake or -fry, whole wheat
+- Wheat bran, crude
+- Wheat germ, crude
+- Wild rice, cooked
+- Wild rice, dry (uncooked weight)
+
+## Breakfast cereals (3)
+
+- Oats, regular and quick, unenriched, cooked with water, without salt
+- Whole wheat hot natural cereal, cooked with water, without salt
+- Whole wheat hot natural cereal, dry
+
+## Nuts & seeds (17)
+
+- Almonds, blanched
+- Chestnuts, european, raw, peeled
+- Chestnuts, european, raw, unpeeled
+- Coconut milk, frozen (liquid expressed from grated meat and water)
+- Coconut milk, raw (liquid expressed from grated meat and water)
+- Hazelnuts or filberts, blanched
+- Macadamia nuts, raw
+- Pecans
+- Pine nuts, dried
+- Pistachio nuts, raw
+- Pumpkin and squash seed kernels, roasted, without salt
+- Sesame butter, paste
+- Sesame butter, tahini, from raw and stone ground kernels
+- Sesame seeds, whole, roasted and toasted
+- Sunflower seed butter, without salt
+- Sunflower seed kernels, dry roasted, without salt
+- Sunflower seed kernels, oil roasted, without salt
+
+## Meat & poultry (35)
+
+- Beef, brisket, flat half, lean, trimmed to 0" fat, choice, cooked, braised
+- Beef, chuck, clod roast, lean, trimmed to 0" fat, choice, cooked, roasted
+- Beef, chuck, top blade, lean, trimmed to 0" fat, choice, cooked, broiled
+- Beef, ground, 97% lean meat / 3% fat, loaf, cooked, baked
+- Beef, ground, unspecified fat content, cooked
+- Beef, loin, tenderloin roast, boneless, lean, trimmed to 0" fat, choice, cooked, roasted
+- Beef, loin, tenderloin steak, boneless, lean, trimmed to 0" fat, choice, cooked, grilled
+- Beef, round, tip round, roast, lean, trimmed to 0" fat, choice, cooked, roasted
+- Beef, round, top round, lean, trimmed to 0" fat, choice, cooked, braised
+- Chicken, breast, meat and skin, cooked, roasted
+- Chicken, dark meat, meat and skin, cooked, roasted
+- Chicken, dark meat, meat only, cooked, roasted
+- Chicken, drumstick, meat and skin, cooked, roasted
+- Chicken, leg, meat and skin, cooked, roasted
+- Chicken, leg, meat only, cooked, roasted
+- Chicken, thigh, meat and skin, cooked, roasted
+- Chicken, wing, meat and skin, cooked, roasted
+- Chicken, wing, meat only, cooked, roasted
+- Duck, domesticated, meat and skin, cooked, roasted
+- Duck, domesticated, meat only, cooked, roasted
+- Lamb (imported), ground lamb, cooked, braised
+- Lamb (imported), loin, boneless, lean, cooked, fast roasted
+- Lamb (imported), loin, lean, cooked, broiled
+- Lamb (imported), shoulder, whole (arm and blade), lean, cooked, braised
+- Lamb, ground, cooked, broiled
+- Pork, ground, 96% lean / 4% fat, cooked, crumbles
+- Pork, ground, cooked
+- Pork, leg (ham), rump half, lean, cooked, roasted
+- Pork, leg (ham), whole, lean, cooked, roasted
+- Pork, loin, whole, lean, cooked, braised
+- Pork, loin, whole, lean, cooked, broiled
+- Pork, shoulder, arm picnic, lean, cooked, braised
+- Pork, shoulder, whole, lean, cooked, roasted
+- Turkey, whole, dark meat, cooked, roasted
+- Turkey, whole, meat only, cooked, roasted
+
+## Fish & seafood (35)
+
+- Fish, anchovy, european, canned in oil, drained solids
+- Fish, bass, freshwater, mixed species, cooked, dry heat
+- Fish, cod, Atlantic, canned, solids and liquid
+- Fish, cod, Pacific, cooked
+- Fish, flatfish (flounder and sole species), cooked, dry heat
+- Fish, halibut, Atlantic and Pacific, cooked, dry heat
+- Fish, halibut, greenland, cooked, dry heat
+- Fish, herring, Atlantic, cooked, dry heat
+- Fish, herring, Pacific, cooked, dry heat
+- Fish, mackerel, king, cooked, dry heat
+- Fish, mackerel, spanish, cooked, dry heat
+- Fish, monkfish, cooked, dry heat
+- Fish, pollock, Alaska, cooked
+- Fish, pollock, Atlantic, cooked, dry heat
+- Fish, salmon, chum, canned, without salt, drained solids with bone
+- Fish, salmon, pink, canned, without salt, solids with bone and liquid
+- Fish, sardine, Pacific, canned in tomato sauce, drained solids with bone
+- Fish, sea bass, mixed species, cooked, dry heat
+- Fish, tilapia, cooked, dry heat
+- Fish, trout, mixed species, cooked, dry heat
+- Fish, trout, rainbow, wild, cooked, dry heat
+- Fish, tuna, white, canned in oil, without salt, drained solids
+- Fish, tuna, white, canned in water, without salt, drained solids
+- Fish, turbot, european, cooked, dry heat
+- Fish, whiting, mixed species, cooked, dry heat
+- Shellfish, clam, mixed species, canned, liquid
+- Shellfish, clam, mixed species, cooked, moist heat
+- Shellfish, crab, blue, canned
+- Shellfish, crab, blue, cooked, moist heat
+- Shellfish, lobster, northern, cooked, moist heat
+- Shellfish, oyster, Pacific, cooked, moist heat
+- Shellfish, oyster, eastern, canned
+- Shellfish, prawns, cooked
+- Shellfish, prawns, mixed species, canned
+- Shellfish, scallop, (bay and sea), cooked, steamed
+
+## Dairy & eggs (27)
+
+- Butter, Clarified butter (ghee)
+- Cheese, blue
+- Cheese, brie
+- Cheese, camembert
+- Cheese, cheddar, sharp, sliced
+- Cheese, cream
+- Cheese, edam
+- Cheese, goat, hard type
+- Cheese, goat, soft type
+- Cheese, gouda
+- Cheese, gruyere
+- Cheese, mozzarella, part skim milk
+- Cheese, parmesan, grated
+- Cheese, parmesan, shredded
+- Cheese, ricotta, part skim milk
+- Cheese, ricotta, whole milk
+- Cheese, swiss
+- Cream, fluid, half and half
+- Cream, fluid, heavy whipping
+- Cream, sour, cultured
+- Egg, white, raw, fresh
+- Egg, whole, cooked, poached
+- Egg, whole, cooked, scrambled
+- Egg, yolk, raw, fresh
+- Milk, buttermilk, fluid, whole
+- Yoghurt, Greek, fruit, whole milk
+- Yoghurt, plain, skim milk
+
+## Oils & fats (7)
+
+- Oil, avocado
+- Oil, coconut
+- Oil, corn, peanut, and olive
+- Oil, flaxseed, cold pressed
+- Oil, sunflower, linoleic (less than 60%)
+- Oil, sunflower, linoleic, (approx. 65%)
+- Oil, walnut
+
+## Herbs & spices (50)
+
+- Allspice, ground
+- Anise seed
+- Basil, dried
+- Basil, fresh
+- Bay leaf
+- Capers, canned
+- Caraway seed
+- Cardamom
+- Celery seed
+- Chervil, dried
+- Cinnamon, ground
+- Cloves, ground
+- Coriander leaf, dried
+- Coriander seed
+- Cumin seed
+- Dill seed
+- Dill weed, dried
+- Dill weed, fresh
+- Fennel seed
+- Fenugreek seed
+- Ginger, ground
+- Horseradish, prepared
+- Mace, ground
+- Marjoram, dried
+- Mustard seed, ground
+- Mustard, prepared, yellow
+- Nutmeg, ground
+- Oregano, dried
+- Paprika
+- Parsley, dried
+- Pepper, black
+- Pepper, white
+- Peppermint, fresh
+- Poppy seed
+- Poultry seasoning
+- Pumpkin pie spice
+- Rosemary, dried
+- Rosemary, fresh
+- Saffron
+- Sage, ground
+- Savory, ground
+- Spearmint, dried
+- Spearmint, fresh
+- Tarragon, dried
+- Thyme, dried
+- Thyme, fresh
+- Turmeric, ground
+- Vanilla extract
+- Vinegar, cider
+- Vinegar, red wine

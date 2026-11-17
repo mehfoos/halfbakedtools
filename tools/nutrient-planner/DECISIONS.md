@@ -13,6 +13,9 @@ and shoppers at ordinary UK supermarkets. It is for thinking about food, not a m
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | "Wider selection" preset: about 400 ordinary foods on top of the common list (`pipeline/wider_selection.json`; list in `data/foods/wider_selection.md`) | Variety without the odd picks of "Everything". The list is the maintainers' judgement, for the owner to review |
+| 2026-11-17 | Mild preference for familiar foods in suggestions, capped at 1% of one target per plan; stated on the methods page | "Everything" picked dried lychees and bread sticks because the optimiser only sees nutrients |
+| 2026-11-17 | When a long food list times out, also search the common foods and keep the better plan | A time-limited search over 400+ foods gave a worse plan than the common foods alone |
 | 2026-11-17 | Vitamin D is reported on its own line and left out of the "targets met" count unless the visitor asks to plan for it | Otherwise almost every result read "short on vitamin D", burying shortfalls the plan was actually trying to avoid. Its amount, status and the supplement advice are still shown |
 | 2026-11-17 | US-fortified products are flagged and left out of the "Everything" preset (still selectable one by one) | A UK shopper's version may not have the added nutrients, so a plan built on them could mislead |
 | 2026-11-17 | Children: a warning (stronger under 5) and portion limits scaled by calories relative to a 2,000 kcal day. No minimum age | Adult portion caps gave toddler plans with 130 g of kale; the scaling is a rule of thumb and is labelled as one |
