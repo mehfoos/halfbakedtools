@@ -13,6 +13,7 @@ and shoppers at ordinary UK supermarkets. It is for thinking about food, not a m
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | US-fortified products are flagged and left out of the "Everything" preset (still selectable one by one) | A UK shopper's version may not have the added nutrients, so a plan built on them could mislead |
 | 2026-11-17 | Children: a warning (stronger under 5) and portion limits scaled by calories relative to a 2,000 kcal day. No minimum age | Adult portion caps gave toddler plans with 130 g of kale; the scaling is a rule of thumb and is labelled as one |
 | 2026-11-17 | Suggestions leave out foods the NHS says a group should avoid (liver in pregnancy; shark, swordfish, marlin in pregnancy and under 16); the builder warns | The vitamin A limit alone only capped liver at about 30 g |
 | 2026-11-17 | Suggestions don't chase vitamin D unless the visitor ticks a box (off by default); the day's vitamin D and the supplement notice are still shown | It forced 200–300 g of salmon or 200 g of UV mushrooms into most plans, against the 8 Nov decision below |

@@ -64,6 +64,11 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   and fish pages. Children's portion limits are scaled by calories (a rule of thumb, not an official figure), and a
   warning is shown for under-18s, stronger for under-5s (PHE Table 3 and 5 notes).
 
+- **"Everything" foods:** 108 US products with added nutrients (enriched, fortified, "with added vitamin …") are now
+  flagged "US-fortified" and are not switched on by the "Everything" preset, because US fortification differs from the
+  UK's. Dried pulses and uncooked grains are labelled "dry (uncooked weight)". Daily caps lowered for powders (30 g),
+  breadcrumbs and crackers (60 g) and condensed milk (40 g). Coconut cream is now classed as vegan.
+
 ## Changes made on 10 Nov 2026
 
 - **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of

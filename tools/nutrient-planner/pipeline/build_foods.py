@@ -273,14 +273,14 @@ def main() -> int:
         if "energy" not in vals:
             continue
         vals.update(derive(vals))
-        name = auto_foods.uk_name(desc)
+        name = auto_foods.display_name(cat, desc)
         group, variant = auto_foods.group_and_variant(name)
         step, cap = auto_foods.amounts_for(cat, name)
         foods_out.append({
             "id": f"u{fid}", "name": name, "cat": cat, "group": group, "label": variant,
             "diet": auto_foods.diet_for(cat, desc), "common": False,
             "unit": "g", "unitGrams": 1, "step": step, "maxGrams": cap, "notes": None,
-            "capGroup": auto_foods.cap_group(cat, desc),
+            "capGroup": auto_foods.cap_group(cat, desc), "fortified": auto_foods.fortified(desc) or None,
             "fdcId": fid, "usdaName": desc, "dataset": "sr", "v": pack(vals),
         })
         auto_counts[cat] = auto_counts.get(cat, 0) + 1

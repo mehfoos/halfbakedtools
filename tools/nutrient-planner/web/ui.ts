@@ -202,7 +202,7 @@ export async function start(root: HTMLElement) {
     $$<HTMLInputElement>(root, 'input[name="diet"]').forEach((r) => (r.checked = r.value === s.diet));
     const all = dietFoods();
     const on = all.filter((f) => isOn(f, s.base, toggled)).length;
-    const baseText = { common: "common foods", all: "everything", none: "nothing" }[s.base];
+    const baseText = { common: "common foods", all: "everything except US-fortified products", none: "nothing" }[s.base];
     $(root, "#foodCount").innerHTML = `<b>${on.toLocaleString("en-GB")}</b> of ${all.length.toLocaleString("en-GB")} foods switched on`;
     $(root, "#foodsNote").textContent = `starting from ${baseText}${toggled.size ? `, ${toggled.size} changed` : ""}`;
   }
@@ -225,7 +225,7 @@ export async function start(root: HTMLElement) {
   }
 
   const itemHtml = (f: PlannerFood, label: string, path = "") =>
-    `<label class="item"><input type="checkbox" data-food="${f.id}" /> <span>${esc(label)}${f.common ? ' <span class="tag">common</span>' : ""}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`;
+    `<label class="item"><input type="checkbox" data-food="${f.id}" /> <span>${esc(label)}${f.common ? ' <span class="tag">common</span>' : ""}${f.fortified ? ' <span class="tag">US-fortified</span>' : ""}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`;
   const triBox = (attr: string, id: string) => `<input type="checkbox" ${attr}="${esc(id)}" />`;
   let treeModel = categoriesTree();
   const groupFoods = new Map<string, PlannerFood[]>();
@@ -512,6 +512,7 @@ export async function start(root: HTMLElement) {
     const seen = new Set<string>();
     const out = items.filter((i) => i.food.notes && !seen.has(i.food.notes) && seen.add(i.food.notes))
       .map((i) => esc(i.food.notes) + (i.food.noteRef ? ` ${cite(i.food.noteRef)}` : ""));
+    if (items.some((i) => i.food.fortified)) out.push("Includes a US product with added nutrients (marked US-fortified in the food list); the UK version may contain different amounts, so check the label.");
     // warnings for foods this person is advised to avoid (matters in the builder; suggestions leave them out)
     const warn = [...new Map(items.map((i) => avoidReason(i.food, { age: s.age, life: s.life })).filter((r) => !!r).map((r) => [r!.text, r!])).values()]
       .map((r) => `<p class="notice bad small"><b>Advised to avoid:</b> ${esc(r.text)} ${cite(r.ref)}</p>`).join("");

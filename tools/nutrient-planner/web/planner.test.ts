@@ -6,7 +6,7 @@ import { pickProfile, groupRange, energyFor, type Standard } from "./profiles.ts
 import { resolveTargets } from "./solver.ts";
 import { avoidReason, portionFactor, scaledMax } from "./foods.ts";
 import { decode, encode, fresh } from "./state.ts";
-import { isOn, setOn, type PlannerFood } from "./foods.ts";
+import { isOn, setOn, unpack, type PlannerFood } from "./foods.ts";
 import { analyse } from "./analysis.ts";
 
 const load = (id: string) => JSON.parse(readFileSync(new URL(`../data/targets/${id}.json`, import.meta.url), "utf8")) as Standard;
@@ -234,4 +234,17 @@ test("children's portion limits are scaled by calories; adults' are not", () => 
   assert.equal(scaledMax({ maxGrams: 300, step: 10, unitGrams: 1 }, 0.7), 210);
   assert.equal(scaledMax({ maxGrams: 200, step: 0.5, unitGrams: 50 }, 0.33), 50);   // eggs: 200 g x 0.33 = 66 g -> 1 egg
   assert.equal(scaledMax({ maxGrams: 5, step: 5, unitGrams: 1 }, 0.3), 5);          // never below one step
+});
+
+test("US-fortified products are flagged and left out of the Everything preset; dry staples are labelled", () => {
+  const data = unpack(JSON.parse(readFileSync(new URL("../data/foods/foods.json", import.meta.url), "utf8")));
+  const fort = data.foods.filter((f) => f.fortified);
+  assert.ok(fort.length > 50 && fort.every((f) => !f.common));
+  assert.ok(fort.every((f) => !isOn(f, "all", new Set()) && isOn(f, "all", new Set([f.id]))));
+  assert.ok(data.foods.filter((f) => !f.fortified).every((f) => isOn(f, "all", new Set())));
+  assert.ok(fort.some((f) => /Peanut butter.*vitamin and mineral fortified/i.test(f.usdaName)));
+  const soy = data.foods.find((f) => f.usdaName === "Soybeans, mature seeds, raw")!;
+  assert.match(soy.name, /dry \(uncooked weight\)/);
+  assert.equal(data.foods.find((f) => /^Bread, crumbs, dry, grated, plain/.test(f.usdaName))!.maxGrams, 60);
+  assert.equal(data.foods.find((f) => /coconut cream, raw/.test(f.usdaName))!.diet, "vegan");
 });

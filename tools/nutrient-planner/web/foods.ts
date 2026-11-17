@@ -4,6 +4,7 @@ import type { Food, NutrientDef } from "./solver.ts";
 export type PlannerFood = Food & {
   cat: string; label: string; common: boolean; fdcId: string; usdaName: string;
   noteRef?: string | null;   // the reference a food's note rests on
+  fortified?: boolean | null; // a US product with nutrients added; not part of the "Everything" preset
 };
 export type FoodsData = {
   generated?: string; missing?: boolean;
@@ -26,14 +27,17 @@ export function unpack(raw: { keys: string[]; foods: RawFood[]; nutrients: Nutri
 
 export type Base = "common" | "all" | "none";
 
+/** What a preset switches on. "Everything" leaves out US-fortified products (they can be switched on one by one). */
+export const inPreset = (f: PlannerFood, base: Base) => (base === "all" ? !f.fortified : base === "none" ? false : f.common);
+
 /** A food is on if the preset says so, unless the person has toggled it. */
 export function isOn(f: PlannerFood, base: Base, toggled: Set<string>) {
-  const fromBase = base === "all" ? true : base === "none" ? false : f.common;
+  const fromBase = inPreset(f, base);
   return toggled.has(f.id) ? !fromBase : fromBase;
 }
 
 export function setOn(f: PlannerFood, on: boolean, base: Base, toggled: Set<string>) {
-  const fromBase = base === "all" ? true : base === "none" ? false : f.common;
+  const fromBase = inPreset(f, base);
   if (on === fromBase) toggled.delete(f.id); else toggled.add(f.id);
 }
 

@@ -77,7 +77,8 @@ BRAND_RE = re.compile(r"\b[A-Z][A-Z'&.]{2,}\b")
 
 ANIMAL_WORDS = ("milk", "egg", "cheese", "butter", "cream", "whey", "yogurt", "yoghurt", "honey",
                 "ghee", "casein", "lactose")
-PLANT_MILK = ("soymilk", "soy milk", "almond milk", "rice milk", "oat milk", "coconut milk",
+PLANT_MILK = ("soymilk", "soy milk", "almond milk", "rice milk", "oat milk", "coconut milk", "coconut cream",
+              "cream style", "cream-style",
               "hemp", "cocoa butter", "peanut butter", "nut butter", "seed butter", "butternut", "buttermilk free",
               "eggplant", "egg noodles free")
 
@@ -173,6 +174,36 @@ OILY_FISH_RE = re.compile(r"\b(herring|bloater|kipper|hilsa|pilchard|salmon|sard
 OILY_FISH_PORTION_G = 140
 
 
+# Products with nutrients added. US fortification rules differ from the UK's, so these are flagged and are
+# not part of the "Everything" preset (they can still be switched on one by one).
+FORTIFIED_RE = re.compile(r"enriched|fortified|with added (vitamin|calcium|iron|ascorbic|nutrients|potassium)|added (calcium|vitamin)|vitamin and mineral", re.I)
+NOT_FORTIFIED_RE = re.compile(r"unenriched|not fortified|unfortified|without added", re.I)
+
+
+def fortified(desc: str) -> bool:
+    return bool(FORTIFIED_RE.search(desc)) and not NOT_FORTIFIED_RE.search(desc)
+
+
+# Whole grains and grain products that USDA lists without the word "raw" or "dry" but that are uncooked.
+DRY_GRAIN_RE = re.compile(r"^(rye grain|wheat, (hard|soft|durum)|corn grain|semolina|sorghum grain|triticale|barley, hulled|buckwheat$|vital wheat gluten)", re.I)
+
+
+def is_dry_grain(category: str, desc: str) -> bool:
+    return category == "grains" and bool(DRY_GRAIN_RE.search(desc)) and "sprouted" not in desc.lower()
+
+
+def display_name(category: str, desc: str) -> str:
+    """UK-style name; dried pulses and grains are labelled as dry, uncooked weight."""
+    name = uk_name(desc)
+    d = desc.lower()
+    dry_pulse = category == "pulses" and ("mature seeds" in d or d.startswith("lentils")) and "sprouted" not in d
+    if dry_pulse or category in ("grains", "cereals"):
+        name = re.sub(r",\s*raw\b", ", dry (uncooked weight)", name)
+    if is_dry_grain(category, desc):
+        name += ", dry (uncooked weight)"
+    return name
+
+
 def cap_group(category: str, desc: str) -> str | None:
     """Foods that share one daily cap between them (see GROUP_CAPS in web/foods.ts)."""
     return "oily-fish" if category == "fish" and OILY_FISH_RE.search(desc) else None
@@ -197,7 +228,7 @@ def amounts_for(category: str, desc: str) -> tuple[float, int]:
     if category == "dairy":
         if "cheese" in d:
             return 5, 100
-        if any(w in d for w in ("dry", "dried", "powder")):
+        if any(w in d for w in ("dry", "dried", "powder", "condensed")):
             return 5, 40
         if "milk" in d or "buttermilk" in d:
             return 50, 800
@@ -210,6 +241,8 @@ def amounts_for(category: str, desc: str) -> tuple[float, int]:
         return 10, 200
     if category == "drinks":
         return 50, 800
+    if "powder" in d and category in ("fruit", "veg"):
+        return 5, 30
     if category == "fruit":
         if "juice" in d:
             return 50, 250
@@ -227,11 +260,13 @@ def amounts_for(category: str, desc: str) -> tuple[float, int]:
             return 10, 150
         return 10, 400
     if category == "grains":
+        if any(w in d for w in ("crumbs", "stuffing", "crouton")) or "crackers" in d:
+            return 5, 60
         if any(w in d for w in ("bread", "rolls", "muffin", "bagel", "tortilla")):
             return 10, 300
         if "crackers" in d:
             return 5, 60
-        if dry or "raw" in d or "uncooked" in d:
+        if dry or "raw" in d or "uncooked" in d or is_dry_grain(category, desc):
             return 10, 150
         return 10, 500
     if category == "cereals":
