@@ -1,7 +1,7 @@
 // A day's results as HTML: the headline, the "At a glance" chart with its side panel, the notices,
 // and one collapsible section per nutrient group. Used by both suggestions and the builder.
 import { GROUPS, type Report, type Row } from "../analysis.ts";
-import { detailAxes, overviewAxes } from "../chart-axes.ts";
+import { detailAxes, noDataLabels, overviewAxes } from "../chart-axes.ts";
 import { isAdult } from "../profiles.ts";
 import { comparisonTargets, otherStandards } from "../person.ts";
 import type { App, Item } from "./app.ts";
@@ -75,7 +75,7 @@ export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[])
     const counted = rows.filter((r) => r.pctOfMin !== undefined && !r.aside);
     const met = counted.filter((r) => r.status === "met").length, mins = counted.length;
     return `<details><summary>${esc(g.title)} <span class="summary-note">${mins ? `${met} of ${mins} met` : `${rows.length} values`}</span></summary><div class="details-body">
-        ${charts.chart(detailAxes(rep, g.keys, cmp, fmt), `${g.title}: share of each target reached`)}
+        ${charts.chart(detailAxes(rep, g.keys, cmp, fmt), `${g.title}: share of each target reached`, noDataLabels(rep, g.keys, true))}
         ${id === "vitamins" ? `<p class="small sans muted">Vitamin D targets cover all vitamin D from food (D2 and D3 together). The difference matters mainly for supplements, where D3 raises blood levels more effectively. B5 (pantothenic acid) has a US target only; biotin (B7) isn't shown because the food data rarely includes it.</p>` : ""}
         ${table(rows)}
         ${charts.contributionSection(items, g.keys, g.id === "amino" ? "these amino acids" : `these ${g.title.toLowerCase()}`)}</div></details>`;
@@ -94,7 +94,7 @@ export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[])
   const notChecked = rep.unassessed.length ? ` Not checked (no food data): ${rep.unassessed.map((r) => esc(r.label)).join(", ")}.` : "";
   const asideTxt = rep.aside.map((r) => ` ${esc(r.label)}, which suggestions don't plan for: ${fmt(r.value)} of ${fmt(r.min)} ${esc(r.unit)} (see the note below).`).join("");
 
-  const overview = charts.chart(overviewAxes(rep, person, isAdult(app.s.age), cmp, fmt), "Overview: energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt as a share of target");
+  const overview = charts.chart(overviewAxes(rep, person, isAdult(app.s.age), cmp, fmt), "Overview: energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt as a share of target", noDataLabels(rep, ["fat", "satfat", "carbohydrate", "sugars", "fibre", "protein", rep.byKey.get("salt")?.max !== undefined ? "salt" : "sodium"]));
   return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> checked targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}${unknownTxt}${asideTxt}${notChecked}
         ${over.length ? ` <span class="chip over">Over the limit for ${over.map((r) => esc(r.label)).join(", ")}</span>` : ""}</p>
       ${custom ? `<p class="small muted sans">Using some custom targets.</p>` : ""}

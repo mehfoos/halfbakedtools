@@ -58,3 +58,12 @@ export function overviewAxes(rep: Report, person: Person, adult: boolean, cmp: C
   add("fibre", "Fibre"); add("protein", "Protein"); add("salt", "Salt");
   return axes;
 }
+
+/**
+ * Labels of the nutrients (among these keys) that would have an axis but no food in the day has data for them.
+ * With `needsTarget`, only nutrients with a minimum target count (the detail charts draw no axis for the others).
+ */
+export function noDataLabels(rep: Report, keys: string[], needsTarget = false): string[] {
+  return keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.status === "na" && (!needsTarget || (r.min ?? 0) > 0))
+    .map((r) => SHORT_LABEL[r.key] ?? r.label);
+}

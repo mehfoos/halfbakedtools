@@ -4,7 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { analyse, gapsOf, totals } from "./analysis.ts";
-import { detailAxes } from "./chart-axes.ts";
+import { detailAxes, noDataLabels } from "./chart-axes.ts";
 import type { Food, ResolvedTarget } from "./solver.ts";
 
 const food = (id: string, per100g: Record<string, number>) => ({ id, name: id, per100g }) as unknown as Food;
@@ -82,4 +82,11 @@ test("food data: derived values exist only where all their parts do", () => {
       assert.equal(has(f, derived), needs.every((k) => has(f, k)), `${f.name}: ${derived}`);
     }
   }
+});
+
+test("a nutrient with no data in the day gets no chart axis, and is named as not drawn rather than drawn at zero", () => {
+  const rep = day([noData], [target("iron", { min: 8 }), target("sodium", { max: 2300 })]);
+  assert.equal(detailAxes(rep, ["iron"], [], String as never).length, 0);
+  assert.deepEqual(noDataLabels(rep, ["iron", "sodium"], true), ["Iron"]); // sodium has only a limit: no axis in the detail charts
+  assert.deepEqual(noDataLabels(rep, ["iron", "sodium"]), ["Iron", "Sodium"]);
 });

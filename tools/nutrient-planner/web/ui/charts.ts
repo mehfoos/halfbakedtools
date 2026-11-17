@@ -27,12 +27,14 @@ export function createCharts(app: App) {
     radarSvg(c.axes, { title: c.title, zoom: c.zoom, overlays: overlays(), compact: compact() });
 
   /** A chart, with a zoom button when some value is off the default scale. Needs at least three axes. */
-  function chart(axes: Axis[], title: string) {
-    if (axes.length < 3) return "";
+  function chart(axes: Axis[], title: string, noData: string[] = []) {
+    // A nutrient no food has data for gets no axis (it would read as zero), so say which ones are left out.
+    const note = noData.length ? `<p class="small muted sans">Not drawn, because no food in this day has data (this is not zero): ${noData.map(esc).join(", ")}.</p>` : "";
+    if (axes.length < 3) return noData.length ? `<p class="small muted sans">Too few nutrients with data to draw this chart.</p>${note}` : "";
     const id = `c${++uid}`;
     charts.set(id, { axes, title, zoom: false });
     const canZoom = scaleMax(axes, 150, overlays()) > 150;
-    return `<figure class="chart" data-chart="${id}">${radarSvg(axes, { title, overlays: overlays(), compact: compact() })}${canZoom ? `<figcaption><button type="button" class="link small" data-zoom="${id}">Zoom to target</button></figcaption>` : ""}</figure>`;
+    return `<figure class="chart" data-chart="${id}">${radarSvg(axes, { title, overlays: overlays(), compact: compact() })}${canZoom ? `<figcaption><button type="button" class="link small" data-zoom="${id}">Zoom to target</button></figcaption>` : ""}</figure>${note}`;
   }
 
   /** A collapsed section whose table (each food's share of each nutrient) is built when first opened. */
@@ -44,10 +46,10 @@ export function createCharts(app: App) {
 
   function contributionTable(items: Item[], keys: string[]) {
     // D2 and D3 are recorded for too few foods to split the total fairly.
-    const ks = keys.filter((k) => !["vitaminD2", "vitaminD3"].includes(k) && app.nutrientMeta.has(k) && items.some((it) => (it.food.per100g[k] ?? 0) > 0));
+    const known = (it: Item, k: string) => it.food.per100g[k] !== undefined;
+    const ks = keys.filter((k) => !["vitaminD2", "vitaminD3"].includes(k) && app.nutrientMeta.has(k) && items.some((it) => (it.food.per100g[k] ?? 0) > 0 || !known(it, k)));
     if (!ks.length) return `<p class="small sans">No values to show.</p>`;
     const amount = (it: Item, k: string) => ((it.food.per100g[k] ?? 0) * it.grams) / 100;
-    const known = (it: Item, k: string) => it.food.per100g[k] !== undefined;
     const gaps = ks.some((k) => items.some((it) => !known(it, k)));
     return `<p class="small sans">Share of the day's total that each food provides.${gaps ? " NA: that food has no data for the nutrient (this is not zero); shares are of the amounts that are known." : ""}</p><div class="table-scroll"><table class="contrib"><thead><tr><th>Nutrient</th>${items.map((it) => `<th class="num">${esc(it.food.name)}</th>`).join("")}</tr></thead><tbody>${
       ks.map((k) => {
