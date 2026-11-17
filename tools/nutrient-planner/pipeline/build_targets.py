@@ -407,7 +407,34 @@ EU_PROTEIN_EXTRA = {"pregnancy": 9, "lactation": 19}   # g/day added (2nd trimes
 REF_WEIGHT = {"1-3": (12.2, 11.5), "4-6": (19.2, 18.7), "7-10": (29.0, 28.4), "11-14": (44.0, 45.1), "15-17": (64.1, 56.4),
               "adult": (68.1, 58.5), "pregnant": (None, 70.5)}
 EU_TO_US_UL = {"1-3": "1-3", "4-6": "4-8", "7-10": "4-8", "11-14": "9-13", "15-17": "14-18", "18-24": "19-30", "25-50": "31-50", "51+": "51-70"}
-EU_TO_UK_ENERGY = {"1-3": "2-3", "4-6": "4-6", "7-10": "7-10", "11-14": "11-14", "15-17": "15-18", "18-24": "19-64", "25-50": "19-64", "51+": "65-74"}
+# Average requirement for energy, MJ/day: EFSA 2017 summary report, Table 1 (page 22), at the lowest
+# physical activity level (PAL) the table gives for the age: 1.4 ("low active (sedentary)") for ages 1-9
+# and adults, 1.6 ("moderately active") for ages 10-17. (male, female). No values for 80 and over
+# ("lack of anthropometric data"), so the 70-79 value is used there.
+EU_ENERGY_MJ = {
+    1: (3.3, 3.0), 2: (4.3, 4.0), 3: (4.9, 4.6), 4: (5.3, 4.9), 5: (5.6, 5.2), 6: (5.9, 5.5), 7: (6.3, 5.8),
+    8: (6.7, 6.2), 9: (7.0, 6.6),
+    10: (8.1, 7.6), 11: (8.5, 8.0), 12: (9.1, 8.4), 13: (9.8, 8.8), 14: (10.5, 9.1), 15: (11.3, 9.3),
+    16: (11.9, 9.5), 17: (12.3, 9.5),
+}
+EU_ENERGY_MJ_ADULT = [(18, 29, 9.8, 7.9), (30, 39, 9.5, 7.6), (40, 49, 9.3, 7.5), (50, 59, 9.2, 7.5),
+                      (60, 69, 8.4, 6.8), (70, 120, 8.3, 6.8)]
+KCAL_PER_MJ = 238.83   # Table 1, footnote (a)
+
+
+def eu_energy_by_age(sex: str, lo: int, hi: int) -> dict:
+    """EFSA average requirement for each whole year of age, in kcal; default band +/-10%."""
+    i = 0 if sex == "male" else 1
+    out = {}
+    for age in range(lo, hi + 1):
+        mj = EU_ENERGY_MJ[age][i] if age in EU_ENERGY_MJ else next(r for r in EU_ENERGY_MJ_ADULT if r[0] <= age <= r[1])[2 + i]
+        k = round(mj * KCAL_PER_MJ)
+        out[str(age)] = {"kcal": k, "low": round(k * 0.9), "high": round(k * 1.1)}
+    return out
+
+
+EU_ENERGY_NOTE = ("EFSA average requirement for your age and sex (summary report, Table 1) at the lowest activity level the table gives: "
+                  "sedentary for adults and for children under 10, moderately active for ages 10 to 17. Default band ±10%. Raise it if you are more active.")
 
 
 def eu_targets(sex: str, g: str, stage: str) -> dict:
@@ -456,26 +483,28 @@ def build_eu() -> dict:
     profiles = []
     for sex in ("male", "female"):
         for g in EU_GROUPS:
-            ukg = EU_TO_UK_ENERGY[g]
-            col = UK_COLS.index(ukg)
-            kcal = UK["energy"][0 if sex == "male" else 1][col]
+            lo, hi = (int(x) for x in g.replace("+", "-120").split("-"))
+            by_age = eu_energy_by_age(sex, lo, hi)
+            note = EU_ENERGY_NOTE + (" EFSA gives no value for ages 80 and over, so the value for 70 to 79 is used." if g == "51+" else "")
             profiles.append({
                 "id": f"{sex}-{g}", "stage": sex, "group": g, "label": f"{sex.title()}, {g} years",
-                "energy": {"kcal": kcal, "low": round(kcal * 0.9), "high": round(kcal * 1.1),
-                           "note": "EFSA's energy needs depend on activity level, so the UK estimate for this age is used as a default; adjust it if you're more active."},
+                "energy": {**by_age[str(lo)], "note": note, "byAge": by_age},
                 "defaultWeightKg": REF_WEIGHT.get(g, REF_WEIGHT["adult"])[0 if sex == "male" else 1],
                 "targets": eu_targets(sex, g, sex),
             })
     for stage in ("pregnancy", "lactation"):
+        by_age = eu_energy_by_age("female", 18, 50)
+        extra = ("In pregnancy EFSA adds about 70 kcal a day in the first trimester, 260 in the second and 500 in the third (Table 1); this default doesn't."
+                 if stage == "pregnancy" else
+                 "While breastfeeding (first 6 months) EFSA adds about 500 kcal a day (Table 1); this default doesn't.")
         profiles.append({
             "id": f"{stage}-18-50", "stage": stage, "group": "18-50", "label": f"{'Pregnant' if stage == 'pregnancy' else 'Breastfeeding'}, 18-50 years",
-            "energy": {"kcal": 2000, "low": 1800, "high": 2400,
-                       "note": "Energy needs rise in later pregnancy and while breastfeeding; ask your midwife or doctor."},
+            "energy": {**by_age["18"], "note": EU_ENERGY_NOTE + " " + extra, "byAge": by_age},
             "defaultWeightKg": 70.5 if stage == "pregnancy" else 58.5, "targets": eu_targets("female", "25-50", stage),
         })
     return {
         "id": "eu", "name": "EU", "longName": "EU Dietary Reference Values (EFSA)", "status": "available",
-        "verified": {"checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 2, 3, 5, 7, 9, 11 and 17"},
+        "verified": {"checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 1, 2, 3, 5, 7, 9, 11 and 17"},
         "sources": [ref("efsa-2017"), ref("nasem-dri", "Safety upper limits (EFSA tables give no complete set)"), ref("who-2007", "Amino acids")],
         "notes": [
             "Values are population reference intakes (PRI) where EFSA set one, otherwise adequate intakes (AI), from the EFSA 2017 summary report (Tables 2, 3, 5, 7, 9 and 11).",

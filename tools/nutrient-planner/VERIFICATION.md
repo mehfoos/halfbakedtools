@@ -7,7 +7,7 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
 | Standard | Status | Checked against | Date |
 |---|---|---|---|
 | UK | Checked | Public Health England (2016) *Government Dietary Recommendations*, Tables 1–6 (pages 6–11) | 9 Nov 2026 |
-| EU | Checked | EFSA (2017) *Dietary reference values for nutrients: Summary report*, doi:10.2903/sp.efsa.2017.e15121, Tables 2, 3, 5, 7, 9, 11, 17 | 9 Nov 2026 |
+| EU | Checked | EFSA (2017) *Dietary reference values for nutrients: Summary report*, doi:10.2903/sp.efsa.2017.e15121, Tables 1, 2, 3, 5, 7, 9, 11, 17 | 9 Nov 2026 |
 | US | Checked | National Academies DRI summary table PDFs: RDA and AI (vitamins, elements, water and macronutrients), chronic disease risk reduction intakes, acceptable macronutrient distribution ranges | 10 Nov 2026 |
 | US calories | Checked | *Dietary Guidelines for Americans, 2020–2025*, Appendix 2, Tables A2-1 to A2-3 | 10 Nov 2026 |
 | Upper limits (all standards) | Checked | National Academies DRI summary tables, tolerable upper intake levels (vitamins and elements) | 10 Nov 2026 |
@@ -52,6 +52,12 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   reported against its target.
 - **Oily fish capped at 140 g a day in total** in suggestions. Oily fish are those the NHS page lists (herring,
   pilchards, salmon, sardines, sprats, trout, mackerel; not tuna): 33 foods. 140 g is the NHS portion size.
+
+- **EU calories now come from EFSA** (summary report Table 1, page 22; re-read against the archived PDF), by exact
+  age and sex, at the lowest activity level the table gives (sedentary for adults and under-10s, moderately active
+  for 10–17). Before, UK calorie figures were used under the EU standard, and a 51-year-old got the UK figure for
+  65–74. Example: woman aged 35, 2,000 → 1,815 kcal. EFSA gives none for 80+, so the 70–79 value is used and
+  the page says so.
 
 ## Changes made on 10 Nov 2026
 

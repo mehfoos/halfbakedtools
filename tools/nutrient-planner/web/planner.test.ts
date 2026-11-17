@@ -201,3 +201,14 @@ test("oily fish share one 140 g daily cap; tuna and white fish don't count", () 
   const oily = raw.foods.filter((f: { capGroup?: string }) => f.capGroup === "oily-fish");
   assert.ok(oily.every((f: { cat: string; maxGrams: number }) => f.cat === "fish" && f.maxGrams <= 140));
 });
+
+test("EU calories come from EFSA Table 1 for the exact age and sex", () => {
+  const e = (sex: "male" | "female", age: number, life: "none" | "pregnancy" = "none") => energyFor(pickProfile(eu, sex, age, life).profile, age, sex).kcal;
+  assert.equal(e("female", 35), 1815);   // 7.6 MJ x 238.83, PAL 1.4
+  assert.equal(e("male", 25), 2341);     // 9.8 MJ
+  assert.equal(e("female", 65), 1624);   // 6.8 MJ
+  assert.equal(e("male", 85), 1982);     // 8.3 MJ (70-79 value; none given for 80+)
+  assert.equal(e("female", 1), 716);     // 3.0 MJ
+  assert.equal(e("male", 12), 2173);     // 9.1 MJ, PAL 1.6 (lowest given for ages 10-17)
+  assert.equal(e("female", 30, "pregnancy"), 1815);
+});
