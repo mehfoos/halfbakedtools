@@ -176,3 +176,11 @@ test("US saturated fat: under 10% of calories from age 2; EU sets no number", ()
   assert.equal(sat(us, 1), undefined);                          // no limit before age 2
   assert.equal(sat(eu, 35), undefined);
 });
+
+test("EU omega-3: 100 mg DHA at age 1, 250 mg EPA+DHA from age 2", () => {
+  const defs = [{ key: "epaDha", label: "EPA+DHA", unit: "mg" }, { key: "dha", label: "DHA", unit: "g" }];
+  const at = (age: number) => new Map(resolveTargets(pickProfile(eu, "female", age, "none").profile.targets, defs, 1000, 12, "eu", {}, age).map((t) => [t.key, t.min]));
+  assert.deepEqual([...at(1)], [["dha", 0.1]]);
+  assert.deepEqual([...at(2)], [["epaDha", 250]]);
+  assert.deepEqual([...at(30)], [["epaDha", 250]]);
+});

@@ -12,7 +12,8 @@ where a bound is {"value", "basis", "source", "note"?} and basis is:
   pctEnergy  percent of energy (converted to grams in the browser)
   perKg      mg per kg body weight per day (converted using the user's weight)
   perMJ      amount per MJ of energy
-A bound may carry "byAge" (exact value for a whole year of age) or "fromAge" (applies from that age).
+A bound may carry "byAge" (exact value for a whole year of age), "fromAge" (applies from that age)
+or "toAge" (applies up to and including that age).
 The planner tries to reach every min (shortfall is penalised) and never
 exceeds a max.
 """
@@ -281,7 +282,7 @@ def build_uk() -> dict:
         "verified": {"checked": True, "date": "2026-11-09", "against": "Public Health England (2016) Government Dietary Recommendations PDF, Tables 1-6 (pages 6-11)"},
         "sources": [ref("phe-2016"), ref("nasem-dri", "Safety upper limits (the UK has no complete set)"), ref("who-2007", "Amino acids")],
         "notes": [
-            "Vitamin A is expressed in retinol equivalents by PHE and in retinol activity equivalents by USDA food data; plant sources of vitamin A may be slightly overestimated against the UK target.",
+            "The UK target is in retinol equivalents; the food data is in retinol activity equivalents, which count carotenes from plants at half the value (US tables, vitamin A footnote). So vitamin A from plant foods is understated against this target, by up to half; vitamin A from animal foods is unaffected.",
             "Free sugars (limit 5% of energy) are not assessed because food databases do not separate free from intrinsic sugars.",
             "Children under 5 are advised to take vitamin A, C and D supplements; women who could become pregnant are advised to take 400 µg folic acid daily.",
         ],
@@ -430,8 +431,12 @@ def eu_targets(sex: str, g: str, stage: str) -> dict:
     put(t, "la", "min", 4, "pctEnergy", "efsa-2017", "Adequate intake")
     put(t, "ala", "min", 0.5, "pctEnergy", "efsa-2017", "Adequate intake")
     put(t, "epaDha", "min", 350 if stage in ("pregnancy", "lactation") else 250, "abs", "efsa-2017",
-        "Adequate intake" + (" (250 mg plus 100-200 mg DHA)" if stage in ("pregnancy", "lactation")
-                             else " (100 mg of DHA under age 2)" if g == "1-3" else ""))
+        "Adequate intake" + (" (250 mg plus 100-200 mg DHA)" if stage in ("pregnancy", "lactation") else ""))
+    if g == "1-3" and stage not in ("pregnancy", "lactation"):
+        # EFSA Table 2 (page 23): at age 1 the adequate intake is 100 mg DHA; EPA+DHA 250 mg applies from age 2.
+        t["epaDha"]["min"]["fromAge"] = 2
+        put(t, "dha", "min", 0.1, "abs", "efsa-2017", "Adequate intake at age 1: 100 mg DHA")
+        t["dha"]["min"]["toAge"] = 1
     put(t, "protein", "min", round(EU_PROTEIN_ADULT * 1000), "perKg", "efsa-2017", "Population reference intake per kg body weight"
         + (f", plus {EU_PROTEIN_EXTRA[stage]} g/day ({'second trimester' if stage == 'pregnancy' else 'first 6 months'})" if stage in EU_PROTEIN_EXTRA else ""))
     if stage in EU_PROTEIN_EXTRA:
@@ -479,10 +484,11 @@ def build_eu() -> dict:
             "EFSA gives no separate fibre or carbohydrate values for pregnancy and breastfeeding; adult values are used.",
             "Adult zinc assumes a moderate phytate intake (600 mg/day); diets rich in wholegrains and pulses have more phytate and need more zinc (up to 16.3 mg for men and 12.7 mg for women).",
             "Iron for women aged 51+ uses EFSA's post-menopausal value (11 mg) as an age-based approximation.",
-            "Thiamin and niacin are set per unit of energy, so they rise with the calorie range.",
+            "Thiamin and niacin are set per unit of energy, so they follow each plan's calories.",
+            "Omega-3: at age 1 EFSA's adequate intake is 100 mg of DHA; from age 2 it is 250 mg of EPA and DHA together.",
             "EFSA says saturated fat should be as low as possible and gives no number, so the planner applies no saturated fat limit under the EU standard; the charts show it against the food-label reference intake (20 g) for reference only.",
             "EFSA had not set a sodium value when these tables were published, so the US sodium limit is used.",
-            "Vitamin A is expressed in retinol equivalents by EFSA and in retinol activity equivalents by USDA food data.",
+            "The EFSA target is in retinol equivalents; the food data is in retinol activity equivalents, which count carotenes from plants at half the value (US tables, vitamin A footnote). So vitamin A from plant foods is understated against this target, by up to half; vitamin A from animal foods is unaffected.",
         ],
         "profiles": profiles,
     }

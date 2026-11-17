@@ -34,10 +34,11 @@
   "EFSA gives no separate fibre or carbohydrate values for pregnancy and breastfeeding; adult values are used.",
   "Adult zinc assumes a moderate phytate intake (600 mg/day); diets rich in wholegrains and pulses have more phytate and need more zinc (up to 16.3 mg for men and 12.7 mg for women).",
   "Iron for women aged 51+ uses EFSA's post-menopausal value (11 mg) as an age-based approximation.",
-  "Thiamin and niacin are set per unit of energy, so they rise with the calorie range.",
+  "Thiamin and niacin are set per unit of energy, so they follow each plan's calories.",
+  "Omega-3: at age 1 EFSA's adequate intake is 100 mg of DHA; from age 2 it is 250 mg of EPA and DHA together.",
   "EFSA says saturated fat should be as low as possible and gives no number, so the planner applies no saturated fat limit under the EU standard; the charts show it against the food-label reference intake (20 g) for reference only.",
   "EFSA had not set a sodium value when these tables were published, so the US sodium limit is used.",
-  "Vitamin A is expressed in retinol equivalents by EFSA and in retinol activity equivalents by USDA food data."
+  "The EFSA target is in retinol equivalents; the food data is in retinol activity equivalents, which count carotenes from plants at half the value (US tables, vitamin A footnote). So vitamin A from plant foods is understated against this target, by up to half; vitamin A from animal foods is unaffected."
  ],
  "profiles": [
   {
@@ -389,7 +390,17 @@
       "value": 250,
       "basis": "abs",
       "source": "efsa-2017",
-      "note": "Adequate intake (100 mg of DHA under age 2)"
+      "note": "Adequate intake",
+      "fromAge": 2
+     }
+    },
+    "dha": {
+     "min": {
+      "value": 0.1,
+      "basis": "abs",
+      "source": "efsa-2017",
+      "note": "Adequate intake at age 1: 100 mg DHA",
+      "toAge": 1
      }
     },
     "protein": {
@@ -3572,7 +3583,17 @@
       "value": 250,
       "basis": "abs",
       "source": "efsa-2017",
-      "note": "Adequate intake (100 mg of DHA under age 2)"
+      "note": "Adequate intake",
+      "fromAge": 2
+     }
+    },
+    "dha": {
+     "min": {
+      "value": 0.1,
+      "basis": "abs",
+      "source": "efsa-2017",
+      "note": "Adequate intake at age 1: 100 mg DHA",
+      "toAge": 1
      }
     },
     "protein": {

@@ -36,6 +36,12 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   no number ("as low as possible", summary report Table 2), so the EU standard has no saturated fat limit and the note
   now says so.
 
+- **Vitamin A note corrected (UK and EU).** It said plant vitamin A "may be slightly overestimated". It is the other
+  way round: the food data counts carotenes at half the value the UK and EFSA units do (National Academies vitamins
+  table, footnote a), so plant vitamin A is understated, by up to half. No numbers changed.
+- **EU omega-3 at age 1:** EFSA's adequate intake is 100 mg DHA (summary report Table 2, page 23), not the 250 mg
+  EPA+DHA that applies from age 2. Now applied by exact age.
+
 ## Changes made on 10 Nov 2026
 
 - **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of

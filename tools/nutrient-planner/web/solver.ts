@@ -18,7 +18,8 @@
 
 export type Bound = { value: number; basis: "abs" | "pctEnergy" | "perKg" | "perMJ"; source: string; note?: string; extraG?: number;
   byAge?: Record<string, number>;
-  fromAge?: number };                 // the bound applies only from this age (whole years)   // exact value for a given whole year of age, where the source sets one
+  fromAge?: number;                   // the bound applies only from this age (whole years)
+  toAge?: number };                   // ... or only up to and including this age   // exact value for a given whole year of age, where the source sets one
 export type TargetSpec = { min?: Bound; max?: Bound };
 export type NutrientDef = { key: string; label: string; unit: string };
 export type Food = {
@@ -73,7 +74,7 @@ export function resolveTargets(
     const def = byKey.get(key);
     if (!def) continue;
     const t: ResolvedTarget = { key, label: def.label, unit: def.unit };
-    const applies = (b?: Bound): b is Bound => !!b && (b.fromAge === undefined || age === undefined || Math.floor(age) >= b.fromAge);
+    const applies = (b?: Bound): b is Bound => !!b && (age === undefined || ((b.fromAge === undefined || Math.floor(age) >= b.fromAge) && (b.toAge === undefined || Math.floor(age) <= b.toAge)));
     if (applies(spec.min)) { t.min = toAbs(key, spec.min); t.minSource = spec.min.source; t.minPerKcal = perKcal(key, spec.min); }
     if (applies(spec.max)) { t.max = toAbs(key, spec.max); t.maxSource = spec.max.source; t.maxPerKcal = perKcal(key, spec.max); }
     const o = overrides[key];

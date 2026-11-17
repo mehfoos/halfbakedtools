@@ -7,13 +7,13 @@ export const GROUPS: { id: string; title: string; keys: string[] }[] = [
   { id: "vitamins", title: "Vitamins", keys: ["vitaminA", "vitaminD", "vitaminE", "vitaminK", "vitaminC", "thiamin", "riboflavin", "niacinNE", "pantothenic", "vitaminB6", "folate", "vitaminB12", "choline", "retinol", "vitaminD2", "vitaminD3"] },
   { id: "minerals", title: "Minerals", keys: ["calcium", "iron", "magnesium", "phosphorus", "potassium", "zinc", "copper", "manganese", "selenium", "iodine"] },
   { id: "amino", title: "Essential amino acids (protein building blocks)", keys: ["histidine", "isoleucine", "leucine", "lysine", "metCys", "pheTyr", "threonine", "tryptophan", "valine"] },
-  { id: "fats", title: "Essential fats (omega-3 and omega-6)", keys: ["la", "ala", "epaDha"] },
+  { id: "fats", title: "Essential fats (omega-3 and omega-6)", keys: ["la", "ala", "epaDha", "dha"] },
 ];
 export const ORDER = GROUPS.flatMap((g) => g.keys);
 export const SHORT_LABEL: Record<string, string> = {
   carbohydrate: "Carbs", vitaminA: "A", vitaminD: "D", vitaminE: "E", vitaminK: "K", vitaminC: "C",
   thiamin: "B1", riboflavin: "B2", niacinNE: "B3", pantothenic: "B5", vitaminB6: "B6", folate: "Folate (B9)", vitaminB12: "B12",
-  choline: "Choline", metCys: "Met+Cys", pheTyr: "Phe+Tyr", epaDha: "EPA+DHA", la: "Omega-6 LA", ala: "Omega-3 ALA",
+  choline: "Choline", metCys: "Met+Cys", pheTyr: "Phe+Tyr", epaDha: "EPA+DHA", dha: "DHA", la: "Omega-6 LA", ala: "Omega-3 ALA",
 };
 
 export type Row = {
