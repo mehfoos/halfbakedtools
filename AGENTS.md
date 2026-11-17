@@ -3,6 +3,10 @@
 Read [`docs/PRINCIPLES.md`](docs/PRINCIPLES.md) before making any change. It records the intent of this project and
 the reasons behind its rules. If a request conflicts with a principle, point out the conflict before acting.
 
+How the two files relate: `docs/PRINCIPLES.md` is the *why* (intent, rules, reasons, decision log). This file is the
+*what to do*: a short checklist and map for whoever is about to change something. The non-negotiables below summarise
+the principles; if the two ever differ, `PRINCIPLES.md` wins and this file should be corrected.
+
 ## Non-negotiables
 
 1. **Accuracy first.** Take values from the primary source (the archived copy in `sources/`), never from memory or a
@@ -10,6 +14,10 @@ the reasons behind its rules. If a request conflicts with a principle, point out
    (document, table, page, date). Label anything unchecked as "Not yet checked" on the site.
 2. **Claim less.** Don't describe a value as checked, a feature as complete or a result as precise unless it is.
    Report errors you find, even in your own earlier work.
+   **Never invent data.** Don't estimate, interpolate, extrapolate or borrow a value from a similar item. A value comes
+   from a cited source or it is missing, and missing stays missing and is shown as missing. If a calculation must
+   treat missing as zero, say so on the page, with how many items are affected, and never show a plain pass when the
+   missing data could change the result (see principle 2).
 3. **Cite and archive.**
    - Every fact on the site cites a source with `cite("id")`; the id is listed in the tool's `references.json`.
    - Every reference has an archived copy in `sources/`.

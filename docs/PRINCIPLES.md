@@ -41,6 +41,11 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
   - Limitations are stated plainly on the methods page and next to results where they matter.
   - A tool doesn't hide uncertainty. Where data is missing, it says "not checked" rather than guessing or counting it
     as a pass.
+  - **Data is never invented, estimated, interpolated or extrapolated.** A value comes from a cited source or it is
+    missing. A missing value stays missing: it is not replaced by a similar food's value, an average or a guess. If a
+    calculation has to treat a missing value as zero, the page says so, with how many items are affected, and the
+    result is never shown as a plain pass or "within the limit" when missing data could change it. Any unavoidable
+    assumption is stated on the page where it applies, with its source.
   - Status labels are honest: `alpha` = early version; `beta` = complete and checked against its sources;
     `stable` = unlikely to change except for data updates.
   - No marketing language.
@@ -143,6 +148,7 @@ reason.
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | Rule made explicit: data is never invented, estimated, interpolated or extrapolated; missing stays missing, and any treatment of it as zero is disclosed on the page (principle 2; also in `AGENTS.md`) | Owner's requirement; the planner's earlier zero-filling of missing values was not disclosed per food and could understate intake against a limit |
 | 2026-11-16 | A tool that handles visitors' files sets a browser security policy (CSP) on its page blocking connections to other sites, starts any background workers from blobs so the policy binds them too, and has a test that fails if its code can send data | Makes "nothing leaves the browser" enforced and checkable (first used by the PDF tools) |
 | 2026-11-16 | Library files needed at run time are copied from `node_modules` and served by this site (`vendor` in `tool.json`) | No third-party requests |
 | 2026-11-17 | The site's own pages (home, About) describe it in reserved, brief terms and cover utilities as well as evidence-based tools | Owner's instruction: don't sound confident about accuracy or market the site; the collection is wide-ranging |
