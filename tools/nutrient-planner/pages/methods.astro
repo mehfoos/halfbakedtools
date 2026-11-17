@@ -68,6 +68,10 @@ const standards = [uk, us, eu];
     Further options are found by forbidding most of the ingredients of earlier options.
   </p>
   <p>
+    Each search is limited to 5 seconds. If that limit is reached, the best combination found so far is shown and
+    marked as such.
+  </p>
+  <p>
     Two things are deliberately not left to the optimiser. Vitamin D: few foods contain much, so suggestions don't try
     to reach the vitamin D target unless you tick the box for it; the result still shows how much the day provides and
     the NHS advice on supplements <Fragment set:html={cite("nhs-vitd")} />. Oily fish: suggestions include at most one

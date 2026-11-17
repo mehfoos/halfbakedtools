@@ -552,6 +552,7 @@ export async function start(root: HTMLElement) {
         results.insertAdjacentHTML("beforeend", `<article class="result">
           <h3><span>Option ${k}</span><span class="result-actions"><button type="button" class="small" data-edit="${k - 1}">Adjust in builder</button></span></h3>
           <ul class="ingredients">${items.map((i) => `<li><b>${esc(i.food.name)}</b> · ${esc(describeAmount(i.food, i.grams))}</li>`).join("")}</ul>
+          ${(d.plan as Plan).timedOut ? `<p class="notice info small">The search for this option was stopped at its 5-second limit, so this is the best combination found in that time; a better one may exist. Switching fewer foods on makes the search faster.</p>` : ""}
           ${reportHtml(report(items), items)}
           ${notes}
         </article>`);
@@ -560,7 +561,9 @@ export async function start(root: HTMLElement) {
         runBtn.disabled = false;
         status.textContent = "";
         if (d.type === "error") results.insertAdjacentHTML("beforeend", `<p class="notice bad">Something went wrong: ${esc(d.message)}</p>`);
+        else if (!lastPlans.length && d.timedOut) results.insertAdjacentHTML("beforeend", `<p class="notice bad">The search ran out of time (5 seconds) before finding a combination. That doesn't mean none exists. Try switching fewer foods on, or allowing more different foods.</p>`);
         else if (!lastPlans.length) results.insertAdjacentHTML("beforeend", `<p class="notice bad">No combination fits all the limits. Try allowing more foods, widening the calorie range, or switching more foods on.</p>`);
+        else if (lastPlans.length < s.options && d.timedOut) results.insertAdjacentHTML("beforeend", `<p class="small muted sans">The search for further options ran out of time.</p>`);
         else if (lastPlans.length < s.options) results.insertAdjacentHTML("beforeend", `<p class="small muted sans">Only ${lastPlans.length} distinct option${lastPlans.length > 1 ? "s" : ""} could be found with these settings.</p>`);
         worker?.terminate(); worker = null;
       }

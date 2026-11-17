@@ -127,6 +127,7 @@ export type Plan = {
   totals: Record<string, number>;
   energy: number;
   score: number;               // sum of relative shortfalls (0 = every target met)
+  timedOut?: boolean;          // the search hit its time limit, so a better combination may exist
 };
 
 export type Solver = (lp: string) => Promise<{ status: string; values: Record<string, number> }>;
@@ -234,6 +235,7 @@ export async function plan(input: PlanInput, solve: Solver, allKeys: string[], o
     if (!chosen.length) break;
     const totals = totalsFor(chosen, Array.from(new Set([...allKeys, "energy"])));
     plans.push({
+      ...(res.status === "Time limit reached" ? { timedOut: true } : {}),
       items: chosen.map(({ food, grams }) => ({ id: food.id, name: food.name, grams, amountLabel: describeAmount(food, grams) })),
       totals,
       energy: totals.energy,

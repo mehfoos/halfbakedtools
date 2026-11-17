@@ -143,3 +143,11 @@ test("foods in a cap group share one daily cap", async () => {
   assert.ok(fish <= 140, `fish ${fish} g`);
   assert.ok(p.totals.protein >= 60 - 1e-6);
 });
+
+test("a plan found when the search hit its time limit is marked", async () => {
+  const stopped: typeof solve = async (lp) => ({ ...(await solve(lp)), status: "Time limit reached" });
+  const [p] = await plan({ foods: [A, B, C, D], targets, energyLow: 0, energyHigh: 5000, maxIngredients: 3, options: 1 }, stopped, keys);
+  assert.equal(p.timedOut, true);
+  const [q] = await plan({ foods: [A, B, C, D], targets, energyLow: 0, energyHigh: 5000, maxIngredients: 3, options: 1 }, solve, keys);
+  assert.equal(q.timedOut, undefined);
+});
