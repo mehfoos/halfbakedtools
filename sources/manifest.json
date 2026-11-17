@@ -234,6 +234,13 @@
     "retrieved": "2026-11-17",
     "sha256": "fdc33442adb5707d448676e92b54f9adeaad63b6df267b683b5fe728307391cf"
   },
+  "usda-sr28-documentation.pdf": {
+    "source": "usda-sr-doc",
+    "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf",
+    "finalUrl": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf",
+    "retrieved": "2026-11-17",
+    "sha256": "6ee9d1b3d838c7bc66ab8df422b0498956300d4d0aec2b4f8b132184d72427c2"
+  },
   "who-2007-trs-935.pdf": {
     "source": "who-2007",
     "retrieved": null,
