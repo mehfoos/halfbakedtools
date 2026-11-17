@@ -23,16 +23,21 @@ export function scaleMax(axes: Axis[], base = 150, overlays: Overlay[] = []) {
   return top <= base ? base : Math.ceil(top / 50) * 50;
 }
 
-export function radarSvg(axes: Axis[], opts: { title: string; base?: number; size?: number; zoom?: boolean; overlays?: Overlay[] }) {
+export function radarSvg(axes: Axis[], opts: { title: string; base?: number; size?: number; zoom?: boolean; overlays?: Overlay[]; compact?: boolean }) {
   const n = axes.length;
   if (n < 3) return "";
   // zoom: keep the scale at `base` and mark anything beyond it with an arrow instead.
   const overlays = opts.overlays ?? [];
   const max = opts.zoom ? (opts.base ?? 150) : scaleMax(axes, opts.base ?? 150, overlays);
-  const size = opts.size ?? 340;
-  const pad = 82;
-  const cx = size / 2 + pad, cy = size / 2 + 30, r = size / 2 - 10;
-  const W = size + pad * 2, H = size + 64;
+  // compact (phones): a smaller ring with more room around it, so the same text is larger once the
+  // chart is scaled to the screen width.
+  const compact = !!opts.compact;
+  const size = opts.size ?? (compact ? 230 : 340);
+  const pad = compact ? 98 : 82;
+  const top = compact ? 38 : 30;
+  const fs = compact ? { ring: 12, target: 13, label: 15, pct: 14.5, note: 12, gap: 17 } : { ring: 10, target: 11, label: 12.5, pct: 12, note: 10.5, gap: 14 };
+  const cx = size / 2 + pad, cy = size / 2 + top, r = size / 2 - 10;
+  const W = size + pad * 2, H = size + top * 2 + (compact ? 14 : 4);
   const ang = (i: number) => -Math.PI / 2 + (2 * Math.PI * i) / n;
   const pt = (i: number, pct: number) => {
     const rr = (Math.min(Math.max(pct, 0), max) / max) * r;
@@ -49,7 +54,7 @@ export function radarSvg(axes: Axis[], opts: { title: string; base?: number; siz
     g += `<polygon points="${ring(p)}" fill="none" stroke="#d6d2b8" stroke-width="1"/>`;
     // Ring labels sit between the first two axes, away from the axis labels.
     const t = -Math.PI / 2 + Math.PI / n, rr = (p / max) * r;
-    g += `<text x="${(cx + rr * Math.cos(t) + 3).toFixed(1)}" y="${(cy + rr * Math.sin(t) + 3).toFixed(1)}" font-size="10" fill="#8a8670">${p}%</text>`;
+    g += `<text x="${(cx + rr * Math.cos(t) + 3).toFixed(1)}" y="${(cy + rr * Math.sin(t) + 3).toFixed(1)}" font-size="${fs.ring}" fill="#8a8670">${p}%</text>`;
   }
   axes.forEach((_, i) => {
     const [x, y] = pt(i, max);
@@ -59,7 +64,7 @@ export function radarSvg(axes: Axis[], opts: { title: string; base?: number; siz
   g += `<polygon points="${ring(100)}" fill="rgba(0,0,128,0.05)" stroke="${NAVY}" stroke-width="2.6"/>`;
   {
     const t = -Math.PI / 2 + Math.PI / n, rr = (100 / max) * r;
-    g += `<text x="${(cx + rr * Math.cos(t) + 3).toFixed(1)}" y="${(cy + rr * Math.sin(t) - 3).toFixed(1)}" font-size="11" font-weight="700" fill="${NAVY}">target</text>`;
+    g += `<text x="${(cx + rr * Math.cos(t) + 3).toFixed(1)}" y="${(cy + rr * Math.sin(t) - 3).toFixed(1)}" font-size="${fs.target}" font-weight="700" fill="${NAVY}">target</text>`;
   }
   // Other standards' targets: thin coloured outlines, broken where a standard has no value for an axis.
   for (const o of overlays) {
@@ -91,12 +96,12 @@ export function radarSvg(axes: Axis[], opts: { title: string; base?: number; siz
     const cos = Math.cos(ang(i));
     const anchor = Math.abs(cos) < 0.25 ? "middle" : cos > 0 ? "start" : "end";
     const mark = a.kind === "min" ? " ≥" : a.kind === "max" ? " ≤" : "";
-    g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="12.5" fill="#111">${esc(a.label)}${mark}`
-      + `<tspan x="${lx.toFixed(1)}" dy="14" font-size="12" font-weight="700" fill="${colour}">${Math.round(a.pct)}%</tspan></text>`;
+    g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="${fs.label}" fill="#111">${esc(a.label)}${mark}`
+      + `<tspan x="${lx.toFixed(1)}" dy="${fs.gap}" font-size="${fs.pct}" font-weight="700" fill="${colour}">${Math.round(a.pct)}%</tspan></text>`;
   });
   const clipped = axes.filter((a) => a.pct > max).length;
-  const note = clipped ? `<text x="${W - 6}" y="${H - 6}" text-anchor="end" font-size="10.5" fill="#8a8670">Zoomed to ${max}%: arrows mark ${clipped} value${clipped > 1 ? "s" : ""} beyond the edge</text>`
-    : max > (opts.base ?? 150) ? `<text x="${W - 6}" y="${H - 6}" text-anchor="end" font-size="10.5" fill="#8a8670">Scale extended to ${max}% to fit the highest value</text>` : "";
+  const note = clipped ? `<text x="${W - 6}" y="${H - 6}" text-anchor="end" font-size="${fs.note}" fill="#8a8670">Zoomed to ${max}%: arrows mark ${clipped} value${clipped > 1 ? "s" : ""} beyond the edge</text>`
+    : max > (opts.base ?? 150) ? `<text x="${W - 6}" y="${H - 6}" text-anchor="end" font-size="${fs.note}" fill="#8a8670">Scale extended to ${max}% to fit the highest value</text>` : "";
   return `<svg class="radar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.title)}" font-family="'Averia Sans Libre', Arial, sans-serif">`
     + `<title>${esc(opts.title)}</title>${g}${note}</svg>`;
 }

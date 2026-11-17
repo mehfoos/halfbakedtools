@@ -38,7 +38,7 @@
    "id": "male-1",
    "stage": "male",
    "group": "1",
-   "label": "Male, 1 years",
+   "label": "Male, 1 year",
    "energy": {
     "kcal": 765,
     "low": 688,
@@ -3221,7 +3221,7 @@
    "id": "female-1",
    "stage": "female",
    "group": "1",
-   "label": "Female, 1 years",
+   "label": "Female, 1 year",
    "energy": {
     "kcal": 717,
     "low": 645,

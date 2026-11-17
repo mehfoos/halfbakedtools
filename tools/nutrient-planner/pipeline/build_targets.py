@@ -50,6 +50,11 @@ WHO_AA = {"histidine": 10, "isoleucine": 20, "leucine": 39, "lysine": 30, "metCy
           "pheTyr": 25, "threonine": 15, "tryptophan": 4, "valine": 26}
 
 
+def years(group: str) -> str:
+    """'1 year', '2-3 years', '75+ years'."""
+    return f"{group} year" if group == "1" else f"{group} years"
+
+
 def put(t: dict, key: str, bound: str, value, basis: str, source: str, note: str | None = None) -> None:
     b = {"value": value, "basis": basis, "source": source}
     if note:
@@ -270,7 +275,7 @@ def build_uk() -> dict:
                 add_aa(t)
             kcal = UK["energy"][0 if sex == "male" else 1][col]
             profiles.append({
-                "id": f"{sex}-{g}", "stage": sex, "group": g, "label": f"{sex.title()}, {g} years",
+                "id": f"{sex}-{g}", "stage": sex, "group": g, "label": f"{sex.title()}, {years(g)}",
                 "energy": {"kcal": kcal, "low": round(kcal * 0.9), "high": round(kcal * 1.1),
                            "note": "PHE estimated average requirement (adults capped at 2500/2000 kcal); default band ±10%."},
                 "defaultWeightKg": 70 if sex == "male" else 60,
@@ -322,7 +327,7 @@ def build_us() -> dict:
                 note += " While breastfeeding the guidelines add about 330 kcal a day in the first 6 months and 400 kcal after (Table A2-3); this default doesn't."
             label_stage = {"child": "Child", "male": "Male", "female": "Female", "pregnancy": "Pregnant", "lactation": "Breastfeeding"}[stage]
             profiles.append({
-                "id": f"{stage}-{g}", "stage": stage, "group": g, "label": f"{label_stage}, {g} years",
+                "id": f"{stage}-{g}", "stage": stage, "group": g, "label": f"{label_stage}, {years(g)}",
                 "energy": {**first, "note": note, **({"bySex": by_sex} if by_sex else {"byAge": by_age})},
                 "defaultWeightKg": 70 if stage == "male" else (60 if stage != "child" else 20),
                 "targets": t,
@@ -492,7 +497,7 @@ def build_eu() -> dict:
             by_age = eu_energy_by_age(sex, lo, hi)
             note = EU_ENERGY_NOTE + (" EFSA gives no value for ages 80 and over, so the value for 70 to 79 is used." if g == "51+" else "")
             profiles.append({
-                "id": f"{sex}-{g}", "stage": sex, "group": g, "label": f"{sex.title()}, {g} years",
+                "id": f"{sex}-{g}", "stage": sex, "group": g, "label": f"{sex.title()}, {years(g)}",
                 "energy": {**by_age[str(lo)], "note": note, "byAge": by_age},
                 "defaultWeightKg": REF_WEIGHT.get(g, REF_WEIGHT["adult"])[0 if sex == "male" else 1],
                 "targets": eu_targets(sex, g, sex),

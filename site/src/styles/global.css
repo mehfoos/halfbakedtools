@@ -68,9 +68,10 @@ img { max-width: 100%; height: auto; }
 
 /* Collapsible sections: beige panels with navy headings, as on physicsoffusion.com */
 details { background: var(--beige); margin: 10px 0; border-radius: 2px; }
-details > summary { list-style: none; cursor: pointer; font-weight: 700; color: var(--navy); background: #fff; padding: 6px 10px; border-bottom: 1px solid transparent; transition: all ease 0.3s; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+/* The arrow sits in the left padding, so a long title wraps beside it, not below it. */
+details > summary { list-style: none; cursor: pointer; font-weight: 700; color: var(--navy); background: #fff; padding: 6px 10px 6px 30px; position: relative; border-bottom: 1px solid transparent; transition: all ease 0.3s; display: flex; align-items: baseline; gap: 2px 8px; flex-wrap: wrap; }
 details > summary::-webkit-details-marker { display: none; }
-details > summary::before { content: "▸"; display: inline-block; width: 0.9em; transition: transform 0.2s; }
+details > summary::before { content: "▸"; position: absolute; left: 10px; top: 6px; width: 0.9em; transition: transform 0.2s; }
 details[open] > summary::before { transform: rotate(90deg); }
 details > summary:hover { color: var(--link-hover); border-bottom-color: var(--link-hover); }
 details[open] > summary { background: var(--navy); color: #fff; }

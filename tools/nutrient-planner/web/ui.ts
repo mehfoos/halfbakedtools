@@ -64,9 +64,11 @@ export async function start(root: HTMLElement) {
   let toggled = new Set(s.toggled);
 
   const std = () => standards.find((x) => x.id === s.standard && x.status === "available") ?? standards[0];
-  const pick = () => pickProfile(std(), s.sex, s.age, s.life);
+  // Pregnancy and breastfeeding apply to females only, whatever a link or saved setting says.
+  const lifeStage = () => (s.sex === "female" ? s.life : "none");
+  const pick = () => pickProfile(std(), s.sex, s.age, lifeStage());
   const profile = () => pick().profile;
-  const defaultWeight = () => refWeight(s.sex, s.age, s.life);
+  const defaultWeight = () => refWeight(s.sex, s.age, lifeStage());
   const weight = () => s.weight ?? defaultWeight();
   const energy = () => energyFor(profile(), s.age, s.sex);
   const band = () => ({ low: s.energyLow ?? energy().low, high: s.energyHigh ?? energy().high });
@@ -97,7 +99,8 @@ export async function start(root: HTMLElement) {
     age.value = String(s.age);
     weightIn.value = s.weight === null ? "" : String(s.weight);
     weightIn.placeholder = String(defaultWeight());
-    life.value = s.life;
+    life.value = lifeStage();
+    (life.closest("label") as HTMLElement).style.display = s.sex === "female" ? "" : "none";
     const p = pick();
     const b = band();
     const src = std().sources[0];
@@ -333,7 +336,7 @@ export async function start(root: HTMLElement) {
   function otherTargets(dayKcal = 0) {
     const b = band(), mid = dayKcal > 0 ? dayKcal : (b.low + b.high) / 2;
     return others().map((x) => {
-      const p = pickProfile(x, s.sex, s.age, s.life).profile;
+      const p = pickProfile(x, s.sex, s.age, lifeStage()).profile;
       const t = new Map(resolveTargets(p.targets, data.nutrients, mid, weight(), x.id, {}, s.age).map((r) => [r.key, r]));
       return { id: x.id, targets: t, energyMid: (energyFor(p, s.age, s.sex).low + energyFor(p, s.age, s.sex).high) / 2 };
     });
@@ -414,6 +417,8 @@ export async function start(root: HTMLElement) {
   }
 
   // Charts can be zoomed to the target; contributions are worked out only when opened.
+  // On a phone the chart is drawn with larger text relative to its size, so labels stay readable.
+  const compact = () => window.matchMedia("(max-width: 560px)").matches;
   const charts = new Map<string, { axes: Axis[]; title: string; zoom: boolean }>();
   const contribs = new Map<string, { items: Item[]; keys: string[] }>();
   let uid = 0;
@@ -422,7 +427,7 @@ export async function start(root: HTMLElement) {
     const id = `c${++uid}`;
     charts.set(id, { axes, title, zoom: false });
     const canZoom = scaleMax(axes, 150, overlays()) > 150;
-    return `<figure class="chart" data-chart="${id}">${radarSvg(axes, { title, overlays: overlays() })}${canZoom ? `<figcaption><button type="button" class="link small" data-zoom="${id}">Zoom to target</button></figcaption>` : ""}</figure>`;
+    return `<figure class="chart" data-chart="${id}">${radarSvg(axes, { title, overlays: overlays(), compact: compact() })}${canZoom ? `<figcaption><button type="button" class="link small" data-zoom="${id}">Zoom to target</button></figcaption>` : ""}</figure>`;
   }
   root.addEventListener("click", (e) => {
     const b = (e.target as HTMLElement).closest("button[data-zoom]") as HTMLButtonElement | null;
@@ -431,7 +436,7 @@ export async function start(root: HTMLElement) {
     const fig = b.closest("figure");
     if (!c || !fig) return;
     c.zoom = !c.zoom;
-    fig.querySelector("svg")!.outerHTML = radarSvg(c.axes, { title: c.title, zoom: c.zoom, overlays: overlays() });
+    fig.querySelector("svg")!.outerHTML = radarSvg(c.axes, { title: c.title, zoom: c.zoom, overlays: overlays(), compact: compact() });
     b.textContent = c.zoom ? "Show full scale" : "Zoom to target";
   });
   // Showing or hiding the other standards redraws every chart on the page.
@@ -444,7 +449,7 @@ export async function start(root: HTMLElement) {
     $$<HTMLInputElement>(root, ".cmp-toggle").forEach((x) => (x.checked = s.compare));
     for (const fig of $$(root, "figure[data-chart]")) {
       const c = charts.get(fig.dataset.chart!);
-      if (c) fig.querySelector("svg")!.outerHTML = radarSvg(c.axes, { title: c.title, zoom: c.zoom, overlays: overlays() });
+      if (c) fig.querySelector("svg")!.outerHTML = radarSvg(c.axes, { title: c.title, zoom: c.zoom, overlays: overlays(), compact: compact() });
     }
   });
   function contribSection(items: Item[], keys: string[], what: string) {
@@ -514,7 +519,7 @@ export async function start(root: HTMLElement) {
       .map((i) => esc(i.food.notes) + (i.food.noteRef ? ` ${cite(i.food.noteRef)}` : ""));
     if (items.some((i) => i.food.fortified)) out.push("Includes a US product with added nutrients (marked US-fortified in the food list); the UK version may contain different amounts, so check the label.");
     // warnings for foods this person is advised to avoid (matters in the builder; suggestions leave them out)
-    const warn = [...new Map(items.map((i) => avoidReason(i.food, { age: s.age, life: s.life })).filter((r) => !!r).map((r) => [r!.text, r!])).values()]
+    const warn = [...new Map(items.map((i) => avoidReason(i.food, { age: s.age, life: lifeStage() })).filter((r) => !!r).map((r) => [r!.text, r!])).values()]
       .map((r) => `<p class="notice bad small"><b>Advised to avoid:</b> ${esc(r.text)} ${cite(r.ref)}</p>`).join("");
     return warn + (out.length ? `<p class="small muted sans">${out.join(" ")}</p>` : "");
   }
@@ -577,7 +582,7 @@ export async function start(root: HTMLElement) {
       }
     };
     // Foods the NHS says this person should avoid are left out; children's portion limits are scaled down.
-    const who = { age: s.age, life: s.life };
+    const who = { age: s.age, life: lifeStage() };
     const avoided = foods.filter((f) => avoidReason(f, who));
     const factor = portionFactor(s.age, (b.low + b.high) / 2);
     const planFoods = foods.filter((f) => !avoidReason(f, who)).map((f) => (factor < 1 ? { ...f, maxGrams: scaledMax(f, factor) } : f));
