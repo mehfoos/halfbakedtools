@@ -13,15 +13,27 @@ import { esc, fmt } from "./dom.ts";
 const OVERVIEW_KEYS = ["energy", "fat", "satfat", "carbohydrate", "sugars", "fibre", "protein", "salt"];
 
 const chip = (r: Row) => {
-  const text = { met: "met", short: `${Math.round(r.pctOfMin!)}%`, low: `${Math.round(r.pctOfMin!)}%`, over: "over limit", within: "within limit", info: "no target", unassessed: "no data" }[r.status];
+  // "met" refers to the minimum; where there is also a limit and some foods have no data, the limit can't be confirmed.
+  const text = { met: r.missing && r.max !== undefined ? "min met" : "met", short: `${Math.round(r.pctOfMin!)}%`, low: `${Math.round(r.pctOfMin!)}%`, over: "over limit", within: "within limit", info: "no target", unassessed: "not checked", unclear: "unclear", na: "NA" }[r.status];
   return `<span class="chip ${r.status}">${text}</span>`;
 };
 const targetText = (r: Row) => [r.min !== undefined ? `≥ ${fmt(r.min)}` : "", r.max !== undefined ? `≤ ${fmt(r.max)}` : ""].filter(Boolean).join(", ") || "–";
 
+/**
+ * The amount: "NA" when no food in the day has data (this is not zero), or "≥ x" when some foods have no
+ * data, so the real amount is at least x. Hover text gives the count.
+ */
+const amount = (r: Row) => {
+  if (r.status === "na") return `<abbr title="No food in this day has data for this nutrient. This is not zero.">NA</abbr>`;
+  const text = `${fmt(r.value)} <span class="muted">${esc(r.unit)}</span>`;
+  return r.missing ? `<abbr title="${r.missing} of ${r.of} foods in this day have no data for this nutrient, so the amount is at least this.">≥ ${text}</abbr>` : text;
+};
+
 /** Nutrient, amount, target and status, one row each. */
 const table = (rows: Row[]) => `<div class="table-scroll"><table><thead><tr><th>Nutrient</th><th class="num">Amount</th><th class="num">Target</th><th></th></tr></thead><tbody>${
-  rows.map((r) => `<tr><td>${esc(r.label)}${r.custom ? '<span class="badge">custom</span>' : ""}</td><td class="num">${fmt(r.value)} <span class="muted">${esc(r.unit)}</span></td><td class="num muted">${targetText(r)}${r.ofEnergy ? " *" : ""}</td><td>${chip(r)}</td></tr>`).join("")
-}</tbody></table></div>${rows.some((r) => r.ofEnergy) ? `<p class="small muted sans">* Set as a share of energy, so worked out for this day's calories.</p>` : ""}`;
+  rows.map((r) => `<tr><td>${esc(r.label)}${r.custom ? '<span class="badge">custom</span>' : ""}</td><td class="num">${amount(r)}</td><td class="num muted">${targetText(r)}${r.ofEnergy ? " *" : ""}</td><td>${chip(r)}</td></tr>`).join("")
+}</tbody></table></div>${rows.some((r) => r.ofEnergy) ? `<p class="small muted sans">* Set as a share of energy, so worked out for this day's calories.</p>` : ""}${
+  rows.some((r) => r.status === "na" || r.missing) ? `<p class="small muted sans">NA: no food in this day has data for this nutrient. It is not zero. ≥: some foods have no data for this nutrient, so the real amount is at least the figure shown and may be higher (hover for how many foods). Where that could change the answer, the status says "unclear".</p>` : ""}`;
 
 export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[]) {
   const person = app.person();
@@ -50,7 +62,7 @@ export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[])
       <p class="small muted">≥ aim for at least the target · ≤ stay at or below it.</p>
       <p class="small"><label><input type="checkbox" class="cmp-toggle" ${app.s.compare ? "checked" : ""} /> Show ${others.map((x) => esc(x.name)).join(" and ")} targets too</label></p>
       ${groups ? `<h4>Vitamins, minerals and protein building blocks</h4><ul class="groups">${groups}</ul><p class="small muted">Open each section below for its own chart.</p>` : ""}
-      ${close.length ? `<h4>Close to a safety limit</h4>${close.map((r) => `<div class="limit ${r.status === "over" ? "over" : ""}">${esc(r.label)}: <b>${fmt(r.value)}</b> of max ${fmt(r.max)} ${esc(r.unit)}<div class="lbar"><span style="width:${Math.min(100, r.pctOfMax ?? 0).toFixed(0)}%"></span></div></div>`).join("")}` : ""}
+      ${close.length ? `<h4>Close to a safety limit</h4>${close.map((r) => `<div class="limit ${r.status === "over" ? "over" : ""}">${esc(r.label)}: <b>${r.missing ? "≥ " : ""}${fmt(r.value)}</b> of max ${fmt(r.max)} ${esc(r.unit)}<div class="lbar"><span style="width:${Math.min(100, r.pctOfMax ?? 0).toFixed(0)}%"></span></div></div>`).join("")}` : ""}
     </div>`;
   }
 
@@ -69,16 +81,21 @@ export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[])
         ${charts.contributionSection(items, g.keys, g.id === "amino" ? "these amino acids" : `these ${g.title.toLowerCase()}`)}</div></details>`;
   }
 
+  const unknown = rep.unclear.length || rep.noData.length;
   const shortTxt = rep.shortfalls.length
     ? `Short on ${rep.shortfalls.slice(0, 5).map((r) => `${esc(r.label)} (${Math.round(r.pctOfMin!)}%)`).join(", ")}${rep.shortfalls.length > 5 ? ` and ${rep.shortfalls.length - 5} more` : ""}.`
-    : "Every checked minimum is met.";
+    : unknown ? "" : "Every checked minimum is met.";
+  // Foods with no data are never counted as zero: their targets are "unclear" (a lower bound) or "NA".
+  const names = (rows: Row[]) => `${rows.slice(0, 6).map((r) => esc(r.label)).join(", ")}${rows.length > 6 ? ` and ${rows.length - 6} more` : ""}`;
+  const unknownTxt = (rep.unclear.length ? ` Can't confirm, because some foods have no data: ${names(rep.unclear)}.` : "")
+    + (rep.noData.length ? ` No data in this day's foods (shown as NA, not zero): ${names(rep.noData)}.` : "");
   const over = rep.rows.filter((r) => r.status === "over");
   const custom = rep.rows.some((r) => r.custom) || person.customEnergy;
   const notChecked = rep.unassessed.length ? ` Not checked (no food data): ${rep.unassessed.map((r) => esc(r.label)).join(", ")}.` : "";
   const asideTxt = rep.aside.map((r) => ` ${esc(r.label)}, which suggestions don't plan for: ${fmt(r.value)} of ${fmt(r.min)} ${esc(r.unit)} (see the note below).`).join("");
 
   const overview = charts.chart(overviewAxes(rep, person, isAdult(app.s.age), cmp, fmt), "Overview: energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt as a share of target");
-  return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> checked targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}${asideTxt}${notChecked}
+  return `<p class="headline"><b>${rep.metCount} of ${rep.minCount}</b> checked targets met · <b>${fmt(rep.energy)}</b> kcal. ${shortTxt}${unknownTxt}${asideTxt}${notChecked}
         ${over.length ? ` <span class="chip over">Over the limit for ${over.map((r) => esc(r.label)).join(", ")}</span>` : ""}</p>
       ${custom ? `<p class="small muted sans">Using some custom targets.</p>` : ""}
       <h4 class="chart-title">At a glance <span class="muted small">(laid out like a food label)</span></h4>

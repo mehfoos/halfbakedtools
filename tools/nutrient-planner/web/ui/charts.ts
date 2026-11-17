@@ -47,10 +47,13 @@ export function createCharts(app: App) {
     const ks = keys.filter((k) => !["vitaminD2", "vitaminD3"].includes(k) && app.nutrientMeta.has(k) && items.some((it) => (it.food.per100g[k] ?? 0) > 0));
     if (!ks.length) return `<p class="small sans">No values to show.</p>`;
     const amount = (it: Item, k: string) => ((it.food.per100g[k] ?? 0) * it.grams) / 100;
-    return `<p class="small sans">Share of the day's total that each food provides.</p><div class="table-scroll"><table class="contrib"><thead><tr><th>Nutrient</th>${items.map((it) => `<th class="num">${esc(it.food.name)}</th>`).join("")}</tr></thead><tbody>${
+    const known = (it: Item, k: string) => it.food.per100g[k] !== undefined;
+    const gaps = ks.some((k) => items.some((it) => !known(it, k)));
+    return `<p class="small sans">Share of the day's total that each food provides.${gaps ? " NA: that food has no data for the nutrient (this is not zero); shares are of the amounts that are known." : ""}</p><div class="table-scroll"><table class="contrib"><thead><tr><th>Nutrient</th>${items.map((it) => `<th class="num">${esc(it.food.name)}</th>`).join("")}</tr></thead><tbody>${
       ks.map((k) => {
         const total = items.reduce((a, it) => a + amount(it, k), 0);
         return `<tr><td>${esc(app.nutrientMeta.get(k)!.label)}</td>${items.map((it) => {
+          if (!known(it, k)) return `<td class="num muted">NA</td>`;
           const share = total > 0 ? (amount(it, k) / total) * 100 : 0;
           return `<td class="num"><span class="share" style="--w:${share.toFixed(0)}%">${share >= 0.5 ? Math.round(share) + "%" : "–"}</span></td>`;
         }).join("")}</tr>`;

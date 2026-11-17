@@ -17,10 +17,18 @@ function withOthers(axis: Axis, key: string, main: number | undefined, bound: "m
   return { ...axis, others };
 }
 
-/** One axis per nutrient that has a minimum target: the share of that target reached. */
+/** Words for the hover text when some foods have no data, so the amount is "at least". */
+const gapText = (r: Row) => (r.missing ? `; ${r.missing} of ${r.of} foods have no data` : "");
+const amountText = (r: Row, fmt: Fmt) => `${r.missing ? "at least " : ""}${fmt(r.value)}`;
+
+/**
+ * One axis per nutrient that has a minimum target: the share of that target reached. A nutrient that no
+ * food in the day has data for (status "na") has no axis; it is not drawn as zero.
+ */
 export function detailAxes(rep: Report, keys: string[], cmp: Comparison[], fmt: Fmt): Axis[] {
   return keys.map((k) => rep.byKey.get(k)).filter((r): r is Row => !!r && r.pctOfMin !== undefined)
-    .map((r) => withOthers({ label: SHORT_LABEL[r.key] ?? r.label, pct: r.pctOfMin!, kind: "min" as const, ok: r.status === "met", detail: `${fmt(r.value)} of ${fmt(r.min)} ${r.unit}` }, r.key, r.min, "min", cmp));
+    .map((r) => withOthers({ label: SHORT_LABEL[r.key] ?? r.label, pct: r.pctOfMin!, kind: "min" as const, ok: r.status === "met", atLeast: r.status === "unclear",
+      detail: `${amountText(r, fmt)} of ${fmt(r.min)} ${r.unit}${gapText(r)}` }, r.key, r.min, "min", cmp));
 }
 
 // The label's adult reference intakes, g a day (Regulation (EU) No 1169/2011, Annex XIII Part B).
@@ -40,10 +48,11 @@ export function overviewAxes(rep: Report, person: Person, adult: boolean, cmp: C
     let r = rep.byKey.get(key);
     // A standard that limits sodium rather than salt (US, EU) is shown as sodium.
     if (key === "salt" && r?.max === undefined && rep.byKey.get("sodium")?.max !== undefined) { r = rep.byKey.get("sodium"); label = "Sodium"; }
-    if (!r || r.status === "unassessed") return;
-    if (r.min !== undefined && r.min > 0) axes.push(withOthers({ label, pct: r.pctOfMin!, kind: "min", ok: r.status === "met", detail: `${fmt(r.value)} of at least ${fmt(r.min)} ${r.unit}` }, r.key, r.min, "min", cmp));
-    else if (r.max !== undefined && r.max > 0) axes.push(withOthers({ label, pct: (r.value / r.max) * 100, kind: "max", ok: r.value <= r.max * 1.001, detail: `${fmt(r.value)} of at most ${fmt(r.max)} ${r.unit}` }, r.key, r.max, "max", cmp));
-    else if (ADULT_RI[key] && adult) axes.push({ label, pct: (r.value / ADULT_RI[key]) * 100, kind: "ref", detail: `${fmt(r.value)} g; label reference intake ${ADULT_RI[key]} g for an adult` });
+    if (!r || r.status === "unassessed" || r.status === "na") return;
+    const atLeast = r.status === "unclear";
+    if (r.min !== undefined && r.min > 0) axes.push(withOthers({ label, pct: r.pctOfMin!, kind: "min", ok: r.status === "met", atLeast, detail: `${amountText(r, fmt)} of at least ${fmt(r.min)} ${r.unit}${gapText(r)}` }, r.key, r.min, "min", cmp));
+    else if (r.max !== undefined && r.max > 0) axes.push(withOthers({ label, pct: (r.value / r.max) * 100, kind: "max", ok: r.value <= r.max * 1.001, atLeast, detail: `${amountText(r, fmt)} of at most ${fmt(r.max)} ${r.unit}${gapText(r)}` }, r.key, r.max, "max", cmp));
+    else if (ADULT_RI[key] && adult) axes.push({ label, pct: (r.value / ADULT_RI[key]) * 100, kind: "ref", detail: `${amountText(r, fmt)} g; label reference intake ${ADULT_RI[key]} g for an adult${gapText(r)}` });
   };
   add("fat", "Fat"); add("satfat", "Saturates"); add("carbohydrate", "Carbs"); add("sugars", "Sugars");
   add("fibre", "Fibre"); add("protein", "Protein"); add("salt", "Salt");

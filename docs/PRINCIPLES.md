@@ -42,10 +42,13 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
   - A tool doesn't hide uncertainty. Where data is missing, it says "not checked" rather than guessing or counting it
     as a pass.
   - **Data is never invented, estimated, interpolated or extrapolated.** A value comes from a cited source or it is
-    missing. A missing value stays missing: it is not replaced by a similar food's value, an average or a guess. If a
-    calculation has to treat a missing value as zero, the page says so, with how many items are affected, and the
-    result is never shown as a plain pass or "within the limit" when missing data could change it. Any unavoidable
-    assumption is stated on the page where it applies, with its source.
+    missing. A missing value stays missing: it is not replaced by a similar food's value, an average, a guess or
+    **zero**. It is shown as "NA" (not available) and left off charts; where other values can still be added up, the
+    total is shown as a lower bound ("at least"). The page explains that NA means "no data", not zero, because a zero
+    would count in favour of a limit and against a minimum. A result is never shown as a plain pass or "within the
+    limit" when missing data could change it. A value derived from several others (for example EPA + DHA) is only
+    computed when every part is known. Any unavoidable assumption is stated on the page where it applies, with its
+    source.
   - Status labels are honest: `alpha` = early version; `beta` = complete and checked against its sources;
     `stable` = unlikely to change except for data updates.
   - No marketing language.
@@ -148,7 +151,7 @@ reason.
 
 | Date | Decision | Reason |
 |---|---|---|
-| 2026-11-17 | Rule made explicit: data is never invented, estimated, interpolated or extrapolated; missing stays missing, and any treatment of it as zero is disclosed on the page (principle 2; also in `AGENTS.md`) | Owner's requirement; the planner's earlier zero-filling of missing values was not disclosed per food and could understate intake against a limit |
+| 2026-11-17 | Rule made explicit: data is never invented, estimated, interpolated or extrapolated; missing stays missing and is shown as NA, never as zero (principle 2; also in `AGENTS.md`) | Owner's requirement; zero-filling missing values could understate intake against a limit and was not disclosed per food |
 | 2026-11-16 | A tool that handles visitors' files sets a browser security policy (CSP) on its page blocking connections to other sites, starts any background workers from blobs so the policy binds them too, and has a test that fails if its code can send data | Makes "nothing leaves the browser" enforced and checkable (first used by the PDF tools) |
 | 2026-11-16 | Library files needed at run time are copied from `node_modules` and served by this site (`vendor` in `tool.json`) | No third-party requests |
 | 2026-11-17 | The site's own pages (home, About) describe it in reserved, brief terms and cover utilities as well as evidence-based tools | Owner's instruction: don't sound confident about accuracy or market the site; the collection is wide-ranging |

@@ -7,10 +7,12 @@
 // Axis kinds: "min" (reach at least the target), "max" (stay at or below it),
 // "range" (stay inside a band; used for energy), "ref" (a reference amount,
 // not a goal). Points are green when that axis's goal is met, red when not,
-// grey for references.
+// grey for references and for values that are only a lower bound (some foods have no data).
+// A nutrient with no data at all has no axis.
 
 export type Axis = {
   label: string; pct: number; kind: "min" | "max" | "range" | "ref"; ok?: boolean; detail?: string;
+  atLeast?: boolean;                 // some foods have no data, so the value is a lower bound (drawn grey, labelled "+")
   others?: Record<string, number>;   // other standards' targets on this axis, as % of the main target
 };
 export type Overlay = { id: string; label: string; color: string; dash: string };
@@ -83,7 +85,7 @@ export function radarSvg(axes: Axis[], opts: { title: string; base?: number; siz
   g += `<polygon points="${shape}" fill="rgba(45,122,45,0.18)" stroke="#2d7a2d" stroke-width="1.8" stroke-linejoin="round"/>`;
   axes.forEach((a, i) => {
     const [x, y] = pt(i, a.pct);
-    const colour = a.kind === "ref" ? NEUTRAL : a.ok ? GOOD : BAD;
+    const colour = a.kind === "ref" || a.atLeast ? NEUTRAL : a.ok ? GOOD : BAD;
     const sign = a.kind === "min" ? "at least" : a.kind === "max" ? "at most" : a.kind === "range" ? "within range" : "reference";
     if (a.pct > max) {
       // Beyond the zoomed scale: an outward arrow on the edge.
@@ -91,13 +93,13 @@ export function radarSvg(axes: Axis[], opts: { title: string; base?: number; siz
       const tip = [x + ux * 11, y + uy * 11], b1 = [x + px * 6, y + py * 6], b2 = [x - px * 6, y - py * 6];
       g += `<polygon points="${[tip, b1, b2].map((q) => q.map((v) => v.toFixed(1)).join(",")).join(" ")}" fill="${colour}"/>`;
     }
-    g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${colour}" stroke="#fff" stroke-width="1.2"><title>${esc(a.label)}: ${Math.round(a.pct)}% of ${sign}${a.detail ? ` (${esc(a.detail)})` : ""}</title></circle>`;
+    g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${colour}" stroke="#fff" stroke-width="1.2"><title>${esc(a.label)}: ${a.atLeast ? "at least " : ""}${Math.round(a.pct)}% of ${sign}${a.detail ? ` (${esc(a.detail)})` : ""}</title></circle>`;
     const [lx, ly] = pt(i, max * 1.1 + 4);
     const cos = Math.cos(ang(i));
     const anchor = Math.abs(cos) < 0.25 ? "middle" : cos > 0 ? "start" : "end";
     const mark = a.kind === "min" ? " ≥" : a.kind === "max" ? " ≤" : "";
     g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="${fs.label}" fill="#111">${esc(a.label)}${mark}`
-      + `<tspan x="${lx.toFixed(1)}" dy="${fs.gap}" font-size="${fs.pct}" font-weight="700" fill="${colour}">${Math.round(a.pct)}%</tspan></text>`;
+      + `<tspan x="${lx.toFixed(1)}" dy="${fs.gap}" font-size="${fs.pct}" font-weight="700" fill="${colour}">${Math.round(a.pct)}%${a.atLeast ? "+" : ""}</tspan></text>`;
   });
   const clipped = axes.filter((a) => a.pct > max).length;
   const note = clipped ? `<text x="${W - 6}" y="${H - 6}" text-anchor="end" font-size="${fs.note}" fill="#8a8670">Zoomed to ${max}%: arrows mark ${clipped} value${clipped > 1 ? "s" : ""} beyond the edge</text>`

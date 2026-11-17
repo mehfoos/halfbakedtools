@@ -99,8 +99,10 @@ export function boundsAt(t: ResolvedTarget, energyKcal: number): { min?: number;
 }
 
 /**
- * Nutrients with values for at least `minCoverage` of the chosen foods are optimised (a food with no
- * value counts as zero, which errs on the safe side); the rest are reported as not assessed.
+ * Nutrients with values for at least `minCoverage` of the chosen foods are optimised; the rest are reported
+ * as not assessed. For the search only, a food with no value adds nothing to a nutrient's total (the amount
+ * is a lower bound). The plans it returns are measured again by analysis.ts, which counts the foods with no
+ * data and never states a target as passed when that missing data could change the answer.
  */
 export function splitAssessable(targets: ResolvedTarget[], foods: Food[], minCoverage = 0.25) {
   const assessable: ResolvedTarget[] = [];

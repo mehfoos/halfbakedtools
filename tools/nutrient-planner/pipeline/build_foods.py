@@ -155,15 +155,18 @@ def extract(nutrients: list[dict], raw: dict[int, float], meta: dict[int, tuple[
 
 def derive(v: dict) -> dict:
     d = {}
-    if "niacinPreformed" in v:
-        d["niacinNE"] = v["niacinPreformed"] + (v["tryptophan"] * 1000 / 60 if "tryptophan" in v else 0)
+    # A derived value is worked out only when every part is known; otherwise it is left missing,
+    # never completed with zero (docs/PRINCIPLES.md, principle 2).
+    if "niacinPreformed" in v and "tryptophan" in v:
+        d["niacinNE"] = v["niacinPreformed"] + v["tryptophan"] * 1000 / 60
     if "sodium" in v:
         d["salt"] = v["sodium"] * 2.5 / 1000
     if "methionine" in v and "cystine" in v:
         d["metCys"] = v["methionine"] + v["cystine"]
     if "phenylalanine" in v and "tyrosine" in v:
         d["pheTyr"] = v["phenylalanine"] + v["tyrosine"]
-    d["epaDha"] = (v.get("epa", 0) + v.get("dha", 0)) * 1000
+    if "epa" in v and "dha" in v:
+        d["epaDha"] = (v["epa"] + v["dha"]) * 1000
     # USDA's "Carbohydrate, by difference" is what is left after water, protein, fat, ash and alcohol,
     # so it includes fibre. Dietary targets and food labels count carbohydrate without fibre.
     if "carbohydrate" in v and "fibre" in v:

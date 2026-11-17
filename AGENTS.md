@@ -15,9 +15,10 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
 2. **Claim less.** Don't describe a value as checked, a feature as complete or a result as precise unless it is.
    Report errors you find, even in your own earlier work.
    **Never invent data.** Don't estimate, interpolate, extrapolate or borrow a value from a similar item. A value comes
-   from a cited source or it is missing, and missing stays missing and is shown as missing. If a calculation must
-   treat missing as zero, say so on the page, with how many items are affected, and never show a plain pass when the
-   missing data could change the result (see principle 2).
+   from a cited source or it is missing, and missing stays missing and is shown as missing ("NA", not available). **Never
+   substitute zero**: zero is a real value and affects limits differently from minimums. Show NA (or an "at least" lower
+   bound), say on the page that NA means "no data", not zero, and never show a plain pass when the missing data could
+   change the result. Read principle 2 in `docs/PRINCIPLES.md` before touching any calculation that uses data.
 3. **Cite and archive.**
    - Every fact on the site cites a source with `cite("id")`; the id is listed in the tool's `references.json`.
    - Every reference has an archived copy in `sources/`.
