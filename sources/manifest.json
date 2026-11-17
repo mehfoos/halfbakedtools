@@ -26,6 +26,12 @@
     "note": "uploaded by the site owner",
     "sha256": "0231c27d944b9d9ec209d9b6c8d42b9a969df6054f0e30ff7e945bb77d532c48"
   },
+  "efsa-2019-sodium.pdf": {
+    "source": "efsa-sodium-2019",
+    "retrieved": null,
+    "note": "uploaded by the site owner",
+    "sha256": "8b4032645f109b26f1f7ead3ef3bddf8095b30dd3a3056daffe6317b877123eb"
+  },
   "eu-2011-regulation-1169.pdf": {
     "source": "eu-1169",
     "url": "https://www.legislation.gov.uk/eur/2011/1169/pdfs/eur_20111169_adopted_en.pdf",

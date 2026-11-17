@@ -6,13 +6,19 @@
  "verified": {
   "checked": true,
   "date": "2026-11-09",
-  "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 1, 2, 3, 5, 7, 9, 11 and 17"
+  "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 1, 2, 3, 5, 7, 9, 11 and 17; EFSA (2019) Dietary reference values for sodium, Table 12"
  },
  "sources": [
   {
    "id": "efsa-2017",
    "title": "Dietary reference values for nutrients: Summary report",
    "url": "https://doi.org/10.2903/sp.efsa.2017.e15121"
+  },
+  {
+   "id": "efsa-sodium-2019",
+   "title": "Dietary reference values for sodium",
+   "url": "https://doi.org/10.2903/j.efsa.2019.5778",
+   "role": "Sodium"
   },
   {
    "id": "nasem-dri",
@@ -37,7 +43,7 @@
   "Thiamin and niacin are set per unit of energy, so they follow each plan's calories.",
   "Omega-3: at age 1 EFSA's adequate intake is 100 mg of DHA; from age 2 it is 250 mg of EPA and DHA together.",
   "EFSA says saturated fat should be as low as possible and gives no number, so the planner applies no saturated fat limit under the EU standard; the charts show it against the food-label reference intake (20 g) for reference only.",
-  "EFSA had not set a sodium value when these tables were published, so the US sodium limit is used.",
+  "Sodium uses EFSA's 2019 'safe and adequate intake' (2.0 g a day for adults, equal to 5 g of salt; less for children under 11). EFSA says the concern in Europe is too much sodium, not too little, so the planner treats it as a level to stay at or below.",
   "The EFSA target is in retinol equivalents; the food data is in retinol activity equivalents, which count carotenes from plants at half the value (US tables, vitamin A footnote). So vitamin A from plant foods is understated against this target, by up to half; vitamin A from animal foods is unaffected."
  ],
  "profiles": [
@@ -457,10 +463,10 @@
     },
     "sodium": {
      "max": {
-      "value": 1200,
+      "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -871,10 +877,10 @@
     },
     "sodium": {
      "max": {
-      "value": 1500,
+      "value": 1300,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -1290,10 +1296,10 @@
     },
     "sodium": {
      "max": {
-      "value": 1500,
+      "value": 1700,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -1709,10 +1715,10 @@
     },
     "sodium": {
      "max": {
-      "value": 1800,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -2123,10 +2129,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -2481,10 +2487,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     },
     "histidine": {
@@ -3006,10 +3012,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     },
     "histidine": {
@@ -3751,10 +3757,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     },
     "histidine": {
@@ -4266,10 +4272,10 @@
     },
     "sodium": {
      "max": {
-      "value": 1200,
+      "value": 1100,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -4699,10 +4705,10 @@
     },
     "sodium": {
      "max": {
-      "value": 1500,
+      "value": 1300,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -5137,10 +5143,10 @@
     },
     "sodium": {
      "max": {
-      "value": 1500,
+      "value": 1700,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -5575,10 +5581,10 @@
     },
     "sodium": {
      "max": {
-      "value": 1800,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -6008,10 +6014,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     }
    }
@@ -6366,10 +6372,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     },
     "histidine": {
@@ -6891,10 +6897,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     },
     "histidine": {
@@ -7636,10 +7642,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     },
     "histidine": {
@@ -8197,10 +8203,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     },
     "histidine": {
@@ -8758,10 +8764,10 @@
     },
     "sodium": {
      "max": {
-      "value": 2300,
+      "value": 2000,
       "basis": "abs",
-      "source": "nasem-dri",
-      "note": "Chronic disease risk reduction intake"
+      "source": "efsa-sodium-2019",
+      "note": "Safe and adequate intake"
      }
     },
     "histidine": {

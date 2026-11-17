@@ -266,6 +266,21 @@
           "fetch": "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf"
         }
       ]
+    },
+    {
+      "id": "efsa-sodium-2019",
+      "pre": "EFSA Panel on Nutrition, Novel Foods and Food Allergens,",
+      "title": "Dietary reference values for sodium",
+      "style": "quoted",
+      "post": "<i>EFSA Journal</i>, vol. 17, no. 9, Art. no. e05778, Sep. 2019, Table 12, p. 50, doi: 10.2903/j.efsa.2019.5778.",
+      "url": "https://doi.org/10.2903/j.efsa.2019.5778",
+      "licence": "© 2019 European Food Safety Authority; open access, Creative Commons Attribution-NoDerivs (copy kept unaltered)",
+      "usedFor": "EU sodium value",
+      "archive": [
+        {
+          "file": "efsa-2019-sodium.pdf"
+        }
+      ]
     }
   ]
 }

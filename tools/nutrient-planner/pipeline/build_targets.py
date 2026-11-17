@@ -403,6 +403,10 @@ EU_BY_AGE = {
 }
 # Total fat reference intake (upper end, % energy): 35-40% at ages 1-3, 20-35% from 4 (Table 2, page 23).
 EU_FAT_MAX = {"1-3": 40}
+# Sodium, "safe and adequate intake", g/day: EFSA (2019) Dietary reference values for sodium, Table 12 (page 50).
+# Adults 2.0 g, which also applies in pregnancy and lactation. EFSA notes the concern in Europe is excess
+# intake and that the values can inform reduction goals, so the planner uses it as a level to stay at or below.
+EU_SODIUM_G = {"1-3": 1.1, "4-6": 1.3, "7-10": 1.7, "11-14": 2.0, "15-17": 2.0, "18-24": 2.0, "25-50": 2.0, "51+": 2.0}
 EU_PROTEIN_EXTRA = {"pregnancy": 9, "lactation": 19}   # g/day added (2nd trimester; first 6 months)
 # EFSA reference body weights (Table 17, page 91), used as the default weight until the person enters theirs.
 REF_WEIGHT = {"1-3": (12.2, 11.5), "4-6": (19.2, 18.7), "7-10": (29.0, 28.4), "11-14": (44.0, 45.1), "15-17": (64.1, 56.4),
@@ -472,9 +476,9 @@ def eu_targets(sex: str, g: str, stage: str) -> dict:
     elif g in ("1-3", "4-6", "7-10", "11-14", "15-17"):
         t["protein"]["min"]["byAge"] = {str(a): round(v * 1000) for a, v in EU_PROTEIN_AGE[sex].items()}
     # EFSA gives no number for saturated fat ("as low as possible", Table 2), so none is applied.
-    # These tables have no sodium value either, so the US sodium risk-reduction intake is borrowed, along
-    # with the US tolerable upper intake levels, as for the UK.
-    add_us_uls(t, EU_TO_US_UL["25-50" if stage in ("pregnancy", "lactation") else g], stage if stage in ("pregnancy", "lactation") else sex, "nasem-dri")
+    # The US tolerable upper intake levels are borrowed, as for the UK; sodium is EFSA's own value.
+    add_us_uls(t, EU_TO_US_UL["25-50" if stage in ("pregnancy", "lactation") else g], stage if stage in ("pregnancy", "lactation") else sex, "nasem-dri", sodium=False)
+    put(t, "sodium", "max", round(EU_SODIUM_G["25-50" if stage in ("pregnancy", "lactation") else g] * 1000), "abs", "efsa-sodium-2019", "Safe and adequate intake")
     if g in ("18-24", "25-50", "51+") or stage in ("pregnancy", "lactation"):
         add_aa(t)
     return t
@@ -505,8 +509,8 @@ def build_eu() -> dict:
         })
     return {
         "id": "eu", "name": "EU", "longName": "EU Dietary Reference Values (EFSA)", "status": "available",
-        "verified": {"checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 1, 2, 3, 5, 7, 9, 11 and 17"},
-        "sources": [ref("efsa-2017"), ref("nasem-dri", "Safety upper limits (EFSA tables give no complete set)"), ref("who-2007", "Amino acids")],
+        "verified": {"checked": True, "date": "2026-11-09", "against": "EFSA (2017) Dietary Reference Values for nutrients: Summary report, Tables 1, 2, 3, 5, 7, 9, 11 and 17; EFSA (2019) Dietary reference values for sodium, Table 12"},
+        "sources": [ref("efsa-2017"), ref("efsa-sodium-2019", "Sodium"), ref("nasem-dri", "Safety upper limits (EFSA tables give no complete set)"), ref("who-2007", "Amino acids")],
         "notes": [
             "Values are population reference intakes (PRI) where EFSA set one, otherwise adequate intakes (AI), from the EFSA 2017 summary report (Tables 2, 3, 5, 7, 9 and 11).",
             "For children, protein, vitamin E, copper, magnesium and girls' iron follow EFSA's exact age bands; protein uses EFSA's value for each year of age.",
@@ -517,7 +521,7 @@ def build_eu() -> dict:
             "Thiamin and niacin are set per unit of energy, so they follow each plan's calories.",
             "Omega-3: at age 1 EFSA's adequate intake is 100 mg of DHA; from age 2 it is 250 mg of EPA and DHA together.",
             "EFSA says saturated fat should be as low as possible and gives no number, so the planner applies no saturated fat limit under the EU standard; the charts show it against the food-label reference intake (20 g) for reference only.",
-            "EFSA had not set a sodium value when these tables were published, so the US sodium limit is used.",
+            "Sodium uses EFSA's 2019 'safe and adequate intake' (2.0 g a day for adults, equal to 5 g of salt; less for children under 11). EFSA says the concern in Europe is too much sodium, not too little, so the planner treats it as a level to stay at or below.",
             "The EFSA target is in retinol equivalents; the food data is in retinol activity equivalents, which count carotenes from plants at half the value (US tables, vitamin A footnote). So vitamin A from plant foods is understated against this target, by up to half; vitamin A from animal foods is unaffected.",
         ],
         "profiles": profiles,

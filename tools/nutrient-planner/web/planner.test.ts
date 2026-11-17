@@ -248,3 +248,9 @@ test("US-fortified products are flagged and left out of the Everything preset; d
   assert.equal(data.foods.find((f) => /^Bread, crumbs, dry, grated, plain/.test(f.usdaName))!.maxGrams, 60);
   assert.equal(data.foods.find((f) => /coconut cream, raw/.test(f.usdaName))!.diet, "vegan");
 });
+
+test("EU sodium is EFSA's own value (2019, Table 12), not the borrowed US one", () => {
+  const na = (age: number, life: "none" | "pregnancy" = "none") => pickProfile(eu, "female", age, life).profile.targets.sodium.max!;
+  assert.deepEqual([na(2).value, na(5).value, na(8).value, na(12).value, na(16).value, na(40).value, na(30, "pregnancy").value], [1100, 1300, 1700, 2000, 2000, 2000, 2000]);
+  assert.equal(na(40).source, "efsa-sodium-2019");
+});

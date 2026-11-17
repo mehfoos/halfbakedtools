@@ -9,6 +9,7 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
 | UK | Checked | Public Health England (2016) *Government Dietary Recommendations*, Tables 1–6 (pages 6–11) | 9 Nov 2026 |
 | EU | Checked | EFSA (2017) *Dietary reference values for nutrients: Summary report*, doi:10.2903/sp.efsa.2017.e15121, Tables 1, 2, 3, 5, 7, 9, 11, 17 | 9 Nov 2026 |
 | US | Checked | National Academies DRI summary table PDFs: RDA and AI (vitamins, elements, water and macronutrients), chronic disease risk reduction intakes, acceptable macronutrient distribution ranges | 10 Nov 2026 |
+| EU sodium | Checked | EFSA (2019) *Dietary reference values for sodium*, Table 12 (page 50) | 17 Nov 2026 |
 | US calories | Checked | *Dietary Guidelines for Americans, 2020–2025*, Appendix 2, Tables A2-1 to A2-3 | 10 Nov 2026 |
 | Upper limits (all standards) | Checked | National Academies DRI summary tables, tolerable upper intake levels (vitamins and elements) | 10 Nov 2026 |
 | Food-label reference intakes | Checked | Regulation (EU) No 1169/2011, Annex XIII Part B | 10 Nov 2026 |
@@ -71,8 +72,10 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
 
 - **UK folate note added:** the food data's folate unit overstates folic-acid-fortified foods against the UK target
   (National Academies vitamins table, footnote f). No numbers changed.
-- **Not done: EU sodium.** The EU standard still borrows the US sodium limit. EFSA's 2019 sodium opinion could not be
-  downloaded automatically (publisher returns 403), so it has not been checked or used.
+- **EU sodium now EFSA's own value.** "Safe and adequate intake" from EFSA (2019) *Dietary reference values for
+  sodium*, Table 12, page 50 (checked against the archived PDF): 1.1 g at 1–3 years, 1.3 g at 4–6, 1.7 g at 7–10,
+  2.0 g from 11 and for adults, including pregnancy and breastfeeding. Used as a level to stay at or below. Before,
+  the US limit (2.3 g for adults) was borrowed.
 
 ## Changes made on 10 Nov 2026
 
