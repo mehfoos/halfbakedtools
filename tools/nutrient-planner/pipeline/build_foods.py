@@ -192,6 +192,12 @@ def mark_wider(auto_foods_out: list[dict]) -> list[dict]:
         for f in foods[: spec["maxPerGroup"]]:
             f["wider"] = True
             chosen.append(f)
+    # Staples the rules would miss, named exactly by USDA description.
+    also = set(spec.get("also", []))
+    for f in auto_foods_out:
+        if f["usdaName"] in also and not f.get("wider") and not f.get("common"):
+            f["wider"] = True
+            chosen.append(f)
     return chosen
 
 

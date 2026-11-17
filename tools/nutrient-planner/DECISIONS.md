@@ -13,6 +13,7 @@ and shoppers at ordinary UK supermarkets. It is for thinking about food, not a m
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | Wider selection reviewed by the site owner: the odd US blend "Oil, corn, peanut, and olive" removed (plain olive oil is already a common food); cooked bacon and smoked haddock added by name (new `also` list in `wider_selection.json`) | The owner asked for olive oil and for British staples; sausages, black pudding, crumpets, jam, lard and similar are not in the USDA SR Legacy data used, so can't be added without a different source |
 | 2026-11-17 | Reference tables split into one file per standard (`pipeline/targets/`), each row length checked when the script runs. Generated targets unchanged (byte-identical) | One file can be checked against one document; a row with a missing value now stops the build instead of being cut short silently |
 | 2026-11-17 | Code split into small modules: calculations in plain modules with tests, page code in `web/ui/` with one file per section (map in the README). No change in behaviour | Easier for people and AI to review; a rule can be found and checked in one place |
 | 2026-11-17 | "Wider selection" preset: about 400 ordinary foods on top of the common list (`pipeline/wider_selection.json`; list in `data/foods/wider_selection.md`) | Variety without the odd picks of "Everything". The list is the maintainers' judgement, for the owner to review |

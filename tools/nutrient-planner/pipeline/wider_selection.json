@@ -1,6 +1,10 @@
 {
-  "_comment": "The 'Wider selection' preset: ordinary foods beyond the curated common list. A judgement list drawn up for the site owner to review, not taken from a source. A food qualifies if its list group (the first part of its name, as shown in the planner's food list) is one of the entries for its category ('*' means every group), its USDA description contains none of the 'exclude' words, and it is not US-fortified. At most 'maxPerGroup' foods are kept per group, simplest description first. Review the result in data/foods/wider_selection.md after each pipeline run.",
+  "_comment": "The 'Wider selection' preset: ordinary foods beyond the curated common list. A judgement list drawn up for the site owner to review, not taken from a source. A food qualifies if its list group (the first part of its name, as shown in the planner's food list) is one of the entries for its category ('*' means every group), its USDA description contains none of the 'exclude' words, and it is not US-fortified. At most 'maxPerGroup' foods are kept per group, simplest description first. Foods named exactly (by USDA description) in 'also' are added regardless of these rules, for staples the rules would miss. Review the result in data/foods/wider_selection.md after each pipeline run.",
   "maxPerGroup": 2,
+  "also": [
+    "Pork, cured, bacon, cooked, baked",
+    "Fish, haddock, smoked"
+  ],
   "exclude": [
     "dehydrated",
     "powder",
@@ -108,7 +112,8 @@
     "rotisserie",
     "tofu yoghurt",
     "with cheese",
-    "egg, whole, cooked, omelet"
+    "egg, whole, cooked, omelet",
+    "peanut, and olive"
   ],
   "groups": {
     "veg": [

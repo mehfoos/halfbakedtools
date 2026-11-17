@@ -3,7 +3,7 @@
 Foods switched on by the planner's "Wider selection" preset, in addition to the common foods.
 This is a judgement list for the site owner to review; the rules are in `pipeline/wider_selection.json`.
 
-413 foods.
+414 foods.
 
 ## Vegetables (94)
 
@@ -282,7 +282,7 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Sunflower seed kernels, dry roasted, without salt
 - Sunflower seed kernels, oil roasted, without salt
 
-## Meat & poultry (35)
+## Meat & poultry (36)
 
 - Beef, brisket, flat half, lean, trimmed to 0" fat, choice, cooked, braised
 - Beef, chuck, clod roast, lean, trimmed to 0" fat, choice, cooked, roasted
@@ -309,6 +309,7 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Lamb (imported), loin, lean, cooked, broiled
 - Lamb (imported), shoulder, whole (arm and blade), lean, cooked, braised
 - Lamb, ground, cooked, broiled
+- Pork, cured, bacon, cooked, baked
 - Pork, ground, 96% lean / 4% fat, cooked, crumbles
 - Pork, ground, cooked
 - Pork, leg (ham), rump half, lean, cooked, roasted
@@ -320,13 +321,14 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Turkey, whole, dark meat, cooked, roasted
 - Turkey, whole, meat only, cooked, roasted
 
-## Fish & seafood (35)
+## Fish & seafood (36)
 
 - Fish, anchovy, european, canned in oil, drained solids
 - Fish, bass, freshwater, mixed species, cooked, dry heat
 - Fish, cod, Atlantic, canned, solids and liquid
 - Fish, cod, Pacific, cooked
 - Fish, flatfish (flounder and sole species), cooked, dry heat
+- Fish, haddock, smoked
 - Fish, halibut, Atlantic and Pacific, cooked, dry heat
 - Fish, halibut, greenland, cooked, dry heat
 - Fish, herring, Atlantic, cooked, dry heat
@@ -388,11 +390,10 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Yoghurt, Greek, fruit, whole milk
 - Yoghurt, plain, skim milk
 
-## Oils & fats (7)
+## Oils & fats (6)
 
 - Oil, avocado
 - Oil, coconut
-- Oil, corn, peanut, and olive
 - Oil, flaxseed, cold pressed
 - Oil, sunflower, linoleic (less than 60%)
 - Oil, sunflower, linoleic, (approx. 65%)
