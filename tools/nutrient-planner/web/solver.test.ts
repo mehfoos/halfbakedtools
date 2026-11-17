@@ -131,3 +131,15 @@ test("a custom target is an absolute amount", () => {
   assert.equal(fat.max, 60);
   assert.equal(fat.maxPerKcal, undefined);
 });
+
+test("foods in a cap group share one daily cap", async () => {
+  // Fixture: two "fish" each supply protein; together they may not exceed 140 g, so the rest must come from BEAN.
+  const F1 = food("F1", { energy: 100, protein: 20 }, { capGroup: "oily-fish" });
+  const F2 = food("F2", { energy: 100, protein: 20 }, { capGroup: "oily-fish" });
+  const BEAN = food("BEAN", { energy: 300, protein: 10 });
+  const [p] = await plan({ foods: [F1, F2, BEAN], targets: [{ key: "protein", label: "Protein", unit: "g", min: 60 }],
+    energyLow: 0, energyHigh: 5000, maxIngredients: 3, options: 1, groupCaps: { "oily-fish": 140 } }, solve, keys);
+  const fish = p.items.filter((i) => i.id !== "BEAN").reduce((a, i) => a + i.grams, 0);
+  assert.ok(fish <= 140, `fish ${fish} g`);
+  assert.ok(p.totals.protein >= 60 - 1e-6);
+});

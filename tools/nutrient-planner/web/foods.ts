@@ -48,3 +48,9 @@ export function matches(f: PlannerFood, query: string) {
   const hay = `${f.name} ${f.group} ${f.label} ${f.usdaName}`.toLowerCase();
   return words.every((w) => hay.includes(w));
 }
+
+/**
+ * Shared daily caps, in grams, for groups of foods (Food.capGroup). Oily fish: one portion of about 140 g
+ * a day in total (NHS "Fish and shellfish": a portion is around 140 g; weekly limits apply on top).
+ */
+export const GROUP_CAPS: Record<string, number> = { "oily-fish": 140 };

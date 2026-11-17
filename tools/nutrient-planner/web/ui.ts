@@ -2,7 +2,7 @@
 // network requests are for the site's own data files.
 import { resolveTargets, splitAssessable, describeAmount, type Plan, type ResolvedTarget } from "./solver.ts";
 import { pickProfile, isAdult, refWeight, energyFor, type Standard } from "./profiles.ts";
-import { unpack, isOn, setOn, dietOk, matches, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
+import { unpack, isOn, setOn, dietOk, matches, GROUP_CAPS, type FoodsData, type PlannerFood, type Base } from "./foods.ts";
 import { GROUPS, ORDER, SHORT_LABEL, analyse, totals, type Report, type Row } from "./analysis.ts";
 import { radarSvg, scaleMax, type Axis, type Overlay } from "./radar.ts";
 import { decode, encode, exportFile, forget, fresh, importFile, loadRemembered, remember, DEFAULTS, type Settings } from "./state.ts";
@@ -400,7 +400,7 @@ export async function start(root: HTMLElement) {
   function noticesHtml(rep: Report) {
     const short = (k: string) => { const r = rep.byKey.get(k); return r ? r.status === "short" || r.status === "low" : false; };
     const out: string[] = [];
-    if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (NHS ${cite("nhs-vitd")}).`);
+    if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much${s.vitaminD ? "" : ", so suggestions don't try to reach this target from food unless you ask them to (tick the box under “Suggest foods for me”)"}. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (NHS ${cite("nhs-vitd")}).`);
     if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products${s.diet === "none" ? "" : ", so a fortified food or supplement may be needed"} (NHS ${cite("nhs-vegan")}).`);
     if ((rep.byKey.get("epaDha")?.value ?? 0) < 250 && rep.byKey.get("epaDha")?.min === undefined) out.push(s.diet === "none"
       ? `<b>Omega-3 EPA and DHA:</b> found mainly in oily fish such as salmon, mackerel and sardines; the NHS advises at least one portion (about 140 g) of oily fish a week ${cite("nhs-fish")}. Plant omega-3 (ALA) converts to them poorly.`
@@ -524,6 +524,8 @@ export async function start(root: HTMLElement) {
     }
   }
   nIn.addEventListener("change", () => { s.n = Math.min(15, Math.max(1, Math.round(Number(nIn.value) || DEFAULTS.n))); nIn.value = String(s.n); save(); markStale(); });
+  const vitdBox = $<HTMLInputElement>(root, "#vitd");
+  vitdBox.addEventListener("change", () => { s.vitaminD = vitdBox.checked; save(); markStale(); });
   optIn.addEventListener("change", () => { s.options = Math.min(5, Math.max(1, Math.round(Number(optIn.value) || DEFAULTS.options))); optIn.value = String(s.options); save(); });
 
   let worker: Worker | null = null;
@@ -564,7 +566,9 @@ export async function start(root: HTMLElement) {
       }
     };
     worker.postMessage({
-      input: { foods, targets: assessable, energyLow: b.low, energyHigh: b.high, maxIngredients: s.n, options: s.options },
+      // Vitamin D is left to the notice (sunlight and supplements) unless the person asks for it from food.
+      input: { foods, targets: assessable.filter((t) => s.vitaminD || t.key !== "vitaminD"), energyLow: b.low, energyHigh: b.high,
+        maxIngredients: s.n, options: s.options, groupCaps: GROUP_CAPS },
       keys: ORDER,
     });
   });
@@ -710,6 +714,7 @@ export async function start(root: HTMLElement) {
     root.classList.toggle("no-compare", !s.compare);
     nIn.value = String(s.n);
     optIn.value = String(s.options);
+    vitdBox.checked = s.vitaminD;
     renderYou();
     renderFoodSummary();
     if (tree.childElementCount) renderTree();

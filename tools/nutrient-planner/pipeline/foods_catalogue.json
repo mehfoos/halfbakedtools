@@ -1,5 +1,5 @@
 {
-  "_comment": "Curated list of common, cheap, UK-available whole foods. Each entry is matched against USDA SR Legacy descriptions: every 'include' term must appear (case-insensitive), no 'exclude' term may appear; among matches, entries containing 'prefer' terms win, then the shortest description. 'unitGrams' is the weight of one unit; 'step' is the smallest amount of that unit the planner will suggest; 'maxGrams' is a realism cap per day. Values are for the food as eaten (e.g. pulses cooked). Review data/foods/match_report.md after each pipeline run. Optionally add a 'foundation' object with its own include/exclude/prefer terms to use USDA Foundation Foods data (newer analyses) for that food; SR Legacy fills any nutrient Foundation lacks. data/foods/foundation_candidates.md lists likely Foundation records. 'noteRef' names the reference (in references.json) that a food's note rests on.",
+  "_comment": "Curated list of common, cheap, UK-available whole foods. Each entry is matched against USDA SR Legacy descriptions: every 'include' term must appear (case-insensitive), no 'exclude' term may appear; among matches, entries containing 'prefer' terms win, then the shortest description. 'unitGrams' is the weight of one unit; 'step' is the smallest amount of that unit the planner will suggest; 'maxGrams' is a realism cap per day. Values are for the food as eaten (e.g. pulses cooked). Review data/foods/match_report.md after each pipeline run. Optionally add a 'foundation' object with its own include/exclude/prefer terms to use USDA Foundation Foods data (newer analyses) for that food; SR Legacy fills any nutrient Foundation lacks. data/foods/foundation_candidates.md lists likely Foundation records. 'noteRef' names the reference (in references.json) that a food's note rests on. 'capGroup' puts foods under one shared daily cap (oily fish: one 140 g portion a day in total).",
   "foods": [
     {
       "id": "lentils",
@@ -1710,9 +1710,10 @@
       "unit": "g",
       "unitGrams": 1,
       "step": 10,
-      "maxGrams": 300,
+      "maxGrams": 140,
       "notes": "Oily fish: the NHS advises no more than 4 portions (about 140 g each) a week, or 2 for girls and for women who are pregnant, breastfeeding or may have a child one day.",
-      "noteRef": "nhs-fish"
+      "noteRef": "nhs-fish",
+      "capGroup": "oily-fish"
     },
     {
       "id": "tinned-salmon",
@@ -1726,9 +1727,10 @@
       "unit": "g",
       "unitGrams": 1,
       "step": 10,
-      "maxGrams": 200,
+      "maxGrams": 140,
       "notes": "Oily fish: the NHS advises no more than 4 portions (about 140 g each) a week, or 2 for girls and for women who are pregnant, breastfeeding or may have a child one day.",
-      "noteRef": "nhs-fish"
+      "noteRef": "nhs-fish",
+      "capGroup": "oily-fish"
     },
     {
       "id": "tuna",
@@ -1756,9 +1758,10 @@
       "unit": "g",
       "unitGrams": 1,
       "step": 10,
-      "maxGrams": 150,
+      "maxGrams": 140,
       "notes": "Oily fish: the NHS advises no more than 4 portions (about 140 g each) a week, or 2 for girls and for women who are pregnant, breastfeeding or may have a child one day.",
-      "noteRef": "nhs-fish"
+      "noteRef": "nhs-fish",
+      "capGroup": "oily-fish"
     },
     {
       "id": "mackerel",
@@ -1772,9 +1775,10 @@
       "unit": "g",
       "unitGrams": 1,
       "step": 10,
-      "maxGrams": 200,
+      "maxGrams": 140,
       "notes": "Oily fish: the NHS advises no more than 4 portions (about 140 g each) a week, or 2 for girls and for women who are pregnant, breastfeeding or may have a child one day.",
-      "noteRef": "nhs-fish"
+      "noteRef": "nhs-fish",
+      "capGroup": "oily-fish"
     },
     {
       "id": "cod",

@@ -192,3 +192,12 @@ test("every food note's reference is in the reference list", () => {
   assert.ok(refs.length >= 6);
   for (const r of refs) assert.ok(ids.has(r), `unknown reference ${r}`);
 });
+
+test("oily fish share one 140 g daily cap; tuna and white fish don't count", () => {
+  const raw = JSON.parse(readFileSync(new URL("../data/foods/foods.json", import.meta.url), "utf8"));
+  const by = (id: string) => raw.foods.find((f: { id: string }) => f.id === id);
+  for (const id of ["salmon", "tinned-salmon", "sardines", "mackerel"]) { assert.equal(by(id).capGroup, "oily-fish"); assert.equal(by(id).maxGrams, 140); }
+  for (const id of ["tuna", "cod", "haddock", "prawns"]) assert.equal(by(id).capGroup ?? null, null);
+  const oily = raw.foods.filter((f: { capGroup?: string }) => f.capGroup === "oily-fish");
+  assert.ok(oily.every((f: { cat: string; maxGrams: number }) => f.cat === "fish" && f.maxGrams <= 140));
+});

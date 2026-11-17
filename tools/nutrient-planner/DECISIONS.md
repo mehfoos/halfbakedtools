@@ -13,6 +13,8 @@ and shoppers at ordinary UK supermarkets. It is for thinking about food, not a m
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | Suggestions don't chase vitamin D unless the visitor ticks a box (off by default); the day's vitamin D and the supplement notice are still shown | It forced 200–300 g of salmon or 200 g of UV mushrooms into most plans, against the 8 Nov decision below |
+| 2026-11-17 | Oily fish (NHS list) share one cap of 140 g a day in suggestions | One plan had 430 g in a day beside a note giving the NHS weekly limits |
 | 2026-11-17 | US saturated fat limit from the Dietary Guidelines (under 10% of calories, age 2+); no saturated fat limit under EU | The US tables have none; EFSA says "as low as possible" with no number, and borrowing a number would overstate what EFSA says |
 | 2026-11-17 | Targets set as a share of energy are judged against each plan's own calories | A fixed gram amount lets a low-calorie plan exceed the percentage unnoticed |
 | 2026-11-17 | Carbohydrate is USDA's "by difference" value minus fibre | Targets and food labels count carbohydrate without fibre |

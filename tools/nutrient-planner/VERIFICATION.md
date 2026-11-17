@@ -48,6 +48,11 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   breastfeeding or may have a child one day), red and processed meat (cut down to 70 g a day if eating more than 90 g),
   liver (avoid in pregnancy; weekly liver may exceed recommended vitamin A).
 
+- **Vitamin D no longer steers suggestions** unless the visitor asks (design change; see `DECISIONS.md`). It is still
+  reported against its target.
+- **Oily fish capped at 140 g a day in total** in suggestions. Oily fish are those the NHS page lists (herring,
+  pilchards, salmon, sardines, sprats, trout, mackerel; not tuna): 33 foods. 140 g is the NHS portion size.
+
 ## Changes made on 10 Nov 2026
 
 - **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of

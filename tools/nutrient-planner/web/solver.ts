@@ -25,6 +25,7 @@ export type NutrientDef = { key: string; label: string; unit: string };
 export type Food = {
   id: string; name: string; group: string; diet: "vegan" | "vegetarian" | "meat";
   unit: string; unitGrams: number; step: number; maxGrams: number; notes?: string | null;
+  capGroup?: string | null;           // foods in the same group share one daily cap (PlanInput.groupCaps)
   per100g: Record<string, number>;
 };
 
@@ -117,6 +118,7 @@ export type PlanInput = {
   energyHigh: number;
   maxIngredients: number;
   options: number;            // how many distinct plans to return
+  groupCaps?: Record<string, number>;   // grams a day, in total, for all foods of a capGroup
 };
 
 export type PlanItem = { id: string; name: string; grams: number; amountLabel: string };
@@ -179,6 +181,10 @@ export function buildLp(input: PlanInput, forbidden: string[][] = []): string {
   lines.push(` ehi: ${e.join(" + ")} <= ${num(input.energyHigh)}`);
   foods.forEach((f, i) => lines.push(` link${i}: n${i} - ${maxSteps(f)} y${i} <= 0`));
   lines.push(` count: ${foods.map((_, i) => `y${i}`).join(" + ")} <= ${input.maxIngredients}`);
+  Object.entries(input.groupCaps ?? {}).forEach(([group, grams], k) => {
+    const members = foods.map((f, i) => [f, i] as const).filter(([f]) => f.capGroup === group);
+    if (members.length) lines.push(` group${k}: ${members.map(([f, i]) => `${num(stepGrams(f))} n${i}`).join(" + ")} <= ${num(grams)}`);
+  });
   forbidden.forEach((ids, k) => {
     const idx = ids.map((id) => foods.findIndex((f) => f.id === id)).filter((i) => i >= 0);
     const keepAtMost = idx.length - Math.max(1, Math.ceil(idx.length / 3));

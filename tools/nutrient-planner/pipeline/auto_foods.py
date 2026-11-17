@@ -167,9 +167,22 @@ def diet_for(category: str, desc: str) -> str:
     return "vegetarian" if any(w in cleaned for w in ANIMAL_WORDS) else "vegan"
 
 
+# NHS "Fish and shellfish": oily fish include herring (bloater, kipper and hilsa are types of herring),
+# pilchards, salmon, sardines, sprats, trout and mackerel; tuna does not count. A portion is about 140 g.
+OILY_FISH_RE = re.compile(r"\b(herring|bloater|kipper|hilsa|pilchard|salmon|sardine|sprat|trout|mackerel)s?\b", re.I)
+OILY_FISH_PORTION_G = 140
+
+
+def cap_group(category: str, desc: str) -> str | None:
+    """Foods that share one daily cap between them (see GROUP_CAPS in web/foods.ts)."""
+    return "oily-fish" if category == "fish" and OILY_FISH_RE.search(desc) else None
+
+
 def amounts_for(category: str, desc: str) -> tuple[float, int]:
     """(step grams, max grams per day) for an automatically added food."""
     d = desc.lower()
+    if cap_group(category, desc) == "oily-fish":
+        return 10, OILY_FISH_PORTION_G
     dry = any(w in d for w in ("dry", "dried", "dehydrated", "powder", "flour", "meal,", "bran", "germ", "flakes"))
     if category == "herbs":
         return 1, 5

@@ -260,7 +260,7 @@ def main() -> int:
             "cat": auto_foods.CURATED_CATEGORY.get(food["group"], "other"), "group": food.get("listGroup") or group,
             "label": food["name"], "diet": food["diet"], "common": True,
             "unit": food["unit"], "unitGrams": food["unitGrams"], "step": food["step"], "maxGrams": food["maxGrams"],
-            "notes": food.get("notes"), "noteRef": food.get("noteRef"), "fdcId": primary[0], "usdaName": primary[1],
+            "notes": food.get("notes"), "noteRef": food.get("noteRef"), "capGroup": food.get("capGroup"), "fdcId": primary[0], "usdaName": primary[1],
             "dataset": "foundation" if m_fn else "sr", "v": pack(vals),
         })
         fn_txt = f"{m_fn[1]} ({m_fn[0]})" if m_fn else "–"
@@ -280,6 +280,7 @@ def main() -> int:
             "id": f"u{fid}", "name": name, "cat": cat, "group": group, "label": variant,
             "diet": auto_foods.diet_for(cat, desc), "common": False,
             "unit": "g", "unitGrams": 1, "step": step, "maxGrams": cap, "notes": None,
+            "capGroup": auto_foods.cap_group(cat, desc),
             "fdcId": fid, "usdaName": desc, "dataset": "sr", "v": pack(vals),
         })
         auto_counts[cat] = auto_counts.get(cat, 0) + 1

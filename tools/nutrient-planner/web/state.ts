@@ -23,12 +23,13 @@ export type Settings = {
   mode: "suggest" | "build";
   builder: BuilderItem[];
   compare: boolean;               // show the other standards' targets on the charts
+  vitaminD: boolean;              // suggestions also try to reach the vitamin D target from food
 };
 
 export const DEFAULTS: Settings = {
   sex: "female", age: 35, weight: null, diet: "none", standard: "uk", life: "none",
   n: 6, options: 3, energyLow: null, energyHigh: null, base: "common", toggled: [], overrides: {},
-  mode: "suggest", builder: [], compare: true,
+  mode: "suggest", builder: [], compare: true, vitaminD: false,
 };
 
 export const fresh = (): Settings => ({ ...DEFAULTS, toggled: [], overrides: {}, builder: [] });
@@ -60,6 +61,7 @@ export function encode(s: Settings): string {
   if (Object.keys(s.overrides).length) p.set("t", toB64(JSON.stringify(s.overrides)));
   if (s.mode === "build") p.set("mode", "build");
   if (!s.compare) p.set("cmp", "0");
+  if (s.vitaminD) p.set("vd", "1");
   if (s.builder.length) p.set("b", s.builder.map((b) => `${b.id}~${Math.round(b.grams * 10) / 10}`).join("_"));
   return p.toString();
 }
@@ -99,6 +101,7 @@ export function decode(query: string): Settings {
   }
   if (p.get("mode") === "build") s.mode = "build";
   if (p.get("cmp") === "0") s.compare = false;
+  if (p.get("vd") === "1") s.vitaminD = true;
   if (p.get("b")) {
     for (const part of p.get("b")!.split("_")) {
       const [id, g] = part.split("~");
