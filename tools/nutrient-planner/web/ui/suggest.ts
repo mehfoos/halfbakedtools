@@ -2,7 +2,7 @@
 import { describeAmount, type Plan } from "../solver.ts";
 import { ORDER } from "../analysis.ts";
 import { planInput } from "../plan-input.ts";
-import { DEFAULTS } from "../state.ts";
+import { DEFAULTS, MAX_OPTIONS } from "../state.ts";
 import type { App } from "./app.ts";
 import { cite } from "./app.ts";
 import type { Charts } from "./charts.ts";
@@ -16,6 +16,7 @@ export function setupSuggest(app: App, charts: Charts, onAdjust: (plan: Plan) =>
   const results = $(root, "#results");
   const status = $(root, "#status");
   const runBtn = $<HTMLButtonElement>(root, "#run");
+  const stopBtn = $<HTMLButtonElement>(root, "#stop");
   const nIn = $<HTMLInputElement>(root, "#n");
   const optIn = $<HTMLInputElement>(root, "#options");
   const vitdBox = $<HTMLInputElement>(root, "#vitd");
@@ -66,6 +67,7 @@ export function setupSuggest(app: App, charts: Charts, onAdjust: (plan: Plan) =>
 
     worker = new Worker(new URL("../worker.ts", import.meta.url), { type: "module" });
     runBtn.disabled = true;
+    stopBtn.hidden = false;
     plans = [];
     results.innerHTML = CAVEAT;
     status.textContent = `Finding option 1 of ${s.options}…`;
@@ -77,8 +79,7 @@ export function setupSuggest(app: App, charts: Charts, onAdjust: (plan: Plan) =>
         return;
       }
       // "done" or "error"
-      runBtn.disabled = false;
-      status.textContent = "";
+      finish();
       show(d.type === "error" ? bad(`Something went wrong: ${esc(d.message)}`) : endMessage(d.timedOut));
       worker?.terminate(); worker = null;
     };
@@ -88,10 +89,22 @@ export function setupSuggest(app: App, charts: Charts, onAdjust: (plan: Plan) =>
     worker.postMessage({ input, keys: ORDER });
   }
 
+  function finish() {
+    runBtn.disabled = false;
+    stopBtn.hidden = true;
+    status.textContent = "";
+  }
+
   runBtn.addEventListener("click", run);
+  stopBtn.addEventListener("click", () => {
+    if (!worker) return;
+    worker.terminate(); worker = null;
+    finish();
+    show(aside(`Search stopped after ${plans.length} option${plans.length === 1 ? "" : "s"}.`));
+  });
   nIn.addEventListener("change", () => { app.s.n = clampInt(nIn.value, 1, 15, DEFAULTS.n); nIn.value = String(app.s.n); app.save(); markStale(); });
   vitdBox.addEventListener("change", () => { app.s.vitaminD = vitdBox.checked; app.save(); markStale(); });
-  optIn.addEventListener("change", () => { app.s.options = clampInt(optIn.value, 1, 5, DEFAULTS.options); optIn.value = String(app.s.options); app.save(); });
+  optIn.addEventListener("change", () => { app.s.options = clampInt(optIn.value, 1, MAX_OPTIONS, DEFAULTS.options); optIn.value = String(app.s.options); app.save(); });
   results.addEventListener("click", (e) => {
     const btn = (e.target as HTMLElement).closest("button[data-edit]") as HTMLButtonElement | null;
     if (btn) onAdjust(plans[Number(btn.dataset.edit)]);

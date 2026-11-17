@@ -26,6 +26,10 @@ export type Settings = {
   vitaminD: boolean;              // suggestions also try to reach the vitamin D target from food
 };
 
+/** Most options one search can ask for. The search runs in the visitor's browser and can be stopped at any
+ *  time; the cap only stops a damaged or hostile link from asking for an endless search. */
+export const MAX_OPTIONS = 50;
+
 export const DEFAULTS: Settings = {
   sex: "female", age: 35, weight: null, diet: "none", standard: "uk", life: "none",
   n: 6, options: 3, energyLow: null, energyHigh: null, base: "common", toggled: [], overrides: {},
@@ -79,7 +83,7 @@ export function decode(query: string): Settings {
   const ls = p.get("ls");
   if (ls === "pregnancy" || ls === "lactation") s.life = ls;
   s.n = clampInt(p.get("n"), 1, 15) ?? DEFAULTS.n;
-  s.options = clampInt(p.get("o"), 1, 5) ?? DEFAULTS.options;
+  s.options = clampInt(p.get("o"), 1, MAX_OPTIONS) ?? DEFAULTS.options;
   s.energyLow = clampInt(p.get("el"), 300, 6000);
   s.energyHigh = clampInt(p.get("eh"), 300, 6000);
   const f = p.get("f");

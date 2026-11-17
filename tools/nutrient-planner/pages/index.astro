@@ -105,8 +105,9 @@ const tool = `${base}tools/nutrient-planner/`;
         <div id="suggestPane">
           <div class="run-row sans">
             <label>Up to <input type="number" id="n" min="1" max="15" step="1" inputmode="numeric" /> different foods</label>
-            <label>Show <input type="number" id="options" min="1" max="5" step="1" inputmode="numeric" /> options</label>
+            <label>Show <input type="number" id="options" min="1" max="50" step="1" inputmode="numeric" /> options</label>
             <button type="button" class="primary" id="run">Find combinations</button>
+            <button type="button" id="stop" hidden>Stop</button>
             <span id="status" class="muted small" role="status" aria-live="polite"></span>
           </div>
           <p class="small sans"><label><input type="checkbox" id="vitd" /> Also try to reach the vitamin D target from food</label>

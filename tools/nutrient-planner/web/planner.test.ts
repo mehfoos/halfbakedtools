@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { pickProfile, groupRange, energyFor, type Standard } from "./profiles.ts";
 import { resolveTargets } from "./solver.ts";
 import { avoidReason, portionFactor, scaledMax } from "./foods.ts";
-import { decode, encode, fresh } from "./state.ts";
+import { decode, encode, fresh, MAX_OPTIONS } from "./state.ts";
 import { isOn, setOn, unpack, familiarityPenalty, FAMILIARITY_BUDGET, type PlannerFood } from "./foods.ts";
 import { analyse } from "./analysis.ts";
 
@@ -57,6 +57,8 @@ test("damaged or hostile links are ignored safely", () => {
   assert.deepEqual(s.toggled, ["ok-id"]);
   assert.deepEqual(s.builder, [{ id: "egg", grams: 50 }]);
   assert.deepEqual(s.overrides, {});
+  assert.equal(decode("o=100000").options, MAX_OPTIONS, "a link can't ask for an endless search");
+  assert.equal(decode("o=12").options, 12, "more than five options are allowed");
 });
 
 test("food selection: preset plus toggles", () => {
