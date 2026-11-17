@@ -24,6 +24,12 @@ const standards = [uk, us, eu];
     fish; choosing vegan also hides dairy, eggs and honey. The food list, the rules and a match report live in the repository's
     <code>tools/nutrient-planner/</code> folder so anyone can check them.
   </p>
+  <p>
+    One value is adjusted. USDA lists "Carbohydrate, by difference" <Fragment set:html={cite("usda-sr")} />: what is left of a
+    food after water, protein, fat, ash and alcohol, which includes fibre. Dietary targets and food labels count
+    carbohydrate without fibre, so the planner subtracts each food's fibre from it. A food with no fibre value
+    (mostly meat, fish and oils) keeps USDA's figure.
+  </p>
   <p class="muted small">
     Current snapshot: {meta.foodsLastUpdated ? `built ${meta.foodsLastUpdated}, ${meta.foodCount} foods` : "not built yet"}.
     The snapshot is stored in the repository so the site keeps working even if the USDA servers change, and is refreshed every three months.

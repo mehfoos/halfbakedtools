@@ -14,6 +14,14 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
 | Food-label reference intakes | Checked | Regulation (EU) No 1169/2011, Annex XIII Part B | 10 Nov 2026 |
 | Amino acids (all standards) | Checked | WHO/FAO/UNU (2007) Technical Report Series 935, Table 23 and section 8.4 (page 150) | 10 Nov 2026 |
 
+## Changes made on 17 Nov 2026 (accuracy review; plan in `REVIEW-2026-11.md`)
+
+- **Carbohydrate now excludes fibre.** USDA's "Carbohydrate, by difference" includes fibre; the UK, US and EU targets
+  and the food-label layout count carbohydrate without it. The pipeline now subtracts each food's fibre
+  (`build_foods.py`, `derive`). 1,315 foods changed, for example cooked lentils 20.13 → 12.23 g per 100 g; no other
+  value changed. Before this, carbohydrate was overstated by the amount of fibre (about 50 g a day in a typical
+  suggested plan). Not yet done: USDA's own documentation of "by difference" is not yet archived (chunk 8).
+
 ## Changes made on 10 Nov 2026
 
 - **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of

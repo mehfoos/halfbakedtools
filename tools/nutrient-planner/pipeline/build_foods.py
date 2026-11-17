@@ -164,6 +164,10 @@ def derive(v: dict) -> dict:
     if "phenylalanine" in v and "tyrosine" in v:
         d["pheTyr"] = v["phenylalanine"] + v["tyrosine"]
     d["epaDha"] = (v.get("epa", 0) + v.get("dha", 0)) * 1000
+    # USDA's "Carbohydrate, by difference" is what is left after water, protein, fat, ash and alcohol,
+    # so it includes fibre. Dietary targets and food labels count carbohydrate without fibre.
+    if "carbohydrate" in v and "fibre" in v:
+        d["carbohydrate"] = max(0.0, v["carbohydrate"] - v["fibre"])
     return d
 
 
@@ -228,7 +232,8 @@ def main() -> int:
     fn_vals = fnd.values({m[1][0] for m in matches if m[1]}) if fnd else {}
 
     nutrients = spec["nutrients"]
-    keys = [n["key"] for n in nutrients] + [d["key"] for d in spec["derived"]]
+    replaced = {d["key"] for d in spec["derived"] if d.get("replaces")}
+    keys = [n["key"] for n in nutrients] + [d["key"] for d in spec["derived"] if d["key"] not in replaced]
     sig = lambda x: float(f"{x:.4g}")
     foods_out, report = [], []
 
@@ -289,7 +294,7 @@ def main() -> int:
         "generated": today,
         "source": "USDA FoodData Central (public domain)",
         "files": sources,
-        "nutrients": nutrients + spec["derived"],
+        "nutrients": nutrients + [d for d in spec["derived"] if d["key"] not in replaced],
         "keys": keys,
         "categories": [{"id": c, "name": n} for c, n in auto_foods.CATEGORIES],
         "foods": foods_out,

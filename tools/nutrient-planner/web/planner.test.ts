@@ -154,3 +154,11 @@ test("amino acid targets are the WHO safe level (average requirement + 24%)", ()
   assert.equal(t.lysine.min!.value, 37.2);
   assert.equal(t.leucine.min!.value, 48.36);
 });
+
+test("carbohydrate excludes fibre (USDA's by-difference value minus fibre)", () => {
+  const raw = JSON.parse(readFileSync(new URL("../data/foods/foods.json", import.meta.url), "utf8"));
+  const c = raw.keys.indexOf("carbohydrate"), f = raw.keys.indexOf("fibre");
+  const lentils = raw.foods.find((x: { id: string }) => x.id === "lentils");
+  assert.ok(Math.abs(lentils.v[c] + lentils.v[f] - 20.13) < 0.01);   // USDA: 20.13 g by difference, 7.9 g fibre
+  assert.ok(raw.foods.every((x: { v: (number | null)[] }) => x.v[c] === null || x.v[c]! >= 0));
+});

@@ -13,6 +13,7 @@ and shoppers at ordinary UK supermarkets. It is for thinking about food, not a m
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | Carbohydrate is USDA's "by difference" value minus fibre | Targets and food labels count carbohydrate without fibre |
 | 2026-11-10 | Amino acid targets use the WHO safe level (Table 23 average + 24%, §8.4) | Matches the basis of every other target (covers nearly everyone) |
 | 2026-11-10 | US calories use exact Dietary Guidelines Table A2-2 values for age and sex, band ±10% | The earlier secondary-source bands were inaccurate |
 | 2026-11-09 | EU (EFSA) standard added alongside UK and US; other standards shown as thin outlines on charts, on by default, toggleable | Compare major standards without clutter |

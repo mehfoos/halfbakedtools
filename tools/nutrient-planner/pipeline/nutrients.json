@@ -1,5 +1,5 @@
 {
-  "_comment": "Maps the planner's nutrient keys to USDA FoodData Central nutrient records. 'ids' are FDC nutrient ids tried in order; 'name' is a substring the matched nutrient name must contain (a safety check against id drift). 'scale' converts the USDA unit into the planner unit. Derived nutrients are computed in build_foods.py.",
+  "_comment": "Maps the planner's nutrient keys to USDA FoodData Central nutrient records. 'ids' are FDC nutrient ids tried in order; 'name' is a substring the matched nutrient name must contain (a safety check against id drift). 'scale' converts the USDA unit into the planner unit. Derived nutrients are computed in build_foods.py. A derived entry with 'replaces' overwrites the USDA value of the same key.",
   "nutrients": [
     {
       "key": "energy",
@@ -43,7 +43,7 @@
     },
     {
       "key": "carbohydrate",
-      "label": "Carbohydrate",
+      "label": "Carbohydrate (excluding fibre)",
       "unit": "g",
       "ids": [
         1005,
@@ -497,6 +497,16 @@
       "unit": "mg",
       "formula": "(epa + dha)*1000",
       "requires": []
+    },
+    {
+      "key": "carbohydrate",
+      "label": "Carbohydrate (excluding fibre)",
+      "unit": "g",
+      "formula": "USDA 'Carbohydrate, by difference' minus fibre (not below 0); unchanged if the food has no fibre value",
+      "requires": [
+        "carbohydrate"
+      ],
+      "replaces": true
     }
   ]
 }

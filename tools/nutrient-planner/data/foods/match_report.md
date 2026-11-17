@@ -1,4 +1,4 @@
-# Food match report (2026-11-09)
+# Food match report (2026-11-17)
 
 ## Common foods (curated, on by default)
 
