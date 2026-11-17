@@ -13,8 +13,11 @@
 //               q_i = step_i · n_i,  n_i integer,  n_i ≤ maxSteps_i · y_i
 //               Σ_i y_i ≤ N,  y_i binary
 //
-// Several distinct options are found by re-solving with "no-good" cuts that
-// forbid reusing most of an earlier option's ingredients.
+// Several distinct options are found by re-solving with "no-good" cuts. To keep the
+// options varied (see DIVERSITY below), each new option must share fewer than half of
+// any earlier option's foods, and no food may appear in more than about half of the
+// options. If that makes an option clearly worse, or impossible, the looser rule (change
+// at least a third of each earlier option's foods) is used for it and the option says so.
 
 export type Bound = { value: number; basis: "abs" | "pctEnergy" | "perKg" | "perMJ"; source: string; note?: string; extraG?: number;
   byAge?: Record<string, number>;
@@ -132,7 +135,22 @@ export type Plan = {
   energy: number;
   score: number;               // sum of relative shortfalls (0 = every target met)
   timedOut?: boolean;          // the search hit its time limit, so a better combination may exist
+  relaxed?: boolean;           // the variety rules were loosened for this option (see DIVERSITY)
 };
+
+/**
+ * Variety between options.
+ *  - "varied": the foods an option shares with each earlier option are fewer than half of either option's
+ *    foods; with `banned`, a food already in `maxUses(options)` earlier options can't be used again;
+ *  - "loose": an option changes at least a third of each earlier option's foods (the rule before Nov 2026).
+ * Each option tries, in order: varied with the ban, varied without it (lets a staple such as a fortified
+ * soya drink repeat), loose. A later step is used only if it does better by more than `slack` (2% of one target).
+ */
+export const DIVERSITY = {
+  slack: 0.02,
+  maxUses: (options: number) => Math.max(2, Math.ceil(options / 2)),
+};
+export type Variety = { rule: "varied" | "loose"; banned?: string[] };
 
 export type Solver = (lp: string) => Promise<{ status: string; values: Record<string, number> }>;
 
@@ -148,7 +166,7 @@ function stepGrams(f: Food) { return f.step * f.unitGrams; }
 function maxSteps(f: Food) { return Math.max(0, Math.floor(f.maxGrams / stepGrams(f) + 1e-9)); }
 
 /** Build a CPLEX-LP-format model for HiGHS. Exported for testing. */
-export function buildLp(input: PlanInput, forbidden: string[][] = []): string {
+export function buildLp(input: PlanInput, forbidden: string[][] = [], variety: Variety = { rule: "loose" }): string {
   const { foods, targets } = input;
   const lines: string[] = [];
   const obj: string[] = [];
@@ -193,8 +211,21 @@ export function buildLp(input: PlanInput, forbidden: string[][] = []): string {
   forbidden.forEach((ids, k) => {
     const idx = ids.map((id) => foods.findIndex((f) => f.id === id)).filter((i) => i >= 0);
     if (!idx.length) return;   // none of that option's foods are in this list
-    const keepAtMost = idx.length - Math.max(1, Math.ceil(idx.length / 3));
-    lines.push(` cut${k}: ${idx.map((i) => `y${i}`).join(" + ")} <= ${keepAtMost}`);
+    // Count shared foods against the earlier option's full size, so a shorter list can't sidestep the rule.
+    const size = ids.length;
+    const keepAtMost = variety.rule === "varied" ? Math.ceil(size / 2) - 1 : size - Math.max(1, Math.ceil(size / 3));
+    lines.push(` cut${k}: ${idx.map((i) => `y${i}`).join(" + ")} <= ${Math.min(keepAtMost, idx.length)}`);
+    // ...and fewer than half of the new option's own foods: shared < (shared + others), i.e.
+    // Σ y(shared) − Σ y(others) ≤ −1. (It also stops an option made only of an earlier option's foods.)
+    if (variety.rule === "varied") {
+      const shared = new Set(idx);
+      const others = foods.map((_, i) => i).filter((i) => !shared.has(i));
+      lines.push(` half${k}: ${idx.map((i) => `y${i}`).join(" + ")}${others.map((i) => ` - y${i}`).join("")} <= -1`);
+    }
+  });
+  (variety.banned ?? []).forEach((id) => {
+    const i = foods.findIndex((f) => f.id === id);
+    if (i >= 0) lines.push(` ban${i}: y${i} = 0`);
   });
 
   lines.push("Bounds");
@@ -230,8 +261,8 @@ export function shortfallScore(targets: ResolvedTarget[], totals: Record<string,
 type Chosen = { food: Food; grams: number }[];
 
 /** One search: the foods and amounts chosen, and whether the search was stopped by its time limit. */
-async function solveOnce(input: PlanInput, forbidden: string[][], solve: Solver): Promise<{ chosen: Chosen; timedOut: boolean } | null> {
-  const res = await solve(buildLp(input, forbidden));
+async function solveOnce(input: PlanInput, forbidden: string[][], solve: Solver, variety: Variety): Promise<{ chosen: Chosen; timedOut: boolean } | null> {
+  const res = await solve(buildLp(input, forbidden, variety));
   if (res.status !== "Optimal" && res.status !== "Time limit reached") return null;
   const chosen = input.foods
     .map((food, i) => ({ food, grams: Math.round(res.values[`n${i}`] ?? 0) * stepGrams(food) }))
@@ -255,18 +286,47 @@ function planCost(input: PlanInput, chosen: Chosen) {
 export async function plan(input: PlanInput, solve: Solver, allKeys: string[], onPlan?: (p: Plan) => void): Promise<Plan[]> {
   const plans: Plan[] = [];
   const forbidden: string[][] = [];
+  const uses: Record<string, number> = {};
   const quick = input.quickFoods && input.quickFoods.length < input.foods.length ? { ...input, foods: input.quickFoods } : null;
-  for (let k = 0; k < input.options; k++) {
-    let best = await solveOnce(input, forbidden, solve);
+  // One search under a variety rule, with the common-foods fallback described above.
+  const search = async (variety: Variety) => {
+    let best = await solveOnce(input, forbidden, solve, variety);
     if (quick && (!best || best.timedOut)) {
-      const alt = await solveOnce(quick, forbidden, solve);
+      const alt = await solveOnce(quick, forbidden, solve, variety);
       if (alt && (!best || planCost(input, alt.chosen) < planCost(input, best.chosen))) best = { chosen: alt.chosen, timedOut: true };
+    }
+    return best;
+  };
+  for (let k = 0; k < input.options; k++) {
+    let best: Awaited<ReturnType<typeof search>> = null;
+    let relaxed = false;
+    if (k === 0) best = await search({ rule: "loose" });   // the first option has nothing to differ from
+    else {
+      const limit = DIVERSITY.maxUses(input.options);
+      const banned = Object.keys(uses).filter((id) => uses[id] >= limit);
+      const steps: { variety: Variety; relaxed: boolean }[] = [
+        ...(banned.length ? [{ variety: { rule: "varied", banned } as Variety, relaxed: false }] : []),
+        { variety: { rule: "varied" }, relaxed: false },
+        { variety: { rule: "loose" }, relaxed: true },
+      ];
+      // Stop at the first step that is about as good as the first option; otherwise keep the best,
+      // preferring the more varied step unless a looser one is better by more than the slack.
+      const good = plans[0].score + DIVERSITY.slack;
+      let bestCost = Infinity;
+      for (const step of steps) {
+        const found = await search(step.variety);
+        if (!found) continue;
+        const cost = planCost(input, found.chosen);
+        if (cost < bestCost - (best ? DIVERSITY.slack : 0)) { best = found; bestCost = cost; relaxed = step.relaxed; }
+        if (bestCost <= good) break;
+      }
     }
     if (!best) break;
     const { chosen } = best;
     const totals = totalsFor(chosen, Array.from(new Set([...allKeys, "energy"])));
     plans.push({
       ...(best.timedOut ? { timedOut: true } : {}),
+      ...(relaxed ? { relaxed: true } : {}),
       items: chosen.map(({ food, grams }) => ({ id: food.id, name: food.name, grams, amountLabel: describeAmount(food, grams) })),
       totals,
       energy: totals.energy,
@@ -274,6 +334,7 @@ export async function plan(input: PlanInput, solve: Solver, allKeys: string[], o
     });
     onPlan?.(plans[plans.length - 1]);
     forbidden.push(chosen.map((c) => c.food.id));
+    chosen.forEach((c) => (uses[c.food.id] = (uses[c.food.id] ?? 0) + 1));
   }
   return plans;
 }

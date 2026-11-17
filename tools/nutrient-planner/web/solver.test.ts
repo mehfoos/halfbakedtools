@@ -4,7 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { plan, resolveTargets, splitAssessable, buildLp, describeAmount, type Food } from "./solver.ts";
+import { plan, resolveTargets, splitAssessable, buildLp, describeAmount, DIVERSITY, type Food } from "./solver.ts";
 import { makeSolver } from "./highsSolver.ts";
 
 const require = createRequire(import.meta.url);
@@ -175,4 +175,33 @@ test("if the full search runs out of time, the quick list is searched too and th
   assert.equal(p.timedOut, true);    // the full list was never searched to the end
   const [q] = await plan(input, solve, keys);
   assert.equal(q.timedOut, undefined);
+});
+
+// Fixture: N interchangeable foods, each 25 g protein and 500 kcal per 100 g step; any four meet 100 g protein.
+const same = (n: number) => Array.from({ length: n }, (_, i) => food(`F${i}`, { energy: 500, protein: 25 }, { step: 100, maxGrams: 100 }));
+const protein100 = [{ key: "protein", label: "Protein", unit: "g", min: 100 }] as any;
+
+test("options are varied: fewer than half of either option's foods shared; no food in more than half the options", async () => {
+  const input = { foods: same(16), targets: protein100, energyLow: 2000, energyHigh: 2500, maxIngredients: 5, options: 4 };
+  const plans = await plan(input, solve, ["protein"]);
+  assert.equal(plans.length, 4);
+  const sets = plans.map((p) => p.items.map((i) => i.id));
+  for (let a = 0; a < sets.length; a++) for (let b = a + 1; b < sets.length; b++) {
+    const shared = sets[b].filter((x) => sets[a].includes(x)).length;
+    assert.ok(2 * shared < Math.min(sets[a].length, sets[b].length), `options ${a + 1} and ${b + 1} share ${shared}`);
+  }
+  const uses: Record<string, number> = {};
+  sets.flat().forEach((id) => (uses[id] = (uses[id] ?? 0) + 1));
+  assert.ok(Math.max(...Object.values(uses)) <= DIVERSITY.maxUses(4));
+  assert.ok(plans.every((p) => p.score === 0 && !p.relaxed));
+  assert.doesNotMatch(buildLp(input, [["F0", "F1", "F2"]], { rule: "loose" }), /half0/);
+  assert.match(buildLp(input, [["F0", "F1", "F2"]], { rule: "loose" }), /cut0: y0 \+ y1 \+ y2 <= 2/);
+});
+
+test("options repeat foods, and say so, when the list is too short to vary", async () => {
+  // Four foods: the first option uses all four, so a later one can't avoid sharing half of them.
+  const plans = await plan({ foods: same(4), targets: protein100, energyLow: 1000, energyHigh: 2500, maxIngredients: 4, options: 3 }, solve, ["protein"]);
+  assert.equal(plans.length, 3);
+  assert.equal(plans[0].score, 0);
+  assert.ok(!plans[0].relaxed && plans.slice(1).every((p) => p.relaxed));
 });

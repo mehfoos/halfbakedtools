@@ -39,6 +39,7 @@ export function setupSuggest(app: App, charts: Charts, onAdjust: (plan: Plan) =>
           <h3><span>Option ${k}</span><span class="result-actions"><button type="button" class="small" data-edit="${k - 1}">Adjust in builder</button></span></h3>
           <p class="small muted sans day-note">Amounts are totals for the whole day, to spread across meals and snacks as you like.</p>
           <ul class="ingredients">${items.map((i) => `<li><b>${esc(i.food.name)}</b> · ${esc(describeAmount(i.food, i.grams))} · <span class="kcal">${int(Math.round(((i.food.per100g.energy ?? 0) * i.grams) / 100))} kcal</span></li>`).join("")}</ul>
+          ${plan.relaxed ? `<p class="notice info small">This option repeats more of the earlier options' foods than usual, because with the foods switched on a more varied combination would meet the targets less well. Switching more foods on gives more variety.</p>` : ""}
           ${plan.timedOut ? `<p class="notice info small">The search for this option was stopped at its 5-second limit, so this is the best combination found in that time; a better one may exist. Switching fewer foods on makes the search faster.</p>` : ""}
           ${reportHtml(app, charts, app.report(items), items)}
           ${foodNotes(app, items)}
