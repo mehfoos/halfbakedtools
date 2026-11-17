@@ -13,6 +13,7 @@ and shoppers at ordinary UK supermarkets. It is for thinking about food, not a m
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | Reference tables split into one file per standard (`pipeline/targets/`), each row length checked when the script runs. Generated targets unchanged (byte-identical) | One file can be checked against one document; a row with a missing value now stops the build instead of being cut short silently |
 | 2026-11-17 | Code split into small modules: calculations in plain modules with tests, page code in `web/ui/` with one file per section (map in the README). No change in behaviour | Easier for people and AI to review; a rule can be found and checked in one place |
 | 2026-11-17 | "Wider selection" preset: about 400 ordinary foods on top of the common list (`pipeline/wider_selection.json`; list in `data/foods/wider_selection.md`) | Variety without the odd picks of "Everything". The list is the maintainers' judgement, for the owner to review |
 | 2026-11-17 | Mild preference for familiar foods in suggestions, capped at 1% of one target per plan; stated on the methods page | "Everything" picked dried lychees and bread sticks because the optimiser only sees nutrients |

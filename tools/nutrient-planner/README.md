@@ -19,7 +19,9 @@ data/
   meta.json           when the snapshot was built
 pipeline/             Python (standard library only)
   build_foods.py      downloads USDA data, builds data/foods/
-  build_targets.py    reference intakes transcribed from the official tables; edit here, not the JSON
+  build_targets.py    writes data/targets/ from the tables in targets/
+  targets/            reference intakes transcribed from the official tables, one file per standard
+                      (uk.py, us.py, eu.py; common.py: shared helpers, WHO amino acids); edit here, not the JSON
   foods_catalogue.json  curated common foods and how each matches a USDA record
   auto_foods.py       rules for adding the other USDA foods (categories, UK names, portion caps)
   nutrients.json      nutrient keys ↔ USDA nutrient ids
@@ -59,7 +61,7 @@ ui/dom.ts        small helpers: element lookup, escaping, number formatting
 
 Where to change things:
 
-- a target or its source: `pipeline/build_targets.py` (never the generated JSON), then `VERIFICATION.md`;
+- a target or its source: `pipeline/targets/<standard>.py` (never the generated JSON), then `VERIFICATION.md`;
 - a rule about which foods or amounts are allowed: `foods.ts` and `plan-input.ts`;
 - the optimiser's objective or constraints: `solver.ts` (`buildLp`);
 - wording of advice shown with results: `ui/notices.ts`; every factual statement needs a `cite("id")`.
