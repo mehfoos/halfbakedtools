@@ -6,7 +6,7 @@ const topics = [...new Set(TOOLS.map((t) => t.topic))].sort();
 ---
 <Base current="home">
   <h1>Half-Baked Tools</h1>
-  <p class="lede">Small, open-source tools for everyday questions. Every tool shows its sources and its limits, and keeps improving as better evidence and data arrive.</p>
+  <p class="lede">Small, open-source tools and utilities for everyday questions and tasks. They are works in progress.</p>
   {topics.map((topic) => (
     <section class="tool-group">
       <h2>{topic}</h2>
@@ -23,5 +23,5 @@ const topics = [...new Set(TOOLS.map((t) => t.topic))].sort();
     </section>
   ))}
   <h2>Why "half-baked"?</h2>
-  <p>Because these tools are never finished. Data gets updated, methods get refined, and anyone can suggest improvements on GitHub. What doesn't change: claims come with sources, and limitations are stated plainly. <a href={`${base}about/`}>More about how the site works</a>.</p>
+  <p>Because the tools are never finished: expect rough edges, and changes as they are corrected and refined. <a href={`${base}about/`}>More about the site</a>.</p>
 </Base>

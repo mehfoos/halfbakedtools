@@ -4,7 +4,7 @@ const repo = (import.meta.env.PUBLIC_REPO as string | undefined) || "mehfoos/hal
 
 export const site = {
   name: "Half-Baked Tools",
-  tagline: "Open, evolving tools for life's questions, with the evidence shown.",
+  tagline: "Open-source tools and utilities for everyday questions and tasks. Always a work in progress.",
   repo,
   repoUrl: `https://github.com/${repo}`,
   /** Where archived copies of references are kept (the repository's sources/ folder). */

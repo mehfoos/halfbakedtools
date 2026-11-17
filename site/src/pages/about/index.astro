@@ -6,28 +6,31 @@ const base = import.meta.env.BASE_URL;
 const methods = TOOLS.filter((t) => t.pages.some((p) => p.page === "methods"));
 ---
 <Base title="About" current="about">
-  <h1>About Half-Baked Tools</h1>
-  <p class="lede">What every tool on this site promises, and how you can check it.</p>
+  <h1>About</h1>
+  <p class="lede">A small, growing collection of free tools. Some help work something out; others are simple utilities.</p>
 
-  <h2>What every tool does</h2>
+  <h2>What to expect</h2>
   <ul class="prose">
-    <li><strong>Accuracy before features.</strong> Numbers are checked line by line against the original documents, and each tool says what has and hasn't been checked yet. Where a tool is unsure, it says so rather than guessing.</li>
-    <li><strong>Every claim is referenced.</strong> Sources are cited with numbers like [1], and each tool's reference list links to the original and to a copy kept in this site's repository, so the exact version used stays available even if the original moves or changes.</li>
-    <li><strong>Methods and limits are written down.</strong> Each tool has a methods page explaining how it works and what it can't tell you.</li>
-    <li><strong>Your data stays with you.</strong> Calculations run in your browser; nothing you enter is sent anywhere. See <a href={`${base}privacy/`}>Privacy</a>.</li>
-    <li><strong>Open source.</strong> All code, data, references and verification notes are on <a href={site.repoUrl}>GitHub</a>, where anyone can report a problem.</li>
+    <li><strong>Works in progress.</strong> The tools are unfinished and may contain mistakes. For anything that matters, check the original source or ask a professional.</li>
+    <li><strong>Sources, where a tool relies on them.</strong> Tools built on published figures cite them, with a link to the original and to a copy kept in this site's repository. Their methods pages say what has been checked and what hasn't.</li>
+    <li><strong>Runs in your browser.</strong> The tools do their work on your device; what you enter or open isn't sent to a server. See <a href={`${base}privacy/`}>Privacy</a>.</li>
+    <li><strong>Open source.</strong> The code and data are on <a href={site.repoUrl}>GitHub</a>. Corrections are welcome there.</li>
   </ul>
 
-  <h2>Methods for each tool</h2>
-  <ul class="prose">
-    {methods.map((t) => <li><a href={pageHref(base, t, "methods")}>{t.name}: methods and sources</a></li>)}
-  </ul>
+  {methods.length > 0 && (
+    <Fragment>
+      <h2>Methods and sources</h2>
+      <ul class="prose">
+        {methods.map((t) => <li><a href={pageHref(base, t, "methods")}>{t.name}</a></li>)}
+      </ul>
+    </Fragment>
+  )}
 
   <h2>Status labels</h2>
   <ul class="prose">
-    <li><strong>Early version:</strong> working, but expect rough edges and changes.</li>
-    <li><strong>Beta:</strong> complete and checked against its sources; still being refined.</li>
-    <li><strong>Stable:</strong> unlikely to change except for data updates.</li>
+    <li><strong>Early version:</strong> works, with rough edges; likely to change.</li>
+    <li><strong>Beta:</strong> the main features are in place; still being checked and refined.</li>
+    <li><strong>Stable:</strong> expected to change little.</li>
   </ul>
 
   <p class="small muted">Information only. Nothing on this site is medical, financial or legal advice.</p>

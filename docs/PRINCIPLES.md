@@ -8,9 +8,11 @@ Each principle has a short rule, the reason behind it, and what it means in prac
 
 ## Intent
 
-Half-Baked Tools (halfbakedtools.com) is an umbrella site of small, open-source, evidence-based tools for everyday
-life questions: what to eat, what to buy, how to plan. Its value is that people can **trust the numbers and check
-them**. "Half-baked" means *never finished*: data gets updated, methods get refined and anyone can suggest
+Half-Baked Tools (halfbakedtools.com) is an umbrella site for a wide-ranging collection of small, open-source
+tools: some answer everyday questions from published evidence (what to eat, how to exercise), others are plain
+utilities (working with PDF files). For the evidence-based tools, the value is that people can **check the numbers**;
+for all of them, that they are honest about what they do and don't do. The site's own pages describe it in reserved
+terms: no marketing, and no claims of accuracy beyond what has been checked. "Half-baked" means *never finished*: data gets updated, methods get refined and anyone can suggest
 improvements. It does **not** mean low quality.
 
 The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools will follow, each in its own folder
@@ -143,6 +145,7 @@ reason.
 |---|---|---|
 | 2026-11-16 | A tool that handles visitors' files sets a browser security policy (CSP) on its page blocking connections to other sites, starts any background workers from blobs so the policy binds them too, and has a test that fails if its code can send data | Makes "nothing leaves the browser" enforced and checkable (first used by the PDF tools) |
 | 2026-11-16 | Library files needed at run time are copied from `node_modules` and served by this site (`vendor` in `tool.json`) | No third-party requests |
+| 2026-11-17 | The site's own pages (home, About) describe it in reserved, brief terms and cover utilities as well as evidence-based tools | Owner's instruction: don't sound confident about accuracy or market the site; the collection is wide-ranging |
 | 2026-11-11 | Each tool is a self-contained folder; references numbered per tool; shared `sources/` archive | Site will host many tools |
 | 2026-11-10 | IEEE-style numbered citations; collapsible reference lists with original and archived links | Traceability; owner's requirement |
 | 2026-11-10 | Every cited document archived in the repo, including owner-uploaded copies | Links move and documents change |

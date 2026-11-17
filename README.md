@@ -1,6 +1,6 @@
 # Half-Baked Tools
 
-Open, evolving tools for life's questions, with the evidence shown. Live at **https://halfbakedtools.com**.
+Open-source tools and utilities for everyday questions and tasks; always a work in progress. Live at **https://halfbakedtools.com**.
 
 Every tool on the site follows the same rules: accuracy comes before features, every claim is cited and
 the cited documents are archived in this repository, methods and limitations are written down, and
