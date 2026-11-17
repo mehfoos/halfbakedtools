@@ -79,10 +79,10 @@
       "pre": "U.S. Department of Agriculture and U.S. Department of Health and Human Services,",
       "title": "Dietary Guidelines for Americans, 2020–2025",
       "style": "italic",
-      "post": "9th ed. Washington, DC, USA, Dec. 2020, Appendix 2, Estimated calorie needs.",
+      "post": "9th ed. Washington, DC, USA, Dec. 2020, Executive Summary, p. x, and Appendix 2, Estimated calorie needs.",
       "url": "https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf",
       "licence": "Public domain (US government work)",
-      "usedFor": "US calorie defaults",
+      "usedFor": "US calorie defaults and saturated fat limit",
       "archive": [
         {
           "file": "dga-2020-2025.pdf",

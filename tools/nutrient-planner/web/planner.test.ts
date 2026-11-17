@@ -3,11 +3,13 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { pickProfile, groupRange, energyFor, type Standard } from "./profiles.ts";
+import { resolveTargets } from "./solver.ts";
 import { decode, encode, fresh } from "./state.ts";
 import { isOn, setOn, type PlannerFood } from "./foods.ts";
 import { analyse } from "./analysis.ts";
 
 const load = (id: string) => JSON.parse(readFileSync(new URL(`../data/targets/${id}.json`, import.meta.url), "utf8")) as Standard;
+const eu = load("eu");
 const uk = load("uk"), us = load("us");
 
 test("age bands parse", () => {
@@ -91,7 +93,7 @@ test("diet filter: no restriction, vegetarian, vegan", async () => {
 });
 
 test("EU targets: per-MJ, per-kg and energy-percentage values convert correctly", async () => {
-  const { resolveTargets } = await import("./solver.ts");
+
   const eu = load("eu");
   const p = pickProfile(eu, "male", 30, "none").profile;
   assert.equal(p.id, "male-25-50");
@@ -106,7 +108,7 @@ test("EU targets: per-MJ, per-kg and energy-percentage values convert correctly"
 });
 
 test("EU exact age bands and per-year protein (EFSA 2017 Tables 3, 7, 9, 11)", async () => {
-  const { resolveTargets } = await import("./solver.ts");
+
   const { refWeight } = await import("./profiles.ts");
   const eu = load("eu");
   const nutrients = ["iron", "vitaminE", "protein", "fat"].map((key) => ({ key, label: key, unit: "" }));
@@ -161,4 +163,16 @@ test("carbohydrate excludes fibre (USDA's by-difference value minus fibre)", () 
   const lentils = raw.foods.find((x: { id: string }) => x.id === "lentils");
   assert.ok(Math.abs(lentils.v[c] + lentils.v[f] - 20.13) < 0.01);   // USDA: 20.13 g by difference, 7.9 g fibre
   assert.ok(raw.foods.every((x: { v: (number | null)[] }) => x.v[c] === null || x.v[c]! >= 0));
+});
+
+test("US saturated fat: under 10% of calories from age 2; EU sets no number", () => {
+  const sat = (std: Standard, age: number) => {
+    const p = pickProfile(std, "female", age, "none").profile;
+    return resolveTargets(p.targets, [{ key: "satfat", label: "Saturated fat", unit: "g" }], 1800, 60, std.id, {}, age).find((t) => t.key === "satfat");
+  };
+  assert.ok(Math.abs(sat(us, 35)!.max! - 20) < 1e-9);          // 10% of 1800 kcal / 9 kcal per g
+  assert.ok(Math.abs(sat(us, 35)!.maxPerKcal! - 0.1 / 9) < 1e-12);
+  assert.ok(sat(us, 2)?.max !== undefined);
+  assert.equal(sat(us, 1), undefined);                          // no limit before age 2
+  assert.equal(sat(eu, 35), undefined);
 });

@@ -13,6 +13,7 @@ and shoppers at ordinary UK supermarkets. It is for thinking about food, not a m
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-17 | US saturated fat limit from the Dietary Guidelines (under 10% of calories, age 2+); no saturated fat limit under EU | The US tables have none; EFSA says "as low as possible" with no number, and borrowing a number would overstate what EFSA says |
 | 2026-11-17 | Targets set as a share of energy are judged against each plan's own calories | A fixed gram amount lets a low-calorie plan exceed the percentage unnoticed |
 | 2026-11-17 | Carbohydrate is USDA's "by difference" value minus fibre | Targets and food labels count carbohydrate without fibre |
 | 2026-11-10 | Amino acid targets use the WHO safe level (Table 23 average + 24%, §8.4) | Matches the basis of every other target (covers nearly everyone) |

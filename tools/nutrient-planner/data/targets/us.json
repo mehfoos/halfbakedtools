@@ -6,7 +6,7 @@
  "verified": {
   "checked": true,
   "date": "2026-11-10",
-  "against": "National Academies DRI summary table PDFs (RDA and AI for vitamins, elements, water and macronutrients; upper limits; chronic disease risk reduction; macronutrient ranges) and Dietary Guidelines for Americans 2020-2025, Appendix 2"
+  "against": "National Academies DRI summary table PDFs (RDA and AI for vitamins, elements, water and macronutrients; upper limits; chronic disease risk reduction; macronutrient ranges) and Dietary Guidelines for Americans 2020-2025, Appendix 2 and Executive Summary"
  },
  "sources": [
   {
@@ -18,7 +18,7 @@
    "id": "dga-2020",
    "title": "Dietary Guidelines for Americans, 2020–2025",
    "url": "https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf",
-   "role": "Calorie estimates"
+   "role": "Calorie estimates and saturated fat limit"
   },
   {
    "id": "who-2007",
@@ -30,7 +30,8 @@
  "notes": [
   "Upper limits for magnesium, niacin, folate and vitamin E apply to supplements and fortificants only, so they are not applied to food.",
   "The vitamin A upper limit applies to preformed vitamin A (retinol), not to carotenes from plants.",
-  "Adults over 50 are advised to get most vitamin B12 from fortified foods or supplements."
+  "Adults over 50 are advised to get most vitamin B12 from fortified foods or supplements.",
+  "Saturated fat follows the Dietary Guidelines for Americans (less than 10% of calories, from age 2). The same guidelines limit added sugars to less than 10% of calories; that isn't assessed because the food data doesn't separate added from natural sugars."
  ],
  "profiles": [
   {
@@ -373,6 +374,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     }
    }
@@ -738,6 +748,15 @@
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
      }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
     }
    }
   },
@@ -1073,6 +1092,15 @@
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
      }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
     }
    }
   },
@@ -1407,6 +1435,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     }
    }
@@ -1777,6 +1814,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     },
     "histidine": {
@@ -2261,6 +2307,15 @@
       "note": "Acceptable macronutrient distribution range"
      }
     },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
+    },
     "histidine": {
      "min": {
       "value": 12.4,
@@ -2741,6 +2796,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     },
     "histidine": {
@@ -3375,6 +3439,15 @@
       "note": "Acceptable macronutrient distribution range"
      }
     },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
+    },
     "histidine": {
      "min": {
       "value": 12.4,
@@ -3781,6 +3854,15 @@
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
      }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
     }
    }
   },
@@ -4115,6 +4197,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     }
    }
@@ -4485,6 +4576,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     },
     "histidine": {
@@ -4969,6 +5069,15 @@
       "note": "Acceptable macronutrient distribution range"
      }
     },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
+    },
     "histidine": {
      "min": {
       "value": 12.4,
@@ -5449,6 +5558,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     },
     "histidine": {
@@ -6083,6 +6201,15 @@
       "note": "Acceptable macronutrient distribution range"
      }
     },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
+    },
     "histidine": {
      "min": {
       "value": 12.4,
@@ -6489,6 +6616,15 @@
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
      }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
     }
    }
   },
@@ -6858,6 +6994,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     },
     "histidine": {
@@ -7342,6 +7487,15 @@
       "note": "Acceptable macronutrient distribution range"
      }
     },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
+    },
     "histidine": {
      "min": {
       "value": 12.4,
@@ -7748,6 +7902,15 @@
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
      }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
+     }
     }
    }
   },
@@ -8117,6 +8280,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     },
     "histidine": {
@@ -8599,6 +8771,15 @@
       "basis": "pctEnergy",
       "source": "nasem-dri",
       "note": "Acceptable macronutrient distribution range"
+     }
+    },
+    "satfat": {
+     "max": {
+      "value": 10,
+      "basis": "pctEnergy",
+      "source": "dga-2020",
+      "note": "Dietary Guidelines: less than 10% of calories, from age 2",
+      "fromAge": 2
      }
     },
     "histidine": {

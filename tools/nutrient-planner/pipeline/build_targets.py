@@ -11,6 +11,8 @@ where a bound is {"value", "basis", "source", "note"?} and basis is:
   abs        an absolute daily amount in the nutrient's unit
   pctEnergy  percent of energy (converted to grams in the browser)
   perKg      mg per kg body weight per day (converted using the user's weight)
+  perMJ      amount per MJ of energy
+A bound may carry "byAge" (exact value for a whole year of age) or "fromAge" (applies from that age).
 The planner tries to reach every min (shortfall is penalised) and never
 exceeds a max.
 """
@@ -111,8 +113,8 @@ UK_TO_US_UL = {"1": "1-3", "2-3": "1-3", "4": "4-8", "5-6": "4-8", "7-10": "4-8"
                "19-50": "19-30", "51-64": "51-70", "65-74": "71+", "75+": "71+"}
 
 # ---------------------------------------------------------------------------
-# US: National Academies DRI summary tables (NCBI Bookshelf NBK545442,
-# Appendix J, 2019). RDA or AI values; groups as in the tables.
+# US: National Academies DRI summary tables (the table PDFs archived in sources/,
+# nasem-dri-*.pdf). RDA or AI values; groups as in the tables.
 # ---------------------------------------------------------------------------
 US_GROUPS = ["1-3", "4-8", "9-13", "14-18", "19-30", "31-50", "51-70", "71+"]
 US_COLS_V = ["vitaminA", "vitaminC", "vitaminD", "vitaminE", "vitaminK", "thiamin", "riboflavin", "niacinNE",
@@ -225,6 +227,10 @@ def us_energy_by_age(sex: str, group: str) -> dict:
 # Pantothenic acid adequate intakes (mg/day), same table.
 US_PANTOTHENIC = {"1-3": 2, "4-8": 3, "9-13": 4, "14-18": 5, "19-30": 5, "31-50": 5, "51-70": 5, "71+": 5,
                   "pregnancy": 6, "lactation": 7}
+# Dietary Guidelines for Americans 2020-2025, Executive Summary, page x: "Saturated fat - Less than 10 percent
+# of calories per day starting at age 2." (Added sugars have the same limit but can't be assessed from food data.)
+US_SATFAT_MAX_PCT = 10
+US_SATFAT_FROM_AGE = 2
 US_AMDR_FAT = {"1-3": 40, "4-8": 35, "9-13": 35, "14-18": 35}  # upper % energy; adults 35
 
 
@@ -296,6 +302,8 @@ def build_us() -> dict:
             add_us_uls(t, g, stage, "nasem-dri")
             put(t, "pantothenic", "min", US_PANTOTHENIC[stage if stage in ("pregnancy", "lactation") else g], "abs", "nasem-dri", "Adequate intake")
             put(t, "fat", "max", US_AMDR_FAT.get(g, 35), "pctEnergy", "nasem-dri", "Acceptable macronutrient distribution range")
+            put(t, "satfat", "max", US_SATFAT_MAX_PCT, "pctEnergy", "dga-2020", "Dietary Guidelines: less than 10% of calories, from age 2")
+            t["satfat"]["max"]["fromAge"] = US_SATFAT_FROM_AGE
             if g in ("19-30", "31-50", "51-70", "71+"):
                 add_aa(t)
             sex = "male" if stage == "male" else "female"  # children: DGA values for girls (lower), noted below
@@ -320,21 +328,21 @@ def build_us() -> dict:
     return {
         "id": "us", "name": "US", "longName": "US Dietary Reference Intakes (National Academies)",
         "status": "available",
-        "verified": {"checked": True, "date": "2026-11-10", "against": "National Academies DRI summary table PDFs (RDA and AI for vitamins, elements, water and macronutrients; upper limits; chronic disease risk reduction; macronutrient ranges) and Dietary Guidelines for Americans 2020-2025, Appendix 2"},
-        "sources": [ref("nasem-dri"), ref("dga-2020", "Calorie estimates"), ref("who-2007", "Amino acids")],
+        "verified": {"checked": True, "date": "2026-11-10", "against": "National Academies DRI summary table PDFs (RDA and AI for vitamins, elements, water and macronutrients; upper limits; chronic disease risk reduction; macronutrient ranges) and Dietary Guidelines for Americans 2020-2025, Appendix 2 and Executive Summary"},
+        "sources": [ref("nasem-dri"), ref("dga-2020", "Calorie estimates and saturated fat limit"), ref("who-2007", "Amino acids")],
         "notes": [
             "Upper limits for magnesium, niacin, folate and vitamin E apply to supplements and fortificants only, so they are not applied to food.",
             "The vitamin A upper limit applies to preformed vitamin A (retinol), not to carotenes from plants.",
             "Adults over 50 are advised to get most vitamin B12 from fortified foods or supplements.",
+            "Saturated fat follows the Dietary Guidelines for Americans (less than 10% of calories, from age 2). The same guidelines limit added sugars to less than 10% of calories; that isn't assessed because the food data doesn't separate added from natural sugars.",
         ],
         "profiles": profiles,
     }
 
 
 # ---------------------------------------------------------------------------
-# EU: EFSA Dietary Reference Values, summary tables (EFSA 2017), as reproduced
-# in Gibson, Principles of Nutritional Assessment (nutritionalassessment.org,
-# appendix tables for EFSA reference intakes). PRI where set, otherwise AI.
+# EU: EFSA (2017) Dietary Reference Values for nutrients: Summary report
+# (archived as sources/efsa-2017-drv-summary-report.pdf). PRI where set, otherwise AI.
 # Groups: 1-3, 4-6, 7-10, 11-14, 15-17, 18-24, 25-50, 51+ (51+ uses the
 # post-menopausal iron value for women, an age proxy).
 # Each row: value per group in that order; (male, female) tuples where they differ.
@@ -430,8 +438,9 @@ def eu_targets(sex: str, g: str, stage: str) -> dict:
         t["protein"]["min"]["extraG"] = EU_PROTEIN_EXTRA[stage]
     elif g in ("1-3", "4-6", "7-10", "11-14", "15-17"):
         t["protein"]["min"]["byAge"] = {str(a): round(v * 1000) for a, v in EU_PROTEIN_AGE[sex].items()}
-    # EFSA sets no numeric limit for saturated fat ("as low as possible") or salt in these tables, so the
-    # US tolerable upper intake levels and sodium risk-reduction intake are borrowed, as for the UK.
+    # EFSA gives no number for saturated fat ("as low as possible", Table 2), so none is applied.
+    # These tables have no sodium value either, so the US sodium risk-reduction intake is borrowed, along
+    # with the US tolerable upper intake levels, as for the UK.
     add_us_uls(t, EU_TO_US_UL["25-50" if stage in ("pregnancy", "lactation") else g], stage if stage in ("pregnancy", "lactation") else sex, "nasem-dri")
     if g in ("18-24", "25-50", "51+") or stage in ("pregnancy", "lactation"):
         add_aa(t)
@@ -471,7 +480,8 @@ def build_eu() -> dict:
             "Adult zinc assumes a moderate phytate intake (600 mg/day); diets rich in wholegrains and pulses have more phytate and need more zinc (up to 16.3 mg for men and 12.7 mg for women).",
             "Iron for women aged 51+ uses EFSA's post-menopausal value (11 mg) as an age-based approximation.",
             "Thiamin and niacin are set per unit of energy, so they rise with the calorie range.",
-            "EFSA sets no numeric limit for saturated fat (as low as possible) and had not set sodium values in these tables; US limits are used for safety checks.",
+            "EFSA says saturated fat should be as low as possible and gives no number, so the planner applies no saturated fat limit under the EU standard; the charts show it against the food-label reference intake (20 g) for reference only.",
+            "EFSA had not set a sodium value when these tables were published, so the US sodium limit is used.",
             "Vitamin A is expressed in retinol equivalents by EFSA and in retinol activity equivalents by USDA food data.",
         ],
         "profiles": profiles,

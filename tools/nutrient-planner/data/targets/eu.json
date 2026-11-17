@@ -35,7 +35,8 @@
   "Adult zinc assumes a moderate phytate intake (600 mg/day); diets rich in wholegrains and pulses have more phytate and need more zinc (up to 16.3 mg for men and 12.7 mg for women).",
   "Iron for women aged 51+ uses EFSA's post-menopausal value (11 mg) as an age-based approximation.",
   "Thiamin and niacin are set per unit of energy, so they rise with the calorie range.",
-  "EFSA sets no numeric limit for saturated fat (as low as possible) and had not set sodium values in these tables; US limits are used for safety checks.",
+  "EFSA says saturated fat should be as low as possible and gives no number, so the planner applies no saturated fat limit under the EU standard; the charts show it against the food-label reference intake (20 g) for reference only.",
+  "EFSA had not set a sodium value when these tables were published, so the US sodium limit is used.",
   "Vitamin A is expressed in retinol equivalents by EFSA and in retinol activity equivalents by USDA food data."
  ],
  "profiles": [

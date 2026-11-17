@@ -29,6 +29,13 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
   exactly on the 35% limit). The optimiser and the reports now use each plan's actual calories. A custom target typed
   by the visitor stays an absolute amount.
 
+- **US saturated fat limit added:** less than 10% of calories from age 2 (*Dietary Guidelines for Americans,
+  2020–2025*, Executive Summary, page x; checked against the archived PDF). The US standard had no saturated fat limit
+  before. No limit is applied at age 1.
+- **EU note corrected:** it said US limits were used for saturated fat. No US limit was in fact applied, and EFSA gives
+  no number ("as low as possible", summary report Table 2), so the EU standard has no saturated fat limit and the note
+  now says so.
+
 ## Changes made on 10 Nov 2026
 
 - **Amino acids:** the nine values matched Table 23. But Table 23 gives *average* requirements, which about half of

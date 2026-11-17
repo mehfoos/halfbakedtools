@@ -17,7 +17,8 @@
 // forbid reusing most of an earlier option's ingredients.
 
 export type Bound = { value: number; basis: "abs" | "pctEnergy" | "perKg" | "perMJ"; source: string; note?: string; extraG?: number;
-  byAge?: Record<string, number> };   // exact value for a given whole year of age, where the source sets one
+  byAge?: Record<string, number>;
+  fromAge?: number };                 // the bound applies only from this age (whole years)   // exact value for a given whole year of age, where the source sets one
 export type TargetSpec = { min?: Bound; max?: Bound };
 export type NutrientDef = { key: string; label: string; unit: string };
 export type Food = {
@@ -72,8 +73,9 @@ export function resolveTargets(
     const def = byKey.get(key);
     if (!def) continue;
     const t: ResolvedTarget = { key, label: def.label, unit: def.unit };
-    if (spec.min) { t.min = toAbs(key, spec.min); t.minSource = spec.min.source; t.minPerKcal = perKcal(key, spec.min); }
-    if (spec.max) { t.max = toAbs(key, spec.max); t.maxSource = spec.max.source; t.maxPerKcal = perKcal(key, spec.max); }
+    const applies = (b?: Bound): b is Bound => !!b && (b.fromAge === undefined || age === undefined || Math.floor(age) >= b.fromAge);
+    if (applies(spec.min)) { t.min = toAbs(key, spec.min); t.minSource = spec.min.source; t.minPerKcal = perKcal(key, spec.min); }
+    if (applies(spec.max)) { t.max = toAbs(key, spec.max); t.maxSource = spec.max.source; t.maxPerKcal = perKcal(key, spec.max); }
     const o = overrides[key];
     if (o) {
       // a custom value is an absolute amount, so it no longer follows the plan's calories
