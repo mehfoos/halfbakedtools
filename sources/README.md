@@ -24,7 +24,9 @@ Adding a new archived copy:
    release copy once it is verified, and says "archived copy not yet available" until then.
 
 The *Archive sources to release* workflow (owner-run, from the Actions tab) was used once to fill the release with
-the files collected before Nov 2026; it can also re-check everything. It is not needed for new files.
+the files collected before Nov 2026, including the older copies that were committed to this folder (entries with
+`fromRepo`, uploaded from the committed copy after checking its checksum). It can also re-check everything. It is
+not needed for new files.
 
 ## Older copies in this folder
 
