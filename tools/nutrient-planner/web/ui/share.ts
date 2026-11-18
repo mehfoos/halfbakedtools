@@ -17,7 +17,7 @@ export function setupShare(app: App, onImport: () => void) {
   $(root, "#exportBtn").addEventListener("click", () => {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(exportFile(app.s));
-    a.download = "nutrient-planner-settings.json";
+    a.download = app.kind === "finder" ? "food-finder-settings.json" : "nutrient-planner-settings.json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   });
@@ -29,8 +29,8 @@ export function setupShare(app: App, onImport: () => void) {
     catch (err) { alert(err instanceof Error ? err.message : "Couldn't read that file."); }
     box.value = "";
   });
-  rememberBox.addEventListener("change", () => { if (rememberBox.checked) remember(app.s); else forget(); });
-  $(root, "#forgetBtn").addEventListener("click", () => { forget(); rememberBox.checked = false; });
+  rememberBox.addEventListener("change", () => { if (rememberBox.checked) remember(app.s, app.kind); else forget(app.kind); });
+  $(root, "#forgetBtn").addEventListener("click", () => { forget(app.kind); rememberBox.checked = false; });
 
   // Where the food data came from, at the foot of the tool.
   const { refreshUrl, methodsUrl } = root.dataset;

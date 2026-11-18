@@ -7,8 +7,10 @@ import { reportHtml } from "./report.ts";
 import { $, $$, esc, fmt } from "./dom.ts";
 
 // Amounts are shown in the food's own unit (grams, or e.g. eggs, slices) and stored in grams.
-const unitAmount = (f: PlannerFood, grams: number) => (f.unit === "g" ? grams : grams / f.unitGrams);
-const unitLabel = (f: PlannerFood) => (f.unit === "g" ? "g" : `${f.unit}${f.unit.endsWith("h") ? "es" : "s"}`);
+export const unitAmount = (f: PlannerFood, grams: number) => (f.unit === "g" ? grams : grams / f.unitGrams);
+/** The amount a food starts at when added: one unit (an egg, a slice), or 100 g (less if the food's daily cap is lower). */
+export const startGrams = (f: PlannerFood) => (f.unit === "g" ? Math.min(100, f.maxGrams) : f.unitGrams);
+export const unitLabel = (f: PlannerFood) => (f.unit === "g" ? "g" : `${f.unit}${f.unit.endsWith("h") ? "es" : "s"}`);
 const amountOf = (key: string, f: PlannerFood, grams: number) => ((f.per100g[key] ?? 0) * grams) / 100;
 
 export function setupBuilder(app: App, charts: Charts) {
@@ -81,7 +83,7 @@ export function setupBuilder(app: App, charts: Charts) {
   }
   // Adds one unit (or 100 g); adding a food already in the list increases its amount.
   function add(f: PlannerFood) {
-    const grams = f.unit === "g" ? Math.min(100, f.maxGrams) : f.unitGrams;
+    const grams = startGrams(f);
     const existing = app.s.builder.find((b) => b.id === f.id);
     if (existing) existing.grams += grams; else app.s.builder.push({ id: f.id, grams });
     addSearch.value = "";

@@ -83,3 +83,8 @@
 :is(#planner, #finder) .builder-table .amt { display: flex; gap: 6px; align-items: center; }
 :is(#planner, #finder) .builder-table input[type="number"] { width: 6em; padding: 3px 6px; }
 :is(#planner, #finder) .result-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+/* Food Finder: the amount box above the results */
+:is(#planner, #finder) .amount-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-bottom: 6px; }
+:is(#planner, #finder) .amount-row .amt { display: flex; gap: 6px; align-items: center; }
+:is(#planner, #finder) #amount { width: 6em; padding: 3px 6px; }
+:is(#planner, #finder) #youBox > summary .summary-note { font-weight: 400; }
