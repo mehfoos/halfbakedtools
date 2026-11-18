@@ -7,12 +7,9 @@
 //   foods.ts, plan-input.ts                the food list and the rules applied before a search
 //   analysis.ts, chart-axes.ts, radar.ts   measuring a day against the targets, and drawing it
 //   state.ts                               settings: defaults, link, file, remembered
-//   ui/                                    the page itself, one file per section
-import { unpack, type BlendData, type FoodsData } from "./foods.ts";
-import type { Standard } from "./profiles.ts";
+//   ui/                                    the page itself, one file per section (ui/boot.ts: shared start-up)
 import type { Settings } from "./state.ts";
-import { createApp } from "./ui/app.ts";
-import { createCharts } from "./ui/charts.ts";
+import { boot, loadBlend } from "./ui/boot.ts";
 import { setupYou } from "./ui/you.ts";
 import { setupFoodList } from "./ui/food-list.ts";
 import { setupSuggest } from "./ui/suggest.ts";
@@ -20,40 +17,10 @@ import { setupBuilder } from "./ui/builder.ts";
 import { setupShare } from "./ui/share.ts";
 import { $, $$ } from "./ui/dom.ts";
 
-const STANDARD_FILES = ["targets/uk.json", "targets/us.json", "targets/eu.json"];
-
-async function loadData(root: HTMLElement): Promise<{ data: FoodsData; standards: Standard[] }> {
-  const dataUrl = root.dataset.data ?? `${root.dataset.base ?? "/"}tools/nutrient-planner/data/`;
-  const get = (f: string) => fetch(dataUrl + f).then((r) => { if (!r.ok) throw new Error(f); return r.json(); });
-  const [raw, ...standards] = await Promise.all(["foods/foods.json", ...STANDARD_FILES].map(get));
-  return { data: unpack(raw), standards };
-}
-
-async function loadBlend(root: HTMLElement): Promise<BlendData> {
-  const dataUrl = root.dataset.data ?? `${root.dataset.base ?? "/"}tools/nutrient-planner/data/`;
-  const r = await fetch(`${dataUrl}foods/foods-blend.json`);
-  if (!r.ok) throw new Error("foods-blend.json");
-  return r.json();
-}
-
 export async function start(root: HTMLElement) {
-  const loading = $(root, "#loading");
-  let loaded: Awaited<ReturnType<typeof loadData>>;
-  try {
-    loaded = await loadData(root);
-  } catch {
-    loading.textContent = "Sorry, the planner's data couldn't be loaded. Please try again later.";
-    return;
-  }
-  if (loaded.data.missing || !loaded.data.foods.length) {
-    loading.innerHTML = `<span class="notice">The food data snapshot hasn't been built yet.</span>`;
-    return;
-  }
-  loading.remove();
-  $(root, "#app").hidden = false;
-
-  const app = createApp(root, loaded.data, loaded.standards);
-  const charts = createCharts(app);
+  const booted = await boot(root);
+  if (!booted) return;
+  const { app, charts } = booted;
 
   // Section 3 has two modes: "Suggest foods for me" and "Build my own".
   function setMode(mode: Settings["mode"]) {

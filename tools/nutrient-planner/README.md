@@ -10,6 +10,7 @@ and see how it measures up. Live at https://halfbakedtools.com/tools/nutrient-pl
 tool.json             name, summary, status, pages
 pages/index.astro     the planner
 pages/methods.astro   methods, sources, verification status and limitations
+components/           page parts shared by the Planner and Food Finder pages (about you, food list, save or share)
 web/                  browser code and tests (see "Code map" below)
 references.json       references, in citation order
 VERIFICATION.md       what was checked against which document, and when
@@ -53,6 +54,7 @@ chart-axes.ts    a day's report -> the axes of the radar charts
 radar.ts         draws a radar chart as SVG
 state.ts         settings: defaults, link encoding, file export/import, opt-in remembering
 *.test.ts        tests (run with `npm test`)
+ui/boot.ts       start-up shared by the pages: load the data, then create the state and charts
 ui/app.ts        shared state for the page: data, settings, and the values derived from them
 ui/you.ts        section 1: about you, and "Fine-tune targets"
 ui/food-list.ts  section 2: choose foods
@@ -63,6 +65,7 @@ ui/charts.ts     charts on the page: zoom, compare, "which foods provide" tables
 ui/notices.ts    advice and caveats shown with results, each with its reference
 ui/share.ts      copy link, export/import, remember on this device
 ui/dom.ts        small helpers: element lookup, escaping, number formatting
+ui/page.css      the pages' styles (shared)
 ```
 
 Where to change things:

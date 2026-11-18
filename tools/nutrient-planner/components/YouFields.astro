@@ -1,0 +1,52 @@
+---
+// "About you": sex, age, weight, the targets line, and "Fine-tune targets".
+// Shared by the Planner and Food Finder pages, so a change here shows on both.
+import Caveat from "@site/components/Caveat.astro";
+---
+<div class="you">
+  <fieldset>
+    <legend>Sex</legend>
+    <div class="segmented">
+      <label><input type="radio" name="sex" value="female" /><span>Female</span></label>
+      <label><input type="radio" name="sex" value="male" /><span>Male</span></label>
+    </div>
+  </fieldset>
+  <label class="field">Age <span><input id="age" type="number" min="1" max="110" step="1" inputmode="numeric" /> years</span></label>
+  <label class="field">Weight <span><input id="weight" type="number" min="10" max="300" step="1" inputmode="numeric" /> kg</span></label>
+</div>
+<p class="profile-line sans" id="profileLine"></p>
+<p class="notice small" id="childNote" hidden></p>
+<Caveat kind="unverified" id="unverified" hidden>These recommendations haven't yet been checked line by line against the original document. Treat them with extra caution, or switch to UK or EU in "Fine-tune targets".</Caveat>
+
+<details id="tuneBox">
+  <summary>Fine-tune targets <span class="summary-note" id="tuneNote"></span></summary>
+  <div class="details-body">
+    <div class="tune-row">
+      <fieldset>
+        <legend>Recommendations</legend>
+        <div class="segmented" id="standardSeg"></div>
+      </fieldset>
+      <label class="field">Pregnancy or breastfeeding
+        <select id="life">
+          <option value="none">Neither</option>
+          <option value="pregnancy">Pregnant</option>
+          <option value="lactation">Breastfeeding</option>
+        </select>
+      </label>
+    </div>
+    <p class="small sans" id="sourceLine"></p>
+    <fieldset class="energy">
+      <legend>Calories per day</legend>
+      <span class="cal-row">
+        <label>from <input type="number" id="energyLow" min="300" max="6000" step="10" inputmode="numeric" /></label>
+        <label>to <input type="number" id="energyHigh" min="300" max="6000" step="10" inputmode="numeric" /></label>
+        <button type="button" class="link" id="energyReset" hidden>Reset to recommended</button>
+      </span>
+      <p class="small muted sans" id="energyNote"></p>
+      <p class="notice small" id="energyCustom" hidden>Your calorie range differs from the recommended range for this group.</p>
+    </fieldset>
+    <p class="small sans">These are the official daily targets for the group above. If your needs differ (for example on medical advice), type your own value; it will be marked <span class="badge">custom</span>.</p>
+    <p class="notice" id="customBanner" hidden>Some targets are custom and differ from the official recommendations. <button type="button" class="link" id="resetTargets">Reset all to official values</button></p>
+    <div id="targetGroups"></div>
+  </div>
+</details>

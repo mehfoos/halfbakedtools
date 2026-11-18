@@ -1,0 +1,20 @@
+---
+// "Save or share these settings": link, settings file and the opt-in "remember on this device".
+// Shared by the Planner and Food Finder pages, so a change here shows on both.
+const base = import.meta.env.BASE_URL;
+---
+<details id="shareBox">
+  <summary>Save or share these settings</summary>
+  <div class="details-body sans">
+    <p class="small">Your settings are kept in this page's address, so you can bookmark it or send it to someone. Nothing is sent to us.</p>
+    <div class="preset-row">
+      <button type="button" class="small" id="copyLink">Copy link</button>
+      <button type="button" class="small" id="exportBtn">Export settings file</button>
+      <label class="button small" for="importFile">Import settings file</label>
+      <input type="file" id="importFile" accept="application/json,.json" hidden />
+    </div>
+    <p class="small"><label><input type="checkbox" id="rememberBox" /> Remember my settings on this device</label> · <button type="button" class="link" id="forgetBtn">Forget</button></p>
+    <p class="small muted">Off by default. If ticked, settings are saved in this browser only. <a href={`${base}privacy/`}>Privacy</a></p>
+    <p class="small muted" id="dataInfo"></p>
+  </div>
+</details>

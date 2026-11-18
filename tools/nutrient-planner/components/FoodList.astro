@@ -1,0 +1,20 @@
+---
+// "Choose foods": the preset buttons, search box and the tree of foods (filled in by web/ui/food-list.ts).
+// Shared by the Planner and Food Finder pages, so a change here shows on both.
+---
+<details id="foodsBox">
+  <summary>Choose foods <span class="summary-note" id="foodsNote"></span></summary>
+  <div class="details-body">
+    <div class="preset-row sans">
+      <span>Start from:</span>
+      <button type="button" class="small" data-base="common">Common foods</button>
+      <button type="button" class="small" data-base="wider">Wider selection</button>
+      <button type="button" class="small" data-base="all">Everything</button>
+      <button type="button" class="small" data-base="none">Nothing</button>
+    </div>
+    <label class="sr-only" for="foodSearch">Search foods</label>
+    <input type="search" id="foodSearch" placeholder="Search all foods, e.g. lentils, salmon, cheddar" autocomplete="off" />
+    <p class="small muted sans">Tick a category to switch all of it on or off, or open it to choose individual foods. Common foods are marked <span class="tag">common</span>.</p>
+    <div id="foodTree"></div>
+  </div>
+</details>
