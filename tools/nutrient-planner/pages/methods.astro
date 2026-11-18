@@ -108,7 +108,7 @@ const standards = [uk, us, eu];
         <p>
           The planner solves a mixed-integer programme with the HiGHS solver <Fragment set:html={cite("highs")} />, running in your browser.
           It chooses at most your chosen number of ingredients and an amount of each, in practical steps
-          (10 g, half an egg, a slice of bread), to minimise the total <em>relative</em> shortfall across all
+          (10 g, half an egg, a slice of bread; an egg, a slice or a banana weighs what USDA publishes for that food's portion <Fragment set:html={cite("usda-sr")} />: 50 g, 32 g and 118 g), to minimise the total <em>relative</em> shortfall across all
           minimum targets, so being 20% short of iron counts the same as being 20% short of protein. Upper limits
           (salt, saturated fat, tolerable upper intake levels) and your calorie range are never exceeded.
           Targets that the source sets as a share of energy (fat, saturated fat and carbohydrate as a percentage of energy; EU thiamin and niacin per unit of energy) are measured against each plan's own calories, not a fixed calorie figure.

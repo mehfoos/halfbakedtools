@@ -108,6 +108,15 @@ class Dataset:
         }
         log(f"{label}: {len(self.foods)} foods")
 
+    def portion_grams(self, fdc_id: str, modifier: str) -> float:
+        """The weight in grams of one household unit, as USDA publishes it (food_portion.csv), for a
+        portion of amount 1 whose description ("modifier") matches exactly, e.g. "slice" or "large"."""
+        found = [float(r["gram_weight"]) for r in read_csv(self.zf, "food_portion.csv")
+                 if r["fdc_id"] == fdc_id and r.get("modifier") == modifier and float(r.get("amount") or 0) == 1]
+        if len(found) != 1:
+            raise RuntimeError(f"{self.label} {fdc_id}: expected one portion '{modifier}', found {len(found)}")
+        return found[0]
+
     def values(self, fdc_ids: set[str]) -> dict[str, dict[int, float]]:
         out: dict[str, dict[int, float]] = {i: {} for i in fdc_ids}
         for row in read_csv(self.zf, "food_nutrient.csv"):
@@ -308,7 +317,7 @@ def main() -> int:
     replaced = {d["key"] for d in spec["derived"] if d.get("replaces")}
     keys = [n["key"] for n in nutrients] + [d["key"] for d in spec["derived"] if d["key"] not in replaced]
     sig = lambda x: float(f"{x:.4g}")
-    foods_out, report = [], []
+    foods_out, report, portion_report = [], [], []
 
     def pack(vals: dict) -> list:
         return [sig(vals[k]) if k in vals else None for k in keys]
@@ -327,12 +336,21 @@ def main() -> int:
             continue
         vals.update(derive(vals))
         primary = m_fn or m_sr
+        # A household unit (an egg, a slice) weighs what USDA's portion table says for the matched SR Legacy
+        # record; it is never typed in by hand. Grams need no lookup.
+        if food.get("usdaPortion"):
+            if not m_sr:
+                raise RuntimeError(f"{food['id']}: a usdaPortion needs an SR Legacy match")
+            unit_grams = sr.portion_grams(m_sr[0], food["usdaPortion"])
+            portion_report.append(f"| {food['name']} | 1 {food['unit']} | 1 {food['usdaPortion']} | {unit_grams:g} g | {m_sr[1]} ({m_sr[0]}) |")
+        else:
+            unit_grams = food["unitGrams"]
         group, _ = auto_foods.group_and_variant(auto_foods.uk_name(primary[1]))
         foods_out.append({
             "id": food["id"], "name": food["name"],
             "cat": auto_foods.CURATED_CATEGORY.get(food["group"], "other"), "group": food.get("listGroup") or group,
             "label": food["name"], "diet": food["diet"], "common": True,
-            "unit": food["unit"], "unitGrams": food["unitGrams"], "step": food["step"], "maxGrams": food["maxGrams"],
+            "unit": food["unit"], "unitGrams": unit_grams, "step": food["step"], "maxGrams": food["maxGrams"],
             "notes": food.get("notes"), "noteRef": food.get("noteRef"), "capGroup": food.get("capGroup"), "fdcId": primary[0], "usdaName": primary[1],
             "dataset": "foundation" if m_fn else "sr", "v": pack(vals),
         })
@@ -384,6 +402,10 @@ def main() -> int:
         "Check that each food matched the record you expect. Edit `foods_catalogue.json` to fix a match.\n\n"
         "| Food | Foundation match (fdc_id) | SR Legacy match (fdc_id) | Nutrient values |\n|---|---|---|---|\n"
         + "\n".join(report) + "\n\n"
+        "## Household units\n\n"
+        "Each weight is read from SR Legacy `food_portion.csv` for the matched record (the catalogue's `usdaPortion`).\n\n"
+        "| Food | Unit | USDA portion | Weight | SR Legacy record (fdc_id) |\n|---|---|---|---|---|\n"
+        + "\n".join(portion_report) + "\n\n"
         "## Other foods (added automatically, off by default)\n\n"
         "Rules are in `auto_foods.py`.\n\n| Category | Foods |\n|---|---|\n"
         + "\n".join(f"| {cat_names[c]} | {n} |" for c, n in sorted(auto_counts.items(), key=lambda x: list(cat_names).index(x[0])))

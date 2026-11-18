@@ -64,8 +64,11 @@ and shoppers at ordinary UK supermarkets. It is for thinking about food, not a m
 | 2026-11-08 | Food prices ignored for now | Price data isn't available reliably; possible later |
 | 2026-11-08 | Optimiser: mixed-integer programme (HiGHS, in the browser) minimising total relative shortfall, never exceeding upper limits or the calorie band; practical amounts (10 g, half an egg, a slice) | Fewest foods, practical portions, transparent method |
 | 2026-11-08 | Food data: local snapshot of USDA FoodData Central SR Legacy (public domain), refreshed quarterly | No UK dataset with comparable coverage and licence; resilience |
+| 2026-11-18 | Household units (an egg, a slice, a banana) weigh what USDA's SR Legacy portion table publishes for the matched record (`usdaPortion` in the catalogue, read by `build_foods.py`), never a typed-in weight. Check found the slice was 36 g with no source; USDA gives 32 g for record 172688, so it is now 32 g (egg 50 g = "1 large" and banana 118 g = "1 medium" already matched). The bread's daily cap stays 288 g (now 9 slices) | Owner asked for the weights to be checked and cited; a value with no source breaks principle 2 |
 
 ## Known gaps and ideas (not promises)
+
+- `data/foods/foods-cofid.json` (not offered on the page yet) is out of date: its CoFID matches for egg, kale, onions, white mushrooms, courgette and leeks are raw records, made before those common foods switched to cooked USDA records on 18 Nov 2026, and it still has the old 36 g slice. Rebuilding it now would label raw CoFID values as cooked, so it was left as it is. Re-match those six foods before the CoFID table is offered.
 
 - How well nutrients are absorbed isn't modelled yet, for example iron from plants, phytates reducing zinc, or ALA
   converting to EPA and DHA.

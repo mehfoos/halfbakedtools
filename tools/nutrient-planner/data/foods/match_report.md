@@ -123,6 +123,16 @@ Check that each food matched the record you expect. Edit `foods_catalogue.json` 
 | Prawns (cooked) | – | Crustaceans, shrimp, mixed species, cooked, moist heat (may contain additives to retain moisture) (171971) | 52 |
 | Mussels (cooked) | – | Mollusks, mussel, blue, cooked, moist heat (174217) | 46 |
 
+## Household units
+
+Each weight is read from SR Legacy `food_portion.csv` for the matched record (the catalogue's `usdaPortion`).
+
+| Food | Unit | USDA portion | Weight | SR Legacy record (fdc_id) |
+|---|---|---|---|---|
+| Wholemeal bread | 1 slice | 1 slice | 32 g | Bread, whole-wheat, commercially prepared (172688) |
+| Eggs (hard-boiled) | 1 egg | 1 large | 50 g | Egg, whole, cooked, hard-boiled (173424) |
+| Bananas | 1 banana | 1 medium (7" to 7-7/8" long) | 118 g | Bananas, raw (173944) |
+
 ## Other foods (added automatically, off by default)
 
 Rules are in `auto_foods.py`.

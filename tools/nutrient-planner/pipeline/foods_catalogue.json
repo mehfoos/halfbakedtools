@@ -1,5 +1,5 @@
 {
-  "_comment": "Curated list of common, cheap, UK-available whole foods. Each entry is matched against USDA SR Legacy descriptions: every 'include' term must appear (case-insensitive), no 'exclude' term may appear; among matches, entries containing 'prefer' terms win, then the shortest description. 'unitGrams' is the weight of one unit; 'step' is the smallest amount of that unit the planner will suggest; 'maxGrams' is a realism cap per day. Values are for the food as eaten (e.g. pulses cooked). Review data/foods/match_report.md after each pipeline run. Optionally add a 'foundation' object with its own include/exclude/prefer terms to use USDA Foundation Foods data (newer analyses) for that food; SR Legacy fills any nutrient Foundation lacks. data/foods/foundation_candidates.md lists likely Foundation records. 'noteRef' names the reference (in references.json) that a food's note rests on. 'capGroup' puts foods under one shared daily cap (oily fish: one 140 g portion a day in total).",
+  "_comment": "Curated list of common, cheap, UK-available whole foods. Each entry is matched against USDA SR Legacy descriptions: every 'include' term must appear (case-insensitive), no 'exclude' term may appear; among matches, entries containing 'prefer' terms win, then the shortest description. 'unitGrams' is the weight of one unit (1 for grams); a household unit (egg, slice) instead names its USDA portion in 'usdaPortion' (the 'modifier' column of SR Legacy food_portion.csv), and its weight is read from there, never typed in; 'step' is the smallest amount of that unit the planner will suggest; 'maxGrams' is a realism cap per day. Values are for the food as eaten (e.g. pulses cooked). Review data/foods/match_report.md after each pipeline run. Optionally add a 'foundation' object with its own include/exclude/prefer terms to use USDA Foundation Foods data (newer analyses) for that food; SR Legacy fills any nutrient Foundation lacks. data/foods/foundation_candidates.md lists likely Foundation records. 'noteRef' names the reference (in references.json) that a food's note rests on. 'capGroup' puts foods under one shared daily cap (oily fish: one 140 g portion a day in total).",
   "foods": [
     {
       "id": "lentils",
@@ -244,7 +244,7 @@
         "toasted"
       ],
       "unit": "slice",
-      "unitGrams": 36,
+      "usdaPortion": "slice",
       "step": 1,
       "maxGrams": 288,
       "notes": "US bread data; UK wholemeal bread is not fortified, US values for some vitamins may differ."
@@ -337,7 +337,7 @@
       ],
       "exclude": [],
       "unit": "egg",
-      "unitGrams": 50,
+      "usdaPortion": "large",
       "step": 0.5,
       "maxGrams": 200
     },
@@ -635,7 +635,7 @@
       ],
       "exclude": [],
       "unit": "banana",
-      "unitGrams": 118,
+      "usdaPortion": "medium (7\" to 7-7/8\" long)",
       "step": 0.5,
       "maxGrams": 354
     },

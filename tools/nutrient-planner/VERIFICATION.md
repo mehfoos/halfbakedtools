@@ -16,6 +16,18 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
 | Food-label reference intakes | Checked | Regulation (EU) No 1169/2011, Annex XIII Part B | 10 Nov 2026 |
 | Amino acids (all standards) | Checked | WHO/FAO/UNU (2007) Technical Report Series 935, Table 23 and section 8.4 (page 150) | 10 Nov 2026 |
 
+## Household unit weights (checked 18 Nov 2026)
+
+Checked against the archived USDA SR Legacy download (`FoodData_Central_sr_legacy_food_csv_2018-04.zip`, release
+`usda-data-2026-11-08`), file `food_portion.csv`, for each food's matched record. The build now reads these weights
+from that file (`usdaPortion` in `pipeline/foods_catalogue.json`), and `data/foods/match_report.md` lists them.
+
+| Food | USDA record (fdc_id) | USDA portion | Weight | Result |
+|---|---|---|---|---|
+| Wholemeal bread | 172688 | 1 slice | 32 g | **Corrected**: was 36 g, with no recorded source |
+| Eggs (hard-boiled) | 173424 | 1 large | 50 g | Matched |
+| Bananas | 173944 | 1 medium (7" to 7-7/8" long) | 118 g | Matched |
+
 ## Changes made on 17 Nov 2026 (accuracy review; plan in `REVIEW-2026-11.md`)
 
 - **Carbohydrate now excludes fibre.** USDA's "Carbohydrate, by difference" includes fibre; the UK, US and EU targets
