@@ -102,7 +102,7 @@ def raw_unusual(cat: str, name: str) -> bool:
 
 def entry(table: str, fid: str, code: str, name: str, cat: str, vals: dict, labels: dict, *, basic: bool,
           src_name: str | None = None, extra: dict | None = None, diet: str | None = None,
-          group: str | None = None) -> dict:
+          group: str | None = None, rule_name: str | None = None) -> dict:
     """One food. Basic foods get the shared diet, amount and cap rules; other foods are Food Finder only.
     The list group is the name up to its first comma; a table whose names have no commas can pass its own."""
     g, variant = auto_foods.group_and_variant(name)
@@ -114,7 +114,7 @@ def entry(table: str, fid: str, code: str, name: str, cat: str, vals: dict, labe
         step, max_g = auto_foods.amounts_for(cat, name)
         f |= {"diet": diet or auto_foods.diet_for(cat, name), "unit": "g", "unitGrams": 1, "step": step, "maxGrams": max_g,
               "notes": None, "noteRef": None, "capGroup": auto_foods.cap_group(cat, name), "common": False,
-              "wider": None if raw_unusual(cat, name) else True}
+              "wider": None if raw_unusual(cat, rule_name or name) else True}
     else:
         f |= {"diet": "meat" if cat in auto_foods.MEAT_CATS else "unknown", "unit": "g", "unitGrams": 1, "step": 10,
               "maxGrams": 1000, "notes": None, "noteRef": None, "capGroup": None, "common": False, "basic": False}
@@ -128,7 +128,7 @@ BASIC_EXCLUDE = re.compile(
     r"\b(fried|deep[- ]fried|breaded|coated|batter|battered|in sauce|with sauce|sandwich|pizza|burger|filled|stuffed|"
     r"pastry|takeaway|infant|baby|toddler|child|children|dish|meal|ready[- ]meal|salted|crisps|chips|sweetened|"
     r"candied|in syrup|liver|kidney|offal|tongue|heart|brain|tripe|pate|pâté|sausage|salami|nugget|soup|sugar|"
-    r"syrup|chocolate|cocoa)\b(?! snap| pea)", re.I)
+    r"syrup|chocolate|cocoa|cake|cakes|biscuit|biscuits|cookie|cookies|snack|snacks|candy|confectionery|jam|jelly|dessert|pudding|mousse|custard|flan|liegeois|li\u00e9geois|ice cream|whipped)\b(?! snap| pea)", re.I)
 RAW_MEAT = re.compile(r"\braw\b", re.I)
 MEAT_WORDS = re.compile(r"\b(" + "|".join(re.escape(w) for w in auto_foods.MEAT_WORDS) + r")", re.I)
 

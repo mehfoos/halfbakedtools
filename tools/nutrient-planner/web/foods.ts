@@ -48,6 +48,7 @@ export function unpack(raw: RawFoods, more?: RawFoods): FoodsData {
 export type TableInfo = {
   id: string; tag: string; title: string; country: string; basic: string; more: string;
   refs: string[]; licence: string; standards: string[]; foods: number; basicFoods: number; generated?: string;
+  translated?: boolean;   // food names translated by this site (shown with a Translated caveat)
 };
 
 /** Food Finder's list of every food in every table, before any table's values are loaded (data/foods/index.json). */

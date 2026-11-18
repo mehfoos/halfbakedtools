@@ -46,6 +46,72 @@
    "standards": [
     "eu"
    ]
+  },
+  {
+   "id": "ciqual",
+   "tag": "Ciqual",
+   "title": "France Ciqual 2025 (ANSES)",
+   "country": "France",
+   "basic": "foods-ciqual.json",
+   "more": "foods-ciqual-more.json",
+   "refs": [
+    "ciqual-2025"
+   ],
+   "licence": "Licence Ouverte / Etalab 2.0 (ANSES)",
+   "standards": []
+  },
+  {
+   "id": "frida",
+   "tag": "Frida",
+   "title": "Denmark Frida 5.5 (DTU, 2025)",
+   "country": "Denmark",
+   "basic": "foods-frida.json",
+   "more": "foods-frida-more.json",
+   "refs": [
+    "frida-55"
+   ],
+   "licence": "CC BY 4.0 (DTU National Food Institute)",
+   "standards": []
+  },
+  {
+   "id": "fineli",
+   "tag": "Fineli",
+   "title": "Finland Fineli, release 20 (THL)",
+   "country": "Finland",
+   "basic": "foods-fineli.json",
+   "more": "foods-fineli-more.json",
+   "refs": [
+    "fineli-20"
+   ],
+   "licence": "CC BY 4.0 (THL)",
+   "standards": []
+  },
+  {
+   "id": "kfcdb",
+   "tag": "KFCDb",
+   "title": "Korea KFCDb 9.3 (RDA)",
+   "country": "South Korea",
+   "basic": "foods-kfcdb.json",
+   "more": "foods-kfcdb-more.json",
+   "refs": [
+    "kfcdb-93"
+   ],
+   "licence": "KOGL Type 1 (Rural Development Administration)",
+   "standards": []
+  },
+  {
+   "id": "japan",
+   "tag": "MEXT",
+   "title": "Japan Standard Tables of Food Composition, 8th ed., 2023 supplement (MEXT)",
+   "country": "Japan",
+   "basic": "foods-japan.json",
+   "more": "foods-japan-more.json",
+   "refs": [
+    "mext-2023"
+   ],
+   "licence": "MEXT terms: free use with the source stated",
+   "standards": [],
+   "translated": true
   }
  ]
 }

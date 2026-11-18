@@ -8,6 +8,19 @@ own table only: nothing is mixed in from other tables, and a nutrient the table 
 |---|---|---|
 | `../build_foods.py` | USDA SR Legacy | `data/foods/foods.json`, `foods-usda-more.json` |
 | `cofid.py` | UK CoFID 2021 (McCance and Widdowson's integrated dataset) | `data/foods/foods-cofid.json`, `foods-cofid-more.json`, `cofid_report.md` |
+| `bls.py` | Germany BLS 4.0 (Max Rubner-Institut, 2025) | `foods-bls(-more).json`, `bls_report.md` |
+| `ciqual.py` | France Ciqual 2025 (ANSES) | `foods-ciqual(-more).json`, `ciqual_report.md` |
+| `frida.py` | Denmark Frida 5.5 (DTU, 2025) | `foods-frida(-more).json`, `frida_report.md` |
+| `fineli.py` | Finland Fineli release 20 (THL) | `foods-fineli(-more).json`, `fineli_report.md` |
+| `kfcdb.py` | Korea KFCDb 9.3, English (RDA) | `foods-kfcdb(-more).json`, `kfcdb_report.md` |
+| `japan.py` | Japan, 8th edition, 2023 supplement (MEXT), with `japan_glossary.json` | `foods-japan(-more).json`, `japan_report.md` |
+
+`common.py` holds the parts every converter shares (derived values, the basic-food rule, the raw-food default, the
+two output files and the report); `fetch.py` downloads an archived file from the `source-archive` release and checks
+its checksum against `sources/archive.json` (or, for a zip built from parts, `sources/release-manifest.json`).
+Each value keeps what its table says about it in `q`: a code such as trace, a value below a limit, or the table's
+own word for an estimate, recipe calculation or borrowed value (each file's `labels` is the legend).
+Tables with no curated common list start the Planner from their basic foods minus raw foods not normally eaten raw.
 
 ## Every table on an equal footing (owner, 18 Nov 2026)
 
@@ -52,4 +65,6 @@ manifest kept with the repository's sources.
 
 ```
 python3 -I tools/nutrient-planner/pipeline/tables/cofid.py --table McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021..xlsx
+for t in bls ciqual frida fineli kfcdb japan; do python3 -I tools/nutrient-planner/pipeline/tables/$t.py; done
+python3 -I tools/nutrient-planner/pipeline/tables/build_index.py
 ```

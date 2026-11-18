@@ -344,6 +344,110 @@
           "label": "Archived copy (documentation)"
         }
       ]
+    },
+    {
+      "id": "ciqual-2025",
+      "pre": "ANSES,",
+      "title": "Ciqual French food composition table 2025",
+      "style": "italic",
+      "post": "Maisons-Alfort, France, 2025. doi: 10.57745/RDMHWY.",
+      "url": "https://doi.org/10.57745/RDMHWY",
+      "licence": "Licence Ouverte / Etalab 2.0",
+      "usedFor": "French food composition (the Ciqual food table)",
+      "archive": [
+        {
+          "asset": "ciqual2025_XML_2025_11_03.zip",
+          "label": "Archived copy (dataset, XML)"
+        },
+        {
+          "asset": "ciqual2025_Table_Ciqual_2025_doc_FR_2025_11_19.pdf",
+          "label": "Archived copy (documentation, French)"
+        }
+      ]
+    },
+    {
+      "id": "frida-55",
+      "pre": "DTU National Food Institute,",
+      "title": "Frida, the Danish Food Composition Database, version 5.5",
+      "style": "italic",
+      "post": "Kongens Lyngby, Denmark, Nov. 2025. doi: 10.11583/DTU.29500682.",
+      "url": "https://doi.org/10.11583/DTU.29500682",
+      "licence": "Dataset CC BY 4.0 (DTU National Food Institute)",
+      "usedFor": "Danish food composition (the Frida food table)",
+      "archive": [
+        {
+          "asset": "frida55_Frida_5.5_Dataset.xlsx",
+          "label": "Archived copy (dataset)"
+        },
+        {
+          "asset": "frida55_Frida5.5_Documentation_English.pdf",
+          "label": "Archived copy (documentation)"
+        }
+      ]
+    },
+    {
+      "id": "fineli-20",
+      "pre": "Finnish Institute for Health and Welfare (THL),",
+      "title": "Fineli, Finnish food composition database, release 20",
+      "style": "italic",
+      "post": "Helsinki, Finland, 2019.",
+      "url": "https://fineli.fi/fineli/en/avoin-data",
+      "licence": "CC BY 4.0 (THL)",
+      "usedFor": "Finnish food composition (the Fineli food table)",
+      "archive": [
+        {
+          "asset": "fineli20_Fineli_Rel20__74_ravintotekijaa.zip",
+          "label": "Archived copy (dataset, 74 components)"
+        },
+        {
+          "asset": "fineli20_Fineli_nutrient_factors.pdf",
+          "label": "Archived copy (nutrient factors)"
+        }
+      ]
+    },
+    {
+      "id": "kfcdb-93",
+      "pre": "Rural Development Administration (RDA),",
+      "title": "Korean Food Composition Database 9.3 (English edition)",
+      "style": "italic",
+      "post": "Jeonju, Korea.",
+      "url": "https://www.nics.go.kr/food/main",
+      "licence": "Korea Open Government Licence (KOGL) Type 1; attribution required",
+      "usedFor": "Korean food composition (the KFCDb food table)",
+      "archive": [
+        {
+          "asset": "kfcdb93_StandardFoodCompositionTableEng.xlsx",
+          "label": "Archived copy (dataset, English)"
+        }
+      ]
+    },
+    {
+      "id": "mext-2023",
+      "pre": "Ministry of Education, Culture, Sports, Science and Technology (MEXT), Japan,",
+      "title": "Standard Tables of Food Composition in Japan, 8th revised edition, 2023 supplement",
+      "style": "italic",
+      "post": "Tokyo, Japan, 2023 (data files dated 27 Mar. 2026).",
+      "url": "https://www.mext.go.jp/a_menu/syokuhinseibun/mext_00001.html",
+      "licence": "MEXT website terms: free use including commercial, with the source stated",
+      "usedFor": "Japanese food composition (the Japan food table); English food-source names",
+      "archive": [
+        {
+          "asset": "japan_20260327-mxt_kagsei-mext-000029402_02.xlsx",
+          "label": "Archived copy (main table)"
+        },
+        {
+          "asset": "japan_20260327-mxt_kagsei-mext-000029402_04.xlsx",
+          "label": "Archived copy (amino acids)"
+        },
+        {
+          "asset": "japan_20260327-mxt_kagsei-mext-000029402_09.xlsx",
+          "label": "Archived copy (fatty acids)"
+        },
+        {
+          "asset": "japan_1374049_0r10.xlsx",
+          "label": "Archived copy (English names of food sources)"
+        }
+      ]
     }
   ]
 }

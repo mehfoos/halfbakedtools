@@ -16,8 +16,11 @@ export function dataCaveat(app: App) {
   // A table other than USDA: say where its definitions differ, because the targets may define a nutrient another way.
   const defs = app.data.definitions ?? {};
   const keys = app.s.source === "blend" || app.data.table === "usda" ? [] : Object.keys(defs).filter((k) => app.nutrientMeta.has(k));
-  if (!keys.length) return est;
-  return est + caveat("assumption", `${esc(t?.tag ?? "This table")}'s values are shown as the table publishes them, and compared with the targets without conversion. Where the table defines a nutrient differently from the target's definition, the comparison is approximate. The table's definitions: ${keys.map((k) => `${esc(app.nutrientMeta.get(k)!.label)}: ${esc(defs[k])}`).join("; ")}.`);
+  const tr = t?.translated && app.s.source !== "blend"
+    ? caveat("translated", `The English food names in ${esc(t.tag)} were translated by this site from the Japanese names (MEXT's English name of the food source, then a glossary for the other terms); any term not yet in the glossary is left in Japanese.`)
+    : "";
+  if (!keys.length) return est + tr;
+  return est + tr + caveat("assumption", `${esc(t?.tag ?? "This table")}'s values are shown as the table publishes them, and compared with the targets without conversion. Where the table defines a nutrient differently from the target's definition, the comparison is approximate. The table's definitions: ${keys.map((k) => `${esc(app.nutrientMeta.get(k)!.label)}: ${esc(defs[k])}`).join("; ")}.`);
 }
 
 /** Notices about nutrients that food data or food alone handles poorly: vitamin D, B12, EPA/DHA, iodine. */

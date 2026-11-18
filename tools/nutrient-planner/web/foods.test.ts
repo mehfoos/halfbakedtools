@@ -95,3 +95,34 @@ test("a food of unknown diet is shown only when no diet is chosen", () => {
   assert.equal(dietOk({ diet: "unknown" }, "vegetarian"), false);
   assert.equal(dietOk({ diet: "unknown" }, "vegan"), false);
 });
+
+// One value per table, checked by hand against the archived source file, so a mapping or unit mistake shows up.
+test("each table's values are its own, in the planner's units (spot checks against the source files)", () => {
+  const read = (f: string) => JSON.parse(readFileSync(new URL(f, dir), "utf8"));
+  const value = (table: string, code: string, key: string) => {
+    const t = read("tables.json").tables.find((x: any) => x.id === table);
+    const all = [...read(t.basic).foods, ...read(t.more).foods];
+    const f = all.find((x: any) => x.src?.code === code);
+    assert.ok(f, `${table} ${code} is listed`);
+    return f.v[read(t.basic).keys.indexOf(key)];
+  };
+  assert.equal(value("bls", "C131000", "energy"), 343);          // BLS: oat whole grain, raw, ENERCC 343 kcal
+  assert.equal(value("bls", "C131000", "protein"), 11.38);       // PROT625 11.375 g (stored to 4 significant figures)
+  assert.equal(value("ciqual", "19024", "iodine"), 12.4);        // Ciqual: whole pasteurised milk, iodine 12.4 µg
+  assert.equal(value("frida", "1", "folate"), 117);              // Frida: strawberry, raw, folate 117 µg (16 analyses)
+  assert.equal(value("kfcdb", "A001001A010a", "energy"), 373);   // KFCDb: oat, polished, raw, 373 kcal
+  assert.equal(value("japan", "01004", "lysine"), 0.62);         // MEXT: oatmeal, lysine 620 mg -> 0.62 g
+  assert.equal(value("japan", "01004", "energy"), 350);          // MEXT: oatmeal, 350 kcal
+});
+
+test("codes are labels, never numbers: trace and below-limit values are missing", () => {
+  const read = (f: string) => JSON.parse(readFileSync(new URL(f, dir), "utf8"));
+  for (const t of read("tables.json").tables) {
+    for (const file of [t.basic, t.more]) {
+      const d = read(file);
+      for (const f of d.foods) for (const [k, q] of Object.entries(f.q ?? {})) {
+        if (q === "trace" || q === "lod" || String(q).startsWith("<")) assert.equal(f.v[d.keys.indexOf(k)], null, `${t.id} ${f.name} ${k}`);
+      }
+    }
+  }
+});
