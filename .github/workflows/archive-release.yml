@@ -1,0 +1,31 @@
+# Keeps the reference files listed in sources/archive.json in the "source-archive" release, so large files stay
+# out of the repository's history. Run by hand from the Actions tab (Archive sources to release -> Run workflow):
+# it downloads what it can from the official sites, checks every file against the checksum recorded when it was
+# first checked, uploads matching files, and lists anything that must be attached by hand. See sources/README.md.
+name: Archive sources to release
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make sure the release exists
+        run: |
+          gh release view source-archive >/dev/null 2>&1 || gh release create source-archive \
+            --title "Source archive" \
+            --notes "Archived copies of reference files (datasets and documents) cited by Half-Baked Tools, kept here instead of in the repository. What each file is, its publisher, licence, origin and SHA-256 checksum are listed in sources/archive.json and sources/release-manifest.json. Each file keeps its publisher's licence."
+      - name: Fetch, check and upload
+        run: python3 -I scripts/archive_release.py
+      - name: Commit the checksum list
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sources/release-manifest.json
+          git diff --cached --quiet && echo "Nothing new" && exit 0
+          git commit -m "Source archive: update release checksums"
+          git push

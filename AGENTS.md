@@ -21,10 +21,14 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
    change the result. Read principle 2 in `docs/PRINCIPLES.md` before touching any calculation that uses data.
 3. **Cite and archive.**
    - Every fact on the site cites a source with `cite("id")`; the id is listed in the tool's `references.json`.
-   - Every reference has an archived copy in `sources/`.
+   - Every reference has an archived copy: in the **`source-archive` release** for anything new (list it in
+     `sources/archive.json` with its official download address or "manual", and the SHA-256 of the copy you
+     checked; the owner runs the *Archive sources to release* workflow), or in `sources/` for older files. Don't
+     commit new PDFs or datasets to the repository: they stay in its history for good. See `sources/README.md`.
    - If you can't download a document (a blocked site or a paywall), **say so and ask the owner to download and upload
      it**. Don't work around the block, and don't fall back to a guess.
-   - Commit any document the owner uploads to `sources/` and cite it.
+   - A document the owner uploads: record it in `sources/archive.json` (with its checksum) and give it to the owner
+     to attach to the release; then cite it.
 4. **Privacy.** No cookies, analytics, third-party scripts, fonts or embeds; no sending visitor input anywhere;
    local storage only when the visitor opts in.
 5. **Don't mislead with charts.** Use linear scales, no silent clipping, distinct targets, and never colour alone.
@@ -49,4 +53,5 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
 - `docs/ADDING_A_TOOL.md`: how to add a tool
 - `docs/SETUP.md`: hosting and repository setup
 - `tools/<slug>/README.md`, `DECISIONS.md`, `VERIFICATION.md`: per-tool details
-- `sources/`: archived source documents and `manifest.json`
+- `sources/`: `archive.json` (registry of files in the `source-archive` release), `release-manifest.json`
+  (their verified checksums), older archived documents and `manifest.json`

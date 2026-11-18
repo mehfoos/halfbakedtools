@@ -1,5 +1,8 @@
 # National food composition tables
 
+**Being moved:** these files are now listed in [`../archive.json`](../archive.json) and will be kept in the
+`source-archive` release instead; this folder will be removed (with its history) in the planned clean-up.
+
 Archived copies of the food composition tables used, or being prepared, for the nutrient planner's choice of food
 data (UK, France, Germany, Japan, Korea, Finland, Denmark). [`manifest.json`](manifest.json) gives, for every
 file, the table, publisher, licence, how and when it was obtained, its origin and its SHA-256 checksum.
