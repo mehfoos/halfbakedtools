@@ -1,5 +1,7 @@
 # Crosswalk: linking planner foods to other food composition tables
 
+> The two-table crosswalk below is being generalised to all tables in [`../blend/`](../blend/README.md) (step 1: describing foods by facets).
+
 The planner's food data comes from USDA SR Legacy, which has **no iodine** and some other gaps. Other national
 tables (UK CoFID, French Ciqual, Australian AFCD, Canadian CNF) have some of these values. This folder holds the
 method for linking a planner food to the right record in another table, and the reviewed links themselves.

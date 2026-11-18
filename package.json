@@ -7,7 +7,8 @@
     "dev": "npm run sync-data && astro dev",
     "build": "npm run sync-data && astro build",
     "preview": "astro preview",
-    "test": "node --test --experimental-strip-types \"tools/*/web/*.test.ts\" \"site/src/**/*.test.ts\""
+    "test": "node --test --experimental-strip-types \"tools/*/web/*.test.ts\" \"site/src/**/*.test.ts\" && npm run test:pipeline",
+    "test:pipeline": "python3 -I -m unittest discover -s tools/nutrient-planner/pipeline/blend"
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.11.1",

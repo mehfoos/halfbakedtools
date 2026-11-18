@@ -78,6 +78,8 @@ test("no reference files are committed to the repository", () => {
     return statSync(p).isDirectory() ? files(p) : [p];
   });
   const kind = /\.(pdf|xlsx?|xlsm|ods|docx?|odt|zip|7z|gz|tar|xml|csv|tsv|mht(ml)?|html?|epub)$/i;
+  // Our own hand-reviewable tables (food descriptions and matching decisions) are CSV by design.
+  const ours = /[\\/]tools[\\/][^\\/]+[\\/]pipeline[\\/]blend[\\/].*\.csv$/;
   for (const f of files(ROOT))
-    assert.ok(!kind.test(f), `${f.slice(ROOT.length)}: reference files go in the source-archive release, not the repository`);
+    assert.ok(!kind.test(f) || ours.test(f), `${f.slice(ROOT.length)}: reference files go in the source-archive release, not the repository`);
 });

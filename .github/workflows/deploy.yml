@@ -28,6 +28,9 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: package-lock.json
+      - uses: actions/setup-python@v5  # the food-data pipeline tests (npm test) are Python
+        with:
+          python-version: "3.12"
       - name: Install
         run: npm ci
       - name: Test
