@@ -4,6 +4,8 @@ import { isOn, matches, setOn, type Base, type PlannerFood } from "../foods.ts";
 import type { Settings } from "../state.ts";
 import type { App } from "./app.ts";
 import { $, $$, esc, int } from "./dom.ts";
+import { caveat } from "../../../../site/src/lib/caveats.ts";
+import { blendFoodHtml } from "./notices.ts";
 
 type Node = { id: string; name: string; foods: PlannerFood[] };
 
@@ -48,7 +50,7 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
   const foodsOf = new Map<string, PlannerFood[]>();   // category or group id -> its foods
 
   const foodBox = (f: PlannerFood, label: string, path = "") =>
-    `<label class="item"><input type="checkbox" data-food="${f.id}" /> <span>${esc(label)}${f.common ? ' <span class="tag">common</span>' : ""}${f.fortified ? ' <span class="tag">US-fortified</span>' : ""}${f.blend ? ' <span class="tag">blended</span>' : ""}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`;
+    `<label class="item"><input type="checkbox" data-food="${f.id}" /> <span>${esc(label)}${f.common ? ' <span class="tag">common</span>' : ""}${f.fortified ? ' <span class="tag">US-fortified</span>' : ""}${f.blend ? ` <span class="tag">blended</span> <button type="button" class="link" data-sources="${esc(f.id)}" aria-expanded="false">sources</button>` : ""}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`;
   const groupBox = (attr: string, id: string) => `<input type="checkbox" ${attr}="${esc(id)}" />`;
 
   function renderTree() {
@@ -104,6 +106,24 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
     const d = e.target as HTMLDetailsElement;
     if (d.open && d.dataset.catBox) fillCategory(d);
   }, true);
+  // "sources" on a blended food opens its sources, values and caveats under it; pressing again closes it.
+  tree.addEventListener("click", (e) => {
+    const t = e.target as HTMLElement;
+    const id = t instanceof HTMLButtonElement ? t.dataset.sources : undefined;
+    if (!id) return;
+    e.preventDefault();
+    const holder = t.closest("li") ?? t.closest("label")!;
+    const next = holder.nextElementSibling?.classList.contains("food-sources") ? holder.nextElementSibling : null;
+    const existing = (holder.querySelector(":scope > .food-sources") ?? next) as HTMLElement | null;
+    if (existing) { existing.remove(); t.setAttribute("aria-expanded", "false"); return; }
+    const f = app.foodById.get(id);
+    if (!f?.blend) return;
+    const box = document.createElement("div");
+    box.className = "food-sources blend-notes sans";
+    box.innerHTML = caveat("beta", "Blended values: the median of the USDA and UK CoFID tables for the standard you chose, matched and combined by automated steps without manual human verification.") + blendFoodHtml(app, f, true);
+    if (holder.tagName === "LI") holder.append(box); else holder.after(box);
+    t.setAttribute("aria-expanded", "true");
+  });
   tree.addEventListener("click", (e) => {
     // A tick box inside a heading shouldn't open or close that section.
     const t = e.target as HTMLElement;

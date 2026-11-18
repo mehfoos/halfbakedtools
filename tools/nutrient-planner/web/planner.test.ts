@@ -95,6 +95,14 @@ test("diet filter: no restriction, vegetarian, vegan", async () => {
   assert.equal(decode("d=veg").diet, "vegetarian");
 });
 
+test("the default food preset is the wider selection, and links made before that still mean 'common'", () => {
+  assert.equal(fresh().base, "wider");
+  assert.equal(decode(encode(fresh())).base, "wider");
+  assert.equal(decode("sex=f&age=35").base, "common");            // an older link: it had no f, and the default then was common
+  assert.equal(decode("sex=f&age=35&f=all").base, "all");
+  assert.equal(decode(encode({ ...fresh(), base: "common" })).base, "common");
+});
+
 test("EU targets: per-MJ, per-kg and energy-percentage values convert correctly", async () => {
 
   const eu = load("eu");

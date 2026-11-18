@@ -22,6 +22,7 @@ export type Row = {
   missing?: number;         // foods in this day with no data for the nutrient (so `value` is "at least")
   of?: number;              // foods in this day
   min?: number; max?: number; custom?: boolean;
+  low?: number; high?: number;   // the day's total if every blended food were at the lowest / highest published value
   ofEnergy?: boolean;       // the target is a share of the day's energy
   aside?: boolean;          // reported on its own line, not counted among the targets met or missed
   pctOfMin?: number;        // share of the minimum reached
@@ -52,6 +53,29 @@ export function totals(items: { food: Food; grams: number }[], keys: string[]) {
   const t: Record<string, number> = {};
   for (const k of keys) t[k] = items.reduce((s, it) => s + ((it.food.per100g[k] ?? 0) * it.grams) / 100, 0);
   return t;
+}
+
+/**
+ * The day's total for each nutrient if every food with a published range were at its lowest, or its highest, value.
+ * These are bounds, not a likely error: all foods being at an extreme together is unlikely. Only nutrients where
+ * the two differ are returned.
+ */
+export function dayBounds(
+  items: { food: Food; grams: number }[], keys: string[],
+  rangeOf: (food: Food, key: string) => [number, number] | null,
+): Record<string, { low: number; high: number }> {
+  const out: Record<string, { low: number; high: number }> = {};
+  for (const k of keys) {
+    let low = 0, high = 0;
+    for (const it of items) {
+      const v = it.food.per100g[k];
+      if (v === undefined) continue;            // no value: adds nothing, as in totals()
+      const [a, b] = rangeOf(it.food, k) ?? [v, v];
+      low += (a * it.grams) / 100; high += (b * it.grams) / 100;
+    }
+    if (high - low > 1e-9) out[k] = { low, high };
+  }
+  return out;
 }
 
 export type Gaps = Record<string, { missing: number; of: number }>;

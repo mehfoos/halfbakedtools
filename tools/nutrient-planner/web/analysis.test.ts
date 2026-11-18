@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyse, gapsOf, gapWords, tally, totals } from "./analysis.ts";
+import { analyse, dayBounds, gapsOf, gapWords, tally, totals } from "./analysis.ts";
 import { detailAxes, noDataLabels } from "./chart-axes.ts";
 import type { Food, ResolvedTarget } from "./solver.ts";
 
@@ -98,4 +98,15 @@ test("counts say how many minimums are met, how many can't be confirmed and how 
   assert.equal(gapWords(t), "1 unclear · 1 NA");
   assert.equal(rep.minUnclear, 1);
   assert.equal(rep.minNa, 1);
+});
+
+test("day bounds: foods with a published range widen the day's total, others stay fixed, and missing adds nothing", () => {
+  const blended = { food: food("blended", { iron: 2, energy: 100 }), grams: 200 };
+  const single = { food: food("single", { iron: 1, energy: 50 }), grams: 100 };
+  const gap = { food: food("gap", { energy: 10 }), grams: 100 };             // no iron value: adds nothing
+  const range = (f: Food, k: string): [number, number] | null => (f.id === "blended" && k === "iron" ? [1, 3] : null);
+  const b = dayBounds([blended, single, gap], ["iron", "energy"], range);
+  assert.deepEqual(b.iron, { low: 1 * 2 + 1, high: 3 * 2 + 1 });              // (1 g x 2) + 1 and (3 x 2) + 1 per 100 g amounts
+  assert.equal(b.energy, undefined);                                           // no range for energy: nothing to show
+  assert.deepEqual(dayBounds([single], ["iron"], range), {});
 });

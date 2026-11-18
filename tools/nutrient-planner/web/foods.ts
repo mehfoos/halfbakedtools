@@ -70,6 +70,13 @@ export function applySource(data: FoodsData, blend: BlendData | null, source: So
   }
 }
 
+/** The lowest and highest value the tables publish for one nutrient of a blended food, or null if there is no range. */
+export function foodRange(f: { blend?: BlendFood | null }, key: string, keys: string[], standard: string): [number, number] | null {
+  const i = keys.indexOf(key);
+  const r = f.blend && i >= 0 ? f.blend.r[["uk", "us", "eu"].includes(standard) ? standard : "uk"][i] : null;
+  return r && r[0] !== r[1] ? [r[0], r[1]] : null;
+}
+
 /** Every nutrient of a blended food under a standard. */
 export function blendValues(blend: BlendData, b: BlendFood, standard: string): BlendValue[] {
   const std = ["uk", "us", "eu"].includes(standard) ? standard : "uk";

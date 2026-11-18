@@ -181,7 +181,8 @@ const tool = `${base}tools/nutrient-planner/`;
   #planner .tree .count { font-family: var(--sans); font-weight: 400; font-size: 0.82rem; color: var(--muted); }
   #planner .tree details[open] > summary .count { color: #dcdcf5; }
   #planner .tree .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 14px; padding: 6px 10px 8px 26px; font-family: var(--sans); font-size: 0.92rem; }
-  #planner .tree .item { display: flex; gap: 4px; align-items: baseline; }
+  #planner .tree .item { display: flex; gap: 4px; align-items: baseline; flex-wrap: wrap; }
+  #planner .tree .food-sources { grid-column: 1 / -1; margin: 4px 0 8px; }
   #planner .tree details details { margin: 2px 0 2px 16px; }
   #planner .tree details details > summary { font-family: var(--sans); font-size: 0.93rem; padding: 3px 8px 3px 28px; }
   #planner .tree details details > summary::before { top: 3px; }

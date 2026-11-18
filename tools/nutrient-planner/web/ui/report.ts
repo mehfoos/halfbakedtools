@@ -29,10 +29,23 @@ const amount = (r: Row) => {
   return r.missing ? `<abbr title="${r.missing} of ${r.of} foods in this day have no data for this nutrient, so the amount is at least this.">≥ ${text}</abbr>` : text;
 };
 
+/**
+ * For a day with blended foods: the day's lowest and highest possible total, and whether the target still holds at
+ * the ends ("below target at the low end"). Nothing is shown for a nutrient whose foods have no published range.
+ */
+const spread = (r: Row) => {
+  if (r.low === undefined || r.high === undefined) return "";
+  const notes: string[] = [];
+  if (r.min !== undefined && r.value >= r.min && r.low < r.min) notes.push("below the target at the low end");
+  if (r.min !== undefined && r.value < r.min && r.high >= r.min) notes.push("reaches the target at the high end");
+  if (r.max !== undefined && r.value <= r.max && r.high > r.max) notes.push("over the limit at the high end");
+  return `<br /><span class="muted small">range ${fmt(r.low)}–${fmt(r.high)}${notes.length ? ` · ${notes.join("; ")}` : ""}</span>`;
+};
+
 /** Nutrient, amount, target and status, one row each. */
 const table = (rows: Row[]) => `<div class="table-scroll"><table><thead><tr><th>Nutrient</th><th class="num">Amount</th><th class="num">Target</th><th></th></tr></thead><tbody>${
-  rows.map((r) => `<tr><td>${esc(r.label)}${r.custom ? '<span class="badge">custom</span>' : ""}</td><td class="num">${amount(r)}</td><td class="num muted">${targetText(r)}${r.ofEnergy ? " *" : ""}</td><td>${chip(r)}</td></tr>`).join("")
-}</tbody></table></div>${rows.some((r) => r.ofEnergy) ? `<p class="small muted sans">* Set as a share of energy, so worked out for this day's calories.</p>` : ""}${
+  rows.map((r) => `<tr><td>${esc(r.label)}${r.custom ? '<span class="badge">custom</span>' : ""}</td><td class="num">${amount(r)}${spread(r)}</td><td class="num muted">${targetText(r)}${r.ofEnergy ? " *" : ""}</td><td>${chip(r)}</td></tr>`).join("")
+}</tbody></table></div>${rows.some((r) => r.low !== undefined) ? `<p class="small muted sans">Range: the day's total if every blended food were at the lowest, or the highest, value the two tables publish. These are bounds: the foods are unlikely to all sit at an extreme together, so the figure above, which uses each food's median, is the one the status is based on.</p>` : ""}${rows.some((r) => r.ofEnergy) ? `<p class="small muted sans">* Set as a share of energy, so worked out for this day's calories.</p>` : ""}${
   rows.some((r) => r.status === "na" || r.missing) ? `<p class="small muted sans">NA: no food in this day has data for this nutrient. It is not zero. ≥: some foods have no data for this nutrient, so the real amount is at least the figure shown and may be higher (hover for how many foods). Where that could change the answer, the status says "unclear".</p>` : ""}`;
 
 export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[]) {

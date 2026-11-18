@@ -3,8 +3,8 @@
 // each section (see main.ts).
 import { splitAssessable, type ResolvedTarget } from "../solver.ts";
 import type { Standard } from "../profiles.ts";
-import { applySource, dietOk, isOn, type BlendData, type FoodsData, type PlannerFood } from "../foods.ts";
-import { ORDER, analyse, gapsOf, totals, type Report } from "../analysis.ts";
+import { applySource, dietOk, foodRange, isOn, type BlendData, type FoodsData, type PlannerFood } from "../foods.ts";
+import { ORDER, analyse, dayBounds, gapsOf, totals, type Report } from "../analysis.ts";
 import { personFrom, targetsFor, type Person } from "../person.ts";
 import { decode, encode, fresh, loadRemembered, remember, type Settings } from "../state.ts";
 import { referencesFor } from "@site/lib/references.ts";
@@ -68,7 +68,14 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
       const { notAssessed } = splitAssessable(targets, selected.length ? selected : app.dietFoods());
       // Vitamin D is reported on its own line unless the person has asked for it to be planned from food.
       const aside = new Set(app.s.vitaminD ? [] : ["vitaminD"]);
-      return analyse(totals(items, ORDER), targets, new Set(notAssessed.map((t) => t.key)), app.nutrientMeta, aside, gapsOf(items, ORDER));
+      const rep = analyse(totals(items, ORDER), targets, new Set(notAssessed.map((t) => t.key)), app.nutrientMeta, aside, gapsOf(items, ORDER));
+      // With blended foods, the day's total also has a lowest and highest possible value (see dayBounds).
+      if (app.blend && items.some((i) => i.food.blend)) {
+        const std = app.person().standard.id;
+        const bounds = dayBounds(items, ORDER, (f, k) => foodRange(f, k, app.blend!.keys, std));
+        for (const r of rep.rows) if (bounds[r.key]) { r.low = bounds[r.key].low; r.high = bounds[r.key].high; }
+      }
+      return rep;
     },
 
     applySource() {

@@ -33,7 +33,7 @@ export const MAX_OPTIONS = 50;
 
 export const DEFAULTS: Settings = {
   sex: "female", age: 35, weight: null, diet: "none", standard: "uk", life: "none",
-  n: 6, options: 3, energyLow: null, energyHigh: null, base: "common", toggled: [], overrides: {},
+  n: 6, options: 3, energyLow: null, energyHigh: null, base: "wider", toggled: [], overrides: {},
   mode: "suggest", builder: [], compare: true, vitaminD: false, source: "usda",
 };
 
@@ -61,7 +61,7 @@ export function encode(s: Settings): string {
   if (s.options !== DEFAULTS.options) p.set("o", String(s.options));
   if (s.energyLow !== null) p.set("el", String(s.energyLow));
   if (s.energyHigh !== null) p.set("eh", String(s.energyHigh));
-  if (s.base !== "common") p.set("f", s.base);
+  p.set("f", s.base);   // always written: links made before "wider" became the default have no f, and mean "common"
   if (s.toggled.length) p.set("x", s.toggled.join("."));
   if (Object.keys(s.overrides).length) p.set("t", toB64(JSON.stringify(s.overrides)));
   if (s.mode === "build") p.set("mode", "build");
@@ -89,7 +89,8 @@ export function decode(query: string): Settings {
   s.energyLow = clampInt(p.get("el"), 300, 6000);
   s.energyHigh = clampInt(p.get("eh"), 300, 6000);
   const f = p.get("f");
-  if (f === "all" || f === "none" || f === "wider") s.base = f;
+  if (f === "all" || f === "none" || f === "wider" || f === "common") s.base = f;
+  else if (query.replace(/^\?/, "") !== "") s.base = "common";   // an older link without f: the default then was "common"
   if (p.get("x")) s.toggled = p.get("x")!.split(".").filter((id) => ID_RE.test(id));
   if (p.get("t")) {
     try {
