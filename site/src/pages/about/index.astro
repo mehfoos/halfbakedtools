@@ -1,9 +1,11 @@
 ---
 import Base from "../../layouts/Base.astro";
 import { site } from "../../site.config.ts";
-import { TOOLS, pageHref } from "../../lib/tools.ts";
+import { TOOLS, orderedTopics, pageHref } from "../../lib/tools.ts";
 const base = import.meta.env.BASE_URL;
-const methods = TOOLS.filter((t) => t.pages.some((p) => p.page === "methods"));
+const topics = orderedTopics();
+const methods = TOOLS.filter((t) => t.pages.some((p) => p.page === "methods"))
+  .sort((a, b) => topics.indexOf(a.topic) - topics.indexOf(b.topic) || a.name.localeCompare(b.name));
 ---
 <Base title="About" current="about">
   <h1>About</h1>
@@ -15,6 +17,7 @@ const methods = TOOLS.filter((t) => t.pages.some((p) => p.page === "methods"));
     <li><strong>Sources, where a tool relies on them.</strong> Tools built on published figures cite them, with a link to the original and to a copy kept in this site's repository. Their methods pages say what has been checked and what hasn't.</li>
     <li><strong>Runs in your browser.</strong> The tools do their work on your device; what you enter or open isn't sent to a server. See <a href={`${base}privacy/`}>Privacy</a>.</li>
     <li><strong>Open source.</strong> The code and data are on <a href={site.repoUrl}>GitHub</a>. Corrections are welcome there.</li>
+    <li><strong>Licences.</strong> Data and documents from other organisations are used under their own licences, which are recorded in the repository with each source. If you are responsible for something used here and would like it removed, please <a href={`${site.repoUrl}/issues`}>open an issue</a> and it will be taken down.</li>
   </ul>
 
   {methods.length > 0 && (

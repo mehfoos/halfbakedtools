@@ -1,7 +1,7 @@
 {
   "slug": "nutrient-planner",
   "name": "Nutrient planner",
-  "summary": "Find a handful of everyday foods that together come close to UK, US or EU daily nutrient recommendations for your age and sex, or build your own day and see how it measures up, with charts for vitamins, minerals and amino acids.",
+  "summary": "Find a handful of everyday foods that together come close to UK, US or EU daily nutrient recommendations for your age and sex, or build your own day and see how it measures up, with charts for vitamins, minerals and amino acids. Food values come from USDA data for now; tables from several national food agencies are being checked so that you can choose between them.",
   "topic": "Food and health",
   "status": "beta",
   "added": "2026-11-08",

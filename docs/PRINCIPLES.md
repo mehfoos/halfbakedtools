@@ -151,6 +151,7 @@ reason.
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-18 | Home page lists topics in a set order, food and health first (`TOPIC_ORDER` in `site/src/lib/tools.ts`); About says where source licences are recorded and how to ask for removal | Owner's request; the evidence-based tools are the site's main purpose. Licence text stays out of tool pages, as agreed |
 | 2026-11-17 | Rule made explicit: data is never invented, estimated, interpolated or extrapolated; missing stays missing and is shown as NA, never as zero (principle 2; also in `AGENTS.md`) | Owner's requirement; zero-filling missing values could understate intake against a limit and was not disclosed per food |
 | 2026-11-16 | A tool that handles visitors' files sets a browser security policy (CSP) on its page blocking connections to other sites, starts any background workers from blobs so the policy binds them too, and has a test that fails if its code can send data | Makes "nothing leaves the browser" enforced and checkable (first used by the PDF tools) |
 | 2026-11-16 | Library files needed at run time are copied from `node_modules` and served by this site (`vendor` in `tool.json`) | No third-party requests |

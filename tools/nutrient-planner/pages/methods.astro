@@ -13,96 +13,169 @@ const standards = [uk, us, eu];
   <h1>Methods and sources</h1>
   <p class="lede">How the nutrient planner works, where its numbers come from, and what it can't tell you.</p>
 
-  <h2>Food composition data</h2>
-  <p>
-    Nutrient values come from the US Department of Agriculture's FoodData Central (public domain), SR Legacy
-    dataset <Fragment set:html={cite("usda-sr")} />. About 115 cheap, common, UK-available foods are hand-matched to USDA records, given
-    friendly names and practical units, and switched on by default. Around 2,100 more vegetables, fruits, pulses,
-    grains, breads, nuts, seeds, meat, fish, dairy foods, eggs, oils, herbs and spices are added automatically by
-    rules that keep cooked lean cuts of meat and leave out baby foods, branded and heavily processed products;
-    these are off by default and can be switched on in the planner's food list, one by one, all at once, or as a "wider selection" of about 400 ordinary foods (a list chosen by judgement, not taken from a source; it is in the repository). US products with added nutrients (enriched or fortified) are marked "US-fortified" and aren't included when you switch on everything, because the UK versions may differ. Choosing vegetarian hides meat and
-    fish; choosing vegan also hides dairy, eggs and honey. The food list, the rules and a match report live in the repository's
-    <code>tools/nutrient-planner/</code> folder so anyone can check them.
-  </p>
-  <p>
-    One value is adjusted. USDA lists "Carbohydrate, by difference": what is left of a
-    food after water, protein, fat, ash and alcohol, which includes fibre <Fragment set:html={cite("usda-sr-doc")} />. Dietary targets and food labels count
-    carbohydrate without fibre, so the planner subtracts each food's fibre from it. A food with no fibre value
-    (mostly meat, fish and oils) keeps USDA's figure.
-  </p>
-  <p class="muted small">
-    Current snapshot: {meta.foodsLastUpdated ? `built ${meta.foodsLastUpdated}, ${meta.foodCount} foods` : "not built yet"}.
-    The snapshot is stored in the repository so the site keeps working even if the USDA servers change, and is refreshed every three months.
-  </p>
+  <h2>In brief</h2>
+  <ul class="prose">
+    <li><strong>Food values</strong> currently come from the US Department of Agriculture's food composition data <Fragment set:html={cite("usda-sr")} />. Tables from other national food agencies are being prepared so that you can choose which to use.</li>
+    <li><strong>Targets</strong> come from the official UK, US or EU recommended intakes for your age and sex.</li>
+    <li><strong>Suggestions</strong> are found by an optimiser running in your browser that gets as close as it can to every target without going over an upper limit.</li>
+    <li><strong>Missing data stays missing</strong>: it is shown as NA (no data), never counted as zero.</li>
+  </ul>
+  <p class="small muted">Open a section below for the details. The limitations are listed at the end.</p>
 
-  <h2>Recommended intakes</h2>
-  {standards.map((s) => (
-    <section>
-      <h3>{s.longName}</h3>
-      <p class="small">
-        {s.verified?.checked
-          ? <><strong>Checked</strong> line by line against the original document ({s.verified.against}) on {s.verified.date}.</>
-          : <><strong>Not yet checked</strong> against the original document. {s.verified?.against}.</>}
-        {s.verified?.pending && <> <strong>Not yet checked:</strong> {s.verified.pending}</>}
+  <details>
+    <summary>Food composition data <span class="summary-note">where the food values come from</span></summary>
+    <div class="details-body">
+      <details>
+        <summary>Which foods are included</summary>
+        <div class="details-body">
+        <p>
+          Nutrient values come from the US Department of Agriculture's FoodData Central (public domain), SR Legacy
+          dataset <Fragment set:html={cite("usda-sr")} />. About 115 cheap, common, UK-available foods are hand-matched to USDA records, given
+          friendly names and practical units, and switched on by default. Around 2,100 more vegetables, fruits, pulses,
+          grains, breads, nuts, seeds, meat, fish, dairy foods, eggs, oils, herbs and spices are added automatically by
+          rules that keep cooked lean cuts of meat and leave out baby foods, branded and heavily processed products;
+          these are off by default and can be switched on in the planner's food list, one by one, all at once, or as a "wider selection" of about 400 ordinary foods (a list chosen by judgement, not taken from a source; it is in the repository). US products with added nutrients (enriched or fortified) are marked "US-fortified" and aren't included when you switch on everything, because the UK versions may differ. Choosing vegetarian hides meat and
+          fish; choosing vegan also hides dairy, eggs and honey. The food list, the rules and a match report live in the repository's
+          <code>tools/nutrient-planner/</code> folder so anyone can check them.
+        </p>
+        </div>
+      </details>
+      <details>
+        <summary>The one adjusted value: carbohydrate</summary>
+        <div class="details-body">
+        <p>
+          One value is adjusted. USDA lists "Carbohydrate, by difference": what is left of a
+          food after water, protein, fat, ash and alcohol, which includes fibre <Fragment set:html={cite("usda-sr-doc")} />. Dietary targets and food labels count
+          carbohydrate without fibre, so the planner subtracts each food's fibre from it. A food with no fibre value
+          (mostly meat, fish and oils) keeps USDA's figure.
+        </p>
+        </div>
+      </details>
+      <details>
+        <summary>Other national food tables <span class="summary-note">in preparation</span></summary>
+        <div class="details-body">
+          <p>
+            Food composition differs from country to country, and no single table covers every nutrient. Tables
+            published by national food and health agencies (for example in the UK, France, Germany, the Nordic
+            countries, Japan and Korea) are being checked so that a later version of the planner can offer them as
+            alternatives. Each will be cited and archived like the USDA data, and each value will say how its source
+            describes it (measured, calculated from a recipe, estimated, or borrowed from a similar food). Until then,
+            only the USDA data is used.
+          </p>
+        </div>
+      </details>
+      <p class="muted small">
+        Current snapshot: {meta.foodsLastUpdated ? `built ${meta.foodsLastUpdated}, ${meta.foodCount} foods` : "not built yet"}.
+        The snapshot is stored in the repository so the site keeps working even if the USDA servers change, and is refreshed every three months.
       </p>
-      <ul class="prose">
-        {s.sources.map((src) => <li>{src.role ? `${src.role}: ` : ""}{src.title} <Fragment set:html={cite(src.id)} /></li>)}
-      </ul>
-      <ul class="prose muted small">{s.notes.map((n) => <li>{n}</li>)}</ul>
-    </section>
-  ))}
-  <p>
-    The charts can also show the other two standards' targets for the same person (same age, sex, weight and
-    calories) as thin coloured outlines, so you can see where the UK, US and EU agree and where they differ.
-    The planner always optimises against the one standard you choose.
-  </p>
+    </div>
+  </details>
 
-  <h2>How the planner chooses foods</h2>
-  <p>
-    The planner solves a mixed-integer programme with the HiGHS solver <Fragment set:html={cite("highs")} />, running in your browser.
-    It chooses at most your chosen number of ingredients and an amount of each, in practical steps
-    (10 g, half an egg, a slice of bread), to minimise the total <em>relative</em> shortfall across all
-    minimum targets, so being 20% short of iron counts the same as being 20% short of protein. Upper limits
-    (salt, saturated fat, tolerable upper intake levels) and your calorie range are never exceeded.
-    Targets that the source sets as a share of energy (fat, saturated fat and carbohydrate as a percentage of energy; EU thiamin and niacin per unit of energy) are measured against each plan's own calories, not a fixed calorie figure.
-    Further options are made to differ: each one shares fewer than half of its foods with any earlier option,
-    and no food is used in more than half of the options (at least two). Where that would leave an option
-    meeting the targets noticeably less well than the first option (by more than 2% of one target), a food may
-    repeat more often, and if that still isn't enough, an option only has to change a third of each earlier
-    option's foods. Such an option says so.
-  </p>
-  <p>
-    Among combinations that meet the targets equally well, the planner prefers the one with less food, so
-    suggestions tend to sit near the bottom of your calorie range. It also has a mild preference for familiar
-    foods: each food from outside the common list counts slightly against a combination, by no more in total
-    than 1% of one target, so common foods are chosen unless another food does a noticeably better job.
-    If a search over a long food list runs out of time, the common foods are searched as well and the better
-    result is shown.
-    Each search is limited to 5 seconds. If that limit is reached, the best combination found so far is shown and
-    marked as such.
-  </p>
-  <p>
-    Two things are deliberately not left to the optimiser. Vitamin D: few foods contain much, so suggestions don't try
-    to reach the vitamin D target unless you tick the box for it; the result still shows how much the day provides and
-    the NHS advice on supplements <Fragment set:html={cite("nhs-vitd")} />. Oily fish: suggestions include at most one
-    portion (140 g) a day in total, and the NHS weekly limits are shown alongside <Fragment set:html={cite("nhs-fish")} />.
-  </p>
-  <h2>Reading the charts</h2>
-  <p>
-    Each radar chart shows every nutrient as a percentage of its target. The thick navy ring is the target
-    (100%). The scale is linear and runs to 150% unless a value is higher, in which case it grows to fit, so
-    400% always looks larger than 300%; "Zoom to target" shows the area around 100% instead and marks anything
-    beyond the edge with an arrow. Green points meet their goal and red ones don't. "≥" means aim for at least
-    the target; "≤" means stay at or below it.
-  </p>
-  <p>
-    The "At a glance" chart follows the nutrition declaration on UK and EU food labels (Regulation 1169/2011) <Fragment set:html={cite("eu-1169")} />:
-    energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt. Each is compared with the official
-    recommendation for the person where one exists; total sugars, which has no recommendation, is compared with
-    the label's adult reference intake (90 g) and shown in grey. Vitamins, minerals and essential amino acids
-    (the building blocks of protein) each have their own chart below it, with a table showing which foods
-    provide each nutrient.
-  </p>
+  <details>
+    <summary>Recommended intakes <span class="summary-note">UK, US and EU targets, and how they were checked</span></summary>
+    <div class="details-body">
+      {standards.map((s) => (
+        <details>
+          <summary>{s.longName}</summary>
+          <div class="details-body">
+            <p class="small">
+              {s.verified?.checked
+                ? <><strong>Checked</strong> line by line against the original document ({s.verified.against}) on {s.verified.date}.</>
+                : <><strong>Not yet checked</strong> against the original document. {s.verified?.against}.</>}
+              {s.verified?.pending && <> <strong>Not yet checked:</strong> {s.verified.pending}</>}
+            </p>
+            <ul class="prose">
+              {s.sources.map((src) => <li>{src.role ? `${src.role}: ` : ""}{src.title} <Fragment set:html={cite(src.id)} /></li>)}
+            </ul>
+            <ul class="prose muted small">{s.notes.map((n) => <li>{n}</li>)}</ul>
+          </div>
+        </details>
+      ))}
+      <p>
+        The charts can also show the other two standards' targets for the same person (same age, sex, weight and
+        calories) as thin coloured outlines, so you can see where the UK, US and EU agree and where they differ.
+        The planner always optimises against the one standard you choose.
+      </p>
+    </div>
+  </details>
+
+  <details>
+    <summary>How the planner chooses foods <span class="summary-note">the optimiser, variety between options, time limits</span></summary>
+    <div class="details-body">
+      <details>
+        <summary>The optimiser</summary>
+        <div class="details-body">
+        <p>
+          The planner solves a mixed-integer programme with the HiGHS solver <Fragment set:html={cite("highs")} />, running in your browser.
+          It chooses at most your chosen number of ingredients and an amount of each, in practical steps
+          (10 g, half an egg, a slice of bread), to minimise the total <em>relative</em> shortfall across all
+          minimum targets, so being 20% short of iron counts the same as being 20% short of protein. Upper limits
+          (salt, saturated fat, tolerable upper intake levels) and your calorie range are never exceeded.
+          Targets that the source sets as a share of energy (fat, saturated fat and carbohydrate as a percentage of energy; EU thiamin and niacin per unit of energy) are measured against each plan's own calories, not a fixed calorie figure.
+        </p>
+        </div>
+      </details>
+      <details>
+        <summary>Variety between options</summary>
+        <div class="details-body">
+        <p>
+          Further options are made to differ: each one shares fewer than half of its foods with any earlier option,
+          and no food is used in more than half of the options (at least two). Where that would leave an option
+          meeting the targets noticeably less well than the first option (by more than 2% of one target), a food may
+          repeat more often, and if that still isn't enough, an option only has to change a third of each earlier
+          option's foods. Such an option says so.
+        </p>
+        </div>
+      </details>
+      <details>
+        <summary>Preferences and time limits</summary>
+        <div class="details-body">
+        <p>
+          Among combinations that meet the targets equally well, the planner prefers the one with less food, so
+          suggestions tend to sit near the bottom of your calorie range. It also has a mild preference for familiar
+          foods: each food from outside the common list counts slightly against a combination, by no more in total
+          than 1% of one target, so common foods are chosen unless another food does a noticeably better job.
+          If a search over a long food list runs out of time, the common foods are searched as well and the better
+          result is shown.
+          Each search is limited to 5 seconds. If that limit is reached, the best combination found so far is shown and
+          marked as such.
+        </p>
+        </div>
+      </details>
+      <details>
+        <summary>Vitamin D and oily fish</summary>
+        <div class="details-body">
+        <p>
+          Two things are deliberately not left to the optimiser. Vitamin D: few foods contain much, so suggestions don't try
+          to reach the vitamin D target unless you tick the box for it; the result still shows how much the day provides and
+          the NHS advice on supplements <Fragment set:html={cite("nhs-vitd")} />. Oily fish: suggestions include at most one
+          portion (140 g) a day in total, and the NHS weekly limits are shown alongside <Fragment set:html={cite("nhs-fish")} />.
+        </p>
+        </div>
+      </details>
+    </div>
+  </details>
+
+  <details>
+    <summary>Reading the charts <span class="summary-note">scales, colours and symbols</span></summary>
+    <div class="details-body">
+      <p>
+        Each radar chart shows every nutrient as a percentage of its target. The thick navy ring is the target
+        (100%). The scale is linear and runs to 150% unless a value is higher, in which case it grows to fit, so
+        400% always looks larger than 300%; "Zoom to target" shows the area around 100% instead and marks anything
+        beyond the edge with an arrow. Green points meet their goal and red ones don't. "≥" means aim for at least
+        the target; "≤" means stay at or below it.
+      </p>
+      <p>
+        The "At a glance" chart follows the nutrition declaration on UK and EU food labels (Regulation 1169/2011) <Fragment set:html={cite("eu-1169")} />:
+        energy, fat, saturates, carbohydrate, sugars, fibre, protein and salt. Each is compared with the official
+        recommendation for the person where one exists; total sugars, which has no recommendation, is compared with
+        the label's adult reference intake (90 g) and shown in grey. Vitamins, minerals and essential amino acids
+        (the building blocks of protein) each have their own chart below it, with a table showing which foods
+        provide each nutrient.
+      </p>
+    </div>
+  </details>
 
   <h2>Limitations</h2>
   <p>The results are estimates. Please treat them as a starting point for thinking about your food, not as a precise measurement.</p>
