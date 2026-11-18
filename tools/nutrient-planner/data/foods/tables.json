@@ -36,6 +36,24 @@
    "foods": 2887,
    "basicFoods": 1072,
    "generated": "2026-11-18"
+  },
+  {
+   "id": "bls",
+   "tag": "BLS",
+   "title": "Germany BLS 4.0 (2025)",
+   "country": "Germany",
+   "basic": "foods-bls.json",
+   "more": "foods-bls-more.json",
+   "refs": [
+    "bls-4"
+   ],
+   "licence": "CC BY 4.0 (Max Rubner-Institut)",
+   "standards": [
+    "eu"
+   ],
+   "foods": 7140,
+   "basicFoods": 2880,
+   "generated": "2026-11-18"
   }
  ]
 }

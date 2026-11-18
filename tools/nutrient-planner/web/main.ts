@@ -57,9 +57,11 @@ export async function start(root: HTMLElement) {
     $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => (r.checked = r.value === app.s.source));
     $(root, "#blendNote").hidden = app.s.source !== "blend";
     const t = app.table()!;
-    const noWider = !app.data.foods.some((f) => f.wider);
+    const noCommon = !app.data.foods.some((f) => f.common);
+    const noWider = !noCommon && !app.data.foods.some((f) => f.wider);
     $(root, "#tableNote").textContent = `${t.title}, ${t.country}: ${t.basicFoods.toLocaleString("en-GB")} foods here (${t.foods.toLocaleString("en-GB")} in Food Finder). Licence: ${t.licence}.`
-      + (noWider ? " This table has no wider selection yet, so that preset shows its common foods." : "");
+      + (noCommon ? " This table has no list of common foods yet, so the common and wider presets start from all its foods except raw foods that aren't normally eaten raw."
+        : noWider ? " This table has no wider selection yet, so that preset shows its common foods." : "");
     app.applySource();
   }
   $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => r.addEventListener("change", async () => {

@@ -320,6 +320,30 @@
           "asset": "sacn2015_SACN_Carbohydrates_and_Health.pdf"
         }
       ]
+    },
+    {
+      "id": "bls-4",
+      "pre": "Max Rubner-Institut,",
+      "title": "Bundeslebensmittelschlüssel (BLS) 4.0",
+      "style": "italic",
+      "post": "Karlsruhe, Germany, 2025. doi: 10.25826/Data20251217-134202-0.",
+      "url": "https://doi.org/10.25826/Data20251217-134202-0",
+      "licence": "CC BY 4.0; credit the Max Rubner-Institut",
+      "usedFor": "German food composition (the BLS food table)",
+      "archive": [
+        {
+          "asset": "bls4_BLS_4_0_Data_2025_EN.xlsx",
+          "label": "Archived copy (dataset, English)"
+        },
+        {
+          "asset": "bls4_BLS_4_0_Components_DE_EN.xlsx",
+          "label": "Archived copy (component definitions)"
+        },
+        {
+          "asset": "bls4_BLS_4_0_Documentation_EN.pdf",
+          "label": "Archived copy (documentation)"
+        }
+      ]
     }
   ]
 }

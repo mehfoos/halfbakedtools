@@ -3,7 +3,7 @@
 // each section (see main.ts).
 import { splitAssessable, type ResolvedTarget } from "../solver.ts";
 import type { Standard } from "../profiles.ts";
-import { applySource, dietOk, foodRange, isOn, type BlendData, type FoodsData, type PlannerFood, type TableInfo } from "../foods.ts";
+import { applySource, dietOk, foodRange, isOn, type Base, type BlendData, type FoodsData, type PlannerFood, type TableInfo } from "../foods.ts";
 import { ORDER, analyse, dayBounds, gapsOf, totals, useRangeEnergy, type Report } from "../analysis.ts";
 import { personFrom, targetsFor, type Person } from "../person.ts";
 import { decode, encode, fresh, loadRemembered, remember, type PageKind, type Settings } from "../state.ts";
@@ -41,6 +41,7 @@ export type App = {
 
   person(): Person;                               // standard, age band, calories, weight
   targets(withOverrides: boolean): ResolvedTarget[];
+  base(): Base;                                   // the preset in effect: a table with no common foods uses "all"
   dietFoods(): PlannerFood[];                     // foods allowed by the diet setting
   selectedFoods(): PlannerFood[];                 // ... of those, the ones switched on
   items(list: { id: string; grams: number }[]): Item[];
@@ -74,7 +75,11 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
     person: () => personFrom(app.s, standards),
     targets: (withOverrides) => targetsFor(app.person(), app.s, app.data.nutrients, withOverrides),
     dietFoods: () => app.data.foods.filter((f) => dietOk(f, app.s.diet)),
-    selectedFoods: () => app.dietFoods().filter((f) => isOn(f, app.s.base, app.toggled)),
+    // A table with no curated common list: the common and wider presets start from its basic foods without the raw
+    // foods people don't normally eat raw (the "wider" flag, pipeline/tables/common.py).
+    base: () => ((app.s.base === "common" || app.s.base === "wider") && !app.data.foods.some((f) => f.common)
+      ? (app.data.foods.some((f) => f.wider) ? "wider" : "all") : app.s.base),
+    selectedFoods: () => app.dietFoods().filter((f) => isOn(f, app.base(), app.toggled)),
     items: (list) => list.map((b) => ({ food: app.foodById.get(b.id), grams: b.grams })).filter((x): x is Item => !!x.food),
 
     report(items, basis = app.kind === "finder" ? "range" : "day") {

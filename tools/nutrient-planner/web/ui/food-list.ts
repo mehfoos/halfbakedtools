@@ -36,7 +36,7 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
   const tree = $(root, "#foodTree");
   const search = $<HTMLInputElement>(root, "#foodSearch");
   const foodsBox = $<HTMLDetailsElement>(root, "#foodsBox");
-  const on = (f: PlannerFood) => isOn(f, app.s.base, app.toggled);
+  const on = (f: PlannerFood) => isOn(f, app.base(), app.toggled);
   // The foods the list shows: in single mode every table's foods, otherwise the table in use.
   const listFoods = () => (single ? single.entries().filter((f) => dietOk(f, app.s.diet)) : app.dietFoods());
 
@@ -50,7 +50,7 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
       return;
     }
     $(root, "#foodCount").innerHTML = `<b>${int(all.filter(on).length)}</b> of ${int(all.length)} foods switched on`;
-    $(root, "#foodsNote").textContent = `starting from ${PRESET_TEXT[app.s.base]}${app.toggled.size ? `, ${app.toggled.size} changed` : ""}`;
+    $(root, "#foodsNote").textContent = `starting from ${PRESET_TEXT[app.base()]}${app.toggled.size ? `, ${app.toggled.size} changed` : ""}`;
   }
 
   // Categories, each split into groups; common foods and groups come first.
@@ -173,7 +173,7 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
       return;
     }
     const foods = cb.dataset.food ? [app.foodById.get(cb.dataset.food)!] : foodsOf.get((cb.dataset.cat ?? cb.dataset.group)!) ?? [];
-    for (const f of foods) setOn(f, cb.checked, app.s.base, app.toggled);
+    for (const f of foods) setOn(f, cb.checked, app.base(), app.toggled);
     updateTicks();
     onToggle();
   });
