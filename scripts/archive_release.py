@@ -7,7 +7,14 @@ history. For every file in the registry this script:
   * if the release already has it: downloads it and checks its SHA-256;
   * otherwise, if it has a 'fetch' address (or a 'zip' list): downloads it from the official site, checks it
     against the expected SHA-256 recorded when it was first checked, and uploads it only if it matches;
-  * otherwise ('manual'): reports that it is waiting to be attached by hand.
+  * otherwise ('manual'), or if the download fails: takes the copy from the inbox, if there is one there;
+  * otherwise reports that it is waiting to be attached by hand.
+
+The inbox is a folder (ARCHIVE_INBOX, default ./inbox) that the workflow fills from the temporary
+'source-inbox' branch, so files a publisher will not let a script download can be staged by a commit instead of
+being attached by hand. Inbox copies are checked against the expected SHA-256 like any other. When every inbox
+file is in the release and verified, the script writes the file named by INBOX_CLEAR so the workflow can delete
+the branch, which keeps those files out of the repository.
 
 A file whose checksum differs from the expected one is never uploaded or accepted: the publisher may have changed
 it, and a person must look at it and update the registry. Results are written to sources/release-manifest.json
@@ -77,8 +84,16 @@ def zip_members_ok(data: bytes, members: list[dict]) -> bool:
         return all(sha256(z.read(m["name"])) == m["sha256"] for m in members)
 
 
+def from_inbox(inbox: Path, e: dict) -> bytes | None:
+    p = inbox / e["file"]
+    return p.read_bytes() if p.is_file() else None
+
+
 def main() -> int:
     dry = "--dry-run" in sys.argv
+    inbox = Path(os.environ.get("ARCHIVE_INBOX", "inbox"))
+    inbox_names = {p.name for p in inbox.iterdir() if p.is_file() and p.name != "README.md"} if inbox.is_dir() else set()
+    verified: set[str] = set()
     reg = json.loads(REGISTRY.read_text())
     tag = reg["release"]
     manifest = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
@@ -97,29 +112,51 @@ def main() -> int:
                     if ok:
                         first = manifest.get(name) or {"note": "attached to the release by hand", "added": today}
                         manifest[name] = first | {"sha256": sha256(data), "bytes": len(data), "verified": today}
-                elif "fetch" in e or "zip" in e:
-                    data = build_zip(e["zip"]) if "zip" in e else download(e["fetch"])
-                    if "sha256" in e and sha256(data) != e["sha256"]:
-                        status = f"NOT UPLOADED: the download differs from the checked copy (got {sha256(data)[:12]}...)"
+                else:
+                    data, how, fetch_error = None, "", ""
+                    if "fetch" in e or "zip" in e:
+                        try:
+                            data = build_zip(e["zip"]) if "zip" in e else download(e["fetch"])
+                            how = "downloaded"
+                        except Exception as err:
+                            fetch_error = str(err)
+                    if data is None or ("sha256" in e and sha256(data) != e["sha256"]):
+                        staged = from_inbox(inbox, e)
+                        if staged is not None:
+                            data, how = staged, "taken from the inbox"
+                    if data is None:
+                        status = (f"FAILED: {fetch_error}. " if fetch_error else "WAITING: ") + \
+                            "stage it on the source-inbox branch or attach it to the release by hand. " + e.get("manual", "")
+                    elif "sha256" in e and sha256(data) != e["sha256"]:
+                        status = f"NOT UPLOADED: the copy {how} differs from the checked copy (got {sha256(data)[:12]}...)"
                     else:
                         p = Path(tmp) / name
                         p.write_bytes(data)
                         if not dry:
                             gh("release", "upload", tag, str(p), capture=False)
-                        manifest[name] = {"sha256": sha256(data), "bytes": len(data), "retrieved": today,
-                                          "verified": today, "url": e.get("fetch") or [m["fetch"] for m in e["zip"]]}
-                        status = "downloaded, checked and uploaded" + (" (dry run: not uploaded)" if dry else "")
-                else:
-                    status = "WAITING: attach this file to the release by hand. " + e.get("manual", "")
+                        manifest[name] = {"sha256": sha256(data), "bytes": len(data), "retrieved": today, "verified": today}
+                        if how == "downloaded":
+                            manifest[name]["url"] = e.get("fetch") or [m["fetch"] for m in e["zip"]]
+                        else:
+                            manifest[name]["note"] = "staged by the owner (publisher blocks scripted downloads)"
+                        status = f"{how}, checked and uploaded" + (" (dry run: not uploaded)" if dry else "")
             except Exception as err:  # one file's failure must not stop the others
                 status = f"FAILED: {err}"
-            if not status.startswith(("in the release, checksum", "downloaded")):
+            if status.startswith(("in the release, checksum", "downloaded", "taken from the inbox")):
+                verified.add(name)
+            else:
                 problems += 1
             lines.append(f"| `{name}` | {status} |")
     manifest = {k: manifest[k] for k in sorted(manifest) if any(e["file"] == k for e in reg["files"])}
     MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     summary = "\n".join([f"## Source archive ({tag})", "", f"{len(reg['files']) - problems} of {len(reg['files'])} files "
                          "are in the release and verified.", "", "| File | Status |", "|---|---|", *lines, ""])
+    leftover = sorted(inbox_names - verified)
+    if inbox_names:
+        summary += ("\nEvery inbox file is in the release, so the source-inbox branch can be deleted.\n" if not leftover
+                    else "\nKept the source-inbox branch: " + ", ".join(f"`{n}`" for n in leftover) + " not verified.\n")
+        if not leftover and not dry and os.environ.get("INBOX_CLEAR"):
+            Path(os.environ["INBOX_CLEAR"]).write_text("clear\n")
     print(summary)
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         Path(os.environ["GITHUB_STEP_SUMMARY"]).write_text(summary)

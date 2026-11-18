@@ -68,8 +68,8 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
     owner runs downloads, checks and uploads them, and records the verified checksums in
     `sources/release-manifest.json`. A file that differs from the checked copy is never accepted. (Older copies
     in `sources/` have their checksums in `sources/manifest.json` and will be moved to the release.)
-  - **Uploaded files:** documents the owner uploads are listed in `sources/archive.json`, attached to the release
-    and cited the same way.
+  - **Uploaded files:** documents the owner uploads are listed in `sources/archive.json`, staged on the temporary
+    `source-inbox` branch (deleted by the workflow once they are in the release) and cited the same way.
   - **Blocked downloads:** if a document can't be downloaded automatically, say so and ask the owner to download it.
     Never substitute a guess, and never work around a site's blocks or terms.
   - **Tests:** they fail if a citation is missing from the reference list or a reference has no archived copy.

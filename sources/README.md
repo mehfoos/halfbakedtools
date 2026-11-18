@@ -13,9 +13,12 @@ anything committed stays in the repository's history for good, which makes every
    release the first time, downloads each missing file from its official address, checks it against the
    recorded checksum and uploads it only if it matches. A file that differs (for example because the publisher
    changed it) is never uploaded: a person must look at it and update the registry.
-3. **Files that can't be downloaded automatically** (sites with browser checks or forms): open the
-   [release](../../../releases/tag/source-archive), choose *Edit*, drag the file in under its exact name, save, then
-   run the workflow again; it checks the attached file against the recorded checksum.
+3. **Files that can't be downloaded automatically** (sites with browser checks or forms): commit them, under
+   their exact registry names, to the temporary **`source-inbox`** branch (an orphan branch holding only those
+   files, never merged), then run the workflow. It checks each staged file against the recorded checksum, uploads
+   the ones that match, and deletes the branch once all of them are in the release, so the files never enter
+   `main`'s history. Attaching a file to the [release](../../../releases/tag/source-archive) by hand (*Edit*, drag
+   it in, save) also works.
 4. The workflow writes the verified checksums to [`release-manifest.json`](release-manifest.json) and lists every
    file's status on the run's summary page. Reference lists link to the release copy once it is verified, and say
    "archived copy not yet available" until then.

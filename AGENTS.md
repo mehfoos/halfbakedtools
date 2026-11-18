@@ -27,8 +27,9 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
      commit new PDFs or datasets to the repository: they stay in its history for good. See `sources/README.md`.
    - If you can't download a document (a blocked site or a paywall), **say so and ask the owner to download and upload
      it**. Don't work around the block, and don't fall back to a guess.
-   - A document the owner uploads: record it in `sources/archive.json` (with its checksum) and give it to the owner
-     to attach to the release; then cite it.
+   - A document the owner uploads: record it in `sources/archive.json` (with its checksum), commit it to the
+     temporary orphan branch `source-inbox` (never to `main`), and ask the owner to run the workflow, which uploads
+     it after checking it and then deletes the branch; then cite it.
 4. **Privacy.** No cookies, analytics, third-party scripts, fonts or embeds; no sending visitor input anywhere;
    local storage only when the visitor opts in.
 5. **Don't mislead with charts.** Use linear scales, no silent clipping, distinct targets, and never colour alone.
