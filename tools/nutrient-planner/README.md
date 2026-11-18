@@ -28,6 +28,8 @@ pipeline/             Python (standard library only)
   check_age.py        is the snapshot due for a refresh?
   crosswalk/          links from planner foods to records in other food tables (UK CoFID, ...), reviewed by
                       hand; method in crosswalk/README.md. Not merged into foods.json yet
+  tables/             one food file per national table (tables/README.md); cofid.py -> data/foods/foods-cofid.json.
+                      Built but not yet offered on the page
 ```
 
 ## Code map (`web/`)

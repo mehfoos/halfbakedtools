@@ -286,3 +286,23 @@ test("the preference for familiar foods can cost at most 1% of one target per pl
     assert.ok(n * familiarityPenalty(f({}), n) <= FAMILIARITY_BUDGET + 1e-12);
   }
 });
+
+test("UK CoFID food file: same layout as the USDA file, no zero-filled codes, diet tags safe", () => {
+  const usda = JSON.parse(readFileSync(new URL("../data/foods/foods.json", import.meta.url), "utf8"));
+  const raw = JSON.parse(readFileSync(new URL("../data/foods/foods-cofid.json", import.meta.url), "utf8"));
+  assert.deepEqual(raw.keys, usda.keys, "same nutrient keys in the same order");
+  assert.ok(raw.foods.every((f: any) => f.v.length === raw.keys.length && f.src?.table === "cofid" && f.srcName));
+  const ids = raw.foods.map((f: any) => f.id);
+  assert.equal(new Set(ids).size, ids.length, "food ids are unique");
+  // A CoFID code ("Tr", "N") is shown as a label and the value stays missing: never zero.
+  const iodine = raw.keys.indexOf("iodine");
+  for (const f of raw.foods) {
+    if (f.q) for (const k of Object.keys(f.q)) {
+      if (f.q[k] === "trace" || f.q[k] === "present, amount not known") assert.equal(f.v[raw.keys.indexOf(k)], null, `${f.name} ${k}`);
+    }
+  }
+  // Values are CoFID's own: semi-skimmed milk iodine 30 µg/100 g (CoFID 12-313).
+  assert.equal(raw.foods.find((f: any) => f.id === "milk").v[iodine], 30);
+  const meat = /\b(beef|pork|chicken|bacon|ham|meat|fish|lard|dripping|anchov\w*|gelatin|cod liver)\b/i;
+  for (const f of raw.foods) if (f.diet !== "meat") assert.ok(!meat.test(f.srcName.replace(/eggs, chicken/i, "")), `${f.srcName} is tagged ${f.diet}`);
+});

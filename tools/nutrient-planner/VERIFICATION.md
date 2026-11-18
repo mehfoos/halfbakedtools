@@ -104,3 +104,11 @@ The exact copies of the documents used for checking are kept in [`sources/`](../
 - **Default body weights:** now EFSA reference body weights (Table 17) for every standard, instead of rounded guesses.
 
 All other UK and EU values matched the documents.
+
+## Food tables (other than USDA)
+
+| Table | What was checked | Against | Date |
+|---|---|---|---|
+| UK CoFID 2021 | Nutrient definitions used in `pipeline/tables/cofid.py` (carbohydrate and sugars as monosaccharide equivalents; AOAC fibre; retinol equivalents; vitamin D for meat; vitamin E as alpha-tocopherol equivalents; K1 only; total folate; niacin equivalents; "Tr" and "N" codes) | CoFID 2021 user guide (GOV.UK, March 2021), pages 7 and 10-16 | 18 Nov 2026 |
+| UK CoFID 2021 | Food file values for semi-skimmed milk, cod (baked), watercress and farmed salmon (baked) equal the spreadsheet cells; test checks milk iodine | CoFID 2021 spreadsheet | 18 Nov 2026 |
+| UK CoFID 2021 | Source defect found: code 13-669 is used for two foods (roasted aubergine and raw watercress); links use code and name | CoFID 2021 spreadsheet | 17 Nov 2026 |
