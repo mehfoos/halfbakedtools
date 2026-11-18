@@ -310,7 +310,9 @@ def main() -> int:
         if cat:
             auto.append((fid, desc, cat))
 
-    sr_vals = sr.values(curated_ids | {a[0] for a in auto})
+    auto_ids = {a[0] for a in auto}
+    more_ids = [fid for fid in sr.foods if fid not in curated_ids and fid not in auto_ids]
+    sr_vals = sr.values(curated_ids | auto_ids | set(more_ids))
     fn_vals = fnd.values({m[1][0] for m in matches if m[1]}) if fnd else {}
 
     nutrients = spec["nutrients"]
@@ -377,6 +379,23 @@ def main() -> int:
         })
         auto_counts[cat] = auto_counts.get(cat, 0) + 1
 
+    # Every other SR Legacy food, for Food Finder only (foods-usda-more.json). Values as published; no amounts rules.
+    more_out = []
+    for fid in more_ids:
+        desc = sr.foods[fid]
+        vals = extract(nutrients, sr_vals.get(fid, {}), sr.nutrient_meta)
+        if not vals:
+            continue
+        vals.update(derive(vals))
+        cat = auto_foods.more_category(sr.category.get(fid, ""))
+        group, variant = auto_foods.group_and_variant(auto_foods.uk_name(desc))
+        more_out.append({
+            "id": f"u{fid}", "name": auto_foods.uk_name(desc), "cat": cat, "group": group, "label": variant or desc,
+            "diet": auto_foods.more_diet(cat, desc), "common": False, "basic": False,
+            "unit": "g", "unitGrams": 1, "step": 10, "maxGrams": 1000, "notes": None, "capGroup": None,
+            "fortified": auto_foods.fortified(desc) or None, "fdcId": fid, "usdaName": desc, "dataset": "sr", "v": pack(vals),
+        })
+
     wider = mark_wider(foods_out[first_auto:])
     write_wider_report(wider)
 
@@ -394,6 +413,10 @@ def main() -> int:
         "keys": keys,
         "categories": [{"id": c, "name": n} for c, n in auto_foods.CATEGORIES],
         "foods": foods_out,
+    }, ensure_ascii=False, separators=(",", ":")))
+    (OUT_DIR / "foods-usda-more.json").write_text(json.dumps({
+        "generated": today, "table": "usda", "source": "USDA FoodData Central (public domain)", "files": sources,
+        "keys": keys, "categories": [{"id": c, "name": n} for c, n in auto_foods.CATEGORIES], "foods": more_out,
     }, ensure_ascii=False, separators=(",", ":")))
     cat_names = dict(auto_foods.CATEGORIES)
     (OUT_DIR / "match_report.md").write_text(

@@ -32,7 +32,8 @@ pipeline/             Python (standard library only)
   check_age.py        is the snapshot due for a refresh?
   crosswalk/          links from planner foods to records in other food tables (UK CoFID, ...), reviewed by
                       hand; method in crosswalk/README.md. Not merged into foods.json yet
-  tables/             one food file per national table (tables/README.md); cofid.py -> data/foods/foods-cofid.json.
+  tables/             two food files per national table, all equal (tables/README.md); tables.json lists them;
+                      build_index.py -> data/foods/tables.json, index.json. cofid.py -> foods-cofid(-more).json.
                       Built but not offered on the page
   blend/              the blended food database (blend/README.md); planner_pack.py -> data/foods/foods-blend.json,
                       the beta "USDA + UK CoFID, blended" source on the page

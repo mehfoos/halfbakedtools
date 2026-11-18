@@ -24,7 +24,7 @@ export type Settings = {
   builder: BuilderItem[];
   compare: boolean;               // show the other standards' targets on the charts
   vitaminD: boolean;              // suggestions also try to reach the vitamin D target from food
-  source: Source;                 // food data: USDA, or the beta USDA + CoFID blend
+  source: Source;                 // food table (tables.json id), or "blend" (beta USDA + CoFID blend)
 };
 
 /** Most options one search can ask for. The search runs in the visitor's browser and can be stopped at any
@@ -49,7 +49,9 @@ const clampInt = (v: string | null, lo: number, hi: number) => {
   const n = v === null || v === "" ? NaN : Number(v);
   return Number.isFinite(n) ? Math.min(hi, Math.max(lo, Math.round(n))) : null;
 };
-const ID_RE = /^[a-z0-9-]{1,40}$/;
+// Food ids: planner ids ("milk", "u168421") and table ids ("cofid:12-313", "cofid:12-313:2").
+const ID_RE = /^[a-z0-9:-]{1,40}$/;
+const SOURCE_RE = /^[a-z0-9]{2,12}$/;
 
 export function encode(s: Settings): string {
   const p = new URLSearchParams();
@@ -69,7 +71,7 @@ export function encode(s: Settings): string {
   if (s.mode === "build") p.set("mode", "build");
   if (!s.compare) p.set("cmp", "0");
   if (s.vitaminD) p.set("vd", "1");
-  if (s.source === "blend") p.set("src", "blend");
+  if (s.source !== "usda") p.set("src", s.source);
   if (s.builder.length) p.set("b", s.builder.map((b) => `${b.id}~${Math.round(b.grams * 10) / 10}`).join("_"));
   return p.toString();
 }
@@ -111,7 +113,7 @@ export function decode(query: string): Settings {
   if (p.get("mode") === "build") s.mode = "build";
   if (p.get("cmp") === "0") s.compare = false;
   if (p.get("vd") === "1") s.vitaminD = true;
-  if (p.get("src") === "blend") s.source = "blend";
+  if (SOURCE_RE.test(p.get("src") ?? "")) s.source = p.get("src")!;   // an unknown table falls back to USDA on the page
   if (p.get("b")) {
     for (const part of p.get("b")!.split("_")) {
       const [id, g] = part.split("~");

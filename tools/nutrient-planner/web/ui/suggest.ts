@@ -6,7 +6,7 @@ import { DEFAULTS, MAX_OPTIONS } from "../state.ts";
 import type { App } from "./app.ts";
 import { cite } from "./app.ts";
 import type { Charts } from "./charts.ts";
-import { CAVEAT, foodNotes } from "./notices.ts";
+import { dataCaveat, foodNotes } from "./notices.ts";
 import { reportHtml } from "./report.ts";
 import { $, clampInt, esc, int } from "./dom.ts";
 
@@ -69,7 +69,7 @@ export function setupSuggest(app: App, charts: Charts, onAdjust: (plan: Plan) =>
     runBtn.disabled = true;
     stopBtn.hidden = false;
     plans = [];
-    results.innerHTML = CAVEAT;
+    results.innerHTML = dataCaveat(app);
     status.textContent = `Finding option 1 of ${s.options}…`;
     worker.onmessage = ({ data: d }) => {
       if (d.type === "plan") {

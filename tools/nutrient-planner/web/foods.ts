@@ -2,7 +2,12 @@
 import type { Food, NutrientDef } from "./solver.ts";
 
 export type PlannerFood = Food & {
-  cat: string; label: string; common: boolean; fdcId: string; usdaName: string;
+  cat: string; label: string; common: boolean;
+  table: string;              // the food table it comes from (pipeline/tables/tables.json)
+  srcName: string;            // the food's name in its table (USDA: the SR Legacy description)
+  fdcId?: string;             // USDA only
+  basic?: boolean | null;     // false: outside the Planner's basic foods (Food Finder only)
+  q?: Record<string, string> | null;   // what the table gave where a value is missing or isn't a plain value ("trace")
   noteRef?: string | null;   // the reference a food's note rests on
   fortified?: boolean | null; // a US product with nutrients added; not part of the "Everything" preset
   wider?: boolean | null;     // part of the "Wider selection" preset (rules in pipeline/wider_selection.json)
@@ -11,26 +16,51 @@ export type PlannerFood = Food & {
 };
 export type FoodsData = {
   generated?: string; missing?: boolean;
+  table?: string;
+  definitions?: Record<string, string>;   // how the table defines nutrients, where that differs from USDA
   nutrients: NutrientDef[];
   categories: { id: string; name: string }[];
   foods: PlannerFood[];
 };
 
-type RawFood = Omit<PlannerFood, "per100g"> & { v: (number | null)[] };
+type RawFood = Omit<PlannerFood, "per100g" | "table" | "srcName"> & { v: (number | null)[]; srcName?: string; usdaName?: string };
+export type RawFoods = {
+  keys: string[]; foods: RawFood[]; nutrients?: NutrientDef[]; categories: FoodsData["categories"];
+  generated?: string; missing?: boolean; table?: string; definitions?: Record<string, string>;
+};
 
-export function unpack(raw: { keys: string[]; foods: RawFood[]; nutrients: NutrientDef[]; categories: FoodsData["categories"]; generated?: string; missing?: boolean }): FoodsData {
-  const foods = (raw.foods ?? []).map((f) => {
+/** Unpack a table's food file. `more` (Food Finder) adds the table's other foods, with the same nutrient keys. */
+export function unpack(raw: RawFoods, more?: RawFoods): FoodsData {
+  const table = raw.table ?? "usda";
+  const conv = (r: RawFoods, basic: boolean) => (r.foods ?? []).map((f) => {
     const per100g: Record<string, number> = {};
-    raw.keys.forEach((k, i) => { const v = f.v[i]; if (v !== null && v !== undefined) per100g[k] = v; });
-    const { v: _v, ...rest } = f;
-    return { ...rest, per100g } as PlannerFood;
+    r.keys.forEach((k, i) => { const v = f.v[i]; if (v !== null && v !== undefined) per100g[k] = v; });
+    const { v: _v, usdaName, ...rest } = f;
+    return { ...rest, table, srcName: f.srcName ?? usdaName ?? f.name, basic: basic ? null : false, per100g } as PlannerFood;
   });
-  return { generated: raw.generated, missing: raw.missing, nutrients: raw.nutrients ?? [], categories: raw.categories ?? [], foods };
+  const foods = [...conv(raw, true), ...(more ? conv(more, false) : [])];
+  // The categories of the "more" file include those that only hold foods outside the basic foods.
+  const categories = more?.categories ?? raw.categories ?? [];
+  return { generated: raw.generated, missing: raw.missing, table, definitions: raw.definitions, nutrients: raw.nutrients ?? [], categories, foods };
 }
+
+/** One food table, as listed in data/foods/tables.json (built from pipeline/tables/tables.json). */
+export type TableInfo = {
+  id: string; tag: string; title: string; country: string; basic: string; more: string;
+  refs: string[]; licence: string; standards: string[]; foods: number; basicFoods: number; generated?: string;
+};
+
+/** Food Finder's list of every food in every table, before any table's values are loaded (data/foods/index.json). */
+export type FoodIndex = {
+  flags: { common: number; basic: number; fortified: number };
+  categories: { id: string; name: string }[];
+  foods: Record<string, [string, string, string, string, string, string, number][]>;
+};
 
 // ---- The beta blended source: an overlay on the USDA data (built by pipeline/blend/planner_pack.py).
 // Each overlaid food has values per target standard, because the standards define some nutrients differently.
-export type Source = "usda" | "blend";
+/** A table id (tables.json), or "blend": the beta overlay of USDA + CoFID on the USDA foods. */
+export type Source = string;
 type StdRows<T> = Record<string, T>;
 export type BlendFood = {
   records: { table: string; code: string; name: string; borrowedFrom?: string }[];
@@ -111,13 +141,15 @@ export function setOn(f: PlannerFood, on: boolean, base: Base, toggled: Set<stri
 
 export type Diet = "none" | "vegetarian" | "vegan";
 /** "none" allows everything; vegetarian hides meat and fish; vegan also hides dairy, eggs and honey. */
-export const dietOk = (f: PlannerFood, diet: Diet) =>
-  diet === "none" || (diet === "vegetarian" ? f.diet !== "meat" : f.diet === "vegan");
+// A food tagged "unknown" (a mixed food outside the basic foods, which may hide meat stock, gelatin or animal fat)
+// is only shown when no diet is chosen.
+export const dietOk = (f: { diet: string }, diet: Diet) =>
+  diet === "none" || (diet === "vegetarian" ? f.diet !== "meat" && f.diet !== "unknown" : f.diet === "vegan");
 
 /** Simple case-insensitive match on all words. */
-export function matches(f: PlannerFood, query: string) {
+export function matches(f: { name: string; group: string; label: string; srcName: string }, query: string) {
   const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const hay = `${f.name} ${f.group} ${f.label} ${f.usdaName}`.toLowerCase();
+  const hay = `${f.name} ${f.group} ${f.label} ${f.srcName}`.toLowerCase();
   return words.every((w) => hay.includes(w));
 }
 
@@ -132,8 +164,8 @@ export const GROUP_CAPS: Record<string, number> = { "oily-fish": 140 };
  *  - liver and liver products: pregnant women should avoid them (NHS "Meat in your diet");
  *  - shark, swordfish and marlin: not if pregnant, and not for children under 16 (NHS "Fish and shellfish").
  */
-export function avoidReason(f: { usdaName: string }, who: { age: number; life: string }): { text: string; ref: string } | null {
-  const name = f.usdaName.toLowerCase();
+export function avoidReason(f: { srcName: string }, who: { age: number; life: string }): { text: string; ref: string } | null {
+  const name = f.srcName.toLowerCase();
   if (who.life === "pregnancy" && /\bliver\b|\bpate\b|pâté|liverwurst|braunschweiger/.test(name))
     return { text: "The NHS advises pregnant women to avoid liver and liver products, which are very high in vitamin A.", ref: "nhs-meat" };
   if (/\b(shark|swordfish|marlin)\b/.test(name)) {
@@ -144,7 +176,7 @@ export function avoidReason(f: { usdaName: string }, who: { age: number; life: s
 }
 
 /** The distinct reasons any of these foods should be avoided by this person. */
-export function avoidReasons(foods: { usdaName: string }[], who: { age: number; life: string }) {
+export function avoidReasons(foods: { srcName: string }[], who: { age: number; life: string }) {
   const reasons = foods.map((f) => avoidReason(f, who)).filter((r) => r !== null);
   return [...new Map(reasons.map((r) => [r.text, r])).values()];
 }

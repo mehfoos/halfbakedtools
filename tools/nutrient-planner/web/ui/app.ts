@@ -3,7 +3,7 @@
 // each section (see main.ts).
 import { splitAssessable, type ResolvedTarget } from "../solver.ts";
 import type { Standard } from "../profiles.ts";
-import { applySource, dietOk, foodRange, isOn, type BlendData, type FoodsData, type PlannerFood } from "../foods.ts";
+import { applySource, dietOk, foodRange, isOn, type BlendData, type FoodsData, type PlannerFood, type TableInfo } from "../foods.ts";
 import { ORDER, analyse, dayBounds, gapsOf, totals, useRangeEnergy, type Report } from "../analysis.ts";
 import { personFrom, targetsFor, type Person } from "../person.ts";
 import { decode, encode, fresh, loadRemembered, remember, type PageKind, type Settings } from "../state.ts";
@@ -29,7 +29,8 @@ export type Item = { food: PlannerFood; grams: number };
 export type App = {
   root: HTMLElement;
   kind: PageKind;                   // "planner" (combinations of foods) or "finder" (one food at a time)
-  data: FoodsData;
+  data: FoodsData;                  // the foods of the table in use (the blend: the USDA foods, overlaid)
+  tables: TableInfo[];              // every food table on offer
   blend: BlendData | null;          // the beta blended source, once loaded
   standards: Standard[];
   s: Settings;                      // the settings; the single source of truth for what the page shows
@@ -45,13 +46,18 @@ export type App = {
   items(list: { id: string; grams: number }[]): Item[];
   report(items: Item[], basis?: EnergyBasis): Report;  // a day's foods measured against the targets
 
+  /** The table whose foods are in use: the chosen table, or USDA for the blend. */
+  tableId(): string;
+  table(): TableInfo | undefined;
+  /** Use another table's foods (already loaded; see boot.ts loadTable). */
+  setData(data: FoodsData): void;
   /** Put the values of the chosen food source (and, for the blend, standard) on the foods. */
   applySource(): void;
   save(): void;                                   // write the settings to the page address (and device, if opted in)
   load(s: Settings): void;                        // replace the settings (import)
 };
 
-export function createApp(root: HTMLElement, data: FoodsData, standards: Standard[], kind: PageKind = "planner"): App {
+export function createApp(root: HTMLElement, data: FoodsData, standards: Standard[], kind: PageKind = "planner", tables: TableInfo[] = []): App {
   // Settings come from the page address first, then opt-in remembered settings, then defaults.
   const rememberBox = $<HTMLInputElement>(root, "#rememberBox");
   const remembered = loadRemembered(kind);
@@ -59,15 +65,15 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
   const s = location.search.length > 1 ? decode(location.search) : remembered ?? fresh();
 
   const app: App = {
-    root, kind, data, standards, s, blend: null,
+    root, kind, data, tables, standards, s, blend: null,
     toggled: new Set(s.toggled),
     foodById: new Map(data.foods.map((f) => [f.id, f])),
     nutrientMeta: new Map(data.nutrients.map((n) => [n.key, { label: n.label, unit: n.unit }])),
     categoryName: new Map(data.categories.map((c) => [c.id, c.name])),
 
     person: () => personFrom(app.s, standards),
-    targets: (withOverrides) => targetsFor(app.person(), app.s, data.nutrients, withOverrides),
-    dietFoods: () => data.foods.filter((f) => dietOk(f, app.s.diet)),
+    targets: (withOverrides) => targetsFor(app.person(), app.s, app.data.nutrients, withOverrides),
+    dietFoods: () => app.data.foods.filter((f) => dietOk(f, app.s.diet)),
     selectedFoods: () => app.dietFoods().filter((f) => isOn(f, app.s.base, app.toggled)),
     items: (list) => list.map((b) => ({ food: app.foodById.get(b.id), grams: b.grams })).filter((x): x is Item => !!x.food),
 
@@ -101,8 +107,16 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
       return rep;
     },
 
+    tableId: () => (app.s.source === "blend" ? "usda" : app.s.source),
+    table: () => app.tables.find((t) => t.id === app.tableId()),
+    setData(next) {
+      // Nutrient definitions and categories are the same in every table file; only the foods change.
+      app.data = { ...next, nutrients: next.nutrients.length ? next.nutrients : app.data.nutrients };
+      app.foodById = new Map(app.data.foods.map((f) => [f.id, f]));
+      app.categoryName = new Map(app.data.categories.map((c) => [c.id, c.name]));
+    },
     applySource() {
-      applySource(app.data, app.blend, app.blend ? app.s.source : "usda", app.person().standard.id);
+      if (app.data.table === "usda") applySource(app.data, app.blend, app.blend ? app.s.source : "usda", app.person().standard.id);
     },
 
     save() {

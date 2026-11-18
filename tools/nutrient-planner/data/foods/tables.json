@@ -1,0 +1,41 @@
+{
+ "tables": [
+  {
+   "id": "usda",
+   "tag": "USDA",
+   "title": "USDA FoodData Central, SR Legacy (2018)",
+   "country": "United States",
+   "basic": "foods.json",
+   "more": "foods-usda-more.json",
+   "refs": [
+    "usda-sr",
+    "usda-sr-doc"
+   ],
+   "licence": "Public domain",
+   "standards": [
+    "us"
+   ],
+   "foods": 7793,
+   "basicFoods": 2244,
+   "generated": "2026-11-18"
+  },
+  {
+   "id": "cofid",
+   "tag": "CoFID",
+   "title": "UK CoFID 2021 (McCance and Widdowson's)",
+   "country": "United Kingdom",
+   "basic": "foods-cofid.json",
+   "more": "foods-cofid-more.json",
+   "refs": [
+    "cofid-2021"
+   ],
+   "licence": "Open Government Licence v3.0",
+   "standards": [
+    "uk"
+   ],
+   "foods": 2887,
+   "basicFoods": 1072,
+   "generated": "2026-11-18"
+  }
+ ]
+}

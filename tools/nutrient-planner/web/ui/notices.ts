@@ -6,8 +6,19 @@ import { cite } from "./app.ts";
 import { esc, fmt } from "./dom.ts";
 import { caveat, KINDS, type CaveatKind } from "../../../../site/src/lib/caveats.ts";
 
-/** Shown above every set of results. */
-export const CAVEAT = caveat("estimate", `Results use average food composition, mostly from US data ${cite("usda-sr")}, so real foods vary with brand, variety and cooking. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).`);
+/** Shown above every set of results: which table the values come from, and how it defines nutrients differently. */
+export function dataCaveat(app: App) {
+  const t = app.table();
+  const from = !t ? "food composition tables"
+    : app.s.source === "blend" ? `the USDA table ${cite("usda-sr")}, with the beta blend of USDA and UK CoFID ${cite("cofid-2021")} for some foods`
+    : `${esc(t.title)} ${t.refs[0] ? cite(t.refs[0]) : ""}`;
+  const est = caveat("estimate", `Results use average food composition from ${from}, so real foods vary with brand, variety and cooking. Nutrients the table doesn't give are shown as not available, never as zero. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).`);
+  // A table other than USDA: say where its definitions differ, because the targets may define a nutrient another way.
+  const defs = app.data.definitions ?? {};
+  const keys = app.s.source === "blend" || app.data.table === "usda" ? [] : Object.keys(defs).filter((k) => app.nutrientMeta.has(k));
+  if (!keys.length) return est;
+  return est + caveat("assumption", `${esc(t?.tag ?? "This table")}'s values are shown as the table publishes them, and compared with the targets without conversion. Where the table defines a nutrient differently from the target's definition, the comparison is approximate. The table's definitions: ${keys.map((k) => `${esc(app.nutrientMeta.get(k)!.label)}: ${esc(defs[k])}`).join("; ")}.`);
+}
 
 /** Notices about nutrients that food data or food alone handles poorly: vitamin D, B12, EPA/DHA, iodine. */
 export function nutrientNotices(app: App, rep: Report) {

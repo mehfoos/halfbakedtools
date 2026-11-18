@@ -47,7 +47,7 @@ Conflicts (two terms that can't both be true):
 ## CoFID 2021 (McCance and Widdowson's, every record)
 
 - Foods: 2887; fully described: 866 (30%)
-- Common foods: 84; fully described: 55 (65%)
+- Common foods: 83; fully described: 54 (65%)
 - Conflicts: 1
 
 Most frequent unclassified phrases:

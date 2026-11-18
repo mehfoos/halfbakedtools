@@ -23,8 +23,31 @@ CATEGORIES = [
     ("drinks", "Plant drinks"),
     ("oils", "Oils & fats"),
     ("herbs", "Herbs & spices"),
+    ("dishes", "Dishes, soups & sauces"),
+    ("sweets", "Cakes, snacks & sweets"),
+    ("beverages", "Drinks"),
+    ("baby", "Baby foods"),
     ("other", "Other"),
 ]
+# The last four categories hold only foods outside the Planner's basic foods: Food Finder lists every food in a
+# table, the Planner only the basic ones (the rules below).
+
+# USDA SR Legacy food_category_id -> category, for foods outside the basic foods (Food Finder only).
+USDA_MORE_CATEGORY = {
+    "3": "baby", "6": "dishes", "7": "meat", "14": "beverages", "28": "beverages", "18": "sweets", "19": "sweets",
+    "21": "dishes", "22": "dishes", "25": "dishes", "23": "sweets", "24": "other",
+}
+
+
+def more_category(cat_id: str) -> str:
+    """The category of a USDA food that isn't one of the basic foods."""
+    return USDA_MORE_CATEGORY.get(cat_id) or USDA_CATEGORY.get(cat_id) or "other"
+
+
+def more_diet(category: str, desc: str) -> str:
+    """Diet tag for a food outside the basic foods. Only meat and fish categories are certain; mixed foods can hide
+    meat stock, gelatin or animal fat, so anything else is "unknown" and is shown only when no diet is chosen."""
+    return "meat" if category in MEAT_CATS else "unknown"
 
 # USDA SR Legacy food_category_id -> planner category
 USDA_CATEGORY = {

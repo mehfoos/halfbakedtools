@@ -9,7 +9,7 @@
 //   state.ts                               settings: defaults, link, file, remembered
 //   ui/                                    the page itself, one file per section (ui/boot.ts: shared start-up)
 import type { Settings } from "./state.ts";
-import { boot, loadBlend } from "./ui/boot.ts";
+import { boot, loadBlend, loadTable } from "./ui/boot.ts";
 import { setupYou } from "./ui/you.ts";
 import { setupFoodList } from "./ui/food-list.ts";
 import { setupSuggest } from "./ui/suggest.ts";
@@ -32,22 +32,34 @@ export async function start(root: HTMLElement) {
     app.save();
   }
 
-  // Food data: the beta blend is loaded the first time it is chosen (or when a link asks for it).
+  // Food data: a table, or the beta blend (an overlay on the USDA foods). Each is loaded the first time it's chosen.
   const sourceStatus = $(root, "#sourceStatus");
   async function ensureSource() {
-    if (app.s.source !== "blend" || app.blend) return;
-    sourceStatus.textContent = "Loading the blended data…";
+    if (!app.tables.some((t) => t.id === app.tableId())) app.s.source = "usda";   // a link to a table not offered
+    const t = app.table()!;
     try {
-      app.blend = await loadBlend(root);
+      if (app.data.table !== t.id) {
+        sourceStatus.textContent = `Loading ${t.tag}…`;
+        app.setData(await loadTable(root, t, false));
+      }
+      if (app.s.source === "blend" && !app.blend) {
+        sourceStatus.textContent = "Loading the blended data…";
+        app.blend = await loadBlend(root);
+      }
       sourceStatus.textContent = "";
     } catch {
       app.s.source = "usda";
-      sourceStatus.textContent = "Sorry, the blended data couldn't be loaded, so the USDA data is in use.";
+      app.setData(await loadTable(root, app.table()!, false));
+      sourceStatus.textContent = "Sorry, that food data couldn't be loaded, so the USDA data is in use.";
     }
   }
   function renderSource() {
     $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => (r.checked = r.value === app.s.source));
     $(root, "#blendNote").hidden = app.s.source !== "blend";
+    const t = app.table()!;
+    const noWider = !app.data.foods.some((f) => f.wider);
+    $(root, "#tableNote").textContent = `${t.title}, ${t.country}: ${t.basicFoods.toLocaleString("en-GB")} foods here (${t.foods.toLocaleString("en-GB")} in Food Finder). Licence: ${t.licence}.`
+      + (noWider ? " This table has no wider selection yet, so that preset shows its common foods." : "");
     app.applySource();
   }
   $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => r.addEventListener("change", async () => {

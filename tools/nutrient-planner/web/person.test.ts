@@ -17,8 +17,8 @@ const standards = [load("uk"), load("us"), load("eu")];
 const nutrients: NutrientDef[] = JSON.parse(readFileSync(new URL("../data/foods/foods.json", import.meta.url), "utf8")).nutrients;
 const fmt = (v: number | undefined) => String(v === undefined ? "–" : Math.round(v));
 
-const food = (id: string, usdaName: string, extra: Partial<PlannerFood> = {}) => ({
-  id, name: id, usdaName, label: id, cat: "c", group: "g", diet: "vegan", common: true,
+const food = (id: string, srcName: string, extra: Partial<PlannerFood> = {}) => ({
+  id, name: id, srcName, label: id, cat: "c", group: "g", diet: "vegan", common: true,
   maxGrams: 300, step: 10, unit: "g", unitGrams: 1, per100g: { energy: 100, protein: 5, vitaminD: 1 }, ...extra,
 }) as unknown as PlannerFood;
 

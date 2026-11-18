@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { applySource, blendValues, unpack, type BlendData } from "./foods.ts";
+import { applySource, blendValues, dietOk, unpack, type BlendData } from "./foods.ts";
 
 const dir = new URL("../data/foods/", import.meta.url);
 const load = () => unpack(JSON.parse(readFileSync(new URL("foods.json", dir), "utf8")));
@@ -52,7 +52,7 @@ test("default lists leave out raw foods that aren't normally eaten raw", () => {
   const exceptions = new Set(["Mushrooms (UV-exposed, 'vitamin D' mushrooms)"]);
   const bad: string[] = [];
   for (const f of data.foods.filter((x) => x.common || x.wider)) {
-    if (!isRaw(f.usdaName) || exceptions.has(f.name)) continue;
+    if (!isRaw(f.srcName) || exceptions.has(f.name)) continue;
     const g = f.group.toLowerCase();
     if (f.diet === "meat") bad.push(`${f.name}: raw meat or fish`);
     else if (f.cat === "dairy" && /^egg/.test(g)) bad.push(`${f.name}: raw egg`);
@@ -61,5 +61,37 @@ test("default lists leave out raw foods that aren't normally eaten raw", () => {
     else if (f.cat === "nuts" && /^chestnuts/.test(g)) bad.push(`${f.name}: raw chestnuts`);
   }
   assert.deepEqual(bad, []);
-  assert.ok(data.foods.some((f) => !f.common && !f.wider && f.cat === "dairy" && /raw/.test(f.usdaName)), "raw eggs remain in the full list");
+  assert.ok(data.foods.some((f) => !f.common && !f.wider && f.cat === "dairy" && /raw/.test(f.srcName)), "raw eggs remain in the full list");
+});
+
+// Every table is offered on an equal footing (pipeline/tables/tables.json): two files per table, the Planner's basic
+// foods and the rest (Food Finder only), and Food Finder's name index of every food in every table.
+test("food tables: two files each, same nutrient keys, unique ids, index complete", () => {
+  const read = (f: string) => JSON.parse(readFileSync(new URL(f, dir), "utf8"));
+  const tables = read("tables.json").tables;
+  const index = read("index.json");
+  const usdaKeys = read("foods.json").keys;
+  assert.ok(tables.length >= 2 && tables.some((t: any) => t.id === "usda"));
+  for (const t of tables) {
+    const basic = read(t.basic), more = read(t.more);
+    assert.deepEqual(basic.keys, usdaKeys, `${t.id}: same nutrient keys as the USDA file`);
+    assert.deepEqual(more.keys, usdaKeys, `${t.id} more: same nutrient keys`);
+    const ids = [...basic.foods, ...more.foods].map((f: any) => f.id);
+    assert.equal(new Set(ids).size, ids.length, `${t.id}: ids are unique`);
+    assert.ok(ids.every((id: string) => /^[a-z0-9:-]{1,40}$/.test(id)), `${t.id}: ids fit the page address`);
+    assert.equal(t.foods, ids.length);
+    assert.equal(t.basicFoods, basic.foods.length);
+    assert.deepEqual(index.foods[t.id].map((r: any[]) => r[0]), ids, `${t.id}: the index lists every food, in order`);
+    // Foods outside the basic foods: never in the Planner; mixed foods are "unknown" for diet unless meat or fish.
+    for (const f of more.foods) {
+      assert.ok(f.diet === "meat" || f.diet === "unknown", `${t.id} ${f.name}: diet ${f.diet}`);
+      assert.ok(f.v.some((x: number | null) => x !== null), `${t.id} ${f.name}: has at least one value`);
+    }
+  }
+});
+
+test("a food of unknown diet is shown only when no diet is chosen", () => {
+  assert.equal(dietOk({ diet: "unknown" }, "none"), true);
+  assert.equal(dietOk({ diet: "unknown" }, "vegetarian"), false);
+  assert.equal(dietOk({ diet: "unknown" }, "vegan"), false);
 });

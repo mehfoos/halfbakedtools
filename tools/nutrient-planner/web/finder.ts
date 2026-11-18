@@ -5,12 +5,16 @@
 //
 // The food and amount are kept as the Planner's builder list with one item (`b=` in the link), and the source as
 // the Planner's source setting (`src=`), so a Food Finder link reads like a one-food Planner day.
-import { boot, loadBlend } from "./ui/boot.ts";
+//
+// The list holds every food of every table (data/foods/index.json, names only). A table's values are loaded when
+// one of its foods is picked, with the table's foods outside the Planner's basic foods.
+import type { FoodIndex, PlannerFood, Source } from "./foods.ts";
+import { boot, loadBlend, loadIndex, loadTable } from "./ui/boot.ts";
 import { setupYou } from "./ui/you.ts";
-import { setupFoodList, SOURCE_LABEL, type Pick } from "./ui/food-list.ts";
+import { setupFoodList, sourceLabel, type Pick } from "./ui/food-list.ts";
 import { setupShare } from "./ui/share.ts";
 import { startGrams, unitAmount, unitLabel } from "./ui/builder.ts";
-import { CAVEAT, foodNotes } from "./ui/notices.ts";
+import { dataCaveat, foodNotes } from "./ui/notices.ts";
 import { reportHtml } from "./ui/report.ts";
 import { $, esc, fmt } from "./ui/dom.ts";
 
@@ -21,19 +25,43 @@ export async function startFinder(root: HTMLElement) {
   const result = $(root, "#finderResult");
   const status = $(root, "#sourceStatus");
 
-  // The blend is needed up front: its foods get a second entry in the list.
-  status.textContent = "Loading the blended data…";
-  try {
-    app.blend = await loadBlend(root);
-    status.textContent = "";
-  } catch {
-    status.textContent = "Sorry, the blended data couldn't be loaded, so only the USDA entries are listed.";
-    if (app.s.source === "blend") app.s.source = "usda";
-  }
+  // The name index and the blend are needed up front: the blend's foods get a second entry in the list.
+  status.textContent = "Loading the food list…";
+  let index: FoodIndex | null = null;
+  const problems: string[] = [];
+  try { index = await loadIndex(root); } catch { problems.push("only the USDA foods are listed"); }
+  try { app.blend = await loadBlend(root); } catch { problems.push("the blended entries are missing"); }
+  status.textContent = problems.length ? `Sorry, some food data couldn't be loaded, so ${problems.join(" and ")}.` : "";
   const blended = new Set(Object.keys(app.blend?.foods ?? {}));
+  const entries: PlannerFood[] = index
+    ? Object.entries(index.foods).flatMap(([table, rows]) => rows.map(([id, name, cat, group, label, diet, flags]) => ({
+        id, name, cat, group, label, diet, table, srcName: name,
+        common: !!(flags & index!.flags.common), fortified: !!(flags & index!.flags.fortified),
+      }) as unknown as PlannerFood))
+    : app.data.foods;
+  const sources = (f: PlannerFood): Source[] => [f.table, ...(f.table === "usda" && blended.has(f.id) ? ["blend"] : [])];
+
+  /** Load the picked food's table (with all its foods) and put it in use. */
+  async function useTable(source: Source) {
+    const id = source === "blend" ? "usda" : source;
+    const t = app.tables.find((x) => x.id === id);
+    if (!t) return false;
+    if (app.data.table === id && app.data.foods.some((f) => f.basic === false)) return true;
+    status.textContent = `Loading ${t.tag}…`;
+    try {
+      app.setData(await loadTable(root, t, true));
+      status.textContent = "";
+      return true;
+    } catch {
+      status.textContent = `Sorry, the ${t.tag} data couldn't be loaded.`;
+      return false;
+    }
+  }
 
   // A link may carry a Planner day: Food Finder shows its first food only. A blended pick of a food the blend
-  // doesn't cover falls back to the USDA entry.
+  // doesn't cover falls back to the USDA entry; a table that isn't offered, to USDA.
+  if (!app.tables.some((t) => t.id === app.tableId())) app.s.source = "usda";
+  if (app.s.builder.length && !(await useTable(app.s.source))) app.s.source = "usda";
   app.s.builder = app.s.builder.filter((b) => app.foodById.has(b.id)).slice(0, 1);
   if (app.s.source === "blend" && !blended.has(app.s.builder[0]?.id ?? "")) app.s.source = "usda";
 
@@ -62,7 +90,7 @@ export async function startFinder(root: HTMLElement) {
     const f = it.food;
     const n = unitAmount(f, it.grams);
     const amount = f.unit === "g" ? `${fmt(n)} g` : `${fmt(n)} ${esc(n === 1 ? f.unit : unitLabel(f))} (${fmt(it.grams)} g)`;
-    $(root, "#finderReport").innerHTML = `${CAVEAT}<article class="result"><h3><span>${esc(f.name)} (${SOURCE_LABEL[app.s.source]}), ${amount}</span></h3>${reportHtml(app, charts, app.report([it]), [it])}${foodNotes(app, [it])}</article>`;
+    $(root, "#finderReport").innerHTML = `${dataCaveat(app)}<article class="result"><h3><span>${esc(f.name)} (${esc(sourceLabel(app, app.s.source))}), ${amount}</span></h3>${reportHtml(app, charts, app.report([it]), [it])}${foodNotes(app, [it])}</article>`;
   }
 
   // Typing an amount redraws the results, not the box (which would lose the cursor).
@@ -78,7 +106,8 @@ export async function startFinder(root: HTMLElement) {
     renderReport();
   });
 
-  function pick(p: Pick) {
+  async function pick(p: Pick) {
+    if (!(await useTable(p.source))) return;
     const f = app.foodById.get(p.id);
     if (!f) return;
     // Switching between a food's sources keeps the amount; a new food starts at one unit or 100 g, as in the Planner.
@@ -102,7 +131,10 @@ export async function startFinder(root: HTMLElement) {
   }
 
   const you = setupYou(app, changed);
-  const foodList = setupFoodList(app, changed, () => { changed(); foodList.refresh(); }, { blended: () => blended, picked, onPick: pick });
+  const foodList = setupFoodList(app, changed, () => { changed(); foodList.refresh(); }, {
+    entries: () => entries, sources, picked, onPick: (p) => void pick(p),
+    pickedName: () => (app.s.builder[0] ? app.foodById.get(app.s.builder[0].id)?.name ?? null : null),
+  });
 
   function showAll() {
     app.s.builder = app.s.builder.slice(0, 1);

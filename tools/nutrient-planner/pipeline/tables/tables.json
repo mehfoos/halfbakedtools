@@ -1,0 +1,11 @@
+{
+  "_comment": "Every food table the tools offer, all on an equal footing. build_index.py reads this, checks each table's files and writes data/foods/tables.json (this list with counts) and data/foods/index.json (every food's name, for Food Finder's list). Adding a table: build its two food files, add an entry here, rerun build_index.py. 'basic' is the Planner's list (foods it can suggest); 'more' is every other food in the table, for Food Finder. 'standards' are the target standards for which the table is the default.",
+  "tables": [
+    {"id": "usda", "tag": "USDA", "title": "USDA FoodData Central, SR Legacy (2018)", "country": "United States",
+     "basic": "foods.json", "more": "foods-usda-more.json", "refs": ["usda-sr", "usda-sr-doc"], "licence": "Public domain",
+     "standards": ["us"]},
+    {"id": "cofid", "tag": "CoFID", "title": "UK CoFID 2021 (McCance and Widdowson's)", "country": "United Kingdom",
+     "basic": "foods-cofid.json", "more": "foods-cofid-more.json", "refs": ["cofid-2021"], "licence": "Open Government Licence v3.0",
+     "standards": ["uk"]}
+  ]
+}

@@ -15,7 +15,7 @@ const standards = [uk, us, eu];
 
   <h2>In brief</h2>
   <ul class="prose">
-    <li><strong>Food values</strong> come from the US Department of Agriculture's food composition data <Fragment set:html={cite("usda-sr")} />. As a beta option, you can choose "USDA + UK CoFID, blended": for foods found to be the same food in the UK table <Fragment set:html={cite("cofid-2021")} />, each value is the median of the two tables, with the range, each table's value and any caveats shown. The matching and blending are automated, without manual human verification. Tables from other national food agencies are being prepared.</li>
+    <li><strong>Food values</strong> come from national food composition tables, each offered on its own and on an equal footing: the US Department of Agriculture's data <Fragment set:html={cite("usda-sr")} /> and the UK's CoFID <Fragment set:html={cite("cofid-2021")} />, with more tables being added. Each value is the table's own, as published; a nutrient a table doesn't give is shown as not available, never as zero, and where a table defines a nutrient differently from the targets (for example vitamin A or energy factors), the page says so. Food Finder lists every food of every table; the Planner lists each table's basic foods (no dishes, sweets, fried or coated foods, offal or raw meat), because it suggests foods. As a beta option, you can choose "USDA + UK CoFID, blended": for foods found to be the same food in the UK table <Fragment set:html={cite("cofid-2021")} />, each value is the median of the two tables, with the range, each table's value and any caveats shown. The matching and blending are automated, without manual human verification. </li>
     <li><strong>Targets</strong> come from the official UK, US or EU recommended intakes for your age and sex.</li>
     <li><strong>Food Finder</strong> shows one food, in the amount you choose, against the same targets, charts and notes as the Planner. Targets set as a share of energy (fat, saturates, carbohydrate) are worked out for the middle of your daily calorie range, because one food is only part of a day.</li>
     <li><strong>Suggestions</strong> (Planner) are found by an optimiser running in your browser that gets as close as it can to every target without going over an upper limit.</li>
@@ -109,7 +109,8 @@ const standards = [uk, us, eu];
         start from the Planner's defaults (female, 35, UK recommendations) until you open "About you" and change them.
       </p>
       <p>
-        Each food is listed once per food data source: USDA, and, for the foods the beta blend covers, "blended, beta"
+        Every food of every food table is listed, with its table in brackets, for example "(USDA)" or "(CoFID)"; the
+        foods the beta blend covers also have a "blended, beta" entry
         (the median of the USDA and UK CoFID values, with the range shown). Amounts start at one unit (an egg, a slice,
         a banana, weighed as USDA publishes the portion <Fragment set:html={cite("usda-sr")} />) or 100 g, as in the
         Planner's "Build my own", and can be changed.

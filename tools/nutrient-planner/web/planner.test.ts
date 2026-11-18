@@ -225,9 +225,9 @@ test("EU calories come from EFSA Table 1 for the exact age and sex", () => {
 });
 
 test("foods the NHS says to avoid: liver in pregnancy; swordfish in pregnancy and under 16", () => {
-  const liver = { usdaName: "Beef, variety meats and by-products, liver, cooked, braised" };
-  const sword = { usdaName: "Fish, swordfish, cooked, dry heat" };
-  const salmon = { usdaName: "Fish, salmon, Atlantic, farmed, cooked, dry heat" };
+  const liver = { srcName: "Beef, variety meats and by-products, liver, cooked, braised" };
+  const sword = { srcName: "Fish, swordfish, cooked, dry heat" };
+  const salmon = { srcName: "Fish, salmon, Atlantic, farmed, cooked, dry heat" };
   assert.equal(avoidReason(liver, { age: 30, life: "pregnancy" })?.ref, "nhs-meat");
   assert.equal(avoidReason(liver, { age: 30, life: "none" }), null);
   assert.equal(avoidReason(liver, { age: 30, life: "lactation" }), null);
@@ -252,11 +252,11 @@ test("US-fortified products are flagged and left out of the Everything preset; d
   assert.ok(fort.length > 50 && fort.every((f) => !f.common));
   assert.ok(fort.every((f) => !isOn(f, "all", new Set()) && isOn(f, "all", new Set([f.id]))));
   assert.ok(data.foods.filter((f) => !f.fortified).every((f) => isOn(f, "all", new Set())));
-  assert.ok(fort.some((f) => /Peanut butter.*vitamin and mineral fortified/i.test(f.usdaName)));
-  const soy = data.foods.find((f) => f.usdaName === "Soybeans, mature seeds, raw")!;
+  assert.ok(fort.some((f) => /Peanut butter.*vitamin and mineral fortified/i.test(f.srcName)));
+  const soy = data.foods.find((f) => f.srcName === "Soybeans, mature seeds, raw")!;
   assert.match(soy.name, /dry \(uncooked weight\)/);
-  assert.equal(data.foods.find((f) => /^Bread, crumbs, dry, grated, plain/.test(f.usdaName))!.maxGrams, 60);
-  assert.equal(data.foods.find((f) => /coconut cream, raw/.test(f.usdaName))!.diet, "vegan");
+  assert.equal(data.foods.find((f) => /^Bread, crumbs, dry, grated, plain/.test(f.srcName))!.maxGrams, 60);
+  assert.equal(data.foods.find((f) => /coconut cream, raw/.test(f.srcName))!.diet, "vegan");
 });
 
 test("EU sodium is EFSA's own value (2019, Table 12), not the borrowed US one", () => {
@@ -282,8 +282,8 @@ test("the Wider selection preset: common foods plus a few hundred ordinary ones,
   assert.ok(extra.length >= 300 && extra.length <= 500, `${extra.length} extra foods`);
   assert.ok(data.foods.filter((f) => f.common).every((f) => isOn(f, "wider", new Set())));
   assert.ok(extra.every((f) => f.wider && !f.fortified));
-  assert.ok(!extra.some((f) => /liver|dehydrated|powder|isolate|concentrate/i.test(f.usdaName)));
-  assert.equal(data.foods.find((f) => /with franks/.test(f.usdaName)), undefined);   // contains meat; was listed as vegan
+  assert.ok(!extra.some((f) => /liver|dehydrated|powder|isolate|concentrate/i.test(f.srcName)));
+  assert.equal(data.foods.find((f) => /with franks/.test(f.srcName)), undefined);   // contains meat; was listed as vegan
 });
 
 test("the preference for familiar foods can cost at most 1% of one target per plan", () => {
@@ -313,4 +313,18 @@ test("UK CoFID food file: same layout as the USDA file, no zero-filled codes, di
   assert.equal(raw.foods.find((f: any) => f.id === "milk").v[iodine], 30);
   const meat = /\b(beef|pork|chicken|bacon|ham|meat|fish|lard|dripping|anchov\w*|gelatin|cod liver)\b/i;
   for (const f of raw.foods) if (f.diet !== "meat") assert.ok(!meat.test(f.srcName.replace(/eggs, chicken/i, "")), `${f.srcName} is tagged ${f.diet}`);
+});
+
+test("links keep the food table and table food ids", () => {
+  const s = fresh();
+  s.source = "cofid";
+  s.builder = [{ id: "cofid:12-313", grams: 200 }, { id: "milk", grams: 150 }];
+  s.toggled = ["cofid:13-661"];
+  const back = decode(encode(s));
+  assert.equal(back.source, "cofid");
+  assert.deepEqual(back.builder, s.builder);
+  assert.deepEqual(back.toggled, s.toggled);
+  assert.equal(decode(encode(fresh())).source, "usda");
+  assert.equal(decode("src=blend").source, "blend");
+  assert.equal(decode("src=%3Cscript%3E").source, "usda", "a damaged table name is ignored");
 });

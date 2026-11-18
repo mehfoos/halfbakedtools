@@ -6,7 +6,26 @@ own table only: nothing is mixed in from other tables, and a nutrient the table 
 
 | Script | Table | Output |
 |---|---|---|
-| `cofid.py` | UK CoFID 2021 (McCance and Widdowson's integrated dataset) | `data/foods/foods-cofid.json`, `cofid_report.md` |
+| `../build_foods.py` | USDA SR Legacy | `data/foods/foods.json`, `foods-usda-more.json` |
+| `cofid.py` | UK CoFID 2021 (McCance and Widdowson's integrated dataset) | `data/foods/foods-cofid.json`, `foods-cofid-more.json`, `cofid_report.md` |
+
+## Every table on an equal footing (owner, 18 Nov 2026)
+
+No table is the anchor: each is offered on its own, in both tools. Each table has two files with the same nutrient keys:
+
+- `foods-<table>.json`: the **basic foods**, the Planner's list (the rules below), which it can suggest from;
+- `foods-<table>-more.json`: **every other food** in the table, for Food Finder only. Their diet is `meat` for meat
+  and fish, otherwise `unknown` (a mixed food can hide meat stock, gelatin or animal fat), and an unknown food is
+  shown only when no diet is chosen.
+
+`tables.json` lists the tables (tag, title, files, references, licence, the standards it is the default for).
+`build_index.py` checks the files and writes `data/foods/tables.json` (the list with counts) and
+`data/foods/index.json` (every food's name, for Food Finder's list; a table's values load when one of its foods is
+picked). Adding a table: build its two files, add it to `tables.json`, run `build_index.py`, add its reference.
+
+Ids: the planner's curated common foods keep the planner's id (`milk`) in every table, so presets and links carry
+across tables. Any other food is `<table>:<code>` (`cofid:13-661`; a reused code gets `:2`), the permanent id the
+blend also uses. The common list per table comes from the same-food links; the values are always the table's own.
 
 The tables are not downloaded by the scripts. Their formats and addresses change between releases, so when a new
 release appears (raise a GitHub issue), download it by hand, check its documentation for changed definitions, and

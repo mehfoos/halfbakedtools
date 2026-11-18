@@ -2,7 +2,7 @@
 import { matches, type PlannerFood } from "../foods.ts";
 import type { App, Item } from "./app.ts";
 import type { Charts } from "./charts.ts";
-import { CAVEAT, foodNotes } from "./notices.ts";
+import { dataCaveat, foodNotes } from "./notices.ts";
 import { reportHtml } from "./report.ts";
 import { $, $$, esc, fmt } from "./dom.ts";
 
@@ -40,7 +40,7 @@ export function setupBuilder(app: App, charts: Charts) {
   }
 
   function renderResult(its: Item[] = items()) {
-    result.innerHTML = its.length ? `${CAVEAT}<article class="result"><h3><span>Your day</span></h3>${reportHtml(app, charts, app.report(its, "hybrid"), its)}${foodNotes(app, its)}</article>` : "";
+    result.innerHTML = its.length ? `${dataCaveat(app)}<article class="result"><h3><span>Your day</span></h3>${reportHtml(app, charts, app.report(its, "hybrid"), its)}${foodNotes(app, its)}</article>` : "";
   }
 
   // Typing an amount updates that row and the results, without redrawing the table (which would lose the cursor).

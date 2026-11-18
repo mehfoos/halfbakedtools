@@ -6,6 +6,8 @@ import FoodList from "../components/FoodList.astro";
 import ShareBox from "../components/ShareBox.astro";
 import "../web/ui/page.css";
 import { site } from "@site/site.config.ts";
+import tableList from "../data/foods/tables.json";
+const tables = tableList.tables;
 const base = import.meta.env.BASE_URL;
 const tool = `${base}tools/nutrient-planner/`;
 ---
@@ -36,12 +38,13 @@ const tool = `${base}tools/nutrient-planner/`;
           <span class="sans" id="foodCount"></span>
         </div>
         <div class="food-head">
-          <div class="segmented" role="radiogroup" aria-label="Food data">
-            <label><input type="radio" name="source" value="usda" /><span>USDA data</span></label>
+          <div class="segmented" role="radiogroup" aria-label="Food table">
+            {tables.map((t) => <label><input type="radio" name="source" value={t.id} /><span title={t.title}>{t.tag}</span></label>)}
             <label><input type="radio" name="source" value="blend" /><span>USDA + UK CoFID, blended</span></label>
           </div>
           <span class="small muted sans" id="sourceStatus" role="status" aria-live="polite"></span>
         </div>
+        <p class="small muted sans" id="tableNote"></p>
         <Caveat kind="beta" id="blendNote" hidden>For foods found to be the same food in the USDA and UK (CoFID) tables, each nutrient is the median of the tables, with the range shown; the foods are marked <span class="tag">blended</span>. Matches and values were made by automated steps without manual human verification. Some nutrients are defined differently by each target standard, so the values follow the standard you chose. All other foods use the USDA data unchanged. <a href="https://github.com/mehfoos/halfbakedtools/tree/main/tools/nutrient-planner/pipeline/blend">How the blend is made</a></Caveat>
         <FoodList />
       </section>
