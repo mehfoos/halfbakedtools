@@ -14,6 +14,8 @@ own table only: nothing is mixed in from other tables, and a nutrient the table 
 | `fineli.py` | Finland Fineli release 20 (THL) | `foods-fineli(-more).json`, `fineli_report.md` |
 | `kfcdb.py` | Korea KFCDb 9.3, English (RDA) | `foods-kfcdb(-more).json`, `kfcdb_report.md` |
 | `japan.py` | Japan, 8th edition, 2023 supplement (MEXT), with `japan_glossary.json` | `foods-japan(-more).json`, `japan_report.md` |
+| `cnf.py` | Canada CNF 2026 (Health Canada; built on USDA data, with per-value source codes) | `foods-cnf(-more).json`, `cnf_report.md` |
+| `afcd.py` | Australia AFCD Release 3, Dec 2025 (FSANZ) | `foods-afcd(-more).json`, `afcd_report.md` |
 
 `common.py` holds the parts every converter shares (derived values, the basic-food rule, the raw-food default, the
 two output files and the report); `fetch.py` downloads an archived file from the `source-archive` release and checks

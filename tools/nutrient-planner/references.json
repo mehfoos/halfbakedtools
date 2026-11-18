@@ -448,6 +448,38 @@
           "label": "Archived copy (English names of food sources)"
         }
       ]
+    },
+    {
+      "id": "cnf-2026",
+      "pre": "Health Canada,",
+      "title": "Canadian Nutrient File (CNF), 2026",
+      "style": "italic",
+      "post": "Ottawa, ON, Canada, 2026 (released May 19, 2026).",
+      "url": "https://open.canada.ca/data/en/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109",
+      "licence": "Open Government Licence - Canada",
+      "usedFor": "Canadian food composition (the CNF food table)",
+      "archive": [
+        {
+          "asset": "cnf2026_cnf_fcen_all-files-data_2026.zip",
+          "label": "Archived copy (data files and guides)"
+        }
+      ]
+    },
+    {
+      "id": "afcd-3",
+      "pre": "Food Standards Australia New Zealand,",
+      "title": "Australian Food Composition Database, Release 3",
+      "style": "italic",
+      "post": "Canberra, ACT, Australia, Dec. 2025.",
+      "url": "https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/australian-food-composition-database-download-excel-files",
+      "licence": "FSANZ; Creative Commons Attribution 4.0 Australia on its website, the dataset's own licence to be confirmed",
+      "usedFor": "Australian food composition (the AFCD food table)",
+      "archive": [
+        {
+          "asset": "afcd3_AFCD_Release_3_December_2025.zip",
+          "label": "Archived copy (Release 3 Excel files and guide)"
+        }
+      ]
     }
   ]
 }

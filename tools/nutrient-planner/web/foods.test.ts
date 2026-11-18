@@ -113,6 +113,14 @@ test("each table's values are its own, in the planner's units (spot checks again
   assert.equal(value("kfcdb", "A001001A010a", "energy"), 373);   // KFCDb: oat, polished, raw, 373 kcal
   assert.equal(value("japan", "01004", "lysine"), 0.62);         // MEXT: oatmeal, lysine 620 mg -> 0.62 g
   assert.equal(value("japan", "01004", "energy"), 350);          // MEXT: oatmeal, 350 kcal
+  assert.equal(value("cnf", "1413", "energy"), 382);             // CNF: instant oatmeal, dry, 382 kcal
+  assert.equal(value("cnf", "1413", "protein"), 12.98);
+  assert.equal(value("cnf", "1413", "carbohydrate"), 57.43);     // by difference 67.53 g minus fibre 10.1 g
+  assert.equal(value("cnf", "1413", "folate"), 107.6);           // dietary folate equivalents 107.6 µg
+  assert.equal(value("cnf", "1413", "lysine"), null);            // no lysine value: NA, not zero
+  assert.equal(value("afcd", "F006136", "energy"), 379.8);       // AFCD: oats, hulled, uncooked, 1589 kJ / 4.184
+  assert.equal(value("afcd", "F006136", "selenium"), 17);
+  assert.equal(value("afcd", "F006136", "lysine"), null);        // no amino acid values: NA, not zero
 });
 
 test("codes are labels, never numbers: trace and below-limit values are missing", () => {

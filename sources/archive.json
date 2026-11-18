@@ -741,6 +741,63 @@
       "sha256": "6cdf4190d6fa4a99d2e7d3124611724ec4cf69159563f88b35dc3c50dd416c63",
       "manual": "Downloaded from https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:02011R1169-20250401 and checked by the editor; attached to the release by the owner",
       "checked": "2026-11-18"
+    },
+    {
+      "file": "cnf2026_cnf_fcen_all-files-data_2026.zip",
+      "table": "Canadian Nutrient File (CNF), 2026 edition",
+      "publisher": "Health Canada",
+      "licence": "Open Government Licence - Canada (attribution: Contains information licensed under the Open Government Licence - Canada)",
+      "origin": "https://open.canada.ca/data/en/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109",
+      "originalName": "cnf_fcen_all-files-data_2026.zip (the nine relational CSV files and the English and French user guide and database structure PDFs; dataset released 2026-05-19, modified 2026-10-04)",
+      "sha256": "f5faad8977ee6bbdd9d69c8649077cacd87d8658ad200509a4047db1e29edcdd",
+      "fetch": "https://open.canada.ca/data/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109/resource/019f2a90-e3a9-489d-b6e1-f74f4ba1d006/download/cnf_fcen_all-files-data_2026.zip",
+      "checked": "2026-11-18"
+    },
+    {
+      "file": "afcd3_AFCD_Release_3_December_2025.zip",
+      "table": "Australian Food Composition Database (AFCD), Release 3",
+      "publisher": "Food Standards Australia New Zealand (FSANZ)",
+      "licence": "To be confirmed: Creative Commons Attribution 4.0 Australia on the FSANZ website copyright page; the older AFCD data user licence page names CC BY-SA 3.0 Australia. The Release 3 files state no licence.",
+      "origin": "https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/australian-food-composition-database-download-excel-files",
+      "originalName": "the six Release 3 Excel files (food details, nutrient profiles, recipes, nutrient details, food group information, reference list) and the 'About the Australian Food Composition Database - Release 3' PDF, as published (page last updated 23 Dec 2025), zipped here",
+      "zip": [
+        {
+          "name": "AFCD Release 3 - Food Details.xlsx",
+          "fetch": "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Food%20Details.xlsx",
+          "sha256": "69aa096c45cb0699db60a9c544442312e9ff09af587b99c42dc78bc26f689629"
+        },
+        {
+          "name": "AFCD Release 3 - Food group information.xlsx",
+          "fetch": "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Food%20group%20information.xlsx",
+          "sha256": "e2d0507394ce5c2abe1f186d36058affa6d532c0d50ea18cf98908e368e17e90"
+        },
+        {
+          "name": "AFCD Release 3 - Nutrient details.xlsx",
+          "fetch": "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Nutrient%20details.xlsx",
+          "sha256": "7c455129a90e65d29840ecd188fa223cca8bdf0729b21efebc286884d69fafaa"
+        },
+        {
+          "name": "AFCD Release 3 - Nutrient profiles.xlsx",
+          "fetch": "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Nutrient%20profiles.xlsx",
+          "sha256": "14cb3e73dbf58987b440e6299624c0fefd7a4e61591fc1f753995d9534e0efc9"
+        },
+        {
+          "name": "AFCD Release 3 - Recipes.xlsx",
+          "fetch": "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Recipes.xlsx",
+          "sha256": "81925cd790b4d914e9016fe71e273e4b5823cbcea7d6aafc277ebbc160e762ef"
+        },
+        {
+          "name": "AFCD Release 3 - Reference List.xlsx",
+          "fetch": "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Reference%20List.xlsx",
+          "sha256": "970bd41a4a85f172ca152c61561027c7970c70ed179e757a7b3c541e02497160"
+        },
+        {
+          "name": "About the Australian Food Composition Database - Release 3.pdf",
+          "fetch": "https://www.foodstandards.gov.au/sites/default/files/2025-12/About%20the%20Australian%20Food%20Composition%20Database%20-%20Release%203.pdf",
+          "sha256": "4bab2ee27256e0f4976038c912697a35e55edd0387759c05d551baf621e1a78a"
+        }
+      ],
+      "checked": "2026-11-18"
     }
   ]
 }

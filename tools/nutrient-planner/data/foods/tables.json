@@ -135,6 +135,38 @@
    "foods": 2538,
    "basicFoods": 1393,
    "generated": "2026-11-18"
+  },
+  {
+   "id": "cnf",
+   "tag": "CNF",
+   "title": "Canada CNF 2026 (Health Canada)",
+   "country": "Canada",
+   "basic": "foods-cnf.json",
+   "more": "foods-cnf-more.json",
+   "refs": [
+    "cnf-2026"
+   ],
+   "licence": "Open Government Licence - Canada (Health Canada)",
+   "standards": [],
+   "foods": 5993,
+   "basicFoods": 2438,
+   "generated": "2026-11-18"
+  },
+  {
+   "id": "afcd",
+   "tag": "AFCD",
+   "title": "Australia AFCD Release 3 (FSANZ, 2025)",
+   "country": "Australia",
+   "basic": "foods-afcd.json",
+   "more": "foods-afcd-more.json",
+   "refs": [
+    "afcd-3"
+   ],
+   "licence": "Food Standards Australia New Zealand (licence to be confirmed)",
+   "standards": [],
+   "foods": 1588,
+   "basicFoods": 829,
+   "generated": "2026-11-18"
   }
  ]
 }
