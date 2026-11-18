@@ -4,7 +4,7 @@
 import { splitAssessable, type ResolvedTarget } from "../solver.ts";
 import type { Standard } from "../profiles.ts";
 import { applySource, dietOk, foodRange, isOn, type BlendData, type FoodsData, type PlannerFood } from "../foods.ts";
-import { ORDER, analyse, dayBounds, gapsOf, totals, type Report } from "../analysis.ts";
+import { ORDER, analyse, dayBounds, gapsOf, totals, useRangeEnergy, type Report } from "../analysis.ts";
 import { personFrom, targetsFor, type Person } from "../person.ts";
 import { decode, encode, fresh, loadRemembered, remember, type PageKind, type Settings } from "../state.ts";
 import { referencesFor } from "@site/lib/references.ts";
@@ -13,6 +13,15 @@ import { $ } from "./dom.ts";
 
 /** In-text citation of one of this tool's references, e.g. cite("nhs-fish") -> [12]. */
 export const { cite } = referencesFor(references as Parameters<typeof referencesFor>[0]);
+
+/**
+ * Which calories a target set as a share of energy (fat, saturates, carbohydrate; EU thiamin and niacin) is worked
+ * out for. Official advice is a share of the whole day's intake, so:
+ *  - "day": the foods' own calories (suggestions, which are always inside the person's calorie range);
+ *  - "range": the middle of the person's calorie range (Food Finder: one food is only part of a day);
+ *  - "hybrid": "range" while the day is below the person's calorie range, then "day" ("Build my own").
+ */
+export type EnergyBasis = "day" | "range" | "hybrid";
 
 /** A food and how much of it, in grams. */
 export type Item = { food: PlannerFood; grams: number };
@@ -34,7 +43,7 @@ export type App = {
   dietFoods(): PlannerFood[];                     // foods allowed by the diet setting
   selectedFoods(): PlannerFood[];                 // ... of those, the ones switched on
   items(list: { id: string; grams: number }[]): Item[];
-  report(items: Item[]): Report;                  // a day's foods measured against the targets
+  report(items: Item[], basis?: EnergyBasis): Report;  // a day's foods measured against the targets
 
   /** Put the values of the chosen food source (and, for the blend, standard) on the foods. */
   applySource(): void;
@@ -62,14 +71,15 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
     selectedFoods: () => app.dietFoods().filter((f) => isOn(f, app.s.base, app.toggled)),
     items: (list) => list.map((b) => ({ food: app.foodById.get(b.id), grams: b.grams })).filter((x): x is Item => !!x.food),
 
-    report(items) {
-      // Food Finder shows one food, which is only part of a day, so a target set as a share of energy (fat,
-      // saturates, carbohydrate; EU thiamin and niacin) is worked out for the middle of the person's daily calorie
-      // range, as the targets table shows it, not for the food's own calories. The Planner measures a day against
-      // its own calories, which its suggestions keep inside that range.
+    report(items, basis = app.kind === "finder" ? "range" : "day") {
+      // Targets set as a share of energy: see EnergyBasis. Dropping minPerKcal/maxPerKcal leaves each target at its
+      // value for the middle of the calorie range (resolveTargets works it out there), as the targets table shows it.
       const all = app.targets(true);
       const perKcal = new Set(all.filter((t) => t.minPerKcal !== undefined || t.maxPerKcal !== undefined).map((t) => t.key));
-      const targets = app.kind === "finder" ? all.map((t) => ({ ...t, minPerKcal: undefined, maxPerKcal: undefined })) : all;
+      const sums = totals(items, ORDER);
+      const p = app.person();
+      const useRange = useRangeEnergy(basis, sums.energy ?? 0, p.band.low);
+      const targets = useRange ? all.map((t) => ({ ...t, minPerKcal: undefined, maxPerKcal: undefined })) : all;
       // A nutrient is "not checked" if too few of the foods in play have data for it. In Food Finder every food in
       // the list is in play (there are no presets).
       const selected = app.kind === "finder" ? app.dietFoods() : app.selectedFoods();
@@ -77,8 +87,11 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
       // In the Planner, vitamin D is reported on its own line unless the person has asked for it to be planned from
       // food. Food Finder plans nothing, so vitamin D is an ordinary row there.
       const aside = new Set(app.s.vitaminD || app.kind === "finder" ? [] : ["vitaminD"]);
-      const rep = analyse(totals(items, ORDER), targets, new Set(notAssessed.map((t) => t.key)), app.nutrientMeta, aside, gapsOf(items, ORDER));
-      if (app.kind === "finder") for (const r of rep.rows) if (perKcal.has(r.key)) r.ofEnergy = true;
+      const rep = analyse(sums, targets, new Set(notAssessed.map((t) => t.key)), app.nutrientMeta, aside, gapsOf(items, ORDER));
+      if (useRange) {
+        for (const r of rep.rows) if (perKcal.has(r.key)) r.ofEnergy = true;
+        if (perKcal.size) rep.energyBasis = { kcal: p.midKcal, why: basis === "range" ? "food" : "partial" };
+      }
       // With blended foods, the day's total also has a lowest and highest possible value (see dayBounds).
       if (app.blend && items.some((i) => i.food.blend)) {
         const std = app.person().standard.id;

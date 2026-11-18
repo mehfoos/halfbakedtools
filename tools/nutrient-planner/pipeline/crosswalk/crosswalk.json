@@ -162,10 +162,10 @@
     {
       "food": "egg",
       "verdict": "accept",
-      "code": "12-937",
-      "name": "Eggs, chicken, whole, raw",
-      "note": "Chicken egg, whole, raw.",
-      "reviewed": "2026-11-17; automated review, without manual human verification (beta)",
+      "code": "12-940",
+      "name": "Eggs, chicken, whole, boiled",
+      "note": "Hard-boiled whole egg; matches the blend's review (c:egg, same): composition agrees. Re-matched on 18 Nov 2026 when the planner food switched to a cooked USDA record (was 12-937 Eggs, chicken, whole, raw).",
+      "reviewed": "2026-11-18; automated review, without manual human verification (beta)",
       "sameFood": true
     },
     {
@@ -221,11 +221,11 @@
     },
     {
       "food": "kale",
-      "verdict": "check",
-      "code": "13-234",
-      "name": "Curly kale, raw",
-      "note": "Curly kale, raw; calcium 254 vs 130 mg (variety?).",
-      "reviewed": "2026-11-17; automated review, without manual human verification (beta)",
+      "verdict": "accept",
+      "code": "13-649",
+      "name": "Curly kale, boiled in unsalted water",
+      "note": "Boiled kale without salt; CoFID names the type (curly), USDA doesn't; matches the blend's review (c:kale, same): composition agrees. Re-matched on 18 Nov 2026 when the planner food switched to a cooked USDA record (was 13-234 Curly kale, raw).",
+      "reviewed": "2026-11-18; automated review, without manual human verification (beta)",
       "sameFood": true
     },
     {
@@ -267,10 +267,10 @@
     {
       "food": "onion",
       "verdict": "accept",
-      "code": "13-499",
-      "name": "Onions, raw",
-      "note": "Onions, raw.",
-      "reviewed": "2026-11-17; automated review, without manual human verification (beta)",
+      "code": "13-500",
+      "name": "Onions, boiled in unsalted water",
+      "note": "Onions boiled in unsalted water; matches the blend's review (c:onion, same): composition agrees. Re-matched on 18 Nov 2026 when the planner food switched to a cooked USDA record (was 13-499 Onions, raw).",
+      "reviewed": "2026-11-18; automated review, without manual human verification (beta)",
       "sameFood": true
     },
     {
@@ -294,11 +294,11 @@
     {
       "food": "mushrooms",
       "verdict": "check",
-      "code": "13-505",
-      "name": "Mushrooms, white, raw",
-      "note": "Same food; protein 1.0 vs 3.1 g. Possibly a different nitrogen-to-protein factor; not yet checked.",
-      "reviewed": "2026-11-17; automated review, without manual human verification (beta)",
-      "sameFood": true
+      "code": "13-506",
+      "name": "Mushrooms, white, stewed in unsalted water",
+      "note": "CoFID's cooked white mushrooms are stewed in unsalted water, USDA's are boiled and drained: the cooking differs, so kept separate, as in the blend's review (c:mushrooms, similar). Re-matched on 18 Nov 2026 when the planner food switched to a cooked USDA record (was 13-505 Mushrooms, white, raw).",
+      "reviewed": "2026-11-18; automated review, without manual human verification (beta)",
+      "sameFood": false
     },
     {
       "food": "uv-mushrooms",
@@ -472,10 +472,10 @@
     {
       "food": "courgette",
       "verdict": "accept",
-      "code": "13-627",
-      "name": "Courgette, raw",
-      "note": "Raw.",
-      "reviewed": "2026-11-17; automated review, without manual human verification (beta)",
+      "code": "13-628",
+      "name": "Courgette, boiled in unsalted water",
+      "note": "Courgette boiled in unsalted water; USDA includes the skin, CoFID doesn't say; matches the blend's review (c:courgette, same): composition agrees. Re-matched on 18 Nov 2026 when the planner food switched to a cooked USDA record (was 13-627 Courgette, raw).",
+      "reviewed": "2026-11-18; automated review, without manual human verification (beta)",
       "sameFood": true
     },
     {
@@ -520,11 +520,11 @@
     },
     {
       "food": "leeks",
-      "verdict": "check",
-      "code": "13-624",
-      "name": "Leeks, raw",
-      "note": "Water 90.7 vs 83.0 g: USDA includes lower leaf; part may differ.",
-      "reviewed": "2026-11-17; automated review, without manual human verification (beta)",
+      "verdict": "accept",
+      "code": "13-625",
+      "name": "Leeks, boiled in unsalted water",
+      "note": "Leeks boiled in unsalted water; USDA names the part (bulb and lower leaf), CoFID doesn't; matches the blend's review (c:leeks, same): composition agrees. Re-matched on 18 Nov 2026 when the planner food switched to a cooked USDA record (was 13-624 Leeks, raw).",
+      "reviewed": "2026-11-18; automated review, without manual human verification (beta)",
       "sameFood": true
     },
     {

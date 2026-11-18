@@ -89,7 +89,7 @@ export function setupYou(app: App, onChange: () => void) {
         <thead><tr><th>Nutrient</th><th class="num">Official</th><th>Your minimum</th><th>Your maximum</th></tr></thead><tbody>
         ${ts.map((t) => `<tr><td>${esc(t.label)} <span class="muted">${esc(t.unit)}</span>${t.custom ? '<span class="badge">custom</span>' : ""}</td>
           <td class="num">${range(official.get(t.key))}</td><td>${input(t, "min")}</td><td>${input(t, "max")}</td></tr>`).join("")}
-        </tbody></table></div>${ts.some(ofEnergy) ? `<p class="small muted sans">* Set as a share of energy. Shown here for ${midKcal} kcal (the middle of your calorie range); each plan is checked against its own calories.</p>` : ""}</div></details>`;
+        </tbody></table></div>${ts.some(ofEnergy) ? `<p class="small muted sans">* Set as a share of energy. Shown here for ${midKcal} kcal (the middle of your calorie range)${app.kind === "finder" ? ", the figure Food Finder uses" : "; suggestions, and days you build once they reach your calorie range, are checked against their own calories"}.</p>` : ""}</div></details>`;
     }).join("");
   }
 

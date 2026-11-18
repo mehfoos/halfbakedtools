@@ -43,23 +43,25 @@ const spread = (r: Row) => {
 };
 
 /** Nutrient, amount, target and status, one row each. */
-/** The footnote for targets set as a share of energy: the day's own calories, or (Food Finder) a fixed figure. */
-const energyNote = (finderKcal?: number) => finderKcal === undefined
+/** The footnote for targets set as a share of energy: the day's own calories, or the middle of the calorie range. */
+const energyNote = (b?: Report["energyBasis"]) => !b
   ? "* Set as a share of energy, so worked out for this day's calories."
-  : `* Set as a share of energy, so worked out for ${int(Math.round(finderKcal))} kcal, the middle of your daily calorie range (see About you), not for this food's own calories.`;
+  : `* Set as a share of energy, so worked out for ${int(Math.round(b.kcal))} kcal, the middle of your daily calorie range (see About you), ${b.why === "food"
+    ? "not for this food's own calories, because one food is only part of a day."
+    : "because this day is still below your calorie range. Once it reaches the range, the day's own calories are used."}`;
 
-const table = (rows: Row[], finderKcal?: number) => `<div class="table-scroll"><table><thead><tr><th>Nutrient</th><th class="num">Amount</th><th class="num">Target</th><th></th></tr></thead><tbody>${
+const table = (rows: Row[], basis?: Report["energyBasis"]) => `<div class="table-scroll"><table><thead><tr><th>Nutrient</th><th class="num">Amount</th><th class="num">Target</th><th></th></tr></thead><tbody>${
   rows.map((r) => `<tr><td>${esc(r.label)}${r.custom ? '<span class="badge">custom</span>' : ""}</td><td class="num">${amount(r)}${spread(r)}</td><td class="num muted">${targetText(r)}${r.ofEnergy ? " *" : ""}</td><td>${chip(r)}</td></tr>`).join("")
-}</tbody></table></div>${rows.some((r) => r.low !== undefined) ? `<p class="small muted sans">Range: the day's total if every blended food were at the lowest, or the highest, value the two tables publish. These are bounds: the foods are unlikely to all sit at an extreme together, so the figure above, which uses each food's median, is the one the status is based on.</p>` : ""}${rows.some((r) => r.ofEnergy) ? `<p class="small muted sans">${energyNote(finderKcal)}</p>` : ""}${
+}</tbody></table></div>${rows.some((r) => r.low !== undefined) ? `<p class="small muted sans">Range: the day's total if every blended food were at the lowest, or the highest, value the two tables publish. These are bounds: the foods are unlikely to all sit at an extreme together, so the figure above, which uses each food's median, is the one the status is based on.</p>` : ""}${rows.some((r) => r.ofEnergy) ? `<p class="small muted sans">${energyNote(basis)}</p>` : ""}${
   rows.some((r) => r.status === "na" || r.missing) ? `<p class="small muted sans">NA: no food in this day has data for this nutrient. It is not zero. ≥: some foods have no data for this nutrient, so the real amount is at least the figure shown and may be higher (hover for how many foods). Where that could change the answer, the status says "unclear".</p>` : ""}`;
 
 export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[]) {
   const person = app.person();
   const others = otherStandards(person, app.standards);
   // The other standards' targets, worked out for this day's calories.
-  // In Food Finder they are worked out for the middle of each standard's calorie range (0 = no day's figure).
-  const finderKcal = app.kind === "finder" ? person.midKcal : undefined;
-  const cmp = comparisonTargets(person, app.s, app.standards, app.data.nutrients, app.kind === "finder" ? 0 : rep.energy);
+  // Worked out for the same calories as the main standard's targets (0 = the middle of the calorie range).
+  const basis = rep.energyBasis;
+  const cmp = comparisonTargets(person, app.s, app.standards, app.data.nutrients, basis ? 0 : rep.energy);
 
   // Legend, the compare tick box, how many targets each group meets, and anything near a safety limit.
   function sidePanel() {
@@ -99,7 +101,7 @@ export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[])
     return `<details><summary>${esc(g.title)} <span class="summary-note">${t.of ? `${t.met} of ${t.of} met${gaps ? `, ${gaps}` : ""}` : gaps ? gaps : `${rows.length} values`}</span></summary><div class="details-body">
         ${charts.chart(detailAxes(rep, g.keys, cmp, fmt), `${g.title}: share of each target reached`, noDataLabels(rep, g.keys, true))}
         ${id === "vitamins" ? `<p class="small sans muted">Vitamin D targets cover all vitamin D from food (D2 and D3 together). The difference matters mainly for supplements, where D3 raises blood levels more effectively. B5 (pantothenic acid) has a US target only; biotin (B7) isn't shown because the food data rarely includes it.</p>` : ""}
-        ${table(rows, finderKcal)}
+        ${table(rows, basis)}
         ${charts.contributionSection(items, g.keys, g.id === "amino" ? "these amino acids" : `these ${g.title.toLowerCase()}`)}</div></details>`;
   }
 
@@ -125,5 +127,5 @@ export function reportHtml(app: App, charts: Charts, rep: Report, items: Item[])
       ${charts.contributionSection(items, OVERVIEW_KEYS, "energy, fat, carbs, fibre, protein and salt")}
       ${nutrientNotices(app, rep)}
       ${groupSection("vitamins")}${groupSection("minerals")}${groupSection("amino")}${groupSection("fats")}
-      <details><summary>All values <span class="summary-note">including fats and values without targets</span></summary><div class="details-body">${table(rep.rows.filter((r) => r.key !== "energy"), finderKcal)}</div></details>`;
+      <details><summary>All values <span class="summary-note">including fats and values without targets</span></summary><div class="details-body">${table(rep.rows.filter((r) => r.key !== "energy"), basis)}</div></details>`;
 }

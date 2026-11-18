@@ -33,6 +33,14 @@ export type Row = {
   status: "met" | "short" | "low" | "over" | "within" | "info" | "unassessed" | "unclear" | "na";
 };
 
+/**
+ * Whether targets set as a share of energy are worked out for the middle of the calorie range rather than the
+ * foods' own calories: always for "range" (Food Finder), never for "day" (suggestions), and for "hybrid" ("Build my
+ * own") only while the day's calories are below the bottom of the person's range.
+ */
+export const useRangeEnergy = (basis: "day" | "range" | "hybrid", dayKcal: number, rangeLow: number) =>
+  basis === "range" || (basis === "hybrid" && dayKcal < rangeLow);
+
 export type Report = {
   rows: Row[];
   byKey: Map<string, Row>;
@@ -46,6 +54,9 @@ export type Report = {
   unclear: Row[];           // targets that can't be confirmed because some foods have no data
   noData: Row[];            // targets with no amount at all because no food in the day has data
   aside: Row[];             // targets reported separately (vitamin D, unless the person asks to plan for it)
+  /** Set when targets given as a share of energy were worked out for the middle of the person's calorie range
+   *  instead of these foods' own calories: "food" (Food Finder) or "partial" (a built day still below the range). */
+  energyBasis?: { kcal: number; why: "food" | "partial" };
 };
 
 /** Per nutrient, the sum of the amounts that are known. A food with no value adds nothing here, and is counted by `gapsOf`. */

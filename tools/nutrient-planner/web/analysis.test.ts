@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyse, dayBounds, gapsOf, gapWords, tally, totals } from "./analysis.ts";
+import { analyse, dayBounds, gapsOf, gapWords, tally, totals, useRangeEnergy } from "./analysis.ts";
 import { detailAxes, noDataLabels } from "./chart-axes.ts";
 import type { Food, ResolvedTarget } from "./solver.ts";
 
@@ -109,4 +109,15 @@ test("day bounds: foods with a published range widen the day's total, others sta
   assert.deepEqual(b.iron, { low: 1 * 2 + 1, high: 3 * 2 + 1 });              // (1 g x 2) + 1 and (3 x 2) + 1 per 100 g amounts
   assert.equal(b.energy, undefined);                                           // no range for energy: nothing to show
   assert.deepEqual(dayBounds([single], ["iron"], range), {});
+});
+
+test("share-of-energy targets: which calories they are worked out for", () => {
+  // Food Finder: always the middle of the range; suggestions: always the day's own calories.
+  assert.equal(useRangeEnergy("range", 2500, 1800), true);
+  assert.equal(useRangeEnergy("day", 155, 1800), false);
+  // "Build my own": the range while the day is below it, then the day's own calories.
+  assert.equal(useRangeEnergy("hybrid", 155, 1800), true);
+  assert.equal(useRangeEnergy("hybrid", 1799, 1800), true);
+  assert.equal(useRangeEnergy("hybrid", 1800, 1800), false);
+  assert.equal(useRangeEnergy("hybrid", 2600, 1800), false);
 });
