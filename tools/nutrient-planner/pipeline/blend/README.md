@@ -1,4 +1,4 @@
-# Blended food list: describing and matching foods
+# Blended food list: describing, matching and blending foods (beta)
 
 The aim (not built yet) is one food list where each value is drawn from every national table that has the **same**
 food, shown as a median with the range across tables and an account of where each number came from. The full plan,
@@ -26,6 +26,13 @@ food the planner uses, in every table, in the same terms. **When in doubt, foods
 | `matches/<table>.csv` | **The decisions**: one per concept, with grade, reason, who decided, date, and the evidence fingerprint it was reviewed against | hand, reviewed |
 | `matches/evidence-<table>.csv`, `matches/REVIEW-<table>.md` | Evidence for each decided record and the top candidates; the review report | **generated** |
 | `test_matches.py` | Decisions are complete, acknowledge every difference, and were reviewed against the current evidence | hand |
+| `definitions.csv` | Every definition a value can have (e.g. energy with US Atwater factors vs EU factors), with a readable label, INFOODS tagname, unit and meaning | hand, reviewed |
+| `components.csv` | For each table and planner nutrient: the column or formula, the definition it gives, any condition, and the section of the table's own documentation that says so | hand, reviewed |
+| `borrowed.csv` | When a table's record is borrowed from another table we use (so it counts once) | hand, reviewed |
+| `values.py` | Reads a value under its definition; evaluates the formulas safely; missing and trace are never zero | hand |
+| `blend.py` | Builds the blended values (step 5) | hand |
+| `output/blended-<table>.json`, `output/audit-<table>.csv`, `output/PREVIEW-<table>.md` | Blended values with ranges and contributions; the full trail per value; explanations and a check of the definitions | **generated** |
+| `test_blend.py` | Definitions are consistent and cited; formulas evaluate; blending rules; the output follows its rules | hand |
 
 Run `python3 -I tools/nutrient-planner/pipeline/blend/build_facets.py` after changing the vocabulary, then
 `match.py` (below), then `npm test`.
@@ -110,6 +117,36 @@ separate: that is the rule working ("when in doubt, keep separate"), and they st
 
 `../crosswalk/crosswalk.json` (17 Nov) is kept only for the single-table CoFID file, where "the planner's food"
 can be a UK record whose composition differs. Blending uses `matches/` only.
+
+## Definitions (step 4)
+
+Tables use one word for different measurements. INFOODS and EuroFIR treat a component measured or calculated
+differently as a different component, so **values are only ever combined within one definition**. Each value is
+stored under its definition (`definitions.csv`); `components.csv` says where each table gives it, citing its
+documentation (USDA SR28 Documentation and User Guide, which SR Legacy refers to; CoFID 2021 user guide).
+
+USDA SR Legacy and CoFID 2021, by planner nutrient:
+
+| Same definition: blended | Different: kept apart | Converted to a shared definition |
+|---|---|---|
+| protein, fat, saturated fat, fibre (AOAC), all minerals, retinol, vitamin K1, vitamin C, riboflavin, niacin (preformed), niacin equivalents, total folate, vitamin B12, linoleic acid, alpha-linolenic acid, EPA, DHA | energy (US Atwater vs EU factors), carbohydrate (by difference vs available as monosaccharides), sugars (by weight vs monosaccharide equivalents), vitamin E (alpha-tocopherol vs alpha-tocopherol equivalents), vitamin D for meat (CoFID adds 25-hydroxy D3), thiamin, vitamin B6 and pantothenic acid (CoFID states the salt form; USDA doesn't) | vitamin A: both tables give retinol equivalents *and* retinol activity equivalents, each calculated from published retinol and carotenoids |
+
+Fallbacks are separate definitions too: USDA's C18:2 "undifferentiated" when n-6 isn't given, CoFID's total C20:5
+when n-3 isn't given, USDA's label fat when total lipid isn't given.
+
+## Blending (step 5, beta: not yet used by the planner)
+
+For each food matched *same* or *equivalent*, and each definition, `blend.py` gives the **median** of the tables'
+values (owner's decision; with two tables, their average) and the range. A value is left out, with the reason shown,
+when it is missing, "present, amount not known", trace, or **borrowed** from a table already used: CoFID records
+whose main data reference cites USDA data (13 of the 142) count once. Values more than two-fold apart are flagged,
+never dropped. Salt and EPA + DHA are worked out from the blended parts. Each value's explanation says which tables
+and codes it came from and what was left out; the audit CSV traces every number to the table, file checksum, code,
+column and published cell.
+
+The preview's **check of the definitions** compares the tables across the matched foods: same-definition pairs
+centre near 1 (protein 0.97, calcium and potassium 1.00); different definitions show the expected gap (EU-factor
+energy about 9% lower; vitamin E equivalents about 26% higher).
 
 ## Permanent ids
 

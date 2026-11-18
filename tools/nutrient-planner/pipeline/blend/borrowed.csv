@@ -1,0 +1,2 @@
+table,borrowed_from,pattern,note
+cofid-2021,usda-sr-legacy,\bUSDA\b|\bAgricultur(e|al) Handbook\b|\bHaytowitz\b|\bGebhardt\b,"CoFID's main data reference cites USDA data (SR releases or Agriculture Handbook No. 8, which SR continues). CoFID doesn't say which values came from it, so all of that record's values count as borrowed"

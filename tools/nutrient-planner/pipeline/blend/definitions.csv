@@ -1,0 +1,54 @@
+definition,label,key,infoods,unit,meaning
+ENERC_KCAL:atwater-specific,Energy (US Atwater factors),energy,ENERC_KCAL,kcal,"Energy from protein, fat and carbohydrate (by difference) with Atwater food-specific factors; for multi-ingredient processed foods, industry factors 4/4/9"
+ENERC_KCAL:eu-factors,Energy (EU factors),energy,ENERC_KCAL,kcal,"Energy from protein 4, fat 9, available carbohydrate as monosaccharide equivalents 3.75 and alcohol 7 kcal/g"
+PROCNT,Protein,protein,PROCNT,g,Total nitrogen x a food-specific conversion factor (6.25 unless stated); non-protein nitrogen removed for mushrooms
+FAT,Fat,fat,FAT,g,"Total fat (all lipid components extracted), not only triglycerides"
+FAT:nlea,Fat (US label definition),fat,FAT_NLEA,g,Total fatty acids expressed as triglycerides (US label fat)
+FASAT,Saturated fat,satfat,FASAT,g,Total saturated fatty acids per 100 g food
+CHOAVLDF,"Carbohydrate (by difference, without fibre)",carbohydrate,CHOAVLDF,g,"Available carbohydrate by difference: 100 minus water, protein, fat, ash, alcohol and total dietary fibre"
+CHOCDF,"Carbohydrate (by difference, with fibre)",carbohydrate,CHOCDF,g,"Carbohydrate by difference, including fibre (used where the food has no fibre value)"
+CHOAVLM,"Carbohydrate (available, as monosaccharides)",carbohydrate,CHOAVLM,g,"Available carbohydrate as the sum of analysed starch, sugars and oligosaccharides, in monosaccharide equivalents (about 5-10% above weight for starch and disaccharides)"
+FIBTG,Fibre (AOAC),fibre,FIBTG,g,Total dietary fibre by AOAC enzymatic-gravimetric methods (includes resistant starch and lignin)
+SUGAR,Sugars (by weight),sugars,SUGAR,g,"Total free mono- and disaccharides, by weight"
+SUGARM,Sugars (as monosaccharides),sugars,SUGARM,g,Total free mono- and disaccharides in monosaccharide equivalents (disaccharides counted about 5% heavier)
+CA,Calcium,calcium,CA,mg,Calcium
+FE,Iron,iron,FE,mg,Iron
+MG,Magnesium,magnesium,MG,mg,Magnesium
+P,Phosphorus,phosphorus,P,mg,Phosphorus
+K,Potassium,potassium,K,mg,Potassium
+NA,Sodium,sodium,NA,mg,Sodium
+ZN,Zinc,zinc,ZN,mg,Zinc
+CU,Copper,copper,CU,mg,Copper
+MN,Manganese,manganese,MN,mg,Manganese
+SE,Selenium,selenium,SE,µg,Selenium
+ID,Iodine,iodine,ID,µg,Iodine
+VITA_RAE,Vitamin A (retinol activity equivalents),vitaminA,VITA_RAE,µg,Retinol activity equivalents: retinol + beta-carotene/12 + other provitamin A carotenoids/24 (IOM 2001)
+VITA,Vitamin A (retinol equivalents),vitaminA,VITA,µg,Retinol equivalents: retinol + beta-carotene/6 + other provitamin A carotenoids/12
+RETOL,Retinol,retinol,RETOL,µg,Retinol (all-trans-retinol equivalent)
+VITD,Vitamin D (D2 + D3),vitaminD,VITD,µg,Vitamin D2 + D3 (no 25-hydroxy vitamin D)
+VITD:with-25OHD3,Vitamin D (including 25-hydroxy D3),vitaminD,VITDA,µg,"Vitamin D3 + 5 x 25-hydroxy vitamin D3 (vitamin D activity, meat)"
+TOCPHA,Vitamin E (alpha-tocopherol),vitaminE,TOCPHA,mg,Alpha-tocopherol only
+VITE,Vitamin E (alpha-tocopherol equivalents),vitaminE,VITE,mg,Alpha-tocopherol equivalents (other tocopherols and tocotrienols weighted by activity)
+VITK1,Vitamin K1,vitaminK,VITK1,µg,Phylloquinone (vitamin K1)
+VITC,Vitamin C,vitaminC,VITC,mg,Total vitamin C: ascorbic acid + dehydroascorbic acid
+THIA:basis-unstated,Thiamin (form not stated),thiamin,THIA,mg,Thiamin; the publisher doesn't state the form it is expressed as
+THIA:as-hydrochloride,Thiamin (as thiamine hydrochloride),thiamin,THIAHCL,mg,Thiamin expressed as thiamine chloride hydrochloride
+RIBF,Riboflavin,riboflavin,RIBF,mg,Riboflavin
+NIA,Niacin (preformed),niacinPreformed,NIA,mg,Preformed niacin (nicotinic acid + nicotinamide)
+NIAEQ,Niacin equivalents,niacinNE,NIAEQ,mg,Niacin equivalents: preformed niacin + tryptophan/60
+PANTAC:basis-unstated,Pantothenic acid (form not stated),pantothenic,PANTAC,mg,Pantothenic acid; the publisher doesn't state the form it is expressed as
+PANTAC:as-ca-pantothenate,Pantothenic acid (as calcium pantothenate),pantothenic,PANTAC,mg,Pantothenate expressed as calcium D-pantothenate
+VITB6:basis-unstated,Vitamin B6 (form not stated),vitaminB6,VITB6A,mg,Vitamin B6; the publisher doesn't state the form it is expressed as
+VITB6:as-hydrochloride,Vitamin B6 (as pyridoxine hydrochloride),vitaminB6,VITB6C,mg,Vitamin B6 expressed as pyridoxine hydrochloride (sum of forms)
+FOL,Folate (total),folate,FOL,µg,"Total folate (food folate + any folic acid), by weight"
+FOLDFE,Folate (dietary folate equivalents),folate,FOLDFE,µg,Dietary folate equivalents: food folate + 1.7 x folic acid
+VITB12,Vitamin B12,vitaminB12,VITB12,µg,Vitamin B12
+CHOLN,Choline,choline,CHOLN,mg,Total choline
+F18D2CN6,Linoleic acid,la,F18D2CN6,g,"Linoleic acid: cis,cis n-6 C18:2, per 100 g food"
+F18D2,C18:2 fatty acids (isomers not separated),la,F18D2,g,"C18:2, isomers not separated (includes trans and other forms), per 100 g food"
+F18D3CN3,Alpha-linolenic acid,ala,F18D3CN3,g,"Alpha-linolenic acid: cis n-3 C18:3, per 100 g food"
+F18D3,C18:3 fatty acids (isomers not separated),ala,F18D3,g,"C18:3, isomers not separated (includes gamma-linolenic acid), per 100 g food"
+F20D5N3,EPA,epa,F20D5N3,g,"EPA: n-3 C20:5, per 100 g food"
+F20D5,C20:5 fatty acids (isomers not separated),epa,F20D5,g,"C20:5, isomers not separated, per 100 g food"
+F22D6N3,DHA,dha,F22D6N3,g,"DHA: n-3 C22:6, per 100 g food"
+F22D6,C22:6 fatty acids (isomers not separated),dha,F22D6,g,"C22:6, isomers not separated, per 100 g food"
