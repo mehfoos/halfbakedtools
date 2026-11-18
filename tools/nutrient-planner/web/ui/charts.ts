@@ -39,6 +39,7 @@ export function createCharts(app: App) {
 
   /** A collapsed section whose table (each food's share of each nutrient) is built when first opened. */
   function contributionSection(items: Item[], keys: string[], what: string) {
+    if (app.kind === "finder") return "";   // one food provides all of it
     const id = `k${++uid}`;
     contributions.set(id, { items, keys });
     return `<details data-contrib="${id}"><summary>Which foods provide ${esc(what)}</summary><div class="details-body"></div></details>`;

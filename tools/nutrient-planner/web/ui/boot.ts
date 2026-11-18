@@ -2,6 +2,7 @@
 // message if they can't be loaded, then create the page's shared state (App) and its charts.
 import { unpack, type BlendData, type FoodsData } from "../foods.ts";
 import type { Standard } from "../profiles.ts";
+import type { PageKind } from "../state.ts";
 import { createApp, type App } from "./app.ts";
 import { createCharts, type Charts } from "./charts.ts";
 import { $ } from "./dom.ts";
@@ -23,7 +24,7 @@ export async function loadBlend(root: HTMLElement): Promise<BlendData> {
 }
 
 /** Load the data and create the page's state and charts; null (with a message on the page) if loading failed. */
-export async function boot(root: HTMLElement): Promise<{ app: App; charts: Charts } | null> {
+export async function boot(root: HTMLElement, kind: PageKind = "planner"): Promise<{ app: App; charts: Charts } | null> {
   const loading = $(root, "#loading");
   let loaded: Awaited<ReturnType<typeof loadData>>;
   try {
@@ -38,6 +39,6 @@ export async function boot(root: HTMLElement): Promise<{ app: App; charts: Chart
   }
   loading.remove();
   $(root, "#app").hidden = false;
-  const app = createApp(root, loaded.data, loaded.standards);
+  const app = createApp(root, loaded.data, loaded.standards, kind);
   return { app, charts: createCharts(app) };
 }

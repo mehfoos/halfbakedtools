@@ -1,14 +1,17 @@
 # Nutrient planner
 
-Suggests a small number of everyday foods, with practical amounts, that together come as close as possible to a
-day's UK, US or EU nutrient recommendations without exceeding upper limits, or lets visitors build their own day
-and see how it measures up. Live at https://halfbakedtools.com/tools/nutrient-planner/.
+Two pages built from the same parts. **Food Finder** (the main page) shows one food, in any amount, against a day's
+UK, US or EU nutrient recommendations. The **Planner** suggests a small number of everyday foods, with practical
+amounts, that together come as close as possible to those recommendations without exceeding upper limits, or lets
+visitors build their own day and see how it measures up. Live at https://halfbakedtools.com/tools/nutrient-planner/
+(Food Finder) and https://halfbakedtools.com/tools/nutrient-planner/planner/ (Planner).
 
 ## Files
 
 ```
 tool.json             name, summary, status, pages
-pages/index.astro     the planner
+pages/index.astro     Food Finder: one food against the daily targets (the tool's main page)
+pages/planner.astro   the Planner
 pages/methods.astro   methods, sources, verification status and limitations
 components/           page parts shared by the Planner and Food Finder pages (about you, food list, save or share)
 web/                  browser code and tests (see "Code map" below)
@@ -54,6 +57,7 @@ chart-axes.ts    a day's report -> the axes of the radar charts
 radar.ts         draws a radar chart as SVG
 state.ts         settings: defaults, link encoding, file export/import, opt-in remembering
 *.test.ts        tests (run with `npm test`)
+finder.ts        Food Finder's entry point (main.ts is the Planner's)
 ui/boot.ts       start-up shared by the pages: load the data, then create the state and charts
 ui/app.ts        shared state for the page: data, settings, and the values derived from them
 ui/you.ts        section 1: about you, and "Fine-tune targets"

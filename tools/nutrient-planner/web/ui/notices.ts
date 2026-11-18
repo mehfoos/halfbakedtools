@@ -14,7 +14,7 @@ export function nutrientNotices(app: App, rep: Report) {
   const s = app.s;
   const short = (k: string) => { const r = rep.byKey.get(k); return r ? ["short", "low", "unclear", "na"].includes(r.status) : false; };
   const out: string[] = [];
-  if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much${s.vitaminD ? "" : ", so suggestions don't try to reach this target from food and it isn't counted above, unless you ask (tick the box under “Suggest foods for me”)"}. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (NHS ${cite("nhs-vitd")}).`);
+  if (short("vitaminD")) out.push(`<b>Vitamin D:</b> few foods contain much${s.vitaminD || app.kind === "finder" ? "" : ", so suggestions don't try to reach this target from food and it isn't counted above, unless you ask (tick the box under “Suggest foods for me”)"}. UK advice is that everyone should consider a 10 µg daily supplement in autumn and winter, and some groups all year round (NHS ${cite("nhs-vitd")}).`);
   if (short("vitaminB12")) out.push(`<b>Vitamin B12:</b> comes almost only from animal foods and fortified products${s.diet === "none" ? "" : ", so a fortified food or supplement may be needed"} (NHS ${cite("nhs-vegan")}).`);
   // Shown when the standard sets no EPA+DHA target (UK, US) and the day provides less than EFSA's 250 mg.
   if ((rep.byKey.get("epaDha")?.value ?? 0) < 250 && rep.byKey.get("epaDha")?.min === undefined) out.push(s.diet === "none"

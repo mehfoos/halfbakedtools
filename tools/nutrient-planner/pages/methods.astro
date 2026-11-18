@@ -11,13 +11,14 @@ const standards = [uk, us, eu];
 ---
 <ToolLayout slug="nutrient-planner" page="methods">
   <h1>Methods and sources</h1>
-  <p class="lede">How the nutrient planner works, where its numbers come from, and what it can't tell you.</p>
+  <p class="lede">How Food Finder and the Planner work, where their numbers come from, and what they can't tell you.</p>
 
   <h2>In brief</h2>
   <ul class="prose">
     <li><strong>Food values</strong> come from the US Department of Agriculture's food composition data <Fragment set:html={cite("usda-sr")} />. As a beta option, you can choose "USDA + UK CoFID, blended": for foods found to be the same food in the UK table <Fragment set:html={cite("cofid-2021")} />, each value is the median of the two tables, with the range, each table's value and any caveats shown. The matching and blending are automated, without manual human verification. Tables from other national food agencies are being prepared.</li>
     <li><strong>Targets</strong> come from the official UK, US or EU recommended intakes for your age and sex.</li>
-    <li><strong>Suggestions</strong> are found by an optimiser running in your browser that gets as close as it can to every target without going over an upper limit.</li>
+    <li><strong>Food Finder</strong> shows one food, in the amount you choose, against the same targets, charts and notes as the Planner. Targets set as a share of energy (fat, saturates, carbohydrate) are worked out for the middle of your daily calorie range, because one food is only part of a day.</li>
+    <li><strong>Suggestions</strong> (Planner) are found by an optimiser running in your browser that gets as close as it can to every target without going over an upper limit.</li>
     <li><strong>Missing data stays missing</strong>: it is shown as NA (no data), never counted as zero.</li>
   </ul>
   <p class="small muted">Open a section below for the details. The limitations are listed at the end.</p>
@@ -95,6 +96,30 @@ const standards = [uk, us, eu];
         The charts can also show the other two standards' targets for the same person (same age, sex, weight and
         calories) as thin coloured outlines, so you can see where the UK, US and EU agree and where they differ.
         The planner always optimises against the one standard you choose.
+      </p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Food Finder <span class="summary-note">one food at a time</span></summary>
+    <div class="details-body">
+      <p>
+        Food Finder is built from the Planner's own parts: the same food list, targets, charts, notes and references, so a
+        change to the Planner shows there too. The differences are that you pick one food, and the details about you
+        start from the Planner's defaults (female, 35, UK recommendations) until you open "About you" and change them.
+      </p>
+      <p>
+        Each food is listed once per food data source: USDA, and, for the foods the beta blend covers, "blended, beta"
+        (the median of the USDA and UK CoFID values, with the range shown). Amounts start at one unit (an egg, a slice,
+        a banana, weighed as USDA publishes the portion <Fragment set:html={cite("usda-sr")} />) or 100 g, as in the
+        Planner's "Build my own", and can be changed.
+      </p>
+      <p>
+        Every row is a share of a day's target. Targets that the source sets as a share of energy (fat, saturated fat and
+        carbohydrate; EU thiamin and niacin) are worked out for the middle of your daily calorie range, as the targets
+        table shows them, not for the food's own calories: measured against its own calories, almost any fatty food
+        would read as "over the limit". The Planner instead measures each day against that day's own calories, which
+        its suggestions keep inside your range.
       </p>
     </div>
   </details>

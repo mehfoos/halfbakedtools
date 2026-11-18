@@ -6,7 +6,7 @@ import type { Standard } from "../profiles.ts";
 import { applySource, dietOk, foodRange, isOn, type BlendData, type FoodsData, type PlannerFood } from "../foods.ts";
 import { ORDER, analyse, dayBounds, gapsOf, totals, type Report } from "../analysis.ts";
 import { personFrom, targetsFor, type Person } from "../person.ts";
-import { decode, encode, fresh, loadRemembered, remember, type Settings } from "../state.ts";
+import { decode, encode, fresh, loadRemembered, remember, type PageKind, type Settings } from "../state.ts";
 import { referencesFor } from "@site/lib/references.ts";
 import references from "../../references.json";
 import { $ } from "./dom.ts";
@@ -19,6 +19,7 @@ export type Item = { food: PlannerFood; grams: number };
 
 export type App = {
   root: HTMLElement;
+  kind: PageKind;                   // "planner" (combinations of foods) or "finder" (one food at a time)
   data: FoodsData;
   blend: BlendData | null;          // the beta blended source, once loaded
   standards: Standard[];
@@ -41,15 +42,15 @@ export type App = {
   load(s: Settings): void;                        // replace the settings (import)
 };
 
-export function createApp(root: HTMLElement, data: FoodsData, standards: Standard[]): App {
+export function createApp(root: HTMLElement, data: FoodsData, standards: Standard[], kind: PageKind = "planner"): App {
   // Settings come from the page address first, then opt-in remembered settings, then defaults.
   const rememberBox = $<HTMLInputElement>(root, "#rememberBox");
-  const remembered = loadRemembered();
+  const remembered = loadRemembered(kind);
   rememberBox.checked = !!remembered;
   const s = location.search.length > 1 ? decode(location.search) : remembered ?? fresh();
 
   const app: App = {
-    root, data, standards, s, blend: null,
+    root, kind, data, standards, s, blend: null,
     toggled: new Set(s.toggled),
     foodById: new Map(data.foods.map((f) => [f.id, f])),
     nutrientMeta: new Map(data.nutrients.map((n) => [n.key, { label: n.label, unit: n.unit }])),
@@ -62,13 +63,22 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
     items: (list) => list.map((b) => ({ food: app.foodById.get(b.id), grams: b.grams })).filter((x): x is Item => !!x.food),
 
     report(items) {
-      const targets = app.targets(true);
-      // A nutrient is "not checked" if too few of the foods in play have data for it.
-      const selected = app.selectedFoods();
+      // Food Finder shows one food, which is only part of a day, so a target set as a share of energy (fat,
+      // saturates, carbohydrate; EU thiamin and niacin) is worked out for the middle of the person's daily calorie
+      // range, as the targets table shows it, not for the food's own calories. The Planner measures a day against
+      // its own calories, which its suggestions keep inside that range.
+      const all = app.targets(true);
+      const perKcal = new Set(all.filter((t) => t.minPerKcal !== undefined || t.maxPerKcal !== undefined).map((t) => t.key));
+      const targets = app.kind === "finder" ? all.map((t) => ({ ...t, minPerKcal: undefined, maxPerKcal: undefined })) : all;
+      // A nutrient is "not checked" if too few of the foods in play have data for it. In Food Finder every food in
+      // the list is in play (there are no presets).
+      const selected = app.kind === "finder" ? app.dietFoods() : app.selectedFoods();
       const { notAssessed } = splitAssessable(targets, selected.length ? selected : app.dietFoods());
-      // Vitamin D is reported on its own line unless the person has asked for it to be planned from food.
-      const aside = new Set(app.s.vitaminD ? [] : ["vitaminD"]);
+      // In the Planner, vitamin D is reported on its own line unless the person has asked for it to be planned from
+      // food. Food Finder plans nothing, so vitamin D is an ordinary row there.
+      const aside = new Set(app.s.vitaminD || app.kind === "finder" ? [] : ["vitaminD"]);
       const rep = analyse(totals(items, ORDER), targets, new Set(notAssessed.map((t) => t.key)), app.nutrientMeta, aside, gapsOf(items, ORDER));
+      if (app.kind === "finder") for (const r of rep.rows) if (perKcal.has(r.key)) r.ofEnergy = true;
       // With blended foods, the day's total also has a lowest and highest possible value (see dayBounds).
       if (app.blend && items.some((i) => i.food.blend)) {
         const std = app.person().standard.id;
@@ -85,7 +95,7 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
     save() {
       app.s.toggled = [...app.toggled];
       history.replaceState(null, "", `?${encode(app.s)}`);
-      if (rememberBox.checked) remember(app.s);
+      if (rememberBox.checked) remember(app.s, kind);
     },
     load(next) {
       app.s = next;

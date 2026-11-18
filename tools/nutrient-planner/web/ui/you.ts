@@ -44,8 +44,10 @@ export function setupYou(app: App, onChange: () => void) {
 
     const child = $(root, "#childNote");
     child.hidden = s.age >= 18;
-    if (s.age < 5) child.innerHTML = `<b>Under 5:</b> treat this as a rough guide only. The UK tables note that reference values for certain nutrients aren't available for children under 5, and that children up to 5 should be given vitamin A, C and D supplements ${cite("phe-2016")}. Suggested amounts are adult portion limits scaled down by calories, and the planner knows nothing about textures, choking risks or foods unsuitable for young children. Ask a health visitor or GP.`;
-    else if (s.age < 18) child.innerHTML = `<b>Planning for a child:</b> suggested amounts are adult portion limits scaled down by the child's calories, which is a rule of thumb. For anything beyond general interest, ask a GP or registered dietitian.`;
+    if (s.age < 5) child.innerHTML = `<b>Under 5:</b> treat this as a rough guide only. The UK tables note that reference values for certain nutrients aren't available for children under 5, and that children up to 5 should be given vitamin A, C and D supplements ${cite("phe-2016")}. ${app.kind === "finder" ? "This tool" : "Suggested amounts are adult portion limits scaled down by calories, and the planner"} knows nothing about textures, choking risks or foods unsuitable for young children. Ask a health visitor or GP.`;
+    else if (s.age < 18) child.innerHTML = app.kind === "finder"
+      ? `<b>For a child:</b> for anything beyond general interest, ask a GP or registered dietitian.`
+      : `<b>Planning for a child:</b> suggested amounts are adult portion limits scaled down by the child's calories, which is a rule of thumb. For anything beyond general interest, ask a GP or registered dietitian.`;
 
     // Calories
     $<HTMLInputElement>(root, "#energyLow").value = String(p.band.low);

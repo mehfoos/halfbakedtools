@@ -1,6 +1,7 @@
 // Section 2, "Choose foods": the diet and preset buttons, the count of foods switched on,
 // and the tree of categories > groups > foods with tick boxes (or a flat list while searching).
-import { isOn, matches, setOn, type Base, type PlannerFood } from "../foods.ts";
+// Food Finder uses the same list in single mode: one entry per food and food data source, and only one can be picked.
+import { isOn, matches, setOn, type Base, type PlannerFood, type Source } from "../foods.ts";
 import type { Settings } from "../state.ts";
 import type { App } from "./app.ts";
 import { $, $$, esc, int } from "./dom.ts";
@@ -9,6 +10,14 @@ import { blendFoodHtml } from "./notices.ts";
 
 type Node = { id: string; name: string; foods: PlannerFood[] };
 
+/** A food and the data source to read it from: what Food Finder's list picks. */
+export type Pick = { id: string; source: Source };
+/** Single mode (Food Finder): `blended` lists the foods that also have a blended entry. */
+export type SingleMode = { blended: () => Set<string>; picked: () => Pick | null; onPick: (p: Pick) => void };
+
+/** How each source is named after a food in Food Finder's list. */
+export const SOURCE_LABEL: Record<Source, string> = { usda: "USDA", blend: "blended, beta" };
+
 const PRESET_TEXT: Record<Base, string> = { common: "common foods", wider: "the wider selection", all: "everything except US-fortified products", none: "nothing" };
 const commonFirst = (a: { common?: boolean }, b: { common?: boolean }) => Number(b.common) - Number(a.common);
 
@@ -16,7 +25,7 @@ const commonFirst = (a: { common?: boolean }, b: { common?: boolean }) => Number
  * `onToggle` is called when individual foods are switched on or off;
  * `onChange` when the diet or preset changes (which changes the whole list).
  */
-export function setupFoodList(app: App, onToggle: () => void, onChange: () => void) {
+export function setupFoodList(app: App, onToggle: () => void, onChange: () => void, single?: SingleMode) {
   const { root } = app;
   const tree = $(root, "#foodTree");
   const search = $<HTMLInputElement>(root, "#foodSearch");
@@ -26,6 +35,12 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
   function renderSummary() {
     $$<HTMLInputElement>(root, 'input[name="diet"]').forEach((r) => (r.checked = r.value === app.s.diet));
     const all = app.dietFoods();
+    if (single) {
+      const p = single.picked();
+      const f = p ? app.foodById.get(p.id) : undefined;
+      $(root, "#foodsNote").textContent = f ? `${f.name} (${SOURCE_LABEL[p!.source]})` : `${int(all.length)} foods`;
+      return;
+    }
     $(root, "#foodCount").innerHTML = `<b>${int(all.filter(on).length)}</b> of ${int(all.length)} foods switched on`;
     $(root, "#foodsNote").textContent = `starting from ${PRESET_TEXT[app.s.base]}${app.toggled.size ? `, ${app.toggled.size} changed` : ""}`;
   }
@@ -49,9 +64,14 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
   let model = categories();
   const foodsOf = new Map<string, PlannerFood[]>();   // category or group id -> its foods
 
-  const foodBox = (f: PlannerFood, label: string, path = "") =>
+  const tags = (f: PlannerFood) => `${f.common ? ' <span class="tag">common</span>' : ""}${f.fortified ? ' <span class="tag">US-fortified</span>' : ""}`;
+  // Single mode: one entry per source of the food, e.g. "Eggs (USDA)" and "Eggs (blended, beta)".
+  const pickBoxes = (f: PlannerFood, label: string, path = "") =>
+    (["usda", ...(single!.blended().has(f.id) ? ["blend"] : [])] as Source[]).map((src) =>
+      `<label class="item"><input type="radio" name="pick" data-food="${f.id}" data-src="${src}" /> <span>${esc(label)} (${SOURCE_LABEL[src]})${tags(f)}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`).join("");
+  const foodBox = (f: PlannerFood, label: string, path = "") => single ? pickBoxes(f, label, path) :
     `<label class="item"><input type="checkbox" data-food="${f.id}" /> <span>${esc(label)}${f.common ? ' <span class="tag">common</span>' : ""}${f.fortified ? ' <span class="tag">US-fortified</span>' : ""}${f.blend ? ` <span class="tag">blended</span> <button type="button" class="link" data-sources="${esc(f.id)}" aria-expanded="false">sources</button>` : ""}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`;
-  const groupBox = (attr: string, id: string) => `<input type="checkbox" ${attr}="${esc(id)}" />`;
+  const groupBox = (attr: string, id: string) => (single ? "" : `<input type="checkbox" ${attr}="${esc(id)}" />`);
 
   function renderTree() {
     const q = search.value.trim();
@@ -90,6 +110,15 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
 
   // Set every tick box from the settings; a heading is ticked, part-ticked or clear, with a count.
   function updateTicks() {
+    if (single) {
+      const p = single.picked();
+      for (const r of $$<HTMLInputElement>(tree, "input[data-food]")) r.checked = !!p && r.dataset.food === p.id && r.dataset.src === p.source;
+      for (const [id, fs] of foodsOf) {
+        const count = tree.querySelector(`[data-count="${CSS.escape(id)}"]`);
+        if (count) count.textContent = `${fs.length}`;
+      }
+      return;
+    }
     for (const cb of $$<HTMLInputElement>(tree, "input[data-food]")) cb.checked = on(app.foodById.get(cb.dataset.food!)!);
     for (const cb of $$<HTMLInputElement>(tree, "input[data-cat], input[data-group]")) {
       const id = cb.dataset.cat ?? cb.dataset.group!;
@@ -131,6 +160,10 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
   });
   tree.addEventListener("change", (e) => {
     const cb = e.target as HTMLInputElement;
+    if (single) {
+      if (cb.dataset.food) single.onPick({ id: cb.dataset.food, source: cb.dataset.src as Source });
+      return;
+    }
     const foods = cb.dataset.food ? [app.foodById.get(cb.dataset.food)!] : foodsOf.get((cb.dataset.cat ?? cb.dataset.group)!) ?? [];
     for (const f of foods) setOn(f, cb.checked, app.s.base, app.toggled);
     updateTicks();
@@ -152,5 +185,7 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
     refresh: () => { if (foodsBox.open) renderTree(); },
     /** Redraw the tree if it has ever been drawn (after importing settings). */
     redrawIfBuilt: () => { if (tree.childElementCount) renderTree(); },
+    /** Show the current pick in the list (single mode). */
+    updateTicks,
   };
 }

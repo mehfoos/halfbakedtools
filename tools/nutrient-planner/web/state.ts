@@ -39,7 +39,9 @@ export const DEFAULTS: Settings = {
 
 export const fresh = (): Settings => ({ ...DEFAULTS, toggled: [], overrides: {}, builder: [] });
 
-const STORAGE_KEY = "halfbakedtools.nutrient-planner.v2";
+/** Where opt-in remembered settings are kept: one key per page, so remembering on one page never changes the other. */
+export const STORAGE_KEYS = { planner: "halfbakedtools.nutrient-planner.v2", finder: "halfbakedtools.food-finder.v1" } as const;
+export type PageKind = keyof typeof STORAGE_KEYS;
 
 const toB64 = (s: string) => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 const fromB64 = (s: string) => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0)));
@@ -131,15 +133,15 @@ export async function importFile(file: File): Promise<Settings> {
 }
 
 // Opt-in local storage. Nothing is written unless the person ticks "remember".
-export function loadRemembered(): Settings | null {
+export function loadRemembered(kind: PageKind = "planner"): Settings | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEYS[kind]);
     return raw ? decode(raw) : null;
   } catch { return null; }
 }
-export function remember(s: Settings) {
-  try { localStorage.setItem(STORAGE_KEY, encode(s)); } catch { /* storage unavailable */ }
+export function remember(s: Settings, kind: PageKind = "planner") {
+  try { localStorage.setItem(STORAGE_KEYS[kind], encode(s)); } catch { /* storage unavailable */ }
 }
-export function forget() {
-  try { localStorage.removeItem(STORAGE_KEY); } catch { /* storage unavailable */ }
+export function forget(kind: PageKind = "planner") {
+  try { localStorage.removeItem(STORAGE_KEYS[kind]); } catch { /* storage unavailable */ }
 }
