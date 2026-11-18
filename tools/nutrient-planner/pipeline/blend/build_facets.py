@@ -8,8 +8,8 @@ planner's id, and the facets found by facets.py. Output (generated, don't edit b
   facets/REPORT.md     how much of each table the vocabulary describes, conflicts, and the most common
                        unclassified words (where the vocabulary should grow next)
 
-Tables covered now: USDA SR Legacy (every food in the planner, data/foods/foods.json) and CoFID 2021 (the
-planner's selection, data/foods/foods-cofid.json). Standard library only:
+Tables covered now: USDA SR Legacy (every food in the planner, data/foods/foods.json) and CoFID 2021 (every
+record, from the archived spreadsheet, fetched and checked by inputs.py). Standard library only:
 
   python3 -I tools/nutrient-planner/pipeline/blend/build_facets.py
 """
@@ -42,10 +42,19 @@ def usda() -> tuple[str, str, list[dict]]:
 
 
 def cofid() -> tuple[str, str, list[dict]]:
-    d = json.loads((TOOL / "data/foods/foods-cofid.json").read_text())
-    rows = [{"code": f["src"]["code"], "name": f["src"]["name"], "planner_id": f["id"],
-             "common": "yes" if f.get("common") else ""} for f in d["foods"]]
-    return "cofid-2021", "CoFID 2021 (McCance and Widdowson's, planner selection)", rows
+    """Every CoFID 2021 record (not only the planner's selection), so matching can see the whole table. Read from
+    the archived spreadsheet (inputs.py checks it)."""
+    sys.path.insert(0, str(HERE.parent / "crosswalk"))
+    import sources  # noqa: E402
+    import inputs  # noqa: E402
+    planner = {(f["src"]["code"], f["src"]["name"]): f for f in
+               json.loads((TOOL / "data/foods/foods-cofid.json").read_text())["foods"]}
+    rows = []
+    for rec in sources.load_cofid(inputs.get("cofid-2021")).values():
+        f = planner.get((rec.code, rec.name))
+        rows.append({"code": rec.code, "name": rec.name, "planner_id": f["id"] if f else "",
+                     "common": "yes" if f and f.get("common") else ""})
+    return "cofid-2021", "CoFID 2021 (McCance and Widdowson's, every record)", rows
 
 
 def slug(text: str) -> str:

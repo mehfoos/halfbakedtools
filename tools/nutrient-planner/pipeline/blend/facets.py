@@ -85,10 +85,12 @@ def describe(name: str, vocab: list[Term]) -> Description:
                 kept.append(_tidy(m.group(0)))
             elif t.facet == "ignore-early":
                 pass
+            elif t.facet == "fat-detail":
+                detail.append(_tidy(m.group(0)))
             else:
                 if t.term not in found.setdefault(t.facet, []):
                     found[t.facet].append(t.term)
-                if t.term == "percent" or t.facet == "cooking-fat":
+                if t.facet in ("cooking-fat", "medium") and re.search(r"oil|butter|lard", m.group(0)):
                     detail.append(_tidy(m.group(0)))
             # blank the match but keep commas, so the phrase structure survives
             text = text[:m.start()] + re.sub(r"[^,]", " ", m.group(0)) + text[m.end():]

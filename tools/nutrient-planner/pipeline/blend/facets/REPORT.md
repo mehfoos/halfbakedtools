@@ -6,9 +6,9 @@ matching treats them as differences until a person reviews them.
 
 ## USDA SR Legacy (FoodData Central, 2018-04)
 
-- Foods: 2244; fully described: 631 (28%)
-- Common foods: 116; fully described: 44 (38%)
-- Conflicts: 2
+- Foods: 2244; fully described: 636 (28%)
+- Common foods: 116; fully described: 46 (40%)
+- Conflicts: 3
 
 Most frequent unclassified phrases:
 
@@ -42,37 +42,42 @@ Conflicts (two terms that can't both be true):
 
 - `173928` Apples, raw, without skin, cooked, boiled: raw, but also a cooking method
 - `173929` Apples, raw, without skin, cooked, microwave: raw, but also a cooking method
+- `171276` Milk, canned, evaporated, with added vitamin D and without added vitamin A: fortification: unfortified and fortified
 
-## CoFID 2021 (McCance and Widdowson's, planner selection)
+## CoFID 2021 (McCance and Widdowson's, every record)
 
-- Foods: 1072; fully described: 514 (48%)
+- Foods: 2887; fully described: 866 (30%)
 - Common foods: 84; fully described: 55 (65%)
-- Conflicts: 0
+- Conflicts: 1
 
 Most frequent unclassified phrases:
 
-- 16 × joint
-- 13 × old
-- 13 × fruit
-- 10 × stewing
-- 8 × soft
-- 8 × capsicum
-- 7 × soya
-- 7 × retail
-- 7 × egg
-- 6 × mung
-- 6 × from steakhouse
-- 6 × topside
-- 6 × quarter
-- 6 × purchased
-- 6 × spaghetti
-- 6 × basmati
-- 6 × easy cook
-- 5 × cooking
-- 5 × chick peas
-- 5 × spreadable
-- 5 × meat
-- 5 × not polyunsaturated
-- 5 × collar
-- 5 × wild
-- 4 × butter
+- 558 × homemade
+- 104 × retail
+- 90 × weighed
+- 47 × vegetable
+- 40 × weighed and skin
+- 39 × fruit
+- 34 × takeaway
+- 33 × chicken
+- 31 × beef
+- 27 × with milk
+- 26 × weighed with stones
+- 26 × joint
+- 20 × rice
+- 20 × in batter
+- 19 × egg
+- 18 × old
+- 16 × lamb
+- 15 × with vegetable oil
+- 15 × lentil
+- 14 × weighed with shells
+- 14 × stewing
+- 14 × with butter
+- 14 × made with whole milk
+- 14 × quarter
+- 14 × infusion
+
+Conflicts (two terms that can't both be true):
+
+- `16-388` Prawns, king, grilled from raw: raw, but also a cooking method

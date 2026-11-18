@@ -1,4 +1,4 @@
-# Blended food list: step 1, describing foods
+# Blended food list: describing and matching foods
 
 The aim (not built yet) is one food list where each value is drawn from every national table that has the **same**
 food, shown as a median with the range across tables and an account of where each number came from. The full plan,
@@ -19,8 +19,16 @@ food the planner uses, in every table, in the same terms. **When in doubt, foods
 | `facets/<table>.csv` | One row per food: permanent id, the table's code and name as published, planner id, and its facets | **generated** |
 | `facets/REPORT.md` | How much of each table the vocabulary describes, conflicts, and the most common unclassified phrases | **generated** |
 | `test_facets.py` | Rules and past mistakes as tests; also checks the generated files are up to date | hand |
+| `synonyms.csv` | Names that mean the same food (US/UK names, spellings, word order), each with a note. Only true synonyms: a close but different food must not be listed | hand, reviewed |
+| `concepts.csv` | One row per blended food (now the planner's 116 common foods), anchored to the planner's USDA record | hand |
+| `inputs.py` | Fetches the raw tables from the releases and checks their SHA-256 | hand |
+| `match.py` | Compares each concept with another table's records; writes the evidence and a review report | hand |
+| `matches/<table>.csv` | **The decisions**: one per concept, with grade, reason, who decided, date, and the evidence fingerprint it was reviewed against | hand, reviewed |
+| `matches/evidence-<table>.csv`, `matches/REVIEW-<table>.md` | Evidence for each decided record and the top candidates; the review report | **generated** |
+| `test_matches.py` | Decisions are complete, acknowledge every difference, and were reviewed against the current evidence | hand |
 
-Run `python3 -I tools/nutrient-planner/pipeline/blend/build_facets.py` after changing the vocabulary, then `npm test`.
+Run `python3 -I tools/nutrient-planner/pipeline/blend/build_facets.py` after changing the vocabulary, then
+`match.py` (below), then `npm test`.
 
 ## How a name is read
 
@@ -36,6 +44,46 @@ Run `python3 -I tools/nutrient-planner/pipeline/blend/build_facets.py` after cha
   Many of these are variety or species names that only a reviewed synonym list can link across tables (the next
   step). Until then, a non-empty `rest` counts as a difference.
 - Conflicts (for example "raw" and "boiled" in one name) are listed in the report, not resolved.
+
+## Matching (step 3, USDA and CoFID first)
+
+For each concept, `match.py` compares the anchor with candidate records (FAO/INFOODS food-matching guidelines:
+food, part, state and processing first, then composition):
+
+- **identity**: the words naming the food (base, variety, cut, unrecognised phrases), after `synonyms.csv`:
+  *same*, *narrower* (one side names more, such as a variety), or *differs*;
+- **facets**: each the same, stated on one side only, or different. "Mature seeds" counts as "dried". A general
+  cooking method ("cooked", "dry heat") is compatible with a specific one ("baked"), but is shown. Origin and US
+  meat grade are not compared;
+- **composition**: water, protein, fat, sodium and calcium per 100 g as published, within tolerances (water ±3 g
+  or 8%; protein ±1 g or 20%; fat ±1 g or 30%; sodium ±50 mg or 50%; calcium ±30 mg or 40%).
+
+**Rule v1** (automatic) says *same* only when all three agree completely. Otherwise a person decides. Grades:
+
+| Grade | Meaning | Blended? |
+|---|---|---|
+| same | the same food | yes |
+| equivalent | a stated difference that doesn't change composition beyond tolerance (e.g. US 2% vs UK semi-skimmed milk) | yes, with the difference shown |
+| similar | the closest record, but a different product | no: kept separate |
+| different / none | not the same food / the table has no such food | no |
+| pending | not reviewed yet | no |
+
+**Review rule** (owner: when in doubt, keep foods separate):
+
+- *Same* when the facets agree and either the composition agrees, or the food is a single unprocessed raw food
+  and the difference is within natural variation.
+- *Similar* when the difference could be a product difference: recipe, added salt, fortification, part, degree
+  of drying, cooking water, packing oil. Any unexplained difference in a processed or cooked food is also similar.
+- A *same* or *equivalent* decision must acknowledge every difference in its reason ("Names differ:", "Facet
+  difference accepted:", "Same food despite:"). It also records the fingerprint of the evidence it was reviewed
+  against, so a later change to the vocabulary, synonyms or data flags it for review again. The tests enforce
+  both.
+
+Decisions so far (CoFID, 18 Nov 2026, by Claude (AI), not yet checked by the owner): 63 same, 3 equivalent,
+35 similar, 15 none.
+
+`../crosswalk/crosswalk.json` (17 Nov) is kept only for the single-table CoFID file, where "the planner's food"
+can be a UK record whose composition differs. Blending uses `matches/` only.
 
 ## Permanent ids
 

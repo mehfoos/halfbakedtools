@@ -1,0 +1,117 @@
+concept,id,grade,reason,by,date,checked
+c:lentils,cofid:13-661,same,"Names differ: CoFID names the type (green and brown), USDA doesn't; USDA lentils are this type. Both dried lentils boiled without salt; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,d0e1f988
+c:chickpeas,cofid:13-662,same,Names differ: CoFID names the type (Kabuli). Both whole dried chickpeas boiled without salt; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,b503e626
+c:kidney-beans,cofid:13-659,same,Both dried red kidney beans boiled without salt; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,199c7d89
+c:black-beans,,none,CoFID has no black (turtle) beans.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:baked-beans,cofid:13-532,same,UK baked beans in tomato sauce are the USDA 'plain or vegetarian' kind; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,98679060
+c:split-peas,cofid:13-142,same,Both dried split peas boiled without salt; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,6dd782ee
+c:edamame,cofid:13-667,similar,"Both frozen edamame, cooked; fat 7.6 vs 5.2 g is not explained, so kept separate.",Claude (AI); not yet checked by the owner,2026-11-18,db5b05f0
+c:tofu,cofid:13-570,similar,CoFID tofu is steamed (water 85 g); USDA is raw firm calcium-set tofu. Different product.,Claude (AI); not yet checked by the owner,2026-11-18,743d9284
+c:soy-milk,cofid:12-523,similar,"Both sweetened, fortified soya drinks, but fortification differs by country and brand, so vitamin and mineral values belong to different products.",Claude (AI); not yet checked by the owner,2026-11-18,c0d14ff5
+c:oats,cofid:11-788,same,"Names differ: 'porridge oats' (UK) and 'oats, regular and quick' (US) are the same rolled oats. Both unfortified, dry; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,365f1ac3
+c:brown-rice,cofid:11-869,same,"Names differ: USDA says long-grain, CoFID wholegrain; both brown rice, boiled (USDA: cooked) without salt; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,d7aff5ea
+c:white-rice,cofid:11-862,same,"Both long-grain white rice boiled without salt, unfortified (UK rice isn't fortified); composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,77592487
+c:wholemeal-bread,cofid:11-981,similar,"Same kind of bread, but protein 12.5 vs 9.4 g: UK and US recipes differ.",Claude (AI); not yet checked by the owner,2026-11-18,b44b5de8
+c:wholewheat-pasta,cofid:11-723,same,"Both wholewheat pasta made from dried, boiled; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,bc7a37c9
+c:quinoa,,none,CoFID has raw quinoa only.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:barley,cofid:11-003,same,"Both pearl barley, boiled; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,b5767cd4
+c:potato,cofid:13-491,same,"Both potatoes baked in their skin; CoFID 'old' means main-crop, as USDA's are; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,0cef1f7c
+c:sweet-potato,cofid:13-672,similar,"Water 65.6 vs 75.8 g, and CoFID doesn't say whether the skin is included.",Claude (AI); not yet checked by the owner,2026-11-18,b4a0d521
+c:egg,cofid:12-937,same,Both whole raw chicken eggs; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,fd2d2431
+c:milk,cofid:12-313,equivalent,"USDA record is 2% fat milk; UK semi-skimmed is 1.5–1.8%. Composition within tolerance; the fat standard differs, so equivalent, not same.",Claude (AI); not yet checked by the owner,2026-11-18,4909a7aa
+c:yogurt,cofid:12-184,similar,"Both whole-milk plain yoghurt, but protein 5.7 vs 3.5 g: the UK product is thicker.",Claude (AI); not yet checked by the owner,2026-11-18,47c6ba39
+c:greek-yogurt,cofid:12-555,similar,CoFID Greek-style yoghurt is full fat (10 g); the planner food is fat-free.,Claude (AI); not yet checked by the owner,2026-11-18,e43c372c
+c:cheddar,cofid:12-346,same,Both full-fat Cheddar; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,563f4442
+c:cottage-cheese,cofid:12-550,equivalent,"Facet difference accepted: USDA 'lowfat, 2% milkfat' and CoFID 'reduced fat' describe the same fat level here; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,7a5d0b7e
+c:spinach,cofid:13-458,similar,"Both frozen spinach boiled without salt, but sodium 97 vs 16 mg is not explained.",Claude (AI); not yet checked by the owner,2026-11-18,79cc85c7
+c:kale,cofid:13-234,similar,"Both raw kale (CoFID: curly), but calcium 254 vs 130 mg is too large for natural variation.",Claude (AI); not yet checked by the owner,2026-11-18,8ecbdf71
+c:broccoli,cofid:13-503,same,Both green broccoli boiled without salt; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,b6c14f61
+c:carrot,cofid:13-496,same,Both raw main-crop ('old') carrots; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,1488aed9
+c:peas,cofid:13-536,similar,"Both frozen peas boiled without salt, but sodium 72 vs 4 mg: UK frozen peas may have salt added.",Claude (AI); not yet checked by the owner,2026-11-18,71271143
+c:tinned-tomatoes,cofid:13-530,similar,"Both canned tomatoes, but sodium 115 vs 5 mg: salt is probably added in the UK product.",Claude (AI); not yet checked by the owner,2026-11-18,8f886e58
+c:onion,cofid:13-499,same,Both raw onions; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,bc539027
+c:red-pepper,cofid:13-524,same,Both raw red sweet (capsicum) peppers; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,a2e62bf2
+c:cabbage,cofid:13-582,same,USDA unspecified raw cabbage; CoFID gives an average of types. Composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,e16c1792
+c:mushrooms,cofid:13-505,same,"Same food despite: protein 3.1 vs 1.0 g. Both raw white mushrooms; the difference is likely the nitrogen-to-protein factor, which the component step will check.",Claude (AI); not yet checked by the owner,2026-11-18,6cfc4c3a
+c:uv-mushrooms,,none,CoFID has no UV-exposed mushrooms.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:banana,cofid:14-318,same,Both raw banana flesh; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,8cded193
+c:apple,cofid:14-319,same,"Names differ: CoFID says eating apple, USDA doesn't; USDA raw apples are eating apples. Flesh and skin; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,b5f2c13c
+c:orange,cofid:14-327,same,Both raw orange flesh (USDA: all varieties); composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,1cbbb08e
+c:blueberries,cofid:14-325,similar,CoFID blueberries are fresh; the planner food is frozen.,Claude (AI); not yet checked by the owner,2026-11-18,d95b7013
+c:strawberries,cofid:14-324,same,Both raw; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,aefec0c0
+c:raisins,cofid:14-393,same,Both raisins; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,b18510bc
+c:dried-apricots,cofid:14-031,similar,Water 14.7 vs 30.9 g: dried to a different degree.,Claude (AI); not yet checked by the owner,2026-11-18,54d86919
+c:walnuts,cofid:14-879,same,Both walnut kernels; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,57955ff0
+c:almonds,cofid:14-896,same,Both whole almond kernels; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,2c4702a5
+c:peanuts,cofid:14-878,similar,CoFID dry-roasted peanuts are salted (sodium 790 mg); the planner food is unsalted.,Claude (AI); not yet checked by the owner,2026-11-18,da3510c2
+c:peanut-butter,cofid:14-892,similar,CoFID smooth peanut butter is salted (sodium 350 vs 17 mg).,Claude (AI); not yet checked by the owner,2026-11-18,3930a750
+c:sunflower-seeds,cofid:14-845,same,Both sunflower seed kernels; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,09b24848
+c:pumpkin-seeds,cofid:14-842,same,Both pumpkin seed kernels; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,bb35b748
+c:flaxseed,,none,Not in CoFID.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:chia,,none,Not in CoFID.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:tahini,cofid:14-847,similar,"Both tahini, but sodium 115 vs 20 mg: salt probably added in the UK product.",Claude (AI); not yet checked by the owner,2026-11-18,2bdd8933
+c:rapeseed-oil,cofid:17-041,same,Rapeseed oil (canola is a rapeseed cultivar group); composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,21e5019b
+c:olive-oil,cofid:17-038,same,Both olive oil; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,1b452353
+c:yeast-extract,,none,CoFID yeast extract (Marmite type) has protein 40.7 vs 23.9 g: a different product.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:cauliflower,cofid:13-513,same,Both boiled without salt; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,c346769a
+c:courgette,cofid:13-627,same,Both raw courgette (zucchini); composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,db1b3cf6
+c:cucumber,cofid:13-523,same,"Both raw, flesh and skin; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,67647153
+c:lettuce,cofid:13-520,similar,CoFID has only 'average' lettuce; the planner food is cos.,Claude (AI); not yet checked by the owner,2026-11-18,e27519d4
+c:green-beans,cofid:13-515,similar,CoFID green beans are fresh; the planner food is frozen.,Claude (AI); not yet checked by the owner,2026-11-18,0ea4de8f
+c:sweetcorn,,none,"CoFID has canned, raw or on-the-cob sweetcorn, not frozen kernels.",Claude (AI); not yet checked by the owner,2026-11-18,
+c:brussels,cofid:13-630,same,Both boiled without salt; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,205c130d
+c:leeks,cofid:13-624,similar,"USDA includes the lower leaf; water 83.0 vs 90.7 g, so the part may differ.",Claude (AI); not yet checked by the owner,2026-11-18,dfa96e5f
+c:garlic,cofid:13-244,similar,"Both raw garlic, but water 58.6 vs 64.3 g and calcium 181 vs 19 mg are too large for natural variation.",Claude (AI); not yet checked by the owner,2026-11-18,0f7798b9
+c:beetroot,cofid:13-633,same,Both boiled; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,237a0bd4
+c:parsnip,cofid:13-631,same,Both boiled without salt; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,0337bdc0
+c:celery,cofid:13-636,same,Both raw; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,1614fd82
+c:red-cabbage,cofid:13-190,same,Both raw; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,8c761271
+c:watercress,cofid:13-669~watercress-raw,same,Both raw. CoFID 2021 also uses code 13-669 for roasted aubergine; this is the watercress record.,Claude (AI); not yet checked by the owner,2026-11-18,e9b44ee9
+c:avocado,cofid:14-386,same,"Names differ: CoFID gives Hass (and Fuerte) separately, USDA all varieties. Raw flesh of a single food; composition agrees, so natural variation.",Claude (AI); not yet checked by the owner,2026-11-18,4c74cf0d
+c:pear,cofid:14-321,same,"Names differ: USDA names Bartlett, CoFID no variety. Raw, flesh and skin; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,ae26527b
+c:grapes,cofid:14-350,same,"CoFID gives the average of green and red, USDA 'red or green'; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,e1a32169
+c:kiwi,cofid:14-371,same,Both raw green kiwi fruit flesh; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,e2410232
+c:mango,cofid:14-378,same,Both raw ripe mango flesh; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,f6255f4f
+c:plums,cofid:14-372,same,Both raw dessert plums; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,1d92f42a
+c:melon,cofid:14-339,same,Both raw cantaloupe flesh; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,7725588c
+c:raspberries,cofid:14-375,same,Both raw; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,d1ef34ba
+c:haricot,cofid:13-087,similar,"Both dried haricot (navy) beans boiled without salt, but water 63.8 vs 69.6 g: cooked differently.",Claude (AI); not yet checked by the owner,2026-11-18,09e2af47
+c:butter-beans,cofid:13-663,same,"Butter beans are large lima beans; both dried, boiled without salt; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,b0f96bf9
+c:pinto,cofid:13-107,same,"Both dried, boiled without salt; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,64015201
+c:red-lentils,cofid:13-657,same,Both raw red lentils (CoFID: split); composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,44cbac3c
+c:hummus,,none,CoFID hummus has fat 26.7 vs 17.8 g: a different recipe.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:tempeh,cofid:13-118,similar,Fat 10.8 vs 6.4 g is not explained.,Claude (AI); not yet checked by the owner,2026-11-18,329c0afb
+c:mozzarella,cofid:12-360,similar,CoFID is fresh mozzarella (water 57 g); USDA whole-milk mozzarella (water 50 g) is a firmer product.,Claude (AI); not yet checked by the owner,2026-11-18,e1d86d57
+c:feta,cofid:12-525,same,Both feta; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,51cb45f3
+c:parmesan,cofid:12-526,same,Both Parmesan; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,1e6b7397
+c:whole-milk,cofid:12-596,equivalent,"USDA 3.25% fat; UK whole milk averages about 3.6%. Composition within tolerance; the fat standard differs, so equivalent.",Claude (AI); not yet checked by the owner,2026-11-18,0c15485c
+c:skimmed-milk,cofid:12-307,same,"Both skimmed milk, unfortified; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,cb8c4abd
+c:greek-yogurt-full,cofid:12-555,similar,CoFID Greek-style is 10 g fat vs 5 g: a different product.,Claude (AI); not yet checked by the owner,2026-11-18,ffd24ee6
+c:butter,cofid:17-661,same,Both unsalted butter; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,1f7a7afb
+c:couscous,cofid:11-902,similar,Water 53.8 vs 72.6 g: cooked with a different amount of water.,Claude (AI); not yet checked by the owner,2026-11-18,15c61ec0
+c:bulgur,,none,CoFID has raw bulgur only.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:wholemeal-flour,cofid:11-889,same,Both wholemeal wheat flour; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,736c75f9
+c:cashews,cofid:14-811,same,"Both raw (plain, not roasted) cashew kernels; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,4d2f1850
+c:hazelnuts,cofid:14-874,same,Both hazelnut kernels; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,b56ce590
+c:brazil-nuts,cofid:14-871,same,Both Brazil nut kernels; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,0b6ef6b2
+c:sesame,cofid:14-844,same,Both whole sesame seeds; composition agrees.,Claude (AI); not yet checked by the owner,2026-11-18,19fe893f
+c:hemp-seeds,,none,Not in CoFID.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:almond-drink,,none,Not in CoFID.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:chicken-breast,cofid:18-330,similar,"CoFID 'light meat' is breast and wing meat, not breast only.",Claude (AI); not yet checked by the owner,2026-11-18,e60a2d86
+c:chicken-thigh,,none,CoFID has casseroled thighs only; the planner food is roasted.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:turkey-mince,,none,CoFID has stewed turkey mince only (fat 6.8 vs 10.4 g).,Claude (AI); not yet checked by the owner,2026-11-18,
+c:beef-mince,cofid:18-042,similar,"CoFID mince patties are barbecued and their fat level isn't stated; the planner food is 15% fat, grilled.",Claude (AI); not yet checked by the owner,2026-11-18,9ea765d0
+c:beef-steak,cofid:18-070,similar,"US 'top sirloin' and UK sirloin are cut differently, even though both are lean, grilled and their composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,e07a7be6
+c:pork-loin,,none,CoFID pork fillet medallions are grilled (water 59.7 vs 69.5 g); the planner food is roasted.,Claude (AI); not yet checked by the owner,2026-11-18,
+c:lamb-leg,cofid:18-191,same,"Both New Zealand leg, whole, frozen, roasted, lean; composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,af720865
+c:ham,cofid:19-496,similar,CoFID 'Ham' has fat 3.3 vs 8.8 g: a different product.,Claude (AI); not yet checked by the owner,2026-11-18,3d2fb306
+c:beef-liver,cofid:18-416,similar,"Ox (beef) liver, stewed vs braised; fat 9.5 vs 5.3 g is not explained.",Claude (AI); not yet checked by the owner,2026-11-18,0639d34b
+c:salmon,cofid:16-359,same,"Both farmed salmon flesh, baked (dry heat); composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,b400c4ff
+c:tinned-salmon,cofid:16-420,similar,CoFID is drained without bones (calcium 109 mg); USDA is the whole can contents with bones (215 mg).,Claude (AI); not yet checked by the owner,2026-11-18,ad7b42b1
+c:tuna,cofid:16-416,similar,Canned in brine vs in water; protein 24.9 vs 19.4 g.,Claude (AI); not yet checked by the owner,2026-11-18,a4570f3b
+c:sardines,cofid:16-440,similar,"CoFID is canned in olive oil; USDA doesn't name the oil. The oil changes the fatty acids (linoleic acid), so kept separate.",Claude (AI); not yet checked by the owner,2026-11-18,b181c91d
+c:mackerel,cofid:16-394,same,"Both mackerel flesh, grilled (dry heat); composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,905c3154
+c:cod,cofid:16-373,same,"Both cod flesh, baked (dry heat); composition agrees.",Claude (AI); not yet checked by the owner,2026-11-18,b670de76
+c:haddock,cofid:16-376,similar,"Both haddock flesh, grilled, but sodium 261 vs 92 mg is not explained (the USDA value may reflect processing).",Claude (AI); not yet checked by the owner,2026-11-18,9e2815ef
+c:prawns,,none,"No CoFID prawns are cooked the same way: water 84 vs 72 g, protein 15 vs 23 g.",Claude (AI); not yet checked by the owner,2026-11-18,
+c:mussels,cofid:16-390,similar,CoFID mussels are bought cooked; water 75.5 vs 61 g.,Claude (AI); not yet checked by the owner,2026-11-18,fe1a930c

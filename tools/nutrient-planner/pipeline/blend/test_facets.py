@@ -26,7 +26,7 @@ CASES = {
         {"cooking": "boiled", "salt": "without", "preservation": "dried", "variety": "green; brown"},
     "Milk, semi-skimmed, pasteurised, summer and autumn": {"fat": "reduced-fat", "preservation": "pasteurised"},
     "Milk, whole, 3.25% milkfat, with added vitamin D":
-        {"fat": "full-fat; percent", "detail": "3.25% milkfat", "fortification": "fortified", "rest": ""},
+        {"fat": "full-fat", "detail": "3.25% milkfat", "fortification": "fortified", "rest": ""},
     "Egg, whole, cooked, hard-boiled": {"part": "whole-egg", "cooking": "boiled", "rest": ""},
     "Eggs, chicken, whole, boiled": {"part": "whole-egg", "cooking": "boiled"},
     "Peanuts, all types, dry-roasted, without salt": {"cooking": "dry-roasted", "generic": "average", "state": "cooked"},
@@ -40,7 +40,12 @@ CASES = {
     "Bagels, oat bran": {"form": "", "rest": "oat bran"},
     "Nuts, coconut milk, raw (liquid expressed from grated meat and water)": {"form": "", "state": "raw"},
     "Pork, cured, ham, extra lean (approximately 4% fat), canned, unheated": {"fat": "extra-lean"},
-    "Beef, ground, 93% lean meat / 7% fat, loaf, cooked, baked": {"fat": "percent", "form": "ground"},
+    "Beef, ground, 93% lean meat / 7% fat, loaf, cooked, baked": {"fat": "", "detail": "7% fat", "form": "ground"},
+    "Cereals, oats, regular and quick, not fortified, dry": {"fortification": "unfortified"},
+    "Sardines, canned in olive oil, drained": {"medium": "oil", "cooking-fat": "", "detail": "in olive oil"},
+    "Aubergine, flesh and skin, roasted in rapeseed oil": {"cooking-fat": "oil", "cooking": "roasted", "detail": "in rapeseed oil"},
+    "Cucumber, with peel, raw": {"part": "flesh-and-skin"},
+    "Squash, summer, zucchini, includes skin, raw": {"part": "flesh-and-skin"},
     "Beans, baked, home prepared": {"cooking": ""},
     "Flour, wheat, bread/strong, white": {"base": "flour", "form": "flour"},
     # identity terms never eat the food's own name
@@ -51,6 +56,7 @@ CASES = {
         {"preservation": "canned", "medium": "water", "portion": "solids-and-liquids", "variety": "red; sour"},
     "Chicken, broilers or fryers, breast, meat only, cooked, roasted":
         {"part": "flesh; breast", "cooking": "roasted", "rest": "broilers or fryers"},
+    "Tomatoes, red, ripe, canned, packed in tomato juice": {"medium": "tomato-juice", "form": ""},
     "Tofu, raw, firm, prepared with calcium sulfate": {"state": "raw", "rest": "firm; prepared with calcium sulfate"},
     "Bread, white, commercially prepared, toasted": {"state": "cooked", "cooking": "toasted"},
 }
@@ -58,13 +64,13 @@ CASES = {
 
 class Vocabulary(unittest.TestCase):
     def test_rows_are_valid(self):
-        known = set(facets.ORDER) | {"keep", "ignore", "ignore-early"}
+        known = set(facets.ORDER) | {"keep", "ignore", "ignore-early", "fat-detail"}
         with facets.VOCABULARY.open(newline="", encoding="utf-8") as f:
             rows = list(csv.DictReader(f))
         for r in rows:
             self.assertIn(r["facet"], known, r)
             self.assertIn(r["scope"], ("", "qualifier"), r)
-            if r["facet"] not in ("keep", "ignore", "ignore-early"):
+            if r["facet"] not in ("keep", "ignore", "ignore-early", "fat-detail"):
                 self.assertTrue(r["term"], r)
 
 
@@ -86,20 +92,22 @@ class Describe(unittest.TestCase):
 
 
 class Generated(unittest.TestCase):
+    """The committed tables must be what the vocabulary gives for each row's own published name. (Checked from the
+    names in the files, so the test needs no download; build_facets.py reads the archived tables themselves.)"""
+
     def test_tables_are_up_to_date_and_ids_unique(self):
-        for table, _title, rows in (build_facets.usda(), build_facets.cofid()):
+        for table, tag in build_facets.TAGS.items():
             path = build_facets.OUT / f"{table}.csv"
-            committed = path.read_text(encoding="utf-8")
-            buf = io.StringIO()
-            w = csv.DictWriter(buf, fieldnames=build_facets.COLUMNS, lineterminator="\n")
-            w.writeheader()
-            for r in sorted(build_facets.with_ids(table, rows), key=lambda r: (r["name"].lower(), r["code"])):
-                w.writerow(r | facets.describe(r["name"], VOCAB).row())
-            self.assertEqual(committed, buf.getvalue(),
-                             f"{path.name} is out of date: run pipeline/blend/build_facets.py")
-            ids = [r["id"] for r in build_facets.with_ids(table, rows)]
+            with path.open(newline="", encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+            self.assertEqual(list(rows[0].keys()), build_facets.COLUMNS)
+            for r in rows:
+                want = facets.describe(r["name"], VOCAB).row()
+                got = {k: r[k] for k in want}
+                self.assertEqual(got, want, f"{path.name} is out of date ({r['id']}): run pipeline/blend/build_facets.py")
+            ids = [r["id"] for r in rows]
             self.assertEqual(len(ids), len(set(ids)), f"{table}: duplicate ids")
-            self.assertTrue(all(i.startswith(build_facets.TAGS[table] + ":") for i in ids))
+            self.assertTrue(all(i.startswith(tag + ":") for i in ids))
 
 
 if __name__ == "__main__":
