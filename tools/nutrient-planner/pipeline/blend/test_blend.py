@@ -53,10 +53,28 @@ class Definitions(unittest.TestCase):
         by = {}
         for r in V.components():   # the first (main) row for each table and nutrient
             by.setdefault((r["table"], r["key"]), r["definition"])
-        for key in ("energy", "carbohydrate", "sugars", "vitaminE", "thiamin", "pantothenic", "vitaminB6"):
+        for key in ("energy", "carbohydrate", "sugars", "vitaminE"):
             self.assertNotEqual(by[("usda-sr-legacy", key)], by[("cofid-2021", key)], key)
-        for key in ("protein", "fat", "fibre", "calcium", "sodium", "niacinPreformed", "vitaminK"):
+        for key in ("protein", "fat", "fibre", "calcium", "sodium", "niacinPreformed", "vitaminK", "thiamin",
+                    "pantothenic", "vitaminB6"):
             self.assertEqual(by[("usda-sr-legacy", key)], by[("cofid-2021", key)], key)
+
+    def test_caveats(self):
+        kinds = json.loads((ROOT / "site/src/lib/caveats.json").read_text())["kinds"]
+        cav = {r["id"]: r for r in V.read_csv(HERE / "caveats.csv")}
+        defs = V.definitions()
+        for cid, c in cav.items():
+            self.assertIn(c["kind"], kinds, cid)
+            self.assertTrue(c["text"] and c["reason"], cid)
+            if c["definition"]:
+                self.assertIn(c["definition"], defs, cid)
+        for r in V.components():
+            if r["caveat"]:
+                self.assertIn(r["caveat"], cav)
+                self.assertEqual(cav[r["caveat"]]["definition"], r["definition"])
+        # combined on an assumption: every table's row for these carries the caveat
+        for key in ("thiamin", "pantothenic", "vitaminB6"):
+            self.assertTrue(all(r["caveat"] for r in V.components() if r["key"] == key), key)
 
 
 class Values(unittest.TestCase):
@@ -121,6 +139,9 @@ class Output(unittest.TestCase):
                         self.assertEqual((e["min"], e["max"]), (min(used), max(used)))
                     else:
                         self.assertNotIn("value", e)
+            for d in ("THIA", "VITB6", "PANTAC"):
+                if d in f["values"]:
+                    self.assertTrue(f["values"][d].get("caveats"), f"{d} must carry its caveat")
             if "salt" in f["derived"]:
                 self.assertAlmostEqual(f["derived"]["salt"]["value"], f["values"]["NA"]["value"] * 2.5 / 1000, places=5)
 

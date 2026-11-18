@@ -1,0 +1,33 @@
+{
+  "_comment": "Copy of KINDS in caveats.ts, for the Python pipeline. Keep identical (tested).",
+  "kinds": {
+    "alpha": {
+      "label": "Alpha",
+      "meaning": "An early version: expect gaps and changes, and check results before relying on them"
+    },
+    "beta": {
+      "label": "Beta",
+      "meaning": "Working, but built by automated steps without manual human verification"
+    },
+    "unverified": {
+      "label": "Not yet checked",
+      "meaning": "Not yet checked line by line against the original source"
+    },
+    "assumption": {
+      "label": "Assumption",
+      "meaning": "Relies on an assumption the sources don't settle; the reason and evidence are given"
+    },
+    "estimate": {
+      "label": "Estimate",
+      "meaning": "An estimate, or labelled by its source as estimated, calculated or borrowed"
+    },
+    "translated": {
+      "label": "Translated",
+      "meaning": "A name or text translated by this site, not by the publisher"
+    },
+    "borrowed": {
+      "label": "Borrowed",
+      "meaning": "The source took this from another source, so it isn't independent"
+    }
+  }
+}

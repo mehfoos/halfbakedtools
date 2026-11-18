@@ -1,0 +1,8 @@
+---
+// A data caveat in an Astro page: the same markup as caveat() in site/src/lib/caveats.ts.
+import { KINDS, type CaveatKind } from "../lib/caveats.ts";
+interface Props { kind: CaveatKind; id?: string; hidden?: boolean; small?: boolean }
+const { kind, id, hidden = false, small = true } = Astro.props;
+const k = KINDS[kind];
+---
+<p class:list={["notice", "caveat", { small }]} data-caveat={kind} id={id} hidden={hidden}><span class="caveat-kind" title={k.meaning}>{k.label}</span> <slot /></p>

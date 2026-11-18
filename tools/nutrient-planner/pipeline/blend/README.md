@@ -29,6 +29,7 @@ food the planner uses, in every table, in the same terms. **When in doubt, foods
 | `definitions.csv` | Every definition a value can have (e.g. energy with US Atwater factors vs EU factors), with a readable label, INFOODS tagname, unit and meaning | hand, reviewed |
 | `components.csv` | For each table and planner nutrient: the column or formula, the definition it gives, any condition, and the section of the table's own documentation that says so | hand, reviewed |
 | `borrowed.csv` | When a table's record is borrowed from another table we use (so it counts once) | hand, reviewed |
+| `caveats.csv` | Every data caveat the blend can show (kind, text, reason, evidence), in the site's one caveat style (`site/src/lib/caveats.ts`) | hand, reviewed |
 | `values.py` | Reads a value under its definition; evaluates the formulas safely; missing and trace are never zero | hand |
 | `blend.py` | Builds the blended values (step 5) | hand |
 | `output/blended-<table>.json`, `output/audit-<table>.csv`, `output/PREVIEW-<table>.md` | Blended values with ranges and contributions; the full trail per value; explanations and a check of the definitions | **generated** |
@@ -129,9 +130,10 @@ USDA SR Legacy and CoFID 2021, by planner nutrient:
 
 | Same definition: blended | Different: kept apart | Converted to a shared definition |
 |---|---|---|
-| protein, fat, saturated fat, fibre (AOAC), all minerals, retinol, vitamin K1, vitamin C, riboflavin, niacin (preformed), niacin equivalents, total folate, vitamin B12, linoleic acid, alpha-linolenic acid, EPA, DHA | energy (US Atwater vs EU factors), carbohydrate (by difference vs available as monosaccharides), sugars (by weight vs monosaccharide equivalents), vitamin E (alpha-tocopherol vs alpha-tocopherol equivalents), vitamin D for meat (CoFID adds 25-hydroxy D3), thiamin, vitamin B6 and pantothenic acid (CoFID states the salt form; USDA doesn't) | vitamin A: both tables give retinol equivalents *and* retinol activity equivalents, each calculated from published retinol and carotenoids |
+| protein, fat, saturated fat, fibre (AOAC), all minerals, retinol, vitamin K1, vitamin C, riboflavin, niacin (preformed), niacin equivalents, total folate, vitamin B12, linoleic acid, alpha-linolenic acid, EPA, DHA; and, **with an Assumption caveat**, thiamin, vitamin B6 and pantothenic acid (CoFID states the salt form, USDA doesn't; combined on a data check showing no salt-basis factor, owner's decision) | energy (US Atwater vs EU factors), carbohydrate (by difference vs available as monosaccharides), sugars (by weight vs monosaccharide equivalents), vitamin E (alpha-tocopherol vs alpha-tocopherol equivalents), vitamin D for meat (CoFID adds 25-hydroxy D3) | vitamin A: both tables give retinol equivalents *and* retinol activity equivalents, each calculated from published retinol and carotenoids |
 
-Fallbacks are separate definitions too: USDA's C18:2 "undifferentiated" when n-6 isn't given, CoFID's total C20:5
+Caveats (`caveats.csv`) are attached to the values they apply to and shown with them, in the site's one caveat
+style. Fallbacks are separate definitions too: USDA's C18:2 "undifferentiated" when n-6 isn't given, CoFID's total C20:5
 when n-3 isn't given, USDA's label fat when total lipid isn't given.
 
 ## Blending (step 5, beta: not yet used by the planner)

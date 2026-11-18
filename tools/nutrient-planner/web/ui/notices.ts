@@ -4,9 +4,10 @@ import { avoidReasons } from "../foods.ts";
 import type { App, Item } from "./app.ts";
 import { cite } from "./app.ts";
 import { esc } from "./dom.ts";
+import { caveat } from "../../../../site/src/lib/caveats.ts";
 
 /** Shown above every set of results. */
-export const CAVEAT = `<p class="small muted sans caveat">These are estimates. They use average food composition, mostly from US data ${cite("usda-sr")}, so real foods vary with brand, variety and cooking. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).</p>`;
+export const CAVEAT = caveat("estimate", `Results use average food composition, mostly from US data ${cite("usda-sr")}, so real foods vary with brand, variety and cooking. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).`);
 
 /** Notices about nutrients that food data or food alone handles poorly: vitamin D, B12, EPA/DHA, iodine. */
 export function nutrientNotices(app: App, rep: Report) {

@@ -45,6 +45,12 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
 - **Before committing:** run `npm test` and `npm run build`; both must pass. Look at changed pages in a browser.
 - **Commits:** author them as `mehfoos <15526657+mehfoos@users.noreply.github.com>`.
 - **Writing:** British English and plain words, explaining technical terms in passing. Information only, not advice.
+- **Data caveats:** every disclaimer about data or a tool's status (alpha, beta, not yet checked, an assumption, an
+  estimate, a translation, a borrowed value) uses one style: `caveat(kind, html)` from `site/src/lib/caveats.ts`
+  in TypeScript, or `<Caveat kind="...">` in Astro pages, with one of the kinds defined there. Never write one by
+  hand (a test checks). Generated reports use the same labels (`site/src/lib/caveats.json`, `> **[Label]** text`).
+  In the food-data pipeline, caveats are listed in `tools/nutrient-planner/pipeline/blend/caveats.csv` with their
+  reason and evidence, and attached to the values they apply to.
 - **Simple by default:** advanced options go in collapsible sections; don't add inputs to the default view without a
   strong reason.
 - **Significant decisions:** add a row to the decision log in `docs/PRINCIPLES.md` (site-wide) or the tool's

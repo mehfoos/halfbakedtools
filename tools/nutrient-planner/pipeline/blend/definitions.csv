@@ -31,15 +31,12 @@ TOCPHA,Vitamin E (alpha-tocopherol),vitaminE,TOCPHA,mg,Alpha-tocopherol only
 VITE,Vitamin E (alpha-tocopherol equivalents),vitaminE,VITE,mg,Alpha-tocopherol equivalents (other tocopherols and tocotrienols weighted by activity)
 VITK1,Vitamin K1,vitaminK,VITK1,µg,Phylloquinone (vitamin K1)
 VITC,Vitamin C,vitaminC,VITC,mg,Total vitamin C: ascorbic acid + dehydroascorbic acid
-THIA:basis-unstated,Thiamin (form not stated),thiamin,THIA,mg,Thiamin; the publisher doesn't state the form it is expressed as
-THIA:as-hydrochloride,Thiamin (as thiamine hydrochloride),thiamin,THIAHCL,mg,Thiamin expressed as thiamine chloride hydrochloride
+THIA,Thiamin,thiamin,THIA,mg,Thiamin. CoFID expresses it as thiamine chloride hydrochloride; USDA doesn't state the form (combined on a data check: caveat salt-basis-thiamin)
 RIBF,Riboflavin,riboflavin,RIBF,mg,Riboflavin
 NIA,Niacin (preformed),niacinPreformed,NIA,mg,Preformed niacin (nicotinic acid + nicotinamide)
 NIAEQ,Niacin equivalents,niacinNE,NIAEQ,mg,Niacin equivalents: preformed niacin + tryptophan/60
-PANTAC:basis-unstated,Pantothenic acid (form not stated),pantothenic,PANTAC,mg,Pantothenic acid; the publisher doesn't state the form it is expressed as
-PANTAC:as-ca-pantothenate,Pantothenic acid (as calcium pantothenate),pantothenic,PANTAC,mg,Pantothenate expressed as calcium D-pantothenate
-VITB6:basis-unstated,Vitamin B6 (form not stated),vitaminB6,VITB6A,mg,Vitamin B6; the publisher doesn't state the form it is expressed as
-VITB6:as-hydrochloride,Vitamin B6 (as pyridoxine hydrochloride),vitaminB6,VITB6C,mg,Vitamin B6 expressed as pyridoxine hydrochloride (sum of forms)
+PANTAC,Pantothenic acid,pantothenic,PANTAC,mg,Pantothenic acid. CoFID expresses it as calcium D-pantothenate; USDA doesn't state the form (combined on a data check: caveat salt-basis-pantothenic)
+VITB6,Vitamin B6,vitaminB6,VITB6A,mg,Vitamin B6. CoFID expresses it as pyridoxine hydrochloride; USDA doesn't state the form (combined on a data check: caveat salt-basis-vitaminB6)
 FOL,Folate (total),folate,FOL,µg,"Total folate (food folate + any folic acid), by weight"
 FOLDFE,Folate (dietary folate equivalents),folate,FOLDFE,µg,Dietary folate equivalents: food folate + 1.7 x folic acid
 VITB12,Vitamin B12,vitaminB12,VITB12,µg,Vitamin B12

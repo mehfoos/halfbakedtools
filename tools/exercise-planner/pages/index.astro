@@ -1,5 +1,6 @@
 ---
 import ToolLayout from "@site/layouts/ToolLayout.astro";
+import Caveat from "@site/components/Caveat.astro";
 import { referencesFor } from "@site/lib/references.ts";
 import references from "../references.json";
 const { cite } = referencesFor(references as Parameters<typeof referencesFor>[0]);
@@ -8,7 +9,8 @@ const base = import.meta.env.BASE_URL;
 <ToolLayout slug="exercise-planner" page="index" description="Choose the muscles you want to train, or heart and lung fitness, and the equipment you have, and get a few short lists of exercises that cover them.">
   <h1>Exercise planner</h1>
   <p class="lede">Choose what you want to train and what equipment you have, and get a few short lists of exercises that cover it, with charts of what each list works.</p>
-  <p class="notice small">Early version (alpha). Which muscles each exercise works is partly the tool's own classification; see <a href={`${base}tools/exercise-planner/methods/`}>Methods and sources</a>. Information only, not medical advice: if you have a health condition, an injury or haven't exercised for a while, ask a GP or physiotherapist first.</p>
+  <Caveat kind="alpha">Which muscles each exercise works is partly the tool's own classification; see <a href={`${base}tools/exercise-planner/methods/`}>Methods and sources</a>.</Caveat>
+  <p class="notice small">Information only, not medical advice: if you have a health condition, an injury or haven't exercised for a while, ask a GP or physiotherapist first.</p>
 
   <div id="planner">
     <noscript><p class="notice">The planner runs in your browser and needs JavaScript.</p></noscript>
