@@ -328,26 +328,18 @@
     },
     {
       "id": "egg",
-      "name": "Eggs",
+      "name": "Eggs (hard-boiled)",
       "group": "Eggs & dairy",
       "diet": "vegetarian",
       "include": [
         "Egg, whole",
-        "raw, fresh"
+        "cooked, hard-boiled"
       ],
-      "exclude": [
-        "frozen",
-        "dried"
-      ],
+      "exclude": [],
       "unit": "egg",
       "unitGrams": 50,
       "step": 0.5,
-      "maxGrams": 200,
-      "foundation": {
-        "include": [
-          "Eggs, Grade A, Large, egg whole"
-        ]
-      }
+      "maxGrams": 200
     },
     {
       "id": "milk",
@@ -458,13 +450,14 @@
     },
     {
       "id": "kale",
-      "name": "Kale (raw)",
+      "name": "Kale (cooked)",
       "group": "Vegetables",
       "diet": "vegan",
       "include": [
-        "Kale, raw"
+        "Kale, cooked, boiled, drained, without salt"
       ],
       "exclude": [
+        "frozen",
         "scotch"
       ],
       "unit": "g",
@@ -548,13 +541,14 @@
     },
     {
       "id": "onion",
-      "name": "Onions (raw)",
+      "name": "Onions (cooked)",
       "group": "Vegetables",
       "diet": "vegan",
       "include": [
-        "Onions, raw"
+        "Onions, cooked, boiled, drained, without salt"
       ],
       "exclude": [
+        "frozen",
         "spring",
         "welsh",
         "young",
@@ -601,15 +595,13 @@
     },
     {
       "id": "mushrooms",
-      "name": "Mushrooms (white, raw)",
+      "name": "Mushrooms (white, cooked)",
       "group": "Vegetables",
       "diet": "vegan",
       "include": [
-        "Mushrooms, white, raw"
+        "Mushrooms, white, cooked, boiled, drained, without salt"
       ],
-      "exclude": [
-        "ultraviolet"
-      ],
+      "exclude": [],
       "unit": "g",
       "unitGrams": 1,
       "step": 10,
@@ -949,13 +941,15 @@
     },
     {
       "id": "courgette",
-      "name": "Courgette (raw)",
+      "name": "Courgette (cooked)",
       "group": "Vegetables",
       "diet": "vegan",
       "include": [
-        "Squash, summer, zucchini, includes skin, raw"
+        "Squash, summer, zucchini, includes skin, cooked, boiled, drained, without salt"
       ],
-      "exclude": [],
+      "exclude": [
+        "frozen"
+      ],
       "unit": "g",
       "unitGrams": 1,
       "step": 10,
@@ -1033,13 +1027,15 @@
     },
     {
       "id": "leeks",
-      "name": "Leeks (raw)",
+      "name": "Leeks (cooked)",
       "group": "Vegetables",
       "diet": "vegan",
       "include": [
-        "Leeks, (bulb and lower leaf-portion), raw"
+        "Leeks, (bulb and lower leaf-portion), cooked, boiled, drained, without salt"
       ],
-      "exclude": [],
+      "exclude": [
+        "frozen"
+      ],
       "unit": "g",
       "unitGrams": 1,
       "step": 10,

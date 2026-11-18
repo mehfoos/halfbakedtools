@@ -3,49 +3,35 @@
 Foods switched on by the planner's "Wider selection" preset, in addition to the common foods.
 This is a judgement list for the site owner to review; the rules are in `pipeline/wider_selection.json`.
 
-414 foods.
+379 foods.
 
-## Vegetables (94)
+## Vegetables (65)
 
 - Artichokes, (globe or french), cooked, boiled, drained, without salt
-- Artichokes, (globe or french), raw
 - Asparagus, frozen, cooked, boiled, drained, without salt
-- Asparagus, raw
 - Aubergine, cooked, boiled, drained, without salt
-- Aubergine, raw
 - Beetroot, canned, drained solids
-- Beetroot, raw
 - Broadbeans, immature seeds, cooked, boiled, drained, without salt
 - Broccoli, frozen, chopped, cooked, boiled, drained, without salt
 - Broccoli, frozen, spears, cooked, boiled, drained, without salt
-- Broccoli, raw
 - Brussels sprouts, frozen, cooked, boiled, drained, without salt
-- Brussels sprouts, raw
 - Butter beans (lima), immature seeds, cooked, boiled, drained, without salt
 - Butter beans (lima), immature seeds, frozen, baby, cooked, boiled, drained, without salt
 - Cabbage, chinese (pak-choi), cooked, boiled, drained, without salt
-- Cabbage, chinese (pak-choi), raw
 - Cabbage, cooked, boiled, drained, without salt
 - Cabbage, red, cooked, boiled, drained, without salt
 - Cabbage, savoy, cooked, boiled, drained, without salt
-- Cabbage, savoy, raw
 - Carrots, baby, raw
 - Carrots, cooked, boiled, drained, without salt
 - Carrots, frozen, cooked, boiled, drained, without salt
-- Cauliflower, green, raw
-- Cauliflower, raw
+- Cauliflower, frozen, cooked, boiled, drained, without salt
 - Celeriac, cooked, boiled, drained, without salt
-- Celeriac, raw
 - Chard, swiss, cooked, boiled, drained, without salt
-- Chard, swiss, raw
 - Chicory, witloof, raw
 - Chives, raw
-- Courgette, includes skin, cooked, boiled, drained, without salt
 - Courgette, includes skin, frozen, cooked, boiled, drained, without salt
 - Fennel, bulb, raw
-- Green beans, raw
-- Green beans, yellow, raw
-- Kale, cooked, boiled, drained, without salt
+- Green beans, cooked, boiled, drained, without salt
 - Kale, frozen, cooked, boiled, drained, without salt
 - Lettuce, butterhead, raw
 - Lettuce, green leaf, raw
@@ -53,21 +39,13 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Lettuce, red leaf, raw
 - Mangetout, boiled, drained, without salt
 - Mangetout, raw
-- Mushrooms, brown, italian, or crimini, raw
-- Mushrooms, oyster, raw
 - Mushrooms, portabella, grilled
-- Mushrooms, portabella, raw
 - Mushrooms, shiitake, cooked, without salt
-- Mushrooms, shiitake, raw
-- Mushrooms, white, cooked, boiled, drained, without salt
 - Okra, cooked, boiled, drained, without salt
-- Okra, raw
-- Onions, cooked, boiled, drained, without salt
 - Onions, yellow, sauteed
 - Onions, young green, tops only
 - Parsley, fresh
 - Peas, green, cooked, boiled, drained, without salt
-- Peas, green, raw
 - Peppers, green, cooked, boiled, drained, without salt
 - Peppers, green, raw
 - Peppers, red, cooked, boiled, drained, without salt
@@ -77,32 +55,25 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Potatoes, boiled, cooked in skin, flesh, without salt
 - Potatoes, boiled, cooked without skin, flesh, without salt
 - Pumpkin, canned, without salt
-- Pumpkin, raw
 - Radishes, raw
 - Radishes, white icicle, raw
 - Rocket, raw
 - Sauerkraut, canned, solids and liquids
-- Shallots, raw
 - Spinach, cooked, boiled, drained, without salt
 - Spinach, raw
 - Spring onions, raw
-- Squash, summer, all varieties, raw
-- Squash, summer, scallop, raw
-- Squash, winter, acorn, raw
-- Squash, winter, hubbard, raw
+- Squash, summer, scallop, cooked, boiled, drained, without salt
+- Squash, winter, hubbard, baked, without salt
 - Swede, cooked, boiled, drained, without salt
-- Swede, raw
 - Sweet potato, cooked, boiled, without skin
 - Sweet potato, frozen, cooked, baked, without salt
-- Sweetcorn, raw
-- Sweetcorn, white, raw
+- Sweetcorn, white, cooked, boiled, drained, without salt
 - Tomatoes, crushed, canned
 - Tomatoes, red, ripe, cooked
 - Tomatoes, red, ripe, raw, year round average
 - Turnips, cooked, boiled, drained, without salt
-- Turnips, raw
 
-## Fruit (44)
+## Fruit (42)
 
 - Apples, raw, golden delicious, with skin
 - Apples, raw, without skin
@@ -143,8 +114,6 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Pomegranates, raw
 - Raisins, golden, seedless
 - Raisins, seeded
-- Rhubarb, frozen, uncooked
-- Rhubarb, raw
 - Tangerines, (mandarin oranges), canned, juice pack
 - Tangerines, (mandarin oranges), raw
 - Watermelon, raw
@@ -262,11 +231,10 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Whole wheat hot natural cereal, cooked with water, without salt
 - Whole wheat hot natural cereal, dry
 
-## Nuts & seeds (17)
+## Nuts & seeds (16)
 
 - Almonds, blanched
-- Chestnuts, european, raw, peeled
-- Chestnuts, european, raw, unpeeled
+- Chestnuts, chinese, roasted
 - Coconut milk, frozen (liquid expressed from grated meat and water)
 - Coconut milk, raw (liquid expressed from grated meat and water)
 - Hazelnuts or filberts, blanched
@@ -360,7 +328,7 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Shellfish, prawns, mixed species, canned
 - Shellfish, scallop, (bay and sea), cooked, steamed
 
-## Dairy & eggs (27)
+## Dairy & eggs (24)
 
 - Butter, Clarified butter (ghee)
 - Cheese, blue
@@ -382,10 +350,7 @@ This is a judgement list for the site owner to review; the rules are in `pipelin
 - Cream, fluid, half and half
 - Cream, fluid, heavy whipping
 - Cream, sour, cultured
-- Egg, white, raw, fresh
 - Egg, whole, cooked, poached
-- Egg, whole, cooked, scrambled
-- Egg, yolk, raw, fresh
 - Milk, buttermilk, fluid, whole
 - Yoghurt, Greek, fruit, whole milk
 - Yoghurt, plain, skim milk

@@ -20,6 +20,7 @@
     "skin only",
     "syrup",
     "sweetened",
+    "with sugar",
     "with salt",
     "salt added",
     "unprepared",
@@ -85,7 +86,8 @@
     "cream style",
     "mature seeds, raw",
     "liquid from",
-    ", skin,", "with franks",
+    ", skin,",
+    "with franks",
     "rendered",
     "omega-3",
     "honey roasted",
@@ -415,5 +417,53 @@
     "herbs": [
       "*"
     ]
+  },
+  "rawRules": {
+    "_comment": "Raw foods that people don't normally eat raw are left out of the 'Wider selection' preset (they stay in 'Everything' and can be switched on by hand), so the default list is mostly cooked unless a food is usually eaten raw. A judgement list drawn up for the site owner to review. For vegetables only the groups in 'rawOk' keep their raw foods (salad vegetables, raw snacks, herbs). For the other categories, a group whose name starts with a 'rawNot' word loses its raw foods. A food counts as raw if its USDA description says raw or uncooked.",
+    "veg": {
+      "rawOk": [
+        "Cabbage, raw",
+        "Cabbage, red",
+        "Carrots, baby",
+        "Carrots, raw",
+        "Celery",
+        "Chicory",
+        "Chives",
+        "Cucumber",
+        "Fennel",
+        "Garlic",
+        "Lettuce, butterhead",
+        "Lettuce, cos",
+        "Lettuce, green leaf",
+        "Lettuce, iceberg",
+        "Lettuce, red leaf",
+        "Mangetout",
+        "Parsley",
+        "Peppers, green",
+        "Peppers, red",
+        "Peppers, yellow",
+        "Radishes",
+        "Rocket",
+        "Spinach, raw",
+        "Spring onions",
+        "Tomatoes, red",
+        "Watercress"
+      ]
+    },
+    "fruit": {
+      "rawNot": [
+        "Rhubarb"
+      ]
+    },
+    "nuts": {
+      "rawNot": [
+        "Chestnuts"
+      ]
+    },
+    "dairy": {
+      "rawNot": [
+        "Egg"
+      ]
+    }
   }
 }

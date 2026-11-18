@@ -40,3 +40,26 @@ test("blend overlay: a missing value stays missing, and every value has its sour
     }
   }
 });
+
+// The default lists (common and wider selection) hold no raw food that people don't normally eat raw. Rules and
+// reasons: pipeline/wider_selection.json ("rawRules"). Everything stays available in the "Everything" preset.
+test("default lists leave out raw foods that aren't normally eaten raw", () => {
+  const data = load();
+  const rules = JSON.parse(readFileSync(new URL("../pipeline/wider_selection.json", import.meta.url), "utf8")).rawRules;
+  const rawOk = new Set<string>(rules.veg.rawOk.map((g: string) => g.toLowerCase()));
+  const isRaw = (n: string) => /\b(raw|uncooked)\b/i.test(n);
+  // A special-purpose raw food kept on purpose in the common list: no cooked USDA record exists.
+  const exceptions = new Set(["Mushrooms (UV-exposed, 'vitamin D' mushrooms)"]);
+  const bad: string[] = [];
+  for (const f of data.foods.filter((x) => x.common || x.wider)) {
+    if (!isRaw(f.usdaName) || exceptions.has(f.name)) continue;
+    const g = f.group.toLowerCase();
+    if (f.diet === "meat") bad.push(`${f.name}: raw meat or fish`);
+    else if (f.cat === "dairy" && /^egg/.test(g)) bad.push(`${f.name}: raw egg`);
+    else if (f.cat === "veg" && !rawOk.has(g)) bad.push(`${f.name}: raw vegetable not usually eaten raw`);
+    else if (f.cat === "fruit" && /^rhubarb/.test(g)) bad.push(`${f.name}: raw rhubarb`);
+    else if (f.cat === "nuts" && /^chestnuts/.test(g)) bad.push(`${f.name}: raw chestnuts`);
+  }
+  assert.deepEqual(bad, []);
+  assert.ok(data.foods.some((f) => !f.common && !f.wider && f.cat === "dairy" && /raw/.test(f.usdaName)), "raw eggs remain in the full list");
+});

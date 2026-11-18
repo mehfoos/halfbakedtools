@@ -88,8 +88,8 @@ food, part, state and processing first, then composition):
   against, so a later change to the vocabulary, synonyms or data flags it for review again. The tests enforce
   both.
 
-Decisions so far (CoFID, 18 Nov 2026; automated review, without manual human verification, beta): 63 same, 3 equivalent,
-35 similar, 15 none. The owner has agreed that such reviews may be used, labelled this way; the blended list will be
+Decisions so far (CoFID, 18 Nov 2026; automated review, without manual human verification, beta): 64 same, 3 equivalent,
+34 similar, 15 none (six common foods were switched from raw to cooked on 18 Nov and re-reviewed). The owner has agreed that such reviews may be used, labelled this way; the blended list will be
 marked beta wherever it is shown.
 
 ### Rule v2: the review rule applied automatically (all 2,244 planner foods)
@@ -114,7 +114,7 @@ Checked (18 Nov 2026): on the 116 foods decided one by one, rule v2 never said *
 found 23 of the 63); and all of its own *same* matches were read against their published names (one mixture
 found, which led to the mixture rule).
 
-Result for CoFID: 139 same (63 reviewed + 76 by rule), 3 equivalent, 1,424 similar, 678 none. Most foods are kept
+Result for CoFID: 139 same (64 reviewed + 75 by rule), 3 equivalent, 1,424 similar, 678 none. Most foods are kept
 separate: that is the rule working ("when in doubt, keep separate"), and they stay available on their own.
 
 `../crosswalk/crosswalk.json` (17 Nov) is kept only for the single-table CoFID file, where "the planner's food"

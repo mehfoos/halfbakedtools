@@ -174,10 +174,28 @@ def derive(v: dict) -> dict:
     return d
 
 
+RAW_RE = re.compile(r"\b(?:raw|uncooked)\b", re.I)
+COOKED_RE = re.compile(r"\b(?:cooked|boiled|baked|roasted|steamed)\b", re.I)
+
+
+def raw_unusual(food: dict, rules: dict) -> bool:
+    """A raw food that people don't normally eat raw (rules: wider_selection.json, 'rawRules')."""
+    if not RAW_RE.search(food["usdaName"]):
+        return False
+    rule = rules.get(food["cat"])
+    if not rule:
+        return False
+    group = food["group"].lower()
+    if "rawOk" in rule:
+        return group not in {g.lower() for g in rule["rawOk"]}
+    return any(group.startswith(w.lower()) for w in rule.get("rawNot", []))
+
+
 def mark_wider(auto_foods_out: list[dict]) -> list[dict]:
     """Flag the foods of the 'Wider selection' preset (rules in wider_selection.json)."""
     spec = json.loads((PIPELINE / "wider_selection.json").read_text())
     exclude = [w.lower() for w in spec["exclude"]]
+    raw_rules = {k: v for k, v in spec.get("rawRules", {}).items() if not k.startswith("_")}
     by_group: dict[tuple[str, str], list[dict]] = {}
     for f in auto_foods_out:
         groups = {g.lower() for g in spec["groups"].get(f["cat"], [])}
@@ -192,7 +210,15 @@ def mark_wider(auto_foods_out: list[dict]) -> list[dict]:
     for (_cat, _group), foods in sorted(by_group.items()):
         # simplest description first: unsalted and plain preparations, then the shortest name
         foods.sort(key=lambda f: ("without salt" not in f["usdaName"].lower() and "raw" not in f["usdaName"].lower(), len(f["usdaName"])))
-        for f in foods[: spec["maxPerGroup"]]:
+        picked = foods[: spec["maxPerGroup"]]
+        # Raw foods people don't normally eat raw drop out, but are not replaced by the group's next food (which is
+        # often an odd product). A group left with nothing keeps its simplest food that isn't such a raw food.
+        keep = [f for f in picked if not raw_unusual(f, raw_rules)]
+        if not keep:
+            rest = [f for f in foods if not raw_unusual(f, raw_rules)]
+            cooked = [f for f in rest if COOKED_RE.search(f["usdaName"])]
+            keep = (cooked or rest)[:1]
+        for f in keep:
             f["wider"] = True
             chosen.append(f)
     # Staples the rules would miss, named exactly by USDA description.

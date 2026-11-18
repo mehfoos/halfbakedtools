@@ -258,20 +258,19 @@ Decision: **similar** → `cofid:13-672`. Water 65.6 vs 75.8 g, and CoFID doesn'
 | `cofid:13-671` Sweet potato, steamed | narrower | cooking: baked / steamed | salt: without / — | part: flesh / — | agrees | review: differs | `5330d205` |
 | `cofid:13-647` Sweet potato, wedges, flesh and skin, baked in rapeseed oil | differs | part: flesh / flesh-and-skin | cooking-fat: — / oil | salt: without / — | differs: water 75.78 vs 61.3 | fat 0.15 vs 3.9 | calcium 38 vs 109 | review: differs | `b56a8eac` |
 
-### Eggs (`c:egg`)
+### Eggs (hard-boiled) (`c:egg`)
 
-Anchor: USDA 171287, Egg, whole, raw, fresh
+Anchor: USDA 173424, Egg, whole, cooked, hard-boiled
 
-Decision: **same** → `cofid:12-937`. Both whole raw chicken eggs; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
+Decision: **same** → `cofid:12-940`. USDA hard-boiled whole egg and CoFID whole chicken egg, boiled; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
-| `cofid:12-937` Eggs, chicken, whole, raw ✔ | narrower | — | preservation: fresh / — | agrees | review: incomplete | `fd2d2431` |
-| `cofid:17-763` Creme egg | narrower | — | state: raw / — | preservation: fresh / — | part: whole-egg / — | differs: water 76.15 vs 6.7 | protein 12.56 vs 4 | fat 9.51 vs 15.9 | sodium 142 vs 63 | review: incomplete | `fa7259e0` |
-| `cofid:12-573` Custard, egg | narrower | — | state: raw / — | preservation: fresh / — | part: whole-egg / — | differs: protein 12.56 vs 5.9 | fat 9.51 vs 3.4 | calcium 56 vs 130 | review: incomplete | `9e28efdc` |
-| `cofid:12-940` Eggs, chicken, whole, boiled | narrower | state: raw / cooked | cooking: — / boiled | preservation: fresh / — | agrees | review: differs | `af806905` |
-| `cofid:12-961` Eggs, chicken, whole, dried | narrower | preservation: fresh / dried | state: raw / — | differs: water 76.15 vs 4 | protein 12.56 vs 48.6 | fat 9.51 vs 34.7 | sodium 142 vs 593 | calcium 56 vs 178 | review: differs | `3471c652` |
-| `cofid:12-944` Eggs, chicken, whole, fried in sunflower oil | narrower | state: raw / cooked | cooking: — / fried | cooking-fat: — / oil | preservation: fresh / — | differs: water 76.15 vs 68 | fat 9.51 vs 15.7 | review: differs | `cb5def24` |
+| `cofid:17-763` Creme egg | narrower | — | state: cooked / — | cooking: boiled / — | part: whole-egg / — | differs: water 74.62 vs 6.7 | protein 12.58 vs 4 | fat 10.61 vs 15.9 | calcium 50 vs 85 | review: incomplete | `028cf0ff` |
+| `cofid:12-573` Custard, egg | narrower | — | state: cooked / — | cooking: boiled / — | part: whole-egg / — | differs: protein 12.58 vs 5.9 | fat 10.61 vs 3.4 | calcium 50 vs 130 | review: incomplete | `7f6272af` |
+| `cofid:12-940` Eggs, chicken, whole, boiled ✔ | narrower | — | — | agrees | review: incomplete | `eb54cc33` |
+| `cofid:12-961` Eggs, chicken, whole, dried | narrower | — | state: cooked / — | cooking: boiled / — | preservation: — / dried | differs: water 74.62 vs 4 | protein 12.58 vs 48.6 | fat 10.61 vs 34.7 | sodium 124 vs 593 | calcium 50 vs 178 | review: incomplete | `119db806` |
+| `cofid:12-944` Eggs, chicken, whole, fried in sunflower oil | narrower | cooking: boiled / fried | cooking-fat: — / oil | differs: water 74.62 vs 68 | fat 10.61 vs 15.7 | review: differs | `ffce34f8` |
 
 ### Semi-skimmed milk (`c:milk`)
 
@@ -357,16 +356,16 @@ Decision: **similar** → `cofid:13-458`. Both frozen spinach boiled without sal
 | `cofid:15-869` Roulade, spinach | differs | — | state: cooked / — | cooking: boiled / — | preservation: frozen / — | salt: without / — | portion: drained / — | form: chopped / — | differs: water 88.94 vs 68.6 | protein 4.01 vs 10.1 | fat 0.87 vs 13.3 | sodium 97 vs 269 | review: differs | `e60ec06e` |
 | `cofid:13-550` Spinach, baby, boiled in unsalted water | differs | — | preservation: frozen / — | portion: drained / — | form: chopped / — | differs: sodium 97 vs 42 | review: differs | `32a3579a` |
 
-### Kale (raw) (`c:kale`)
+### Kale (cooked) (`c:kale`)
 
-Anchor: USDA 168421, Kale, raw
+Anchor: USDA 169238, Kale, cooked, boiled, drained, without salt
 
-Decision: **similar** → `cofid:13-234`. Both raw kale (CoFID: curly), but calcium 254 vs 130 mg is too large for natural variation. (Automated review, without manual human verification (beta), 2026-11-18)
+Decision: **same** → `cofid:13-649`. Both boiled kale without salt; CoFID names the type (curly), USDA doesn't; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
-| `cofid:13-649` Curly kale, boiled in unsalted water | narrower | state: raw / cooked | cooking: — / boiled | salt: — / without | agrees | review: differs | `365db1d3` |
-| `cofid:13-234` Curly kale, raw ✔ | narrower | — | — | differs: calcium 254 vs 130 | review: incomplete | `8ecbdf71` |
+| `cofid:13-649` Curly kale, boiled in unsalted water ✔ | narrower | — | portion: drained / — | agrees | review: incomplete | `582ffd19` |
+| `cofid:13-234` Curly kale, raw | narrower | state: cooked / raw | cooking: boiled / — | salt: without / — | portion: drained / — | agrees | review: differs | `24562ec8` |
 
 ### Broccoli (cooked) (`c:broccoli`)
 
@@ -424,20 +423,19 @@ Decision: **similar** → `cofid:13-530`. Both canned tomatoes, but sodium 115 v
 | `cofid:13-540` Cabbage, red, boiled in unsalted water | differs | — | state: — / cooked | cooking: — / boiled | preservation: canned / — | salt: — / without | medium: tomato-juice / — | differs: sodium 115 vs 6 | review: differs | `ec91332f` |
 | `cofid:13-190` Cabbage, red, raw | differs | — | state: — / raw | preservation: canned / — | medium: tomato-juice / — | differs: sodium 115 vs 8 | review: differs | `1aa430dc` |
 
-### Onions (raw) (`c:onion`)
+### Onions (cooked) (`c:onion`)
 
-Anchor: USDA 170000, Onions, raw
+Anchor: USDA 170001, Onions, cooked, boiled, drained, without salt
 
-Decision: **same** → `cofid:13-499`. Both raw onions; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
+Decision: **same** → `cofid:13-500`. Both onions boiled in unsalted water; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
-| `cofid:13-499` Onions, raw ✔ | same | — | — | agrees | same | `bc539027` |
-| `cofid:13-589` Onions, baked | same | state: raw / cooked | cooking: — / baked | agrees | review: differs | `b5b48d54` |
-| `cofid:13-500` Onions, boiled in unsalted water | same | state: raw / cooked | cooking: — / boiled | salt: — / without | agrees | review: differs | `35db0387` |
-| `cofid:13-590` Onions, dried, raw | same | — | preservation: — / dried | differs: water 89.11 vs 4.5 | protein 1.1 vs 8.8 | fat 0.1 vs 1.2 | sodium 4 vs 100 | calcium 23 vs 263 | review: incomplete | `0166e821` |
-| `cofid:13-611` Onions, fried in butter | same | state: raw / cooked | cooking: — / fried | cooking-fat: — / butter | differs: water 89.11 vs 79.9 | fat 0.1 vs 5.3 | review: differs | `08112231` |
-| `cofid:13-592` Onions, fried in corn oil | same | state: raw / cooked | cooking: — / fried | cooking-fat: — / oil | differs: water 89.11 vs 79.9 | fat 0.1 vs 5.3 | review: differs | `bada86ec` |
+| `cofid:13-589` Onions, baked | same | cooking: boiled / baked | salt: without / — | portion: drained / — | agrees | review: differs | `876e9abf` |
+| `cofid:13-500` Onions, boiled in unsalted water ✔ | same | — | portion: drained / — | agrees | review: incomplete | `53e1acfa` |
+| `cofid:13-590` Onions, dried, raw | same | state: cooked / raw | cooking: boiled / — | preservation: — / dried | salt: without / — | portion: drained / — | differs: water 87.86 vs 4.5 | protein 1.36 vs 8.8 | fat 0.19 vs 1.2 | sodium 3 vs 100 | calcium 22 vs 263 | review: differs | `6808b1c8` |
+| `cofid:13-611` Onions, fried in butter | same | cooking: boiled / fried | cooking-fat: — / butter | salt: without / — | portion: drained / — | differs: water 87.86 vs 79.9 | fat 0.19 vs 5.3 | review: differs | `dad1c61f` |
+| `cofid:13-592` Onions, fried in corn oil | same | cooking: boiled / fried | cooking-fat: — / oil | salt: without / — | portion: drained / — | differs: water 87.86 vs 79.9 | fat 0.19 vs 5.3 | review: differs | `f1dff631` |
 
 ### Red pepper (raw) (`c:red-pepper`)
 
@@ -467,19 +465,19 @@ Decision: **same** → `cofid:13-582`. USDA unspecified raw cabbage; CoFID gives
 | `cofid:13-511` Cabbage, green, boiled in unsalted water | narrower | state: raw / cooked | cooking: — / boiled | salt: — / without | agrees | review: differs | `cf7e1ce3` |
 | `cofid:13-510` Cabbage, green, raw | narrower | — | — | differs: protein 1.28 vs 2.4 | review: incomplete | `939fbbae` |
 
-### Mushrooms (white, raw) (`c:mushrooms`)
+### Mushrooms (white, cooked) (`c:mushrooms`)
 
-Anchor: USDA 169251, Mushrooms, white, raw
+Anchor: USDA 169252, Mushrooms, white, cooked, boiled, drained, without salt
 
-Decision: **same** → `cofid:13-505`. Same food despite: protein 3.1 vs 1.0 g. Both raw white mushrooms; the difference is likely the nitrogen-to-protein factor, which the component step will check. (Automated review, without manual human verification (beta), 2026-11-18)
+Decision: **similar** → `cofid:13-506`. CoFID's cooked white mushrooms are stewed in unsalted water, USDA's are boiled and drained; composition agrees, but the cooking differs. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
-| `cofid:13-546` Mushrooms, white, fried in corn oil | same | state: raw / cooked | cooking: — / fried | cooking-fat: — / oil | differs: water 92.45 vs 79.1 | protein 3.09 vs 1.4 | fat 0.34 vs 11 | review: differs | `77215f96` |
-| `cofid:13-507` Mushrooms, white, fried in rapeseed oil | same | state: raw / cooked | cooking: — / fried | cooking-fat: — / oil | differs: water 92.45 vs 79.1 | protein 3.09 vs 1.4 | fat 0.34 vs 11 | review: differs | `41a33f94` |
-| `cofid:13-505` Mushrooms, white, raw ✔ | same | — | — | differs: protein 3.09 vs 1 | review: incomplete | `6cfc4c3a` |
-| `cofid:13-506` Mushrooms, white, stewed in unsalted water | same | state: raw / cooked | cooking: — / stewed | salt: — / without | differs: protein 3.09 vs 1.4 | review: differs | `4ed79fc1` |
-| `cofid:13-545` Mushrooms, white, fried in salted butter | narrower | state: raw / cooked | cooking: — / fried | salt: — / with | differs: water 92.45 vs 79.1 | protein 3.09 vs 1.4 | fat 0.34 vs 11 | sodium 5 vs 150 | review: differs | `3b6a96c7` |
+| `cofid:13-546` Mushrooms, white, fried in corn oil | same | cooking: boiled / fried | cooking-fat: — / oil | salt: without / — | portion: drained / — | differs: water 91.08 vs 79.1 | fat 0.47 vs 11 | review: differs | `d4dddaef` |
+| `cofid:13-507` Mushrooms, white, fried in rapeseed oil | same | cooking: boiled / fried | cooking-fat: — / oil | salt: without / — | portion: drained / — | differs: water 91.08 vs 79.1 | fat 0.47 vs 11 | review: differs | `9f62a331` |
+| `cofid:13-505` Mushrooms, white, raw | same | state: cooked / raw | cooking: boiled / — | salt: without / — | portion: drained / — | differs: protein 2.17 vs 1 | review: differs | `4c6a1265` |
+| `cofid:13-506` Mushrooms, white, stewed in unsalted water ✔ | same | cooking: boiled / stewed | portion: drained / — | agrees | review: differs | `d5ddd237` |
+| `cofid:13-545` Mushrooms, white, fried in salted butter | narrower | cooking: boiled / fried | salt: without / with | portion: drained / — | differs: water 91.08 vs 79.1 | fat 0.47 vs 11 | sodium 2 vs 150 | review: differs | `87f4ce08` |
 
 ### Mushrooms (UV-exposed, 'vitamin D' mushrooms) (`c:uv-mushrooms`)
 
@@ -771,20 +769,19 @@ Decision: **same** → `cofid:13-513`. Both boiled without salt; composition agr
 | `cofid:15-637` Cauliflower cheese, retail | narrower | — | state: cooked / — | cooking: boiled / — | salt: without / — | portion: drained / — | differs: water 93 vs 78.4 | protein 1.84 vs 4.2 | fat 0.45 vs 5.8 | sodium 15 vs 200 | calcium 16 vs 119 | review: incomplete | `b6033243` |
 | `cofid:15-679` Bhaji, cauliflower and potato, homemade | narrower | — | state: cooked / — | cooking: boiled / — | salt: without / — | portion: drained / — | differs: water 93 vs 75.5 | protein 1.84 vs 3.3 | fat 0.45 vs 6.8 | review: incomplete | `ee065f60` |
 
-### Courgette (raw) (`c:courgette`)
+### Courgette (cooked) (`c:courgette`)
 
-Anchor: USDA 169291, Squash, summer, zucchini, includes skin, raw
+Anchor: USDA 169292, Squash, summer, zucchini, includes skin, cooked, boiled, drained, without salt
 
-Decision: **same** → `cofid:13-627`. Both raw courgette (zucchini); composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
+Decision: **same** → `cofid:13-628`. Both courgette boiled in unsalted water; USDA says it includes the skin, CoFID doesn't say; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
-| `cofid:13-627` Courgette, raw ✔ | narrower | — | part: flesh-and-skin / — | agrees | review: incomplete | `db1b3cf6` |
-| `cofid:13-628` Courgette, boiled in unsalted water | narrower | state: raw / cooked | cooking: — / boiled | salt: — / without | part: flesh-and-skin / — | agrees | review: differs | `b6577900` |
-| `cofid:13-668` Courgette, dried | narrower | — | state: raw / — | preservation: — / dried | part: flesh-and-skin / — | differs: water 94.79 vs 10.5 | protein 1.21 vs 23.3 | fat 0.32 vs 3.6 | calcium 16 vs 485 | review: incomplete | `d1ccfb40` |
-| `cofid:13-414` Courgette, fried in butter | narrower | state: raw / cooked | cooking: — / fried | cooking-fat: — / butter | part: flesh-and-skin / — | differs: water 94.79 vs 86.8 | protein 1.21 vs 2.6 | fat 0.32 vs 4.8 | review: differs | `42b5fb81` |
-| `cofid:13-232` Courgette, fried in corn oil | narrower | state: raw / cooked | cooking: — / fried | cooking-fat: — / oil | part: flesh-and-skin / — | differs: water 94.79 vs 86.8 | protein 1.21 vs 2.6 | fat 0.32 vs 4.8 | review: differs | `adbac876` |
-| `cofid:13-587` Courgette, fried in rapeseed oil | narrower | state: raw / cooked | cooking: — / fried | cooking-fat: — / oil | part: flesh-and-skin / — | differs: water 94.79 vs 86.8 | protein 1.21 vs 2.6 | fat 0.32 vs 4.8 | review: differs | `1cadd949` |
+| `cofid:13-628` Courgette, boiled in unsalted water ✔ | narrower | — | portion: drained / — | part: flesh-and-skin / — | agrees | review: incomplete | `4d8b7037` |
+| `cofid:13-668` Courgette, dried | narrower | — | state: cooked / — | cooking: boiled / — | preservation: — / dried | salt: without / — | portion: drained / — | part: flesh-and-skin / — | differs: water 95.22 vs 10.5 | protein 1.14 vs 23.3 | fat 0.36 vs 3.6 | calcium 18 vs 485 | review: incomplete | `63aea71f` |
+| `cofid:13-414` Courgette, fried in butter | narrower | cooking: boiled / fried | cooking-fat: — / butter | salt: without / — | portion: drained / — | part: flesh-and-skin / — | differs: water 95.22 vs 86.8 | protein 1.14 vs 2.6 | fat 0.36 vs 4.8 | review: differs | `8aecefbf` |
+| `cofid:13-232` Courgette, fried in corn oil | narrower | cooking: boiled / fried | cooking-fat: — / oil | salt: without / — | portion: drained / — | part: flesh-and-skin / — | differs: water 95.22 vs 86.8 | protein 1.14 vs 2.6 | fat 0.36 vs 4.8 | review: differs | `5e781897` |
+| `cofid:13-587` Courgette, fried in rapeseed oil | narrower | cooking: boiled / fried | cooking-fat: — / oil | salt: without / — | portion: drained / — | part: flesh-and-skin / — | differs: water 95.22 vs 86.8 | protein 1.14 vs 2.6 | fat 0.36 vs 4.8 | review: differs | `cf8a45f4` |
 
 ### Cucumber (`c:cucumber`)
 
@@ -848,19 +845,19 @@ Decision: **same** → `cofid:13-630`. Both boiled without salt; composition agr
 | `cofid:13-177` Brussels sprouts, raw | same | state: cooked / raw | cooking: boiled / — | salt: without / — | portion: drained / — | agrees | review: differs | `eda3a7a8` |
 | `cofid:13-148` Alfalfa sprouts, raw | differs | state: cooked / raw | cooking: boiled / — | salt: without / — | portion: drained / — | differs: protein 2.55 vs 4 | review: differs | `64585d5f` |
 
-### Leeks (raw) (`c:leeks`)
+### Leeks (cooked) (`c:leeks`)
 
-Anchor: USDA 169246, Leeks, (bulb and lower leaf-portion), raw
+Anchor: USDA 168426, Leeks, (bulb and lower leaf-portion), cooked, boiled, drained, without salt
 
-Decision: **similar** → `cofid:13-624`. USDA includes the lower leaf; water 83.0 vs 90.7 g, so the part may differ. (Automated review, without manual human verification (beta), 2026-11-18)
+Decision: **same** → `cofid:13-625`. Both leeks boiled in unsalted water; USDA names the part (bulb and lower leaf), CoFID doesn't; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
-| `cofid:13-625` Leeks, boiled in unsalted water | narrower | state: raw / cooked | cooking: — / boiled | salt: — / without | differs: water 83 vs 92.4 | review: differs | `2c63fb40` |
-| `cofid:13-624` Leeks, raw ✔ | narrower | — | — | differs: water 83 vs 90.7 | review: incomplete | `dfa96e5f` |
-| `cofid:13-626` Leeks, roasted in rapeseed oil | narrower | state: raw / cooked | cooking: — / roasted | cooking-fat: — / oil | differs: fat 0.3 vs 1.9 | review: differs | `c9ffef98` |
-| `cofid:15-259` Potato, leek and celery bake | differs | — | state: raw / — | differs: water 83 vs 73.1 | protein 1.5 vs 4.4 | fat 0.3 vs 6.5 | sodium 20 vs 490 | calcium 59 vs 100 | review: differs | `82886cc1` |
-| `cofid:17-831` Soup, potato and leek, homemade | differs | — | state: raw / — | differs: fat 0.3 vs 2.2 | review: differs | `2851e244` |
+| `cofid:13-625` Leeks, boiled in unsalted water ✔ | narrower | — | portion: drained / — | agrees | review: incomplete | `a02f4090` |
+| `cofid:13-624` Leeks, raw | narrower | state: cooked / raw | cooking: boiled / — | salt: without / — | portion: drained / — | agrees | review: differs | `b30d9722` |
+| `cofid:13-626` Leeks, roasted in rapeseed oil | narrower | cooking: boiled / roasted | cooking-fat: — / oil | salt: without / — | portion: drained / — | differs: fat 0.2 vs 1.9 | review: differs | `739741e6` |
+| `cofid:15-259` Potato, leek and celery bake | differs | — | state: cooked / — | cooking: boiled / — | salt: without / — | portion: drained / — | differs: water 90.8 vs 73.1 | protein 0.81 vs 4.4 | fat 0.2 vs 6.5 | sodium 10 vs 490 | calcium 30 vs 100 | review: differs | `1a5f0aa4` |
+| `cofid:17-831` Soup, potato and leek, homemade | differs | — | state: cooked / — | cooking: boiled / — | salt: without / — | portion: drained / — | differs: fat 0.2 vs 2.2 | review: differs | `38ba6ed3` |
 
 ### Garlic (`c:garlic`)
 
@@ -1648,7 +1645,6 @@ Decision: **similar** → `cofid:16-390`. CoFID mussels are bought cooked; water
 | Mushrooms, shiitake, dried (168436) | same | `cofid:13-294` | Rule v2: same name, no facet differs, composition agrees (water, protein, fat, sodium, calcium). Stated by one table only: state: — / raw. |
 | Nectarines, raw (169914) | same | `cofid:14-380` | Rule v2: same name, no facet differs, composition agrees (water, protein, fat, calcium). Stated by one table only: part: — / flesh-and-skin. |
 | Okra, cooked, boiled, drained, without salt (169261) | same | `cofid:13-652` | Rule v2: same name, no facet differs, composition agrees (water, protein, fat, sodium, calcium). Stated by one table only: portion: drained / —. |
-| Onions, cooked, boiled, drained, without salt (170001) | same | `cofid:13-500` | Rule v2: same name, no facet differs, composition agrees (water, protein, fat, sodium, calcium). Stated by one table only: portion: drained / —. |
 | Papayas, raw (169926) | same | `cofid:14-390` | Rule v2: same name, no facet differs, composition agrees (water, protein, fat, sodium, calcium). Stated by one table only: part: — / flesh. |
 | Parsley, fresh (170416) | same | `cofid:13-844` | Rule v2: same name, no facet differs, composition agrees (water, protein, fat, sodium, calcium). |
 | Parsnips, raw (170417) | same | `cofid:13-312` | Rule v2: same name, no facet differs, composition agrees (water, protein, fat, sodium, calcium). |
@@ -2130,9 +2126,9 @@ Decision: **similar** → `cofid:16-390`. CoFID mussels are bought cooked; water
 | Coriander leaf, dried (170921) | similar | `cofid:13-818` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: part: — / leaves. |
 | Coriander leaves, raw (169997) | similar | `cofid:13-888` | Rule v2: closest record by name, kept separate: the names differ in detail. |
 | Coriander seed (170922) | similar | `cofid:13-875` | Rule v2: closest record by name, kept separate: the names differ in detail. |
-| Courgette, includes skin, cooked, boiled, drained, without salt (169292) | similar | `cofid:13-628` | Rule v2: closest record by name, kept separate: the names differ in detail. |
 | Courgette, includes skin, frozen, cooked, boiled, drained, without salt (168470) | similar | `cofid:13-628` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: frozen / —. |
 | Courgette, includes skin, frozen, unprepared (168469) | similar | `cofid:13-628` | Rule v2: closest record by name, kept separate: the names differ in detail; facets differ: state: unprepared / cooked; stated by one table only: preservation: frozen / —. |
+| Courgette, includes skin, raw (169291) | similar | `cofid:13-668` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: — / dried; composition differs: water 94.79 vs 10.5 / protein 1.21 vs 23.3 / fat 0.32 vs 3.6 / calcium 16 vs 485. |
 | Courgette, italian style, canned (168471) | similar | `cofid:13-628` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: canned / —. |
 | Couscous, dry (169699) | similar | `cofid:11-902` | Rule v2: closest record by name, kept separate: facets differ: state: unprepared / cooked; composition differs: water 8.56 vs 53.8 / protein 12.76 vs 7.2. |
 | Cowpeas, young pods with seeds, cooked, boiled, drained, without salt (169221) | similar | `cofid:13-239` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: part: — / drumstick; composition differs: calcium 55 vs 20. |
@@ -2186,10 +2182,10 @@ Decision: **similar** → `cofid:16-390`. CoFID mussels are bought cooked; water
 | Egg, white, dried (172204) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: dried / — / part: white / —; composition differs: protein 81.1 vs 4 / fat 0 vs 15.9 / sodium 1280 vs 63. |
 | Egg, white, raw, fresh (172183) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: part: white / —; composition differs: water 87.57 vs 6.7 / protein 10.9 vs 4 / fat 0.17 vs 15.9 / sodium 166 vs 63 / calcium 7 vs 85. |
 | Egg, white, raw, frozen, pasteurized (172203) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: frozen, pasteurised / — / part: white / —; composition differs: water 88.17 vs 6.7 / protein 10.2 vs 4 / fat 0 vs 15.9 / sodium 169 vs 63 / calcium 8 vs 85. |
-| Egg, whole, cooked, hard-boiled (173424) | similar | `cofid:12-940` | Rule v2: closest record by name, kept separate: the names differ in detail. |
 | Egg, whole, cooked, poached (172186) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; composition differs: water 75.85 vs 6.7 / protein 12.51 vs 4 / fat 9.47 vs 15.9 / sodium 297 vs 63. |
 | Egg, whole, cooked, scrambled (172187) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; composition differs: water 76.4 vs 6.7 / protein 9.99 vs 4 / fat 10.98 vs 15.9 / sodium 145 vs 63. |
 | Egg, whole, dried (172188) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: dried / —; composition differs: water 2.78 vs 6.7 / protein 48.05 vs 4 / fat 43.9 vs 15.9 / sodium 476 vs 63 / calcium 244 vs 85. |
+| Egg, whole, raw, fresh (171287) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; composition differs: water 76.15 vs 6.7 / protein 12.56 vs 4 / fat 9.51 vs 15.9 / sodium 142 vs 63. |
 | Egg, yolk, dried (173428) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: dried / — / part: yolk / —; composition differs: water 3.08 vs 6.7 / protein 33.63 vs 4 / fat 59.13 vs 15.9 / sodium 149 vs 63 / calcium 289 vs 85. |
 | Egg, yolk, raw, fresh (172184) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: part: yolk / —; composition differs: water 52.31 vs 6.7 / protein 15.86 vs 4 / fat 26.54 vs 15.9. |
 | Egg, yolk, raw, frozen, pasteurized (173421) | similar | `cofid:17-763` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: frozen, pasteurised / — / part: yolk / —; composition differs: water 56.44 vs 6.7 / protein 15.53 vs 4 / fat 25.6 vs 15.9. |
@@ -2356,9 +2352,9 @@ Decision: **similar** → `cofid:16-390`. CoFID mussels are bought cooked; water
 | Juice, apple and grape blend, with added ascorbic acid (168197) | similar | `cofid:17-745` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: sugar: — / without / fortification: fortified / —. |
 | Juice, apple, grape and pear blend, with added ascorbic acid and calcium (168198) | similar | `cofid:17-745` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: sugar: — / without / fortification: fortified / —; composition differs: calcium 72 vs 19. |
 | Jujube, Chinese, fresh, dried (168152) | similar | `cofid:14-122` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: dried, fresh / —; composition differs: water 20.19 vs 76.7 / protein 4.72 vs 1.5 / calcium 63 vs 30. |
-| Kale, cooked, boiled, drained, without salt (169238) | similar | `cofid:13-649` | Rule v2: closest record by name, kept separate: the names differ in detail. |
 | Kale, frozen, cooked, boiled, drained, without salt (169240) | similar | `cofid:13-649` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: frozen / —. |
 | Kale, frozen, unprepared (169239) | similar | `cofid:13-649` | Rule v2: closest record by name, kept separate: the names differ in detail; facets differ: state: unprepared / cooked; stated by one table only: preservation: frozen / —; composition differs: calcium 136 vs 231. |
+| Kale, raw (168421) | similar | `cofid:13-234` | Rule v2: closest record by name, kept separate: the names differ in detail; composition differs: calcium 254 vs 130. |
 | Kumquats, raw (168154) | similar | `cofid:14-125` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: form: — / whole; composition differs: calcium 62 vs 25. |
 | Lamb (imported), Intermuscular fat, cooked (172609) | similar | `cofid:18-100` | Rule v2: closest record by name, kept separate: the names differ in detail; composition differs: protein 8.53 vs 15.4. |
 | Lamb (imported), breast, lean, cooked, braised (172610) | similar | `cofid:18-188` | Rule v2: closest record by name, kept separate: facets differ: cooking: braised / roasted / part: breast / leg; stated by one table only: form: — / whole; composition differs: water 54.77 vs 60.4 / fat 17.53 vs 10.2. |
@@ -2398,7 +2394,7 @@ Decision: **similar** → `cofid:16-390`. CoFID mussels are bought cooked; water
 | Lamb (imported), tenderloin, boneless, lean, trimmed to 1/8" fat, cooked, roasted (174888) | similar | `cofid:18-141` | Rule v2: closest record by name, kept separate: the names differ in detail; facets differ: cooking: roasted / grilled; composition differs: fat 6.71 vs 10.7. |
 | Lamb, ground, cooked, broiled (172544) | similar | `cofid:18-188` | Rule v2: closest record by name, kept separate: facets differ: cooking: grilled / roasted / form: ground / whole; stated by one table only: part: — / leg; composition differs: water 55.09 vs 60.4 / fat 19.65 vs 10.2. |
 | Lamb, variety meats and by-products, liver, cooked, braised (172532) | similar | `cofid:18-188` | Rule v2: closest record by name, kept separate: the names differ in detail; facets differ: cooking: braised / roasted; stated by one table only: part: — / leg / form: — / whole. |
-| Leeks, (bulb and lower leaf-portion), cooked, boiled, drained, without salt (168426) | similar | `cofid:13-625` | Rule v2: closest record by name, kept separate: the names differ in detail. |
+| Leeks, (bulb and lower leaf-portion), raw (169246) | similar | `cofid:13-624` | Rule v2: closest record by name, kept separate: the names differ in detail; composition differs: water 83 vs 90.7. |
 | Lemon grass (citronella), raw (168573) | similar | `cofid:14-277` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: form: — / juice; composition differs: water 70.58 vs 91.4 / protein 1.82 vs 0.3 / calcium 65 vs 7. |
 | Lemon juice from concentrate, canned or bottled (167748) | similar | `cofid:14-337` | Rule v2: closest record by name, kept separate: stated by one table only: preservation: bottled, canned / — / part: — / peel / form: from-concentrate, juice / —; composition differs: water 93.64 vs 81.6 / protein 0.45 vs 1.5 / calcium 10 vs 130. |
 | Lemons, raw, without peel (167746) | similar | `cofid:14-277` | Rule v2: closest record by name, kept separate: stated by one table only: part: peel / — / form: — / juice. |
@@ -2491,8 +2487,8 @@ Decision: **similar** → `cofid:16-390`. CoFID mussels are bought cooked; water
 | Mushrooms, portabella, raw (169255) | similar | `cofid:17-416` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: — / dried; composition differs: water 92.82 vs 10.5 / protein 2.11 vs 21.8 / fat 0.35 vs 6 / sodium 9 vs 60 / calcium 3 vs 73. |
 | Mushrooms, shiitake, raw (169242) | similar | `cofid:13-294` | Rule v2: closest record by name, kept separate: stated by one table only: preservation: — / dried; composition differs: water 89.74 vs 9.5 / protein 2.24 vs 9.6. |
 | Mushrooms, straw, canned, drained solids (168582) | similar | `cofid:17-416` | Rule v2: closest record by name, kept separate: the names differ in detail; facets differ: preservation: canned / dried; composition differs: water 89.88 vs 10.5 / protein 3.83 vs 21.8 / fat 0.68 vs 6 / sodium 384 vs 60 / calcium 10 vs 73. |
-| Mushrooms, white, cooked, boiled, drained, without salt (169252) | similar | `cofid:13-546` | Rule v2: closest record by name, kept separate: facets differ: cooking: boiled / fried; stated by one table only: cooking-fat: — / oil; composition differs: water 91.08 vs 79.1 / fat 0.47 vs 11. |
 | Mushrooms, white, microwaved (169402) | similar | `cofid:13-546` | Rule v2: closest record by name, kept separate: facets differ: cooking: microwaved / fried; stated by one table only: cooking-fat: — / oil; composition differs: water 88.52 vs 79.1 / protein 3.91 vs 1.4 / fat 0.46 vs 11. |
+| Mushrooms, white, raw (169251) | similar | `cofid:13-505` | Rule v2: closest record by name, kept separate: composition differs: protein 3.09 vs 1. |
 | Mustard greens, cooked, boiled, drained, without salt (169257) | similar | `cofid:13-299` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: part: — / leaves. |
 | Mustard greens, frozen, cooked, boiled, drained, without salt (169259) | similar | `cofid:13-299` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: frozen / — / part: — / leaves. |
 | Mustard greens, frozen, unprepared (169258) | similar | `cofid:17-362` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: frozen / — / form: — / powder; composition differs: water 93.21 vs 5 / protein 2.49 vs 28.9 / fat 0.27 vs 28.7 / calcium 116 vs 330. |
@@ -2545,6 +2541,7 @@ Decision: **similar** → `cofid:16-390`. CoFID mussels are bought cooked; water
 | Onions, frozen, chopped, unprepared (170410) | similar | `cofid:13-589` | Rule v2: closest record by name, kept separate: facets differ: state: unprepared / cooked; stated by one table only: preservation: frozen / — / form: chopped / —. |
 | Onions, frozen, whole, cooked, boiled, drained, without salt (170413) | similar | `cofid:13-500` | Rule v2: closest record by name, kept separate: stated by one table only: preservation: frozen / — / form: whole / —. |
 | Onions, frozen, whole, unprepared (170412) | similar | `cofid:13-589` | Rule v2: closest record by name, kept separate: facets differ: state: unprepared / cooked; stated by one table only: preservation: frozen / — / form: whole / —. |
+| Onions, raw (170000) | similar | `cofid:13-590` | Rule v2: closest record by name, kept separate: stated by one table only: preservation: — / dried; composition differs: water 89.11 vs 4.5 / protein 1.1 vs 8.8 / fat 0.1 vs 1.2 / sodium 4 vs 100 / calcium 23 vs 263. |
 | Onions, sweet, raw (170008) | similar | `cofid:13-590` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: — / dried; composition differs: water 91.24 vs 4.5 / protein 0.8 vs 8.8 / fat 0.08 vs 1.2 / sodium 8 vs 100 / calcium 20 vs 263. |
 | Onions, welsh, raw (170007) | similar | `cofid:13-590` | Rule v2: closest record by name, kept separate: the names differ in detail; stated by one table only: preservation: — / dried; composition differs: water 90.5 vs 4.5 / protein 1.9 vs 8.8 / sodium 17 vs 100 / calcium 18 vs 263. |
 | Onions, yellow, sauteed (170004) | similar | `cofid:13-589` | Rule v2: closest record by name, kept separate: the names differ in detail; facets differ: cooking: sauteed / baked; composition differs: fat 10.8 vs 0.2. |

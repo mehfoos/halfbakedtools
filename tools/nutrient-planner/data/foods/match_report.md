@@ -1,4 +1,4 @@
-# Food match report (2026-11-17)
+# Food match report (2026-11-18)
 
 ## Common foods (curated, on by default)
 
@@ -24,22 +24,22 @@ Check that each food matched the record you expect. Edit `foods_catalogue.json` 
 | Pearl barley (cooked) | – | Barley, pearled, cooked (170285) | 51 |
 | Potato (baked, with skin) | – | Potatoes, baked, flesh and skin, without salt (170093) | 51 |
 | Sweet potato (baked) | – | Sweet potato, cooked, baked in skin, flesh, without salt (168483) | 51 |
-| Eggs | – | Egg, whole, raw, fresh (171287) | 52 |
+| Eggs (hard-boiled) | – | Egg, whole, cooked, hard-boiled (173424) | 52 |
 | Semi-skimmed milk | – | Milk, reduced fat, fluid, 2% milkfat, without added vitamin A and vitamin D (172205) | 52 |
 | Plain yoghurt (whole milk) | – | Yogurt, plain, whole milk (171284) | 52 |
 | Greek yoghurt (plain, fat-free) | – | Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program) (170894) | 39 |
 | Cheddar cheese | – | Cheese, cheddar (Includes foods for USDA's Food Distribution Program) (173414) | 52 |
 | Cottage cheese (low fat) | – | Cheese, cottage, lowfat, 2% milkfat (172182) | 51 |
 | Spinach (frozen, cooked) | – | Spinach, frozen, chopped or leaf, cooked, boiled, drained, without salt (169288) | 51 |
-| Kale (raw) | – | Kale, raw (168421) | 51 |
+| Kale (cooked) | – | Kale, cooked, boiled, drained, without salt (169238) | 51 |
 | Broccoli (cooked) | – | Broccoli, cooked, boiled, drained, without salt (169967) | 51 |
 | Carrots (raw) | – | Carrots, raw (170393) | 51 |
 | Garden peas (frozen, cooked) | – | Peas, green, frozen, cooked, boiled, drained, without salt (170017) | 51 |
 | Chopped tomatoes (tinned) | – | Tomatoes, red, ripe, canned, packed in tomato juice (170051) | 51 |
-| Onions (raw) | – | Onions, raw (170000) | 51 |
+| Onions (cooked) | – | Onions, cooked, boiled, drained, without salt (170001) | 51 |
 | Red pepper (raw) | – | Peppers, sweet, red, raw (170108) | 51 |
 | Cabbage (raw) | – | Cabbage, raw (169975) | 51 |
-| Mushrooms (white, raw) | – | Mushrooms, white, raw (169251) | 53 |
+| Mushrooms (white, cooked) | – | Mushrooms, white, cooked, boiled, drained, without salt (169252) | 53 |
 | Mushrooms (UV-exposed, 'vitamin D' mushrooms) | – | Mushrooms, portabella, exposed to ultraviolet light, raw (170143) | 49 |
 | Bananas | – | Bananas, raw (173944) | 51 |
 | Apples (with skin) | – | Apples, raw, with skin (Includes foods for USDA's Food Distribution Program) (171688) | 51 |
@@ -61,13 +61,13 @@ Check that each food matched the record you expect. Edit `foods_catalogue.json` 
 | Olive oil | – | Oil, olive, salad or cooking (171413) | 51 |
 | Yeast extract (e.g. Marmite) | – | Yeast extract spread (167717) | 37 |
 | Cauliflower (cooked) | – | Cauliflower, cooked, boiled, drained, without salt (170397) | 51 |
-| Courgette (raw) | – | Squash, summer, zucchini, includes skin, raw (169291) | 51 |
+| Courgette (cooked) | – | Squash, summer, zucchini, includes skin, cooked, boiled, drained, without salt (169292) | 51 |
 | Cucumber | – | Cucumber, with peel, raw (168409) | 51 |
 | Lettuce (cos) | – | Lettuce, cos or romaine, raw (169247) | 51 |
 | Green beans (frozen, cooked) | – | Beans, snap, green, frozen, cooked, boiled, drained without salt (169963) | 51 |
 | Sweetcorn (frozen, cooked) | – | Corn, sweet, yellow, frozen, kernels cut off cob, boiled, drained, without salt (168399) | 51 |
 | Brussels sprouts (cooked) | – | Brussels sprouts, cooked, boiled, drained, without salt (169971) | 49 |
-| Leeks (raw) | – | Leeks, (bulb and lower leaf-portion), raw (169246) | 51 |
+| Leeks (cooked) | – | Leeks, (bulb and lower leaf-portion), cooked, boiled, drained, without salt (168426) | 47 |
 | Garlic | – | Garlic, raw (169230) | 51 |
 | Beetroot (cooked) | – | Beets, cooked, boiled, drained (169146) | 51 |
 | Parsnips (cooked) | – | Parsnips, cooked, boiled, drained, without salt (170009) | 37 |
