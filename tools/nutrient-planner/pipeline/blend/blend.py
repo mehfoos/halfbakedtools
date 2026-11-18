@@ -4,7 +4,7 @@
 For each concept whose match (matches/<table>.csv) is "same" or "equivalent", and for each definition
 (definitions.csv), the blended value is the **median** of the values the tables publish under that definition
 (owner's decision, 18 Nov 2026), with the range. Nothing is combined across definitions: a table whose value
-uses another definition (e.g. energy from EU factors vs US Atwater factors) is listed separately.
+uses another definition (e.g. energy from UK factors vs US Atwater factors) is listed separately.
 
 A table's value is left out of the median, and the reason shown, when it is:
   * missing, "present, amount not known", or trace (never counted as zero);
@@ -57,7 +57,7 @@ TABLES = {
 FLAG_RATIO = 2.0
 STATUS_TEXT = {"missing": "no value", "trace": "trace", "present, amount not known": "present, amount not known"}
 # The definitions explained in the preview (the rest are in the JSON and audit files)
-HEADLINE = ["ENERC_KCAL:atwater-specific", "ENERC_KCAL:eu-factors", "PROCNT", "FAT", "CHOAVLDF", "CHOAVLM",
+HEADLINE = ["ENERC_KCAL:atwater-specific", "ENERC_KCAL:uk-factors", "PROCNT", "FAT", "CHOAVLDF", "CHOAVLM",
             "FIBTG", "SUGAR", "SUGARM", "NA", "CA", "FE", "VITA_RAE", "VITA", "FOL", "THIA", "VITB6", "PANTAC"]
 
 
@@ -74,6 +74,43 @@ def fmt(x: float) -> str:
 def borrowed_rules() -> list[tuple[str, str, re.Pattern, str]]:
     return [(r["table"], r["borrowed_from"], re.compile(r["pattern"]), r["note"])
             for r in V.read_csv(HERE / "borrowed.csv")]
+
+
+STANDARD_STATUS = {"confirmed", "derived", "convention", "assumed", "no target", "table fallback"}
+
+
+def standards() -> dict[tuple[str, str], dict]:
+    """(standard, planner key) -> row of standards.csv, with 'use' split into an ordered list."""
+    out = {}
+    for r in V.read_csv(HERE / "standards.csv"):
+        out[(r["standard"], r["key"])] = r | {"use": [d.strip() for d in r["use"].split(";")]}
+    return out
+
+
+def for_standard(values: dict, standard: str, defs: dict, std: dict) -> dict:
+    """Planner key -> which definition this standard's target uses (standards.csv), the first one this food has,
+    with the caveats that apply. Only nutrients with a choice are listed; the others have one definition."""
+    by_key: dict[str, list[str]] = {}
+    for d in defs:
+        by_key.setdefault(defs[d]["key"], []).append(d)
+    out = {}
+    for key, ds in by_key.items():
+        row = std.get((standard, key))
+        if not row:
+            continue   # one definition only: the planner takes values[that definition] directly
+        order = row["use"]
+        for n, d in enumerate(order):
+            e = values.get(d)
+            if e and e.get("value") is not None:
+                cav = []
+                if n > 0 and row and row["status"] != "table fallback":
+                    cav.append("other-definition")
+                if row and row["status"] == "assumed" and n == 0:
+                    cav.append("definition-not-checked")
+                # the number itself is under values[definition]; this only says which one, and why to be careful
+                out[key] = {"definition": d, **({"caveats": cav} if cav else {})}
+                break
+    return out
 
 
 def blend_food(concept: dict, decision: dict, sides: list[dict], defs: dict) -> dict:
@@ -159,6 +196,7 @@ def main() -> int:
     other = {r["id"]: r for r in V.read_csv(HERE / "facets" / f"{table}.csv")}
     decisions = [d for d in V.read_csv(HERE / "matches" / f"{tag}.csv") if d["grade"] in ("same", "equivalent")]
     rules = [r for r in borrowed_rules() if r[0] == table]
+    STD = standards()
 
     print("loading raw tables (checked against the archived copies)...", file=sys.stderr)
     usda = V.usda_cells(inputs.get("usda-sr-legacy"), {concepts[d["concept"]]["anchor"] for d in decisions})
@@ -176,7 +214,9 @@ def main() -> int:
             {"table": table, "code": rec["code"], "name": rec["name"], "ref": f["ref"],
              "values": V.values_for(table, f["cells"], f["group"]), "borrowed": borrowed},
         ]
-        foods.append(blend_food(c, d, sides, defs))
+        food = blend_food(c, d, sides, defs)
+        food["planner"] = {st: for_standard(food["values"], st, defs, STD) for st in ("uk", "us", "eu")}
+        foods.append(food)
 
     OUT.mkdir(exist_ok=True)
     meta = {"format": "hbt-blend/1", "status": "beta: automated, without manual human verification",
@@ -186,6 +226,8 @@ def main() -> int:
             "caveats": {k: {f: v[f] for f in ("kind", "definition", "text", "reason", "evidence", "checked")}
                         for k, v in CAVEATS.items()},
             "caveat_kinds": KINDS,
+            "standards": {f"{k[0]}:{k[1]}": {"use": v["use"], "status": v["status"], "evidence": v["evidence"]}
+                          for k, v in standards().items()},
             "definitions": {k: {"label": v["label"], "key": v["key"], "unit": v["unit"], "infoods": v["infoods"],
                                 "meaning": v["meaning"]}
                             for k, v in defs.items()}}
@@ -256,7 +298,17 @@ def write_preview(tag: str, foods: list[dict], defs: dict) -> None:
         where = f" Applies to: {defs[c['definition']]['label']}." if c["definition"] else ""
         ev = f" Evidence: {c['evidence']} (checked {c['checked']})." if c["evidence"] else ""
         out += [caveat_md(c["kind"], f"`{cid}`. {c['text']}{where} Reason: {c['reason']}.{ev}"), ""]
-    out += ["## Check of the definitions", "",
+    out += ["## By standard", "",
+            "Which definition each standard's targets use (`../standards.csv`). The planner takes the first one a food "
+            "has; a later one carries the *other-definition* caveat, and an *assumed* choice the *definition-not-checked* "
+            "caveat. Nutrients not listed have one definition.", "",
+            "| Standard | Nutrient | Definitions, in order | How established | Evidence |", "|---|---|---|---|---|"]
+    for (st, key), r in standards().items():
+        if r["status"] == "table fallback":
+            continue
+        out.append(f"| {st.upper()} | {key} | {'; '.join(defs[d]['label'] for d in r['use'])} | {r['status']} | "
+                   f"{r['evidence']} |")
+    out += ["", "## Check of the definitions", "",
             "For each nutrient, CoFID's value divided by USDA's across these foods (both above zero; borrowed records "
             "excluded). Definitions that are the same should centre near 1; a different basis shows as a steady factor. "
             "This supports, but doesn't replace, the documentation cited in `../components.csv`.", "",

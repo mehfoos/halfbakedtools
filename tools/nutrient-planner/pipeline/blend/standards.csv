@@ -1,0 +1,40 @@
+standard,key,use,status,evidence,note
+uk,energy,ENERC_KCAL:uk-factors; ENERC_KCAL:atwater-specific,derived,"phe-2016-government-dietary-recommendations.pdf, Table 2: carbohydrate 333 g = 50% of 2,500 kcal / 3.75 kcal per g, the UK factor (cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf, Energy value)","UK targets are met with UK tables, which use these factors"
+uk,carbohydrate,CHOAVLM; CHOAVLDF; CHOCDF,derived,"phe-2016-government-dietary-recommendations.pdf, Table 2: 333 g at 3.75 kcal/g means available carbohydrate as monosaccharide equivalents",The planner already converts UK carbohydrate at 3.75 kcal/g
+uk,sugars,SUGARM; SUGAR,no target,"phe-2016-government-dietary-recommendations.pdf, Tables 1 and 2: the target is free sugars, which food tables don't separate","Shown, not assessed"
+uk,vitaminA,VITA; VITA_RAE,confirmed,"phe-2016-government-dietary-recommendations.pdf, vitamin figures from Dietary Reference Values (1991); cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf, Total retinol equivalent, cites that report for retinol equivalents",
+uk,vitaminE,VITE; TOCPHA,no target,phe-2016-government-dietary-recommendations.pdf: no vitamin E recommendation,UK tables give alpha-tocopherol equivalents
+uk,vitaminD,VITD,confirmed,"phe-2016-government-dietary-recommendations.pdf, vitamin D from SACN Vitamin D and Health (2016), in µg",D2 + D3; the 25-hydroxy variant is not used
+uk,folate,FOL; FOLDFE,confirmed,"phe-2016-government-dietary-recommendations.pdf, Folate (µg/day); from Dietary Reference Values (1991), before dietary folate equivalents existed",
+uk,fibre,FIBTG,assumed,"phe-2016-government-dietary-recommendations.pdf: fibre from SACN Carbohydrate and Health (2015), which isn't archived here",SACN's definition (AOAC) not yet checked against the report
+us,energy,ENERC_KCAL:atwater-specific; ENERC_KCAL:uk-factors,convention,"Energy targets are needs, not a food-table definition; US intakes are measured with USDA's own factors (usda-sr28-documentation.pdf, Food Energy)",
+us,carbohydrate,CHOAVLDF; CHOAVLM; CHOCDF,assumed,nasem-dri-rda-ai-water-macronutrients.pdf: the summary table doesn't define carbohydrate,DRI carbohydrate is digestible carbohydrate; not yet checked against the DRI report
+us,sugars,SUGAR; SUGARM,no target,"Dietary Guidelines limit added sugars, which food tables don't separate","Shown, not assessed"
+us,vitaminA,VITA_RAE; VITA,confirmed,"nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as retinol activity equivalents (RAEs)",
+us,vitaminE,TOCPHA; VITE,confirmed,"nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as alpha-tocopherol",
+us,vitaminD,VITD,confirmed,"nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as cholecalciferol, µg",
+us,folate,FOLDFE; FOL,confirmed,"nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as dietary folate equivalents (DFE)",Total folate equals DFE only for foods without added folic acid
+us,fibre,FIBTG,assumed,nasem-dri-rda-ai-water-macronutrients.pdf: the summary table doesn't define fiber,DRI total fiber includes functional fibre; not yet checked against the DRI report
+eu,energy,ENERC_KCAL:uk-factors; ENERC_KCAL:atwater-specific,assumed,"Neither table uses the EU labelling factors (carbohydrate by weight 4, fibre 2 kcal/g); the UK factors share the available-carbohydrate basis",Could be calculated with the EU factors once the regulation is archived
+eu,carbohydrate,CHOAVLDF; CHOAVLM; CHOCDF,assumed,"efsa-2017-drv-summary-report.pdf, section 3.2: a reference intake range for total carbohydrate as a percentage of energy, without a gram definition; the planner converts it at 4 kcal/g, by weight",
+eu,sugars,SUGAR; SUGARM,no target,"efsa-2017-drv-summary-report.pdf, section 3.2: no reference value for sugars","Shown, not assessed"
+eu,vitaminA,VITA; VITA_RAE,confirmed,"efsa-2017-drv-summary-report.pdf, section 5.9: in µg retinol equivalents (1 µg RE = 1 µg retinol, 6 µg beta-carotene, 12 µg other carotenoids)",
+eu,vitaminE,TOCPHA; VITE,confirmed,"efsa-2017-drv-summary-report.pdf, section 5.13: vitamin E as alpha-tocopherol only",
+eu,vitaminD,VITD,confirmed,"efsa-2017-drv-summary-report.pdf, section 5.12: in µg",
+eu,folate,FOLDFE; FOL,confirmed,"efsa-2017-drv-summary-report.pdf, section 5.4: in µg dietary folate equivalents (DFE)",Total folate equals DFE only for foods without added folic acid
+eu,fibre,FIBTG,confirmed,"efsa-2017-drv-summary-report.pdf, section 3.2: non-digestible carbohydrates plus lignin, including resistant starch and oligosaccharides",
+uk,fat,FAT; FAT:nlea,table fallback,Only when a table gives no total lipid,
+uk,la,F18D2CN6; F18D2,table fallback,Only when a table doesn't separate the isomers,
+uk,ala,F18D3CN3; F18D3,table fallback,Only when a table doesn't separate the isomers,
+uk,epa,F20D5N3; F20D5,table fallback,Only when a table doesn't separate the isomers,
+uk,dha,F22D6N3; F22D6,table fallback,Only when a table doesn't separate the isomers,
+us,fat,FAT; FAT:nlea,table fallback,Only when a table gives no total lipid,
+us,la,F18D2CN6; F18D2,table fallback,Only when a table doesn't separate the isomers,
+us,ala,F18D3CN3; F18D3,table fallback,Only when a table doesn't separate the isomers,
+us,epa,F20D5N3; F20D5,table fallback,Only when a table doesn't separate the isomers,
+us,dha,F22D6N3; F22D6,table fallback,Only when a table doesn't separate the isomers,
+eu,fat,FAT; FAT:nlea,table fallback,Only when a table gives no total lipid,
+eu,la,F18D2CN6; F18D2,table fallback,Only when a table doesn't separate the isomers,
+eu,ala,F18D3CN3; F18D3,table fallback,Only when a table doesn't separate the isomers,
+eu,epa,F20D5N3; F20D5,table fallback,Only when a table doesn't separate the isomers,
+eu,dha,F22D6N3; F22D6,table fallback,Only when a table doesn't separate the isomers,

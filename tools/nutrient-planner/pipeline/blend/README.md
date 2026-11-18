@@ -26,9 +26,10 @@ food the planner uses, in every table, in the same terms. **When in doubt, foods
 | `matches/<table>.csv` | **The decisions**: one per concept, with grade, reason, who decided, date, and the evidence fingerprint it was reviewed against | hand, reviewed |
 | `matches/evidence-<table>.csv`, `matches/REVIEW-<table>.md` | Evidence for each decided record and the top candidates; the review report | **generated** |
 | `test_matches.py` | Decisions are complete, acknowledge every difference, and were reviewed against the current evidence | hand |
-| `definitions.csv` | Every definition a value can have (e.g. energy with US Atwater factors vs EU factors), with a readable label, INFOODS tagname, unit and meaning | hand, reviewed |
+| `definitions.csv` | Every definition a value can have (e.g. energy with US Atwater factors vs UK factors), with a readable label, INFOODS tagname, unit and meaning | hand, reviewed |
 | `components.csv` | For each table and planner nutrient: the column or formula, the definition it gives, any condition, and the section of the table's own documentation that says so | hand, reviewed |
 | `borrowed.csv` | When a table's record is borrowed from another table we use (so it counts once) | hand, reviewed |
+| `standards.csv` | For each standard (UK, US, EU) and each nutrient with more than one definition: the definitions its targets use, in order, how that was established (confirmed, derived, convention, assumed, no target) and the evidence | hand, reviewed |
 | `caveats.csv` | Every data caveat the blend can show (kind, text, reason, evidence), in the site's one caveat style (`site/src/lib/caveats.ts`) | hand, reviewed |
 | `values.py` | Reads a value under its definition; evaluates the formulas safely; missing and trace are never zero | hand |
 | `blend.py` | Builds the blended values (step 5) | hand |
@@ -130,7 +131,7 @@ USDA SR Legacy and CoFID 2021, by planner nutrient:
 
 | Same definition: blended | Different: kept apart | Converted to a shared definition |
 |---|---|---|
-| protein, fat, saturated fat, fibre (AOAC), all minerals, retinol, vitamin K1, vitamin C, riboflavin, niacin (preformed), niacin equivalents, total folate, vitamin B12, linoleic acid, alpha-linolenic acid, EPA, DHA; and, **with an Assumption caveat**, thiamin, vitamin B6 and pantothenic acid (CoFID states the salt form, USDA doesn't; combined on a data check showing no salt-basis factor, owner's decision) | energy (US Atwater vs EU factors), carbohydrate (by difference vs available as monosaccharides), sugars (by weight vs monosaccharide equivalents), vitamin E (alpha-tocopherol vs alpha-tocopherol equivalents), vitamin D for meat (CoFID adds 25-hydroxy D3) | vitamin A: both tables give retinol equivalents *and* retinol activity equivalents, each calculated from published retinol and carotenoids |
+| protein, fat, saturated fat, fibre (AOAC), all minerals, retinol, vitamin K1, vitamin C, riboflavin, niacin (preformed), niacin equivalents, total folate, vitamin B12, linoleic acid, alpha-linolenic acid, EPA, DHA; and, **with an Assumption caveat**, thiamin, vitamin B6 and pantothenic acid (CoFID states the salt form, USDA doesn't; combined on a data check showing no salt-basis factor, owner's decision) | energy (US Atwater vs UK factors), carbohydrate (by difference vs available as monosaccharides), sugars (by weight vs monosaccharide equivalents), vitamin E (alpha-tocopherol vs alpha-tocopherol equivalents), vitamin D for meat (CoFID adds 25-hydroxy D3) | vitamin A: both tables give retinol equivalents *and* retinol activity equivalents, each calculated from published retinol and carotenoids |
 
 Caveats (`caveats.csv`) are attached to the values they apply to and shown with them, in the site's one caveat
 style. Fallbacks are separate definitions too: USDA's C18:2 "undifferentiated" when n-6 isn't given, CoFID's total C20:5
@@ -147,8 +148,24 @@ and codes it came from and what was left out; the audit CSV traces every number 
 column and published cell.
 
 The preview's **check of the definitions** compares the tables across the matched foods: same-definition pairs
-centre near 1 (protein 0.97, calcium and potassium 1.00); different definitions show the expected gap (EU-factor
+centre near 1 (protein 0.97, calcium and potassium 1.00); different definitions show the expected gap (UK-factor
 energy about 9% lower; vitamin E equivalents about 26% higher).
+
+## Definitions by standard
+
+Targets are compared with values under the definition they are expressed in (`standards.csv`):
+
+| | UK | US | EU |
+|---|---|---|---|
+| Energy | UK factors (derived: PHE's carbohydrate grams use 3.75 kcal/g) | USDA's Atwater factors (convention) | UK factors (*assumed*: neither table uses the EU labelling factors) |
+| Carbohydrate | available, as monosaccharides (derived, as above) | by difference, without fibre (*assumed*) | by difference, without fibre (*assumed*) |
+| Vitamin A | retinol equivalents (confirmed via the 1991 DRV report) | retinol activity equivalents (confirmed) | retinol equivalents (confirmed) |
+| Vitamin E | no target | alpha-tocopherol (confirmed) | alpha-tocopherol (confirmed) |
+| Folate | total folate (confirmed) | dietary folate equivalents (confirmed) | dietary folate equivalents (confirmed) |
+| Fibre | AOAC (*assumed*: SACN 2015 not archived) | AOAC (*assumed*: DRI report not archived) | AOAC-type (confirmed) |
+
+If a food lacks the preferred definition, the next one is used with an *Assumption* caveat; an *assumed* choice
+carries a *Not yet checked* caveat. `blend.py` writes each food's choice per standard (`planner` in the JSON).
 
 ## Permanent ids
 

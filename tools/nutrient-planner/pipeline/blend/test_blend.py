@@ -77,6 +77,35 @@ class Definitions(unittest.TestCase):
             self.assertTrue(all(r["caveat"] for r in V.components() if r["key"] == key), key)
 
 
+class Standards(unittest.TestCase):
+    def test_standards(self):
+        defs = V.definitions()
+        archived = {e["file"] for e in json.loads((ROOT / "sources/archive.json").read_text())["files"]}
+        std = blend.standards()
+        keys_with_choice = {defs[d]["key"] for d in defs if sum(x["key"] == defs[d]["key"] for x in defs.values()) > 1}
+        for st in ("uk", "us", "eu"):
+            for key in keys_with_choice:
+                self.assertIn((st, key), std, f"{st}: which {key} definition does the target use?")
+        for (st, key), r in std.items():
+            with self.subTest(standard=st, key=key):
+                self.assertIn(r["status"], blend.STANDARD_STATUS)
+                for d in r["use"]:
+                    self.assertIn(d, defs)
+                    self.assertEqual(defs[d]["key"], key)
+                if r["status"] in ("confirmed", "derived"):
+                    self.assertTrue(any(f in r["evidence"] for f in archived), "cite an archived document")
+
+    def test_choice(self):
+        defs = V.definitions()
+        std = {("uk", "folate"): {"use": ["FOL", "FOLDFE"], "status": "confirmed"},
+               ("us", "carbohydrate"): {"use": ["CHOAVLDF", "CHOAVLM"], "status": "assumed"}}
+        vals = {"FOLDFE": {"value": 5, "min": 5, "max": 5, "n": 1}, "CHOAVLDF": {"value": 3, "min": 3, "max": 3, "n": 1}}
+        uk = blend.for_standard(vals, "uk", defs, std)
+        self.assertEqual(uk["folate"], {"definition": "FOLDFE", "caveats": ["other-definition"]})
+        us = blend.for_standard(vals, "us", defs, std)
+        self.assertEqual(us["carbohydrate"], {"definition": "CHOAVLDF", "caveats": ["definition-not-checked"]})
+
+
 class Values(unittest.TestCase):
     def test_reading(self):
         self.assertEqual(V.evaluate("PROT", {"PROT": "9.0"}).number, 9.0)
@@ -139,6 +168,12 @@ class Output(unittest.TestCase):
                         self.assertEqual((e["min"], e["max"]), (min(used), max(used)))
                     else:
                         self.assertNotIn("value", e)
+            std = blend.standards()
+            for st, chosen in f["planner"].items():
+                for key, c in chosen.items():
+                    order = std[(st, key)]["use"]
+                    first = next(d for d in order if f["values"].get(d, {}).get("value") is not None)
+                    self.assertEqual(c["definition"], first, f"{st} {key}: the first definition with a value")
             for d in ("THIA", "VITB6", "PANTAC"):
                 if d in f["values"]:
                     self.assertTrue(f["values"][d].get("caveats"), f"{d} must carry its caveat")

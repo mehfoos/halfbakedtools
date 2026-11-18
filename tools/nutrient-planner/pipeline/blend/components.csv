@@ -1,6 +1,6 @@
 table,key,source,definition,condition,reference,note,caveat
 usda-sr-legacy,energy,1008,ENERC_KCAL:atwater-specific,,"usda-sr28-documentation.pdf, Food Energy",,
-cofid-2021,energy,KCALS,ENERC_KCAL:eu-factors,,"cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf, Energy value (KCALS)",,
+cofid-2021,energy,KCALS,ENERC_KCAL:uk-factors,,"cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf, Energy value (KCALS)",,
 usda-sr-legacy,protein,1003,PROCNT,,"usda-sr28-documentation.pdf, Protein",Jones (1941) specific factors; 6.25 for soy since SR28; mushrooms 4.38 after non-protein nitrogen,
 cofid-2021,protein,PROT,PROCNT,,"cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf, Protein (PROT)",Factors from the 'Factors' worksheet; non-protein nitrogen subtracted for mushrooms. The factor for a food can differ between tables,
 usda-sr-legacy,fat,1004,FAT,,"usda-sr28-documentation.pdf, Total Lipid",,
