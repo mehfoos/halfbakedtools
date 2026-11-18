@@ -281,6 +281,41 @@
           "asset": "efsa-2019-sodium.pdf"
         }
       ]
+    },
+    {
+      "id": "sacn-2015",
+      "pre": "Scientific Advisory Committee on Nutrition,",
+      "title": "Carbohydrates and Health",
+      "style": "italic",
+      "post": "London, U.K.: TSO, 2015.",
+      "url": "https://www.gov.uk/government/publications/sacn-carbohydrates-and-health-report",
+      "licence": "© Crown copyright 2015; Open Government Licence v3.0",
+      "usedFor": "How UK fibre is defined and measured (AOAC); how US total fibre is defined",
+      "archive": [
+        {
+          "asset": "sacn2015_SACN_Carbohydrates_and_Health.pdf"
+        }
+      ]
+    },
+    {
+      "id": "eu-1169-2011",
+      "pre": "European Parliament and Council of the European Union,",
+      "title": "Regulation (EU) No 1169/2011 on the provision of food information to consumers",
+      "style": "quoted",
+      "post": "<i>Official Journal of the European Union</i>, vol. L 304, pp. 18–63, Nov. 2011.",
+      "url": "https://eur-lex.europa.eu/eli/reg/2011/1169/oj",
+      "licence": "© European Union; re-use authorised with acknowledgement of the source",
+      "usedFor": "EU definition of carbohydrate (Annex I, point 7) and energy conversion factors (Annex XIV)",
+      "archive": [
+        {
+          "asset": "eu1169_OJ_L_2011_304_0018_0063_EN.pdf",
+          "label": "Archived copy (as adopted)"
+        },
+        {
+          "asset": "eu1169_consolidated_2025-04-01_EN.pdf",
+          "label": "Archived copy (consolidated, 1 Apr 2025)"
+        }
+      ]
     }
   ]
 }

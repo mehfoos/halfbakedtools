@@ -1,6 +1,7 @@
 definition,label,key,infoods,unit,meaning
 ENERC_KCAL:atwater-specific,Energy (US Atwater factors),energy,ENERC_KCAL,kcal,"Energy from protein, fat and carbohydrate (by difference) with Atwater food-specific factors; for multi-ingredient processed foods, industry factors 4/4/9"
 ENERC_KCAL:uk-factors,Energy (UK factors),energy,ENERC_KCAL,kcal,"Energy from protein 4, fat 9, available carbohydrate as monosaccharide equivalents 3.75 and alcohol 7 kcal/g; no energy from fibre (the UK convention; not the EU labelling factors)"
+ENERC_KCAL:eu-1169,Energy (EU labelling factors),energy,ENERC_KCAL,kcal,"Energy with the EU labelling factors (Regulation 1169/2011, Annex XIV): protein 4, fat 9, carbohydrate by weight 4, fibre 2 kcal/g; calculated from blended parts. Polyols and organic acids are counted as carbohydrate (4, not 2.4 or 3); foods with alcohol aren't calculated"
 PROCNT,Protein,protein,PROCNT,g,Total nitrogen x a food-specific conversion factor (6.25 unless stated); non-protein nitrogen removed for mushrooms
 FAT,Fat,fat,FAT,g,"Total fat (all lipid components extracted), not only triglycerides"
 FAT:nlea,Fat (US label definition),fat,FAT_NLEA,g,Total fatty acids expressed as triglycerides (US label fat)

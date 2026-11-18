@@ -158,6 +158,11 @@ class Output(unittest.TestCase):
             for d, e in f["values"].items():
                 with self.subTest(concept=f["concept"], definition=d):
                     self.assertIn(d, data["definitions"])
+                    if e.get("derived"):   # calculated from blended parts, e.g. EU energy
+                        for k in ("value", "min", "max"):
+                            self.assertAlmostEqual(e[k], sum(blend.EU_FACTORS[x] * f["values"][x][k]
+                                                             for x in blend.EU_FACTORS), places=5)
+                        continue
                     used = [c["number"] for c in e["contributions"] if c["used"]]
                     self.assertEqual(e["n"], len(used))
                     self.assertTrue(all(c["number"] is not None for c in e["contributions"] if c["used"]))

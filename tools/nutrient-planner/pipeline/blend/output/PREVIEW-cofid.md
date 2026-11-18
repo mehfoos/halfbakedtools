@@ -13,6 +13,7 @@ Definitions used below:
 
 - **Energy (US Atwater factors)**: Energy from protein, fat and carbohydrate (by difference) with Atwater food-specific factors; for multi-ingredient processed foods, industry factors 4/4/9 (kcal)
 - **Energy (UK factors)**: Energy from protein 4, fat 9, available carbohydrate as monosaccharide equivalents 3.75 and alcohol 7 kcal/g; no energy from fibre (the UK convention; not the EU labelling factors) (kcal)
+- **Energy (EU labelling factors)**: Energy with the EU labelling factors (Regulation 1169/2011, Annex XIV): protein 4, fat 9, carbohydrate by weight 4, fibre 2 kcal/g; calculated from blended parts. Polyols and organic acids are counted as carbohydrate (4, not 2.4 or 3); foods with alcohol aren't calculated (kcal)
 - **Protein**: Total nitrogen x a food-specific conversion factor (6.25 unless stated); non-protein nitrogen removed for mushrooms (g)
 - **Fat**: Total fat (all lipid components extracted), not only triglycerides (g)
 - **Carbohydrate (by difference, without fibre)**: Available carbohydrate by difference: 100 minus water, protein, fat, ash, alcohol and total dietary fibre (g)
@@ -46,6 +47,8 @@ Shown with every value they apply to (the same labels as on the site).
 
 > **[Not yet checked]** `definition-not-checked`. Which definition this standard's target uses isn't stated in the archived documents; the choice follows the standard's usual practice. Reason: The defining report isn't archived yet (see standards.csv).
 
+> **[Assumption]** `closest-definition`. The US target is for total fibre (dietary plus functional fibre); food tables measure fibre by AOAC methods, which capture most of it but not all. Reason: The closest definition food tables give. Evidence: NASEM DRI macronutrients summary (Total Fiber); SACN 2015, paragraphs 2.32–2.33 (checked 2026-11-18).
+
 ## By standard
 
 Which definition each standard's targets use (`../standards.csv`). The planner takes the first one a food has; a later one carries the *other-definition* caveat, and an *assumed* choice the *definition-not-checked* caveat. Nutrients not listed have one definition.
@@ -59,17 +62,17 @@ Which definition each standard's targets use (`../standards.csv`). The planner t
 | UK | vitaminE | Vitamin E (alpha-tocopherol equivalents); Vitamin E (alpha-tocopherol) | no target | phe-2016-government-dietary-recommendations.pdf: no vitamin E recommendation |
 | UK | vitaminD | Vitamin D (D2 + D3) | confirmed | phe-2016-government-dietary-recommendations.pdf, vitamin D from SACN Vitamin D and Health (2016), in µg |
 | UK | folate | Folate (total); Folate (dietary folate equivalents) | confirmed | phe-2016-government-dietary-recommendations.pdf, Folate (µg/day); from Dietary Reference Values (1991), before dietary folate equivalents existed |
-| UK | fibre | Fibre (AOAC) | assumed | phe-2016-government-dietary-recommendations.pdf: fibre from SACN Carbohydrate and Health (2015), which isn't archived here |
+| UK | fibre | Fibre (AOAC) | confirmed | sacn2015_SACN_Carbohydrates_and_Health.pdf, recommendations S.21–S.22: dietary fibre 'chemically determined using the prevailing AOAC methods'; the 30 g/day value 'measured using the AOAC methods' |
 | US | energy | Energy (US Atwater factors); Energy (UK factors) | convention | Energy targets are needs, not a food-table definition; US intakes are measured with USDA's own factors (usda-sr28-documentation.pdf, Food Energy) |
-| US | carbohydrate | Carbohydrate (by difference, without fibre); Carbohydrate (available, as monosaccharides); Carbohydrate (by difference, with fibre) | assumed | nasem-dri-rda-ai-water-macronutrients.pdf: the summary table doesn't define carbohydrate |
+| US | carbohydrate | Carbohydrate (by difference, without fibre); Carbohydrate (available, as monosaccharides); Carbohydrate (by difference, with fibre) | confirmed | nasem-dri-macronutrients-summary.pdf, Carbohydrate row: total digestible carbohydrate; starch and sugar are the major types |
 | US | sugars | Sugars (by weight); Sugars (as monosaccharides) | no target | Dietary Guidelines limit added sugars, which food tables don't separate |
 | US | vitaminA | Vitamin A (retinol activity equivalents); Vitamin A (retinol equivalents) | confirmed | nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as retinol activity equivalents (RAEs) |
 | US | vitaminE | Vitamin E (alpha-tocopherol); Vitamin E (alpha-tocopherol equivalents) | confirmed | nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as alpha-tocopherol |
 | US | vitaminD | Vitamin D (D2 + D3) | confirmed | nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as cholecalciferol, µg |
 | US | folate | Folate (dietary folate equivalents); Folate (total) | confirmed | nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as dietary folate equivalents (DFE) |
-| US | fibre | Fibre (AOAC) | assumed | nasem-dri-rda-ai-water-macronutrients.pdf: the summary table doesn't define fiber |
-| EU | energy | Energy (UK factors); Energy (US Atwater factors) | assumed | Neither table uses the EU labelling factors (carbohydrate by weight 4, fibre 2 kcal/g); the UK factors share the available-carbohydrate basis |
-| EU | carbohydrate | Carbohydrate (by difference, without fibre); Carbohydrate (available, as monosaccharides); Carbohydrate (by difference, with fibre) | assumed | efsa-2017-drv-summary-report.pdf, section 3.2: a reference intake range for total carbohydrate as a percentage of energy, without a gram definition; the planner converts it at 4 kcal/g, by weight |
+| US | fibre | Fibre (AOAC) | closest | nasem-dri-macronutrients-summary.pdf, Total Fiber row: includes dietary fiber and functional fiber; sacn2015_SACN_Carbohydrates_and_Health.pdf, paragraphs 2.32–2.33: AOAC methods 985.29 and 991.43 measure non-starch polysaccharides, some resistant starch, lignin and some inulin |
+| EU | energy | Energy (EU labelling factors); Energy (UK factors); Energy (US Atwater factors) | confirmed | eu1169_OJ_L_2011_304_0018_0063_EN.pdf, Annex XIV: carbohydrate (except polyols) 4, protein 4, fat 9, alcohol 7, fibre 2 kcal/g |
+| EU | carbohydrate | Carbohydrate (by difference, without fibre); Carbohydrate (available, as monosaccharides); Carbohydrate (by difference, with fibre) | confirmed | eu1169_OJ_L_2011_304_0018_0063_EN.pdf, Annex I point 7: 'any carbohydrate which is metabolised by humans, and includes polyols' (by weight); efsa-2017-drv-summary-report.pdf, section 3.2 |
 | EU | sugars | Sugars (by weight); Sugars (as monosaccharides) | no target | efsa-2017-drv-summary-report.pdf, section 3.2: no reference value for sugars |
 | EU | vitaminA | Vitamin A (retinol equivalents); Vitamin A (retinol activity equivalents) | confirmed | efsa-2017-drv-summary-report.pdf, section 5.9: in µg retinol equivalents (1 µg RE = 1 µg retinol, 6 µg beta-carotene, 12 µg other carotenoids) |
 | EU | vitaminE | Vitamin E (alpha-tocopherol); Vitamin E (alpha-tocopherol equivalents) | confirmed | efsa-2017-drv-summary-report.pdf, section 5.13: vitamin E as alpha-tocopherol only |
@@ -135,6 +138,7 @@ Records: USDA SR Legacy 170567 *Nuts, almonds*; CoFID 2021 14-896 *Almonds, whol
 
 - Energy (US Atwater factors): 579 kcal, from USDA SR Legacy 170567 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 14-896 (borrowed from USDA SR Legacy (counted once), 554 kcal).
+- Energy (EU labelling factors): 595 kcal (range 595–595), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 21.1 g, from USDA SR Legacy 170567 only. Not used: CoFID 2021 14-896 (borrowed from USDA SR Legacy (counted once), 21.2 g).
 - Fat: 49.9 g, from USDA SR Legacy 170567 only. Not used: CoFID 2021 14-896 (borrowed from USDA SR Legacy (counted once), 49.9 g).
 - Carbohydrate (by difference, without fibre): 9.05 g, from USDA SR Legacy 170567 only.
@@ -183,6 +187,7 @@ Records: USDA SR Legacy 171688 *Apples, raw, with skin (Includes foods for USDA'
 
 - Energy (US Atwater factors): 52 kcal, from USDA SR Legacy 171688 only.
 - Energy (UK factors): 51 kcal, from CoFID 2021 14-319 only.
+- Energy (EU labelling factors): 54 kcal (range 50.6–57.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.43 g, median of 2 tables, range 0.26–0.6 (USDA SR Legacy 171688: 0.26; CoFID 2021 14-319: 0.6). ⚠ values differ more than 2-fold.
 - Fat: 0.335 g, median of 2 tables, range 0.17–0.5 (USDA SR Legacy 171688: 0.17; CoFID 2021 14-319: 0.5). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 11.4 g, from USDA SR Legacy 171688 only.
@@ -259,6 +264,7 @@ Records: USDA SR Legacy 168389 *Asparagus, raw*; CoFID 2021 13-157 *Asparagus, r
 
 - Energy (US Atwater factors): 20 kcal, from USDA SR Legacy 168389 only.
 - Energy (UK factors): 25 kcal, from CoFID 2021 13-157 only.
+- Energy (EU labelling factors): 24.8 kcal (range 21.2–28.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.55 g, median of 2 tables, range 2.2–2.9 (USDA SR Legacy 168389: 2.2; CoFID 2021 13-157: 2.9).
 - Fat: 0.36 g, median of 2 tables, range 0.12–0.6 (USDA SR Legacy 168389: 0.12; CoFID 2021 13-157: 0.6). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 1.78 g, from USDA SR Legacy 168389 only.
@@ -283,6 +289,7 @@ Records: USDA SR Legacy 169229 *Eggplant, cooked, boiled, drained, without salt*
 
 - Energy (US Atwater factors): 35 kcal, from USDA SR Legacy 169229 only.
 - Energy (UK factors): 14 kcal, from CoFID 2021 13-651 only.
+- Energy (EU labelling factors): 35.6 kcal (range 33.4–37.7), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.765 g, median of 2 tables, range 0.7–0.83 (USDA SR Legacy 169229: 0.83; CoFID 2021 13-651: 0.7).
 - Fat: 0.365 g, median of 2 tables, range 0.23–0.5 (USDA SR Legacy 169229: 0.23; CoFID 2021 13-651: 0.5). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 6.23 g, from USDA SR Legacy 169229 only.
@@ -307,6 +314,7 @@ Records: USDA SR Legacy 171705 *Avocados, raw, all commercial varieties*; CoFID 
 
 - Energy (US Atwater factors): 160 kcal, from USDA SR Legacy 171705 only.
 - Energy (UK factors): 171 kcal, from CoFID 2021 14-386 only.
+- Energy (EU labelling factors): 169 kcal (range 153–185), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.9 g, median of 2 tables, range 1.8–2 (USDA SR Legacy 171705: 2; CoFID 2021 14-386: 1.8).
 - Fat: 16 g, median of 2 tables, range 14.7–17.4 (USDA SR Legacy 171705: 14.7; CoFID 2021 14-386: 17.4).
 - Carbohydrate (by difference, without fibre): 1.83 g, from USDA SR Legacy 171705 only.
@@ -331,6 +339,7 @@ Records: USDA SR Legacy 175182 *Beans, baked, canned, plain or vegetarian*; CoFI
 
 - Energy (US Atwater factors): 94 kcal, from USDA SR Legacy 175182 only.
 - Energy (UK factors): 81 kcal, from CoFID 2021 13-532 only.
+- Energy (EU labelling factors): 101 kcal (range 98.7–102), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 4.88 g, median of 2 tables, range 4.75–5 (USDA SR Legacy 175182: 4.75; CoFID 2021 13-532: 5).
 - Fat: 0.435 g, median of 2 tables, range 0.37–0.5 (USDA SR Legacy 175182: 0.37; CoFID 2021 13-532: 0.5).
 - Carbohydrate (by difference, without fibre): 17 g, from USDA SR Legacy 175182 only.
@@ -355,6 +364,7 @@ Records: USDA SR Legacy 173944 *Bananas, raw*; CoFID 2021 14-318 *Bananas, flesh
 
 - Energy (US Atwater factors): 89 kcal, from USDA SR Legacy 173944 only.
 - Energy (UK factors): 81 kcal, from CoFID 2021 14-318 only.
+- Energy (EU labelling factors): 91.5 kcal (range 89–93.9), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.15 g, median of 2 tables, range 1.09–1.2 (USDA SR Legacy 173944: 1.09; CoFID 2021 14-318: 1.2).
 - Fat: 0.215 g, median of 2 tables, range 0.1–0.33 (USDA SR Legacy 173944: 0.33; CoFID 2021 14-318: 0.1). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 20.2 g, from USDA SR Legacy 173944 only.
@@ -379,6 +389,7 @@ Records: USDA SR Legacy 172232 *Basil, fresh*; CoFID 2021 13-804 *Basil, fresh*.
 
 - Energy (US Atwater factors): 23 kcal, from USDA SR Legacy 172232 only.
 - Energy (UK factors): 40 kcal, from CoFID 2021 13-804 only.
+- Energy (EU labelling factors): 26.4 kcal (range 25.6–27.2), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 3.12 g, median of 2 tables, range 3.1–3.15 (USDA SR Legacy 172232: 3.15; CoFID 2021 13-804: 3.1).
 - Fat: 0.72 g, median of 2 tables, range 0.64–0.8 (USDA SR Legacy 172232: 0.64; CoFID 2021 13-804: 0.8).
 - Carbohydrate (by difference, without fibre): 1.05 g, from USDA SR Legacy 172232 only.
@@ -403,6 +414,7 @@ Records: USDA SR Legacy 173744 *Beans, kidney, red, mature seeds, raw*; CoFID 20
 
 - Energy (US Atwater factors): 337 kcal, from USDA SR Legacy 173744 only.
 - Energy (UK factors): 266 kcal, from CoFID 2021 13-109 only.
+- Energy (EU labelling factors): 315 kcal (range 313–317), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 22.3 g, median of 2 tables, range 22.1–22.5 (USDA SR Legacy 173744: 22.5; CoFID 2021 13-109: 22.1).
 - Fat: 1.23 g, median of 2 tables, range 1.06–1.4 (USDA SR Legacy 173744: 1.06; CoFID 2021 13-109: 1.4).
 - Carbohydrate (by difference, without fibre): 46.1 g, from USDA SR Legacy 173744 only.
@@ -427,6 +439,7 @@ Records: USDA SR Legacy 169146 *Beets, cooked, boiled, drained*; CoFID 2021 13-6
 
 - Energy (US Atwater factors): 44 kcal, from USDA SR Legacy 169146 only.
 - Energy (UK factors): 53 kcal, from CoFID 2021 13-633 only.
+- Energy (EU labelling factors): 45.2 kcal (range 43.9–46.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.64 g, median of 2 tables, range 1.6–1.68 (USDA SR Legacy 169146: 1.68; CoFID 2021 13-633: 1.6).
 - Fat: 0.24 g, median of 2 tables, range 0.18–0.3 (USDA SR Legacy 169146: 0.18; CoFID 2021 13-633: 0.3).
 - Carbohydrate (by difference, without fibre): 7.96 g, from USDA SR Legacy 169146 only.
@@ -451,6 +464,7 @@ Records: USDA SR Legacy 169145 *Beets, raw*; CoFID 2021 13-164 *Beetroot, raw*. 
 
 - Energy (US Atwater factors): 43 kcal, from USDA SR Legacy 169145 only.
 - Energy (UK factors): 36 kcal, from CoFID 2021 13-164 only.
+- Energy (EU labelling factors): 40.5 kcal (range 40–41), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.66 g, median of 2 tables, range 1.61–1.7 (USDA SR Legacy 169145: 1.61; CoFID 2021 13-164: 1.7).
 - Fat: 0.135 g, median of 2 tables, range 0.1–0.17 (USDA SR Legacy 169145: 0.17; CoFID 2021 13-164: 0.1).
 - Carbohydrate (by difference, without fibre): 6.76 g, from USDA SR Legacy 169145 only.
@@ -475,6 +489,7 @@ Records: USDA SR Legacy 173946 *Blackberries, raw*; CoFID 2021 14-388 *Blackberr
 
 - Energy (US Atwater factors): 43 kcal, from USDA SR Legacy 173946 only.
 - Energy (UK factors): 27 kcal, from CoFID 2021 14-388 only.
+- Energy (EU labelling factors): 34 kcal (range 30.2–37.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.25 g, median of 2 tables, range 1.1–1.39 (USDA SR Legacy 173946: 1.39; CoFID 2021 14-388: 1.1).
 - Fat: 0.345 g, median of 2 tables, range 0.2–0.49 (USDA SR Legacy 173946: 0.49; CoFID 2021 14-388: 0.2). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 4.31 g, from USDA SR Legacy 173946 only.
@@ -499,6 +514,7 @@ Records: USDA SR Legacy 171711 *Blueberries, raw*; CoFID 2021 14-325 *Blueberrie
 
 - Energy (US Atwater factors): 57 kcal, from USDA SR Legacy 171711 only.
 - Energy (UK factors): 40 kcal, from CoFID 2021 14-325 only.
+- Energy (EU labelling factors): 57.9 kcal (range 56.1–59.7), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.82 g, median of 2 tables, range 0.74–0.9 (USDA SR Legacy 171711: 0.74; CoFID 2021 14-325: 0.9).
 - Fat: 0.265 g, median of 2 tables, range 0.2–0.33 (USDA SR Legacy 171711: 0.33; CoFID 2021 14-325: 0.2).
 - Carbohydrate (by difference, without fibre): 12.1 g, from USDA SR Legacy 171711 only.
@@ -523,6 +539,7 @@ Records: USDA SR Legacy 170569 *Nuts, brazilnuts, dried, unblanched*; CoFID 2021
 
 - Energy (US Atwater factors): 659 kcal, from USDA SR Legacy 170569 only.
 - Energy (UK factors): 683 kcal, from CoFID 2021 14-871 only.
+- Energy (EU labelling factors): 698 kcal (range 693–703), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 14.3 g, median of 2 tables, range 14.3–14.3 (USDA SR Legacy 170569: 14.3; CoFID 2021 14-871: 14.3).
 - Fat: 67.7 g, median of 2 tables, range 67.1–68.2 (USDA SR Legacy 170569: 67.1; CoFID 2021 14-871: 68.2).
 - Carbohydrate (by difference, without fibre): 4.24 g, from USDA SR Legacy 170569 only.
@@ -547,6 +564,7 @@ Records: USDA SR Legacy 171714 *Breadfruit, raw*; CoFID 2021 13-167 *Breadfruit,
 
 - Energy (US Atwater factors): 103 kcal, from USDA SR Legacy 171714 only.
 - Energy (UK factors): 95 kcal, from CoFID 2021 13-167 only.
+- Energy (EU labelling factors): 106 kcal (range 105–107), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.19 g, median of 2 tables, range 1.07–1.3 (USDA SR Legacy 171714: 1.07; CoFID 2021 13-167: 1.3).
 - Fat: 0.265 g, median of 2 tables, range 0.23–0.3 (USDA SR Legacy 171714: 0.23; CoFID 2021 13-167: 0.3).
 - Carbohydrate (by difference, without fibre): 22.2 g, from USDA SR Legacy 171714 only.
@@ -571,6 +589,7 @@ Records: USDA SR Legacy 169967 *Broccoli, cooked, boiled, drained, without salt*
 
 - Energy (US Atwater factors): 35 kcal, from USDA SR Legacy 169967 only.
 - Energy (UK factors): 28 kcal, from CoFID 2021 13-503 only.
+- Energy (EU labelling factors): 37.1 kcal (range 34.3–39.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.84 g, median of 2 tables, range 2.38–3.3 (USDA SR Legacy 169967: 2.38; CoFID 2021 13-503: 3.3).
 - Fat: 0.455 g, median of 2 tables, range 0.41–0.5 (USDA SR Legacy 169967: 0.41; CoFID 2021 13-503: 0.5).
 - Carbohydrate (by difference, without fibre): 3.88 g, from USDA SR Legacy 169967 only.
@@ -595,6 +614,7 @@ Records: USDA SR Legacy 169704 *Rice, brown, long-grain, cooked (Includes foods 
 
 - Energy (US Atwater factors): 123 kcal, from USDA SR Legacy 169704 only.
 - Energy (UK factors): 132 kcal, from CoFID 2021 11-869 only.
+- Energy (EU labelling factors): 120 kcal (range 118–122), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 3.17 g, median of 2 tables, range 2.74–3.6 (USDA SR Legacy 169704: 2.74; CoFID 2021 11-869: 3.6).
 - Fat: 0.935 g, median of 2 tables, range 0.9–0.97 (USDA SR Legacy 169704: 0.97; CoFID 2021 11-869: 0.9).
 - Carbohydrate (by difference, without fibre): 24 g, from USDA SR Legacy 169704 only.
@@ -619,6 +639,7 @@ Records: USDA SR Legacy 169971 *Brussels sprouts, cooked, boiled, drained, witho
 
 - Energy (US Atwater factors): 36 kcal, from USDA SR Legacy 169971 only.
 - Energy (UK factors): 32 kcal, from CoFID 2021 13-630 only.
+- Energy (EU labelling factors): 39.1 kcal (range 37–41.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.83 g, median of 2 tables, range 2.55–3.1 (USDA SR Legacy 169971: 2.55; CoFID 2021 13-630: 3.1).
 - Fat: 0.45 g, median of 2 tables, range 0.4–0.5 (USDA SR Legacy 169971: 0.5; CoFID 2021 13-630: 0.4).
 - Carbohydrate (by difference, without fibre): 4.5 g, from USDA SR Legacy 169971 only.
@@ -643,6 +664,7 @@ Records: USDA SR Legacy 173430 *Butter, without salt*; CoFID 2021 17-661 *Butter
 
 - Energy (US Atwater factors): 717 kcal, from USDA SR Legacy 173430 only.
 - Energy (UK factors): 744 kcal, from CoFID 2021 17-661 only.
+- Energy (EU labelling factors): 738 kcal (range 733–743), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.725 g, median of 2 tables, range 0.6–0.85 (USDA SR Legacy 173430: 0.85; CoFID 2021 17-661: 0.6).
 - Fat: 81.7 g, median of 2 tables, range 81.1–82.2 (USDA SR Legacy 173430: 81.1; CoFID 2021 17-661: 82.2).
 - Carbohydrate (by difference, without fibre): 0.06 g, from USDA SR Legacy 173430 only.
@@ -667,6 +689,7 @@ Records: USDA SR Legacy 174253 *Lima beans, large, mature seeds, cooked, boiled,
 
 - Energy (US Atwater factors): 115 kcal, from USDA SR Legacy 174253 only.
 - Energy (UK factors): 105 kcal, from CoFID 2021 13-663 only.
+- Energy (EU labelling factors): 112 kcal (range 104–120), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 7.95 g, median of 2 tables, range 7.8–8.1 (USDA SR Legacy 174253: 7.8; CoFID 2021 13-663: 8.1).
 - Fat: 0.74 g, median of 2 tables, range 0.38–1.1 (USDA SR Legacy 174253: 0.38; CoFID 2021 13-663: 1.1). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 13.9 g, from USDA SR Legacy 174253 only.
@@ -691,6 +714,7 @@ Records: USDA SR Legacy 169975 *Cabbage, raw*; CoFID 2021 13-582 *Cabbage, avera
 
 - Energy (US Atwater factors): 25 kcal, from USDA SR Legacy 169975 only.
 - Energy (UK factors): 26 kcal, from CoFID 2021 13-582 only.
+- Energy (EU labelling factors): 26.7 kcal (range 24.2–29.2), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.54 g, median of 2 tables, range 1.28–1.8 (USDA SR Legacy 169975: 1.28; CoFID 2021 13-582: 1.8).
 - Fat: 0.15 g, median of 2 tables, range 0.1–0.2 (USDA SR Legacy 169975: 0.1; CoFID 2021 13-582: 0.2).
 - Carbohydrate (by difference, without fibre): 3.3 g, from USDA SR Legacy 169975 only.
@@ -715,6 +739,7 @@ Records: USDA SR Legacy 169979 *Cabbage, chinese (pe-tsai), raw*; CoFID 2021 13-
 
 - Energy (US Atwater factors): 16 kcal, from USDA SR Legacy 169979 only.
 - Energy (UK factors): 12 kcal, from CoFID 2021 13-187 only.
+- Energy (EU labelling factors): 16.7 kcal (range 16.3–17.1), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.1 g, median of 2 tables, range 1–1.2 (USDA SR Legacy 169979: 1.2; CoFID 2021 13-187: 1).
 - Fat: 0.2 g, median of 2 tables, range 0.2–0.2 (USDA SR Legacy 169979: 0.2; CoFID 2021 13-187: 0.2).
 - Carbohydrate (by difference, without fibre): 2.03 g, from USDA SR Legacy 169979 only.
@@ -739,6 +764,7 @@ Records: USDA SR Legacy 169976 *Cabbage, cooked, boiled, drained, without salt*;
 
 - Energy (US Atwater factors): 23 kcal, from USDA SR Legacy 169976 only.
 - Energy (UK factors): 17 kcal, from CoFID 2021 13-581 only.
+- Energy (EU labelling factors): 24.4 kcal (range 23.2–25.7), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.19 g, median of 2 tables, range 1.1–1.27 (USDA SR Legacy 169976: 1.27; CoFID 2021 13-581: 1.1).
 - Fat: 0.13 g, median of 2 tables, range 0.06–0.2 (USDA SR Legacy 169976: 0.06; CoFID 2021 13-581: 0.2). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 3.61 g, from USDA SR Legacy 169976 only.
@@ -763,6 +789,7 @@ Records: USDA SR Legacy 169978 *Cabbage, red, cooked, boiled, drained, without s
 
 - Energy (US Atwater factors): 29 kcal, from USDA SR Legacy 169978 only.
 - Energy (UK factors): 15 kcal, from CoFID 2021 13-540 only.
+- Energy (EU labelling factors): 28.6 kcal (range 26–31.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.16 g, median of 2 tables, range 0.8–1.51 (USDA SR Legacy 169978: 1.51; CoFID 2021 13-540: 0.8).
 - Fat: 0.195 g, median of 2 tables, range 0.09–0.3 (USDA SR Legacy 169978: 0.09; CoFID 2021 13-540: 0.3). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 4.34 g, from USDA SR Legacy 169978 only.
@@ -787,6 +814,7 @@ Records: USDA SR Legacy 170393 *Carrots, raw*; CoFID 2021 13-496 *Carrots, old, 
 
 - Energy (US Atwater factors): 41 kcal, from USDA SR Legacy 170393 only.
 - Energy (UK factors): 34 kcal, from CoFID 2021 13-496 only.
+- Energy (EU labelling factors): 39.6 kcal (range 36.9–42.2), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.715 g, median of 2 tables, range 0.5–0.93 (USDA SR Legacy 170393: 0.93; CoFID 2021 13-496: 0.5).
 - Fat: 0.32 g, median of 2 tables, range 0.24–0.4 (USDA SR Legacy 170393: 0.24; CoFID 2021 13-496: 0.4).
 - Carbohydrate (by difference, without fibre): 6.78 g, from USDA SR Legacy 170393 only.
@@ -811,6 +839,7 @@ Records: USDA SR Legacy 170162 *Nuts, cashew nuts, raw*; CoFID 2021 14-811 *Cash
 
 - Energy (US Atwater factors): 553 kcal, from USDA SR Legacy 170162 only.
 - Energy (UK factors): 573 kcal, from CoFID 2021 14-811 only.
+- Energy (EU labelling factors): 600 kcal (range 580–621), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 18 g, median of 2 tables, range 17.7–18.2 (USDA SR Legacy 170162: 18.2; CoFID 2021 14-811: 17.7).
 - Fat: 46 g, median of 2 tables, range 43.9–48.2 (USDA SR Legacy 170162: 43.9; CoFID 2021 14-811: 48.2).
 - Carbohydrate (by difference, without fibre): 26.9 g, from USDA SR Legacy 170162 only.
@@ -835,6 +864,7 @@ Records: USDA SR Legacy 170397 *Cauliflower, cooked, boiled, drained, without sa
 
 - Energy (US Atwater factors): 23 kcal, from USDA SR Legacy 170397 only.
 - Energy (UK factors): 29 kcal, from CoFID 2021 13-513 only.
+- Energy (EU labelling factors): 25 kcal (range 22.4–27.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.87 g, median of 2 tables, range 1.84–1.9 (USDA SR Legacy 170397: 1.84; CoFID 2021 13-513: 1.9).
 - Fat: 0.675 g, median of 2 tables, range 0.45–0.9 (USDA SR Legacy 170397: 0.45; CoFID 2021 13-513: 0.9).
 - Carbohydrate (by difference, without fibre): 1.81 g, from USDA SR Legacy 170397 only.
@@ -859,6 +889,7 @@ Records: USDA SR Legacy 169986 *Cauliflower, raw*; CoFID 2021 13-512 *Cauliflowe
 
 - Energy (US Atwater factors): 25 kcal, from USDA SR Legacy 169986 only.
 - Energy (UK factors): 30 kcal, from CoFID 2021 13-512 only.
+- Energy (EU labelling factors): 27.6 kcal (range 25.7–29.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.21 g, median of 2 tables, range 1.92–2.5 (USDA SR Legacy 169986: 1.92; CoFID 2021 13-512: 2.5).
 - Fat: 0.34 g, median of 2 tables, range 0.28–0.4 (USDA SR Legacy 169986: 0.28; CoFID 2021 13-512: 0.4).
 - Carbohydrate (by difference, without fibre): 2.97 g, from USDA SR Legacy 169986 only.
@@ -883,6 +914,7 @@ Records: USDA SR Legacy 169987 *Celeriac, cooked, boiled, drained, without salt*
 
 - Energy (US Atwater factors): 27 kcal, from USDA SR Legacy 169987 only.
 - Energy (UK factors): 15 kcal, from CoFID 2021 13-585 only.
+- Energy (EU labelling factors): 28 kcal (range 26.5–29.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.93 g, median of 2 tables, range 0.9–0.96 (USDA SR Legacy 169987: 0.96; CoFID 2021 13-585: 0.9).
 - Fat: 0.345 g, median of 2 tables, range 0.19–0.5 (USDA SR Legacy 169987: 0.19; CoFID 2021 13-585: 0.5). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 4.7 g, from USDA SR Legacy 169987 only.
@@ -907,6 +939,7 @@ Records: USDA SR Legacy 170400 *Celeriac, raw*; CoFID 2021 13-219 *Celeriac, raw
 
 - Energy (US Atwater factors): 42 kcal, from USDA SR Legacy 170400 only.
 - Energy (UK factors): 18 kcal, from CoFID 2021 13-219 only.
+- Energy (EU labelling factors): 41.8 kcal (range 40.7–42.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.35 g, median of 2 tables, range 1.2–1.5 (USDA SR Legacy 170400: 1.5; CoFID 2021 13-219: 1.2).
 - Fat: 0.35 g, median of 2 tables, range 0.3–0.4 (USDA SR Legacy 170400: 0.3; CoFID 2021 13-219: 0.4).
 - Carbohydrate (by difference, without fibre): 7.4 g, from USDA SR Legacy 170400 only.
@@ -931,6 +964,7 @@ Records: USDA SR Legacy 169988 *Celery, raw*; CoFID 2021 13-636 *Celery, raw*. M
 
 - Energy (US Atwater factors): 14 kcal, from USDA SR Legacy 169988 only.
 - Energy (UK factors): 9 kcal, from CoFID 2021 13-636 only.
+- Energy (EU labelling factors): 12.2 kcal (range 11.4–13), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.595 g, median of 2 tables, range 0.5–0.69 (USDA SR Legacy 169988: 0.69; CoFID 2021 13-636: 0.5).
 - Fat: 0.135 g, median of 2 tables, range 0.1–0.17 (USDA SR Legacy 169988: 0.17; CoFID 2021 13-636: 0.1).
 - Carbohydrate (by difference, without fibre): 1.37 g, from USDA SR Legacy 169988 only.
@@ -955,6 +989,7 @@ Records: USDA SR Legacy 169989 *Celery, cooked, boiled, drained, without salt*; 
 
 - Energy (US Atwater factors): 18 kcal, from USDA SR Legacy 169989 only.
 - Energy (UK factors): 5.1 kcal, from CoFID 2021 13-637 only.
+- Energy (EU labelling factors): 15.4 kcal (range 13.3–17.6), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.565 g, median of 2 tables, range 0.3–0.83 (USDA SR Legacy 169989: 0.83; CoFID 2021 13-637: 0.3). ⚠ values differ more than 2-fold.
 - Fat: 0.13 g, median of 2 tables, range 0.1–0.16 (USDA SR Legacy 169989: 0.16; CoFID 2021 13-637: 0.1).
 - Carbohydrate (by difference, without fibre): 2.4 g, from USDA SR Legacy 169989 only.
@@ -981,6 +1016,7 @@ Records: USDA SR Legacy 170401 *Chard, swiss, cooked, boiled, drained, without s
 
 - Energy (US Atwater factors): 20 kcal, from USDA SR Legacy 170401 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 13-224 (borrowed from USDA SR Legacy (counted once), 20 kcal).
+- Energy (EU labelling factors): 20.6 kcal (range 20.6–20.6), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.88 g, from USDA SR Legacy 170401 only. Not used: CoFID 2021 13-224 (borrowed from USDA SR Legacy (counted once), 1.9 g).
 - Fat: 0.08 g, from USDA SR Legacy 170401 only. Not used: CoFID 2021 13-224 (borrowed from USDA SR Legacy (counted once), 0.1 g).
 - Carbohydrate (by difference, without fibre): 2.03 g, from USDA SR Legacy 170401 only.
@@ -1007,6 +1043,7 @@ Records: USDA SR Legacy 169991 *Chard, swiss, raw*; CoFID 2021 13-223 *Chard, Sw
 
 - Energy (US Atwater factors): 19 kcal, from USDA SR Legacy 169991 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 13-223 (borrowed from USDA SR Legacy (counted once), 19 kcal).
+- Energy (EU labelling factors): 20.8 kcal (range 20.8–20.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.8 g, from USDA SR Legacy 169991 only. Not used: CoFID 2021 13-223 (borrowed from USDA SR Legacy (counted once), 1.8 g).
 - Fat: 0.2 g, from USDA SR Legacy 169991 only. Not used: CoFID 2021 13-223 (borrowed from USDA SR Legacy (counted once), 0.2 g).
 - Carbohydrate (by difference, without fibre): 2.14 g, from USDA SR Legacy 169991 only.
@@ -1031,6 +1068,7 @@ Records: USDA SR Legacy 173414 *Cheese, cheddar (Includes foods for USDA's Food 
 
 - Energy (US Atwater factors): 403 kcal, from USDA SR Legacy 173414 only.
 - Energy (UK factors): 416 kcal, from CoFID 2021 12-346 only.
+- Energy (EU labelling factors): 417 kcal (range 405–429), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 24.1 g, median of 2 tables, range 22.9–25.4 (USDA SR Legacy 173414: 22.9; CoFID 2021 12-346: 25.4).
 - Fat: 34.1 g, median of 2 tables, range 33.3–34.9 (USDA SR Legacy 173414: 33.3; CoFID 2021 12-346: 34.9).
 - Carbohydrate (by difference, without fibre): 3.37 g, from USDA SR Legacy 173414 only.
@@ -1055,6 +1093,7 @@ Records: USDA SR Legacy 172178 *Cheese, camembert*; CoFID 2021 12-345 *Cheese, C
 
 - Energy (US Atwater factors): 300 kcal, from USDA SR Legacy 172178 only.
 - Energy (UK factors): 290 kcal, from CoFID 2021 12-345 only.
+- Energy (EU labelling factors): 296 kcal (range 285–306), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 20.6 g, median of 2 tables, range 19.8–21.5 (USDA SR Legacy 172178: 19.8; CoFID 2021 12-345: 21.5).
 - Fat: 23.5 g, median of 2 tables, range 22.7–24.3 (USDA SR Legacy 172178: 24.3; CoFID 2021 12-345: 22.7).
 - Carbohydrate (by difference, without fibre): 0.46 g, from USDA SR Legacy 172178 only.
@@ -1079,6 +1118,7 @@ Records: USDA SR Legacy 173419 *Cheese, edam*; CoFID 2021 12-355 *Cheese, Edam*.
 
 - Energy (US Atwater factors): 357 kcal, from USDA SR Legacy 173419 only.
 - Energy (UK factors): 341 kcal, from CoFID 2021 12-355 only.
+- Energy (EU labelling factors): 355 kcal (range 340–370), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 25.8 g, median of 2 tables, range 25–26.7 (USDA SR Legacy 173419: 25; CoFID 2021 12-355: 26.7).
 - Fat: 27.3 g, median of 2 tables, range 26–28.6 (USDA SR Legacy 173419: 28.6; CoFID 2021 12-355: 26).
 - Carbohydrate (by difference, without fibre): 1.43 g, from USDA SR Legacy 173419 only.
@@ -1103,6 +1143,7 @@ Records: USDA SR Legacy 171241 *Cheese, gouda*; CoFID 2021 12-358 *Cheese, Gouda
 
 - Energy (US Atwater factors): 356 kcal, from USDA SR Legacy 171241 only.
 - Energy (UK factors): 377 kcal, from CoFID 2021 12-358 only.
+- Energy (EU labelling factors): 371 kcal (range 356–385), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 25.1 g, median of 2 tables, range 24.9–25.3 (USDA SR Legacy 171241: 24.9; CoFID 2021 12-358: 25.3).
 - Fat: 29 g, median of 2 tables, range 27.4–30.6 (USDA SR Legacy 171241: 27.4; CoFID 2021 12-358: 30.6).
 - Carbohydrate (by difference, without fibre): 2.22 g, from USDA SR Legacy 171241 only.
@@ -1127,6 +1168,7 @@ Records: USDA SR Legacy 171242 *Cheese, gruyere*; CoFID 2021 12-164 *Cheese, Gru
 
 - Energy (US Atwater factors): 413 kcal, from USDA SR Legacy 171242 only.
 - Energy (UK factors): 409 kcal, from CoFID 2021 12-164 only.
+- Energy (EU labelling factors): 411 kcal (range 401–420), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 28.5 g, median of 2 tables, range 27.2–29.8 (USDA SR Legacy 171242: 29.8; CoFID 2021 12-164: 27.2).
 - Fat: 32.8 g, median of 2 tables, range 32.3–33.3 (USDA SR Legacy 171242: 32.3; CoFID 2021 12-164: 33.3).
 - Carbohydrate (by difference, without fibre): 0.36 g, from USDA SR Legacy 171242 only.
@@ -1151,6 +1193,7 @@ Records: USDA SR Legacy 170851 *Cheese, ricotta, whole milk*; CoFID 2021 12-176 
 
 - Energy (US Atwater factors): 150 kcal, from USDA SR Legacy 170851 only.
 - Energy (UK factors): 144 kcal, from CoFID 2021 12-176 only.
+- Energy (EU labelling factors): 158 kcal (range 151–166), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 8.47 g, median of 2 tables, range 7.54–9.4 (USDA SR Legacy 170851: 7.54; CoFID 2021 12-176: 9.4).
 - Fat: 10.6 g, median of 2 tables, range 10.2–11 (USDA SR Legacy 170851: 10.2; CoFID 2021 12-176: 11).
 - Carbohydrate (by difference, without fibre): 7.27 g, from USDA SR Legacy 170851 only.
@@ -1175,6 +1218,7 @@ Records: USDA SR Legacy 171250 *Cheese, roquefort*; CoFID 2021 12-177 *Cheese, R
 
 - Energy (US Atwater factors): 369 kcal, from USDA SR Legacy 171250 only.
 - Energy (UK factors): 375 kcal, from CoFID 2021 12-177 only.
+- Energy (EU labelling factors): 376 kcal (range 363–390), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 20.6 g, median of 2 tables, range 19.7–21.5 (USDA SR Legacy 171250: 21.5; CoFID 2021 12-177: 19.7).
 - Fat: 31.8 g, median of 2 tables, range 30.6–32.9 (USDA SR Legacy 171250: 30.6; CoFID 2021 12-177: 32.9).
 - Carbohydrate (by difference, without fibre): 2 g, from USDA SR Legacy 171250 only.
@@ -1199,6 +1243,7 @@ Records: USDA SR Legacy 173757 *Chickpeas (garbanzo beans, bengal gram), mature 
 
 - Energy (US Atwater factors): 164 kcal, from USDA SR Legacy 173757 only.
 - Energy (UK factors): 129 kcal, from CoFID 2021 13-662 only.
+- Energy (EU labelling factors): 157 kcal (range 151–163), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 8.63 g, median of 2 tables, range 8.4–8.86 (USDA SR Legacy 173757: 8.86; CoFID 2021 13-662: 8.4).
 - Fat: 2.79 g, median of 2 tables, range 2.59–3 (USDA SR Legacy 173757: 2.59; CoFID 2021 13-662: 3).
 - Carbohydrate (by difference, without fibre): 19.8 g, from USDA SR Legacy 173757 only.
@@ -1225,6 +1270,7 @@ Records: USDA SR Legacy 169994 *Chives, raw*; CoFID 2021 13-887 *Chives, fresh*.
 
 - Energy (US Atwater factors): 30 kcal, from USDA SR Legacy 169994 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 13-887 (borrowed from USDA SR Legacy (counted once), 27 kcal).
+- Energy (EU labelling factors): 32 kcal (range 32–32), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 3.27 g, from USDA SR Legacy 169994 only. Not used: CoFID 2021 13-887 (borrowed from USDA SR Legacy (counted once), 3.3 g).
 - Fat: 0.73 g, from USDA SR Legacy 169994 only. Not used: CoFID 2021 13-887 (borrowed from USDA SR Legacy (counted once), 0.7 g).
 - Carbohydrate (by difference, without fibre): 1.85 g, from USDA SR Legacy 169994 only.
@@ -1249,6 +1295,7 @@ Records: USDA SR Legacy 171956 *Fish, cod, Atlantic, cooked, dry heat*; CoFID 20
 
 - Energy (US Atwater factors): 105 kcal, from USDA SR Legacy 171956 only.
 - Energy (UK factors): 100 kcal, from CoFID 2021 16-373 only.
+- Energy (EU labelling factors): 99.6 kcal (range 95.8–103), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 23.4 g, median of 2 tables, range 22.8–23.9 (USDA SR Legacy 171956: 22.8; CoFID 2021 16-373: 23.9).
 - Fat: 0.68 g, median of 2 tables, range 0.5–0.86 (USDA SR Legacy 171956: 0.86; CoFID 2021 16-373: 0.5).
 - Carbohydrate (by difference, without fibre): 0 g, from USDA SR Legacy 171956 only.
@@ -1273,6 +1320,7 @@ Records: USDA SR Legacy 172182 *Cheese, cottage, lowfat, 2% milkfat*; CoFID 2021
 
 - Energy (US Atwater factors): 81 kcal, from USDA SR Legacy 172182 only.
 - Energy (UK factors): 68 kcal, from CoFID 2021 12-550 only.
+- Energy (EU labelling factors): 78.1 kcal (range 74.3–81.9), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 10.5 g, median of 2 tables, range 10.4–10.6 (USDA SR Legacy 172182: 10.4; CoFID 2021 12-550: 10.6).
 - Fat: 1.89 g, median of 2 tables, range 1.5–2.27 (USDA SR Legacy 172182: 2.27; CoFID 2021 12-550: 1.5).
 - Carbohydrate (by difference, without fibre): 4.76 g, from USDA SR Legacy 172182 only.
@@ -1297,6 +1345,7 @@ Records: USDA SR Legacy 169291 *Squash, summer, zucchini, includes skin, raw*; C
 
 - Energy (US Atwater factors): 17 kcal, from USDA SR Legacy 169291 only.
 - Energy (UK factors): 16 kcal, from CoFID 2021 13-627 only.
+- Energy (EU labelling factors): 17.3 kcal (range 16.1–18.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.25 g, median of 2 tables, range 1.21–1.3 (USDA SR Legacy 169291: 1.21; CoFID 2021 13-627: 1.3).
 - Fat: 0.26 g, median of 2 tables, range 0.2–0.32 (USDA SR Legacy 169291: 0.32; CoFID 2021 13-627: 0.2).
 - Carbohydrate (by difference, without fibre): 2.11 g, from USDA SR Legacy 169291 only.
@@ -1321,6 +1370,7 @@ Records: USDA SR Legacy 171722 *Cranberries, raw*; CoFID 2021 14-073 *Cranberrie
 
 - Energy (US Atwater factors): 46 kcal, from USDA SR Legacy 171722 only.
 - Energy (UK factors): 15 kcal, from CoFID 2021 14-073 only.
+- Energy (EU labelling factors): 43.4 kcal (range 43.2–43.7), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.43 g, median of 2 tables, range 0.4–0.46 (USDA SR Legacy 171722: 0.46; CoFID 2021 14-073: 0.4).
 - Fat: 0.115 g, median of 2 tables, range 0.1–0.13 (USDA SR Legacy 171722: 0.13; CoFID 2021 14-073: 0.1).
 - Carbohydrate (by difference, without fibre): 8.37 g, from USDA SR Legacy 171722 only.
@@ -1345,6 +1395,7 @@ Records: USDA SR Legacy 171255 *Cream, fluid, half and half*; CoFID 2021 12-112 
 
 - Energy (US Atwater factors): 131 kcal, from USDA SR Legacy 171255 only.
 - Energy (UK factors): 148 kcal, from CoFID 2021 12-112 only.
+- Energy (EU labelling factors): 141 kcal (range 133–149), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 3.06 g, median of 2 tables, range 3–3.13 (USDA SR Legacy 171255: 3.13; CoFID 2021 12-112: 3).
 - Fat: 12.4 g, median of 2 tables, range 11.5–13.3 (USDA SR Legacy 171255: 11.5; CoFID 2021 12-112: 13.3).
 - Carbohydrate (by difference, without fibre): 4.3 g, from USDA SR Legacy 171255 only.
@@ -1369,6 +1420,7 @@ Records: USDA SR Legacy 168409 *Cucumber, with peel, raw*; CoFID 2021 13-523 *Cu
 
 - Energy (US Atwater factors): 15 kcal, from USDA SR Legacy 168409 only.
 - Energy (UK factors): 14 kcal, from CoFID 2021 13-523 only.
+- Energy (EU labelling factors): 20.2 kcal (range 17.1–23.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.825 g, median of 2 tables, range 0.65–1 (USDA SR Legacy 168409: 0.65; CoFID 2021 13-523: 1).
 - Fat: 0.355 g, median of 2 tables, range 0.11–0.6 (USDA SR Legacy 168409: 0.11; CoFID 2021 13-523: 0.6). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 3.13 g, from USDA SR Legacy 168409 only.
@@ -1395,6 +1447,7 @@ Records: USDA SR Legacy 170484 *Drumstick pods, cooked, boiled, drained, without
 
 - Energy (US Atwater factors): 36 kcal, from USDA SR Legacy 170484 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 13-239 (borrowed from USDA SR Legacy (counted once), 36 kcal).
+- Energy (EU labelling factors): 34.4 kcal (range 34.4–34.4), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.09 g, from USDA SR Legacy 170484 only. Not used: CoFID 2021 13-239 (borrowed from USDA SR Legacy (counted once), 2.1 g).
 - Fat: 0.19 g, from USDA SR Legacy 170484 only. Not used: CoFID 2021 13-239 (borrowed from USDA SR Legacy (counted once), 0.2 g).
 - Carbohydrate (by difference, without fibre): 3.98 g, from USDA SR Legacy 170484 only.
@@ -1421,6 +1474,7 @@ Records: USDA SR Legacy 170483 *Drumstick pods, raw*; CoFID 2021 13-238 *Drumsti
 
 - Energy (US Atwater factors): 37 kcal, from USDA SR Legacy 170483 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 13-238 (borrowed from USDA SR Legacy (counted once), 37 kcal).
+- Energy (EU labelling factors): 37.9 kcal (range 37.9–37.9), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.1 g, from USDA SR Legacy 170483 only. Not used: CoFID 2021 13-238 (borrowed from USDA SR Legacy (counted once), 2.1 g).
 - Fat: 0.2 g, from USDA SR Legacy 170483 only. Not used: CoFID 2021 13-238 (borrowed from USDA SR Legacy (counted once), 0.2 g).
 - Carbohydrate (by difference, without fibre): 5.33 g, from USDA SR Legacy 170483 only.
@@ -1445,6 +1499,7 @@ Records: USDA SR Legacy 172191 *Egg, quail, whole, fresh, raw*; CoFID 2021 12-81
 
 - Energy (US Atwater factors): 158 kcal, from USDA SR Legacy 172191 only.
 - Energy (UK factors): 151 kcal, from CoFID 2021 12-815 only.
+- Energy (EU labelling factors): 153 kcal (range 153–154), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 13 g, median of 2 tables, range 12.9–13.1 (USDA SR Legacy 172191: 13.1; CoFID 2021 12-815: 12.9).
 - Fat: 11.1 g, median of 2 tables, range 11.1–11.1 (USDA SR Legacy 172191: 11.1; CoFID 2021 12-815: 11.1).
 - Carbohydrate (by difference, without fibre): 0.41 g, from USDA SR Legacy 172191 only.
@@ -1469,6 +1524,7 @@ Records: USDA SR Legacy 171287 *Egg, whole, raw, fresh*; CoFID 2021 12-937 *Eggs
 
 - Energy (US Atwater factors): 143 kcal, from USDA SR Legacy 171287 only.
 - Energy (UK factors): 131 kcal, from CoFID 2021 12-937 only.
+- Energy (EU labelling factors): 136 kcal (range 134–139), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 12.6 g, median of 2 tables, range 12.6–12.6 (USDA SR Legacy 171287: 12.6; CoFID 2021 12-937: 12.6).
 - Fat: 9.26 g, median of 2 tables, range 9–9.51 (USDA SR Legacy 171287: 9.51; CoFID 2021 12-937: 9).
 - Carbohydrate (by difference, without fibre): 0.72 g, from USDA SR Legacy 171287 only.
@@ -1493,6 +1549,7 @@ Records: USDA SR Legacy 168412 *Endive, raw*; CoFID 2021 13-240 *Endive, raw*. M
 
 - Energy (US Atwater factors): 17 kcal, from USDA SR Legacy 168412 only.
 - Energy (UK factors): 13 kcal, from CoFID 2021 13-240 only.
+- Energy (EU labelling factors): 15.1 kcal (range 14–16.2), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.52 g, median of 2 tables, range 1.25–1.8 (USDA SR Legacy 168412: 1.25; CoFID 2021 13-240: 1.8).
 - Fat: 0.2 g, median of 2 tables, range 0.2–0.2 (USDA SR Legacy 168412: 0.2; CoFID 2021 13-240: 0.2).
 - Carbohydrate (by difference, without fibre): 0.25 g, from USDA SR Legacy 168412 only.
@@ -1517,6 +1574,7 @@ Records: USDA SR Legacy 168176 *Feijoa, raw*; CoFID 2021 14-090 *Feijoa, flesh o
 
 - Energy (US Atwater factors): 61 kcal, from USDA SR Legacy 168176 only.
 - Energy (UK factors): 47 kcal, from CoFID 2021 14-090 only.
+- Energy (EU labelling factors): 55.4 kcal (range 54.7–56.1), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.805 g, median of 2 tables, range 0.71–0.9 (USDA SR Legacy 168176: 0.71; CoFID 2021 14-090: 0.9).
 - Fat: 0.46 g, median of 2 tables, range 0.42–0.5 (USDA SR Legacy 168176: 0.42; CoFID 2021 14-090: 0.5).
 - Carbohydrate (by difference, without fibre): 8.81 g, from USDA SR Legacy 168176 only.
@@ -1541,6 +1599,7 @@ Records: USDA SR Legacy 173420 *Cheese, feta*; CoFID 2021 12-525 *Cheese, Feta*.
 
 - Energy (US Atwater factors): 265 kcal, from USDA SR Legacy 173420 only.
 - Energy (UK factors): 250 kcal, from CoFID 2021 12-525 only.
+- Energy (EU labelling factors): 263 kcal (range 254–271), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 14.9 g, median of 2 tables, range 14.2–15.6 (USDA SR Legacy 173420: 14.2; CoFID 2021 12-525: 15.6).
 - Fat: 20.8 g, median of 2 tables, range 20.2–21.5 (USDA SR Legacy 173420: 21.5; CoFID 2021 12-525: 20.2).
 - Carbohydrate (by difference, without fibre): 3.88 g, from USDA SR Legacy 173420 only.
@@ -1565,6 +1624,7 @@ Records: USDA SR Legacy 174683 *Grapes, red or green (European type, such as Tho
 
 - Energy (US Atwater factors): 69 kcal, from USDA SR Legacy 174683 only.
 - Energy (UK factors): 65 kcal, from CoFID 2021 14-350 only.
+- Energy (EU labelling factors): 75.5 kcal (range 74.8–76.1), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.71 g, median of 2 tables, range 0.7–0.72 (USDA SR Legacy 174683: 0.72; CoFID 2021 14-350: 0.7).
 - Fat: 0.18 g, median of 2 tables, range 0.16–0.2 (USDA SR Legacy 174683: 0.16; CoFID 2021 14-350: 0.2).
 - Carbohydrate (by difference, without fibre): 17.2 g, from USDA SR Legacy 174683 only.
@@ -1589,6 +1649,7 @@ Records: USDA SR Legacy 169141 *Beans, snap, green, cooked, boiled, drained, wit
 
 - Energy (US Atwater factors): 35 kcal, from USDA SR Legacy 169141 only.
 - Energy (UK factors): 26 kcal, from CoFID 2021 13-515 only.
+- Energy (EU labelling factors): 36.6 kcal (range 35.2–38), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2 g, median of 2 tables, range 1.89–2.1 (USDA SR Legacy 169141: 1.89; CoFID 2021 13-515: 2.1).
 - Fat: 0.29 g, median of 2 tables, range 0.28–0.3 (USDA SR Legacy 169141: 0.28; CoFID 2021 13-515: 0.3).
 - Carbohydrate (by difference, without fibre): 4.68 g, from USDA SR Legacy 169141 only.
@@ -1613,6 +1674,7 @@ Records: USDA SR Legacy 169961 *Beans, snap, green, raw*; CoFID 2021 13-514 *Bea
 
 - Energy (US Atwater factors): 31 kcal, from USDA SR Legacy 169961 only.
 - Energy (UK factors): 24 kcal, from CoFID 2021 13-514 only.
+- Energy (EU labelling factors): 33.8 kcal (range 31.8–35.9), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.97 g, median of 2 tables, range 1.83–2.1 (USDA SR Legacy 169961: 1.83; CoFID 2021 13-514: 2.1).
 - Fat: 0.31 g, median of 2 tables, range 0.22–0.4 (USDA SR Legacy 169961: 0.22; CoFID 2021 13-514: 0.4).
 - Carbohydrate (by difference, without fibre): 4.27 g, from USDA SR Legacy 169961 only.
@@ -1637,6 +1699,7 @@ Records: USDA SR Legacy 170581 *Nuts, hazelnuts or filberts*; CoFID 2021 14-874 
 
 - Energy (US Atwater factors): 628 kcal, from USDA SR Legacy 170581 only.
 - Energy (UK factors): 650 kcal, from CoFID 2021 14-874 only.
+- Energy (EU labelling factors): 662 kcal (range 645–679), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 14.5 g, median of 2 tables, range 14.1–14.9 (USDA SR Legacy 170581: 14.9; CoFID 2021 14-874: 14.1).
 - Fat: 62.1 g, median of 2 tables, range 60.8–63.5 (USDA SR Legacy 170581: 60.8; CoFID 2021 14-874: 63.5).
 - Carbohydrate (by difference, without fibre): 7 g, from USDA SR Legacy 170581 only.
@@ -1661,6 +1724,7 @@ Records: USDA SR Legacy 174687 *Jackfruit, raw*; CoFID 2021 13-259 *Jackfruit, r
 
 - Energy (US Atwater factors): 95 kcal, from USDA SR Legacy 174687 only.
 - Energy (UK factors): 88 kcal, from CoFID 2021 13-259 only.
+- Energy (EU labelling factors): 100 kcal (range 97.9–103), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.51 g, median of 2 tables, range 1.3–1.72 (USDA SR Legacy 174687: 1.72; CoFID 2021 13-259: 1.3).
 - Fat: 0.47 g, median of 2 tables, range 0.3–0.64 (USDA SR Legacy 174687: 0.64; CoFID 2021 13-259: 0.3). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 21.8 g, from USDA SR Legacy 174687 only.
@@ -1709,6 +1773,7 @@ Records: USDA SR Legacy 168153 *Kiwifruit, green, raw*; CoFID 2021 14-371 *Kiwi 
 
 - Energy (US Atwater factors): 61 kcal, from USDA SR Legacy 168153 only.
 - Energy (UK factors): 44 kcal, from CoFID 2021 14-371 only.
+- Energy (EU labelling factors): 62.6 kcal (range 59.9–65.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.97 g, median of 2 tables, range 0.8–1.14 (USDA SR Legacy 168153: 1.14; CoFID 2021 14-371: 0.8).
 - Fat: 0.71 g, median of 2 tables, range 0.52–0.9 (USDA SR Legacy 168153: 0.52; CoFID 2021 14-371: 0.9).
 - Carbohydrate (by difference, without fibre): 11.7 g, from USDA SR Legacy 168153 only.
@@ -1733,6 +1798,7 @@ Records: USDA SR Legacy 172516 *Lamb, New Zealand, imported, frozen, leg, whole 
 
 - Energy (US Atwater factors): 181 kcal, from USDA SR Legacy 172516 only.
 - Energy (UK factors): 206 kcal, from CoFID 2021 18-191 only.
+- Energy (EU labelling factors): 190 kcal (range 174–206), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 29.1 g, median of 2 tables, range 27.7–30.6 (USDA SR Legacy 172516: 27.7; CoFID 2021 18-191: 30.6).
 - Fat: 8.15 g, median of 2 tables, range 7.01–9.3 (USDA SR Legacy 172516: 7.01; CoFID 2021 18-191: 9.3).
 - Carbohydrate (by difference, without fibre): 0 g, from USDA SR Legacy 172516 only.
@@ -1757,6 +1823,7 @@ Records: USDA SR Legacy 167747 *Lemon juice, raw*; CoFID 2021 14-277 *Lemon juic
 
 - Energy (US Atwater factors): 22 kcal, from USDA SR Legacy 167747 only.
 - Energy (UK factors): 7 kcal, from CoFID 2021 14-277 only.
+- Energy (EU labelling factors): 30.5 kcal (range 30.4–30.6), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.325 g, median of 2 tables, range 0.3–0.35 (USDA SR Legacy 167747: 0.35; CoFID 2021 14-277: 0.3).
 - Fat: 0.24 g, from USDA SR Legacy 167747 only. Not used: CoFID 2021 14-277 (trace).
 - Carbohydrate (by difference, without fibre): 6.6 g, from USDA SR Legacy 167747 only.
@@ -1783,6 +1850,7 @@ Records: USDA SR Legacy 167749 *Lemon peel, raw*; CoFID 2021 14-337 *Lemon peel*
 
 - Energy (US Atwater factors): 47 kcal, from USDA SR Legacy 167749 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 14-337 (present, amount not known).
+- Energy (EU labelling factors): 51.5 kcal (range 51.5–51.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.5 g, from USDA SR Legacy 167749 only. Not used: CoFID 2021 14-337 (borrowed from USDA SR Legacy (counted once), 1.5 g).
 - Fat: 0.3 g, from USDA SR Legacy 167749 only. Not used: CoFID 2021 14-337 (borrowed from USDA SR Legacy (counted once), 0.3 g).
 - Carbohydrate (by difference, without fibre): 5.4 g, from USDA SR Legacy 167749 only.
@@ -1807,6 +1875,7 @@ Records: USDA SR Legacy 172421 *Lentils, mature seeds, cooked, boiled, without s
 
 - Energy (US Atwater factors): 116 kcal, from USDA SR Legacy 172421 only.
 - Energy (UK factors): 92 kcal, from CoFID 2021 13-661 only.
+- Energy (EU labelling factors): 103 kcal (range 98.3–107), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 8.41 g, median of 2 tables, range 7.8–9.02 (USDA SR Legacy 172421: 9.02; CoFID 2021 13-661: 7.8).
 - Fat: 0.54 g, median of 2 tables, range 0.38–0.7 (USDA SR Legacy 172421: 0.38; CoFID 2021 13-661: 0.7).
 - Carbohydrate (by difference, without fibre): 12.2 g, from USDA SR Legacy 172421 only.
@@ -1833,6 +1902,7 @@ Records: USDA SR Legacy 168156 *Lime juice, raw*; CoFID 2021 14-279 *Lime juice,
 
 - Energy (US Atwater factors): 25 kcal, from USDA SR Legacy 168156 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 14-279 (borrowed from USDA SR Legacy (counted once), 9 kcal).
+- Energy (EU labelling factors): 35.2 kcal (range 35.2–35.2), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.42 g, from USDA SR Legacy 168156 only. Not used: CoFID 2021 14-279 (borrowed from USDA SR Legacy (counted once), 0.4 g).
 - Fat: 0.07 g, from USDA SR Legacy 168156 only. Not used: CoFID 2021 14-279 (borrowed from USDA SR Legacy (counted once), 0.1 g).
 - Carbohydrate (by difference, without fibre): 8.02 g, from USDA SR Legacy 168156 only.
@@ -1857,6 +1927,7 @@ Records: USDA SR Legacy 168155 *Limes, raw*; CoFID 2021 14-131 *Limes, flesh onl
 
 - Energy (US Atwater factors): 30 kcal, from USDA SR Legacy 168155 only.
 - Energy (UK factors): 9 kcal, from CoFID 2021 14-131 only.
+- Energy (EU labelling factors): 41.6 kcal (range 41.2–42.1), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.7 g, median of 2 tables, range 0.7–0.7 (USDA SR Legacy 168155: 0.7; CoFID 2021 14-131: 0.7).
 - Fat: 0.25 g, median of 2 tables, range 0.2–0.3 (USDA SR Legacy 168155: 0.2; CoFID 2021 14-131: 0.3).
 - Carbohydrate (by difference, without fibre): 7.74 g, from USDA SR Legacy 168155 only.
@@ -1905,6 +1976,7 @@ Records: USDA SR Legacy 169908 *Loquats, raw*; CoFID 2021 14-140 *Loquats, flesh
 
 - Energy (US Atwater factors): 47 kcal, from USDA SR Legacy 169908 only.
 - Energy (UK factors): 28 kcal, from CoFID 2021 14-140 only.
+- Energy (EU labelling factors): 49.2 kcal (range 48.7–49.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.565 g, median of 2 tables, range 0.43–0.7 (USDA SR Legacy 169908: 0.43; CoFID 2021 14-140: 0.7).
 - Fat: 0.2 g, median of 2 tables, range 0.2–0.2 (USDA SR Legacy 169908: 0.2; CoFID 2021 14-140: 0.2).
 - Carbohydrate (by difference, without fibre): 10.4 g, from USDA SR Legacy 169908 only.
@@ -1929,6 +2001,7 @@ Records: USDA SR Legacy 175120 *Fish, mackerel, Atlantic, cooked, dry heat*; CoF
 
 - Energy (US Atwater factors): 262 kcal, from USDA SR Legacy 175120 only.
 - Energy (UK factors): 283 kcal, from CoFID 2021 16-394 only.
+- Energy (EU labelling factors): 269 kcal (range 241–297), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 22.1 g, median of 2 tables, range 20.3–23.9 (USDA SR Legacy 175120: 23.9; CoFID 2021 16-394: 20.3).
 - Fat: 20.1 g, median of 2 tables, range 17.8–22.4 (USDA SR Legacy 175120: 17.8; CoFID 2021 16-394: 22.4).
 - Carbohydrate (by difference, without fibre): 0 g, from USDA SR Legacy 175120 only.
@@ -1953,6 +2026,7 @@ Records: USDA SR Legacy 169910 *Mangos, raw*; CoFID 2021 14-378 *Mangoes, ripe, 
 
 - Energy (US Atwater factors): 60 kcal, from USDA SR Legacy 169910 only.
 - Energy (UK factors): 48 kcal, from CoFID 2021 14-378 only.
+- Energy (EU labelling factors): 63.7 kcal (range 61.9–65.4), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.76 g, median of 2 tables, range 0.7–0.82 (USDA SR Legacy 169910: 0.82; CoFID 2021 14-378: 0.7).
 - Fat: 0.49 g, median of 2 tables, range 0.38–0.6 (USDA SR Legacy 169910: 0.38; CoFID 2021 14-378: 0.6).
 - Carbohydrate (by difference, without fibre): 13.4 g, from USDA SR Legacy 169910 only.
@@ -1977,6 +2051,7 @@ Records: USDA SR Legacy 169092 *Melons, cantaloupe, raw*; CoFID 2021 14-339 *Mel
 
 - Energy (US Atwater factors): 34 kcal, from USDA SR Legacy 169092 only.
 - Energy (UK factors): 19 kcal, from CoFID 2021 14-339 only.
+- Energy (EU labelling factors): 35.9 kcal (range 34.1–37.7), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.72 g, median of 2 tables, range 0.6–0.84 (USDA SR Legacy 169092: 0.84; CoFID 2021 14-339: 0.6).
 - Fat: 0.145 g, median of 2 tables, range 0.1–0.19 (USDA SR Legacy 169092: 0.19; CoFID 2021 14-339: 0.1).
 - Carbohydrate (by difference, without fibre): 7.26 g, from USDA SR Legacy 169092 only.
@@ -2001,6 +2076,7 @@ Records: USDA SR Legacy 171279 *Milk, human, mature, fluid*; CoFID 2021 12-536 *
 
 - Energy (US Atwater factors): 70 kcal, from USDA SR Legacy 171279 only.
 - Energy (UK factors): 69 kcal, from CoFID 2021 12-536 only.
+- Energy (EU labelling factors): 70.4 kcal (range 68.6–72.2), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.17 g, median of 2 tables, range 1.03–1.3 (USDA SR Legacy 171279: 1.03; CoFID 2021 12-536: 1.3).
 - Fat: 4.24 g, median of 2 tables, range 4.1–4.38 (USDA SR Legacy 171279: 4.38; CoFID 2021 12-536: 4.1).
 - Carbohydrate (by difference, without fibre): 6.89 g, from USDA SR Legacy 171279 only.
@@ -2025,6 +2101,7 @@ Records: USDA SR Legacy 170882 *Milk, sheep, fluid*; CoFID 2021 12-329 *Milk, sh
 
 - Energy (US Atwater factors): 108 kcal, from USDA SR Legacy 170882 only.
 - Energy (UK factors): 93 kcal, from CoFID 2021 12-329 only.
+- Energy (EU labelling factors): 102 kcal (range 95.2–108), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 5.69 g, median of 2 tables, range 5.4–5.98 (USDA SR Legacy 170882: 5.98; CoFID 2021 12-329: 5.4).
 - Fat: 6.4 g, median of 2 tables, range 5.8–7 (USDA SR Legacy 170882: 7; CoFID 2021 12-329: 5.8).
 - Carbohydrate (by difference, without fibre): 5.36 g, from USDA SR Legacy 170882 only.
@@ -2049,6 +2126,7 @@ Records: USDA SR Legacy 169251 *Mushrooms, white, raw*; CoFID 2021 13-505 *Mushr
 
 - Energy (US Atwater factors): 22 kcal, from USDA SR Legacy 169251 only.
 - Energy (UK factors): 7 kcal, from CoFID 2021 13-505 only.
+- Energy (EU labelling factors): 21.4 kcal (range 16.2–26.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.04 g, median of 2 tables, range 1–3.09 (USDA SR Legacy 169251: 3.09; CoFID 2021 13-505: 1). ⚠ values differ more than 2-fold.
 - Fat: 0.27 g, median of 2 tables, range 0.2–0.34 (USDA SR Legacy 169251: 0.34; CoFID 2021 13-505: 0.2).
 - Carbohydrate (by difference, without fibre): 2.26 g, from USDA SR Legacy 169251 only.
@@ -2075,6 +2153,7 @@ Records: USDA SR Legacy 168437 *Mushrooms, shiitake, cooked, without salt*; CoFI
 
 - Energy (US Atwater factors): 56 kcal, from USDA SR Legacy 168437 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 13-295 (borrowed from USDA SR Legacy (counted once), 55 kcal).
+- Energy (EU labelling factors): 61.6 kcal (range 61.6–61.6), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.56 g, from USDA SR Legacy 168437 only. Not used: CoFID 2021 13-295 (borrowed from USDA SR Legacy (counted once), 1.6 g).
 - Fat: 0.22 g, from USDA SR Legacy 168437 only. Not used: CoFID 2021 13-295 (borrowed from USDA SR Legacy (counted once), 0.2 g).
 - Carbohydrate (by difference, without fibre): 12.3 g, from USDA SR Legacy 168437 only.
@@ -2101,6 +2180,7 @@ Records: USDA SR Legacy 168436 *Mushrooms, shiitake, dried*; CoFID 2021 13-294 *
 
 - Energy (US Atwater factors): 296 kcal, from USDA SR Legacy 168436 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 13-294 (borrowed from USDA SR Legacy (counted once), 296 kcal).
+- Energy (EU labelling factors): 326 kcal (range 326–326), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 9.58 g, from USDA SR Legacy 168436 only. Not used: CoFID 2021 13-294 (borrowed from USDA SR Legacy (counted once), 9.6 g).
 - Fat: 0.99 g, from USDA SR Legacy 168436 only. Not used: CoFID 2021 13-294 (borrowed from USDA SR Legacy (counted once), 1 g).
 - Carbohydrate (by difference, without fibre): 63.9 g, from USDA SR Legacy 168436 only.
@@ -2125,6 +2205,7 @@ Records: USDA SR Legacy 169914 *Nectarines, raw*; CoFID 2021 14-380 *Nectarines,
 
 - Energy (US Atwater factors): 44 kcal, from USDA SR Legacy 169914 only.
 - Energy (UK factors): 43 kcal, from CoFID 2021 14-380 only.
+- Energy (EU labelling factors): 45.3 kcal (range 44.7–45.9), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.03 g, median of 2 tables, range 1–1.06 (USDA SR Legacy 169914: 1.06; CoFID 2021 14-380: 1).
 - Fat: 0.31 g, median of 2 tables, range 0.3–0.32 (USDA SR Legacy 169914: 0.32; CoFID 2021 14-380: 0.3).
 - Carbohydrate (by difference, without fibre): 8.85 g, from USDA SR Legacy 169914 only.
@@ -2149,6 +2230,7 @@ Records: USDA SR Legacy 169261 *Okra, cooked, boiled, drained, without salt*; Co
 
 - Energy (US Atwater factors): 22 kcal, from USDA SR Legacy 169261 only.
 - Energy (UK factors): 16 kcal, from CoFID 2021 13-652 only.
+- Energy (EU labelling factors): 22.8 kcal (range 22–23.6), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.83 g, median of 2 tables, range 1.8–1.87 (USDA SR Legacy 169261: 1.87; CoFID 2021 13-652: 1.8).
 - Fat: 0.205 g, median of 2 tables, range 0.2–0.21 (USDA SR Legacy 169261: 0.21; CoFID 2021 13-652: 0.2).
 - Carbohydrate (by difference, without fibre): 2.01 g, from USDA SR Legacy 169261 only.
@@ -2173,6 +2255,7 @@ Records: USDA SR Legacy 171413 *Oil, olive, salad or cooking*; CoFID 2021 17-038
 
 - Energy (US Atwater factors): 884 kcal, from USDA SR Legacy 171413 only.
 - Energy (UK factors): 899 kcal, from CoFID 2021 17-038 only.
+- Energy (EU labelling factors): 900 kcal (range 899–900), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0 g, from USDA SR Legacy 171413 only. Not used: CoFID 2021 17-038 (trace).
 - Fat: 100 g, median of 2 tables, range 99.9–100 (USDA SR Legacy 171413: 100; CoFID 2021 17-038: 99.9).
 - Carbohydrate (by difference, without fibre): 0 g, from USDA SR Legacy 171413 only.
@@ -2197,6 +2280,7 @@ Records: USDA SR Legacy 170000 *Onions, raw*; CoFID 2021 13-499 *Onions, raw*. M
 
 - Energy (US Atwater factors): 40 kcal, from USDA SR Legacy 170000 only.
 - Energy (UK factors): 35 kcal, from CoFID 2021 13-499 only.
+- Energy (EU labelling factors): 39.6 kcal (range 38.9–40.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.05 g, median of 2 tables, range 1–1.1 (USDA SR Legacy 170000: 1.1; CoFID 2021 13-499: 1).
 - Fat: 0.1 g, median of 2 tables, range 0.1–0.1 (USDA SR Legacy 170000: 0.1; CoFID 2021 13-499: 0.1).
 - Carbohydrate (by difference, without fibre): 7.64 g, from USDA SR Legacy 170000 only.
@@ -2221,6 +2305,7 @@ Records: USDA SR Legacy 170001 *Onions, cooked, boiled, drained, without salt*; 
 
 - Energy (US Atwater factors): 44 kcal, from USDA SR Legacy 170001 only.
 - Energy (UK factors): 25 kcal, from CoFID 2021 13-500 only.
+- Energy (EU labelling factors): 45 kcal (range 42.3–47.7), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.03 g, median of 2 tables, range 0.7–1.36 (USDA SR Legacy 170001: 1.36; CoFID 2021 13-500: 0.7).
 - Fat: 0.245 g, median of 2 tables, range 0.19–0.3 (USDA SR Legacy 170001: 0.19; CoFID 2021 13-500: 0.3).
 - Carbohydrate (by difference, without fibre): 8.75 g, from USDA SR Legacy 170001 only.
@@ -2245,6 +2330,7 @@ Records: USDA SR Legacy 169097 *Oranges, raw, all commercial varieties*; CoFID 2
 
 - Energy (US Atwater factors): 47 kcal, from USDA SR Legacy 169097 only.
 - Energy (UK factors): 36 kcal, from CoFID 2021 14-327 only.
+- Energy (EU labelling factors): 45.9 kcal (range 44.1–47.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.87 g, median of 2 tables, range 0.8–0.94 (USDA SR Legacy 169097: 0.94; CoFID 2021 14-327: 0.8).
 - Fat: 0.16 g, median of 2 tables, range 0.12–0.2 (USDA SR Legacy 169097: 0.12; CoFID 2021 14-327: 0.2).
 - Carbohydrate (by difference, without fibre): 9.35 g, from USDA SR Legacy 169097 only.
@@ -2269,6 +2355,7 @@ Records: USDA SR Legacy 169926 *Papayas, raw*; CoFID 2021 14-390 *Papaya, flesh 
 
 - Energy (US Atwater factors): 43 kcal, from USDA SR Legacy 169926 only.
 - Energy (UK factors): 44 kcal, from CoFID 2021 14-390 only.
+- Energy (EU labelling factors): 46.2 kcal (range 44.1–48.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.585 g, median of 2 tables, range 0.47–0.7 (USDA SR Legacy 169926: 0.47; CoFID 2021 14-390: 0.7).
 - Fat: 0.43 g, median of 2 tables, range 0.26–0.6 (USDA SR Legacy 169926: 0.26; CoFID 2021 14-390: 0.6). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 9.12 g, from USDA SR Legacy 169926 only.
@@ -2293,6 +2380,7 @@ Records: USDA SR Legacy 170848 *Cheese, parmesan, hard*; CoFID 2021 12-526 *Chee
 
 - Energy (US Atwater factors): 392 kcal, from USDA SR Legacy 170848 only.
 - Energy (UK factors): 415 kcal, from CoFID 2021 12-526 only.
+- Energy (EU labelling factors): 403 kcal (range 381–425), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 36 g, median of 2 tables, range 35.8–36.2 (USDA SR Legacy 170848: 35.8; CoFID 2021 12-526: 36.2).
 - Fat: 27.4 g, median of 2 tables, range 25–29.7 (USDA SR Legacy 170848: 25; CoFID 2021 12-526: 29.7).
 - Carbohydrate (by difference, without fibre): 3.22 g, from USDA SR Legacy 170848 only.
@@ -2317,6 +2405,7 @@ Records: USDA SR Legacy 170416 *Parsley, fresh*; CoFID 2021 13-844 *Parsley, fre
 
 - Energy (US Atwater factors): 36 kcal, from USDA SR Legacy 170416 only.
 - Energy (UK factors): 34 kcal, from CoFID 2021 13-844 only.
+- Energy (EU labelling factors): 40.1 kcal (range 37.7–42.4), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.98 g, median of 2 tables, range 2.97–3 (USDA SR Legacy 170416: 2.97; CoFID 2021 13-844: 3).
 - Fat: 1.04 g, median of 2 tables, range 0.79–1.3 (USDA SR Legacy 170416: 0.79; CoFID 2021 13-844: 1.3).
 - Carbohydrate (by difference, without fibre): 3.03 g, from USDA SR Legacy 170416 only.
@@ -2341,6 +2430,7 @@ Records: USDA SR Legacy 170009 *Parsnips, cooked, boiled, drained, without salt*
 
 - Energy (US Atwater factors): 71 kcal, from USDA SR Legacy 170009 only.
 - Energy (UK factors): 66 kcal, from CoFID 2021 13-631 only.
+- Energy (EU labelling factors): 69.4 kcal (range 66.3–72.4), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.26 g, median of 2 tables, range 1.2–1.32 (USDA SR Legacy 170009: 1.32; CoFID 2021 13-631: 1.2).
 - Fat: 0.5 g, median of 2 tables, range 0.3–0.7 (USDA SR Legacy 170009: 0.3; CoFID 2021 13-631: 0.7). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 13.4 g, from USDA SR Legacy 170009 only.
@@ -2365,6 +2455,7 @@ Records: USDA SR Legacy 170417 *Parsnips, raw*; CoFID 2021 13-312 *Parsnip, raw*
 
 - Energy (US Atwater factors): 75 kcal, from USDA SR Legacy 170417 only.
 - Energy (UK factors): 64 kcal, from CoFID 2021 13-312 only.
+- Energy (EU labelling factors): 74.3 kcal (range 69.3–79.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.5 g, median of 2 tables, range 1.2–1.8 (USDA SR Legacy 170417: 1.2; CoFID 2021 13-312: 1.8).
 - Fat: 0.7 g, median of 2 tables, range 0.3–1.1 (USDA SR Legacy 170417: 0.3; CoFID 2021 13-312: 1.1). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 13.1 g, from USDA SR Legacy 170417 only.
@@ -2389,6 +2480,7 @@ Records: USDA SR Legacy 169930 *Peaches, canned, juice pack, solids and liquids*
 
 - Energy (US Atwater factors): 44 kcal, from USDA SR Legacy 169930 only.
 - Energy (UK factors): 39 kcal, from CoFID 2021 14-188 only.
+- Energy (EU labelling factors): 46.4 kcal (range 46.4–46.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.615 g, median of 2 tables, range 0.6–0.63 (USDA SR Legacy 169930: 0.63; CoFID 2021 14-188: 0.6).
 - Fat: 0.03 g, from USDA SR Legacy 169930 only. Not used: CoFID 2021 14-188 (trace).
 - Carbohydrate (by difference, without fibre): 10.3 g, from USDA SR Legacy 169930 only.
@@ -2413,6 +2505,7 @@ Records: USDA SR Legacy 172430 *Peanuts, all types, raw*; CoFID 2021 14-877 *Pea
 
 - Energy (US Atwater factors): 567 kcal, from USDA SR Legacy 172430 only.
 - Energy (UK factors): 564 kcal, from CoFID 2021 14-877 only.
+- Energy (EU labelling factors): 579 kcal (range 565–594), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 25.8 g, median of 2 tables, range 25.8–25.8 (USDA SR Legacy 172430: 25.8; CoFID 2021 14-877: 25.8).
 - Fat: 47.6 g, median of 2 tables, range 46–49.2 (USDA SR Legacy 172430: 49.2; CoFID 2021 14-877: 46).
 - Carbohydrate (by difference, without fibre): 7.63 g, from USDA SR Legacy 172430 only.
@@ -2437,6 +2530,7 @@ Records: USDA SR Legacy 170285 *Barley, pearled, cooked*; CoFID 2021 11-003 *Bar
 
 - Energy (US Atwater factors): 123 kcal, from USDA SR Legacy 170285 only.
 - Energy (UK factors): 120 kcal, from CoFID 2021 11-003 only.
+- Energy (EU labelling factors): 120 kcal (range 118–121), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.48 g, median of 2 tables, range 2.26–2.7 (USDA SR Legacy 170285: 2.26; CoFID 2021 11-003: 2.7).
 - Fat: 0.52 g, median of 2 tables, range 0.44–0.6 (USDA SR Legacy 170285: 0.44; CoFID 2021 11-003: 0.6).
 - Carbohydrate (by difference, without fibre): 24.4 g, from USDA SR Legacy 170285 only.
@@ -2461,6 +2555,7 @@ Records: USDA SR Legacy 167776 *Pears, raw, bartlett (Includes foods for USDA's 
 
 - Energy (US Atwater factors): 63 kcal, from USDA SR Legacy 167776 only.
 - Energy (UK factors): 43 kcal, from CoFID 2021 14-321 only.
+- Energy (EU labelling factors): 56 kcal (range 55.1–56.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.345 g, median of 2 tables, range 0.3–0.39 (USDA SR Legacy 167776: 0.39; CoFID 2021 14-321: 0.3).
 - Fat: 0.13 g, median of 2 tables, range 0.1–0.16 (USDA SR Legacy 167776: 0.16; CoFID 2021 14-321: 0.1).
 - Carbohydrate (by difference, without fibre): 11.9 g, from USDA SR Legacy 167776 only.
@@ -2485,6 +2580,7 @@ Records: USDA SR Legacy 169118 *Pears, raw*; CoFID 2021 14-365 *Pears, average, 
 
 - Energy (US Atwater factors): 57 kcal, from USDA SR Legacy 169118 only.
 - Energy (UK factors): 44 kcal, from CoFID 2021 14-365 only.
+- Energy (EU labelling factors): 56.7 kcal (range 56–57.4), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.33 g, median of 2 tables, range 0.3–0.36 (USDA SR Legacy 169118: 0.36; CoFID 2021 14-365: 0.3).
 - Fat: 0.12 g, median of 2 tables, range 0.1–0.14 (USDA SR Legacy 169118: 0.14; CoFID 2021 14-365: 0.1).
 - Carbohydrate (by difference, without fibre): 12.1 g, from USDA SR Legacy 169118 only.
@@ -2509,6 +2605,7 @@ Records: USDA SR Legacy 170182 *Nuts, pecans*; CoFID 2021 14-837 *Pecan nuts, ke
 
 - Energy (US Atwater factors): 691 kcal, from USDA SR Legacy 170182 only.
 - Energy (UK factors): 689 kcal, from CoFID 2021 14-837 only.
+- Energy (EU labelling factors): 712 kcal (range 704–721), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 9.19 g, median of 2 tables, range 9.17–9.2 (USDA SR Legacy 170182: 9.17; CoFID 2021 14-837: 9.2).
 - Fat: 71 g, median of 2 tables, range 70.1–72 (USDA SR Legacy 170182: 72; CoFID 2021 14-837: 70.1).
 - Carbohydrate (by difference, without fibre): 4.26 g, from USDA SR Legacy 170182 only.
@@ -2533,6 +2630,7 @@ Records: USDA SR Legacy 170428 *Peppers, sweet, green, cooked, boiled, drained, 
 
 - Energy (US Atwater factors): 28 kcal, from USDA SR Legacy 170428 only.
 - Energy (UK factors): 18 kcal, from CoFID 2021 13-548 only.
+- Energy (EU labelling factors): 31.4 kcal (range 29.9–32.9), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.96 g, median of 2 tables, range 0.92–1 (USDA SR Legacy 170428: 0.92; CoFID 2021 13-548: 1).
 - Fat: 0.35 g, median of 2 tables, range 0.2–0.5 (USDA SR Legacy 170428: 0.2; CoFID 2021 13-548: 0.5). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 5.5 g, from USDA SR Legacy 170428 only.
@@ -2557,6 +2655,7 @@ Records: USDA SR Legacy 170427 *Peppers, sweet, green, raw*; CoFID 2021 13-318 *
 
 - Energy (US Atwater factors): 20 kcal, from USDA SR Legacy 170427 only.
 - Energy (UK factors): 15 kcal, from CoFID 2021 13-318 only.
+- Energy (EU labelling factors): 20.6 kcal (range 19.9–21.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.83 g, median of 2 tables, range 0.8–0.86 (USDA SR Legacy 170427: 0.86; CoFID 2021 13-318: 0.8).
 - Fat: 0.235 g, median of 2 tables, range 0.17–0.3 (USDA SR Legacy 170427: 0.17; CoFID 2021 13-318: 0.3).
 - Carbohydrate (by difference, without fibre): 2.94 g, from USDA SR Legacy 170427 only.
@@ -2581,6 +2680,7 @@ Records: USDA SR Legacy 170110 *Peppers, sweet, red, cooked, boiled, drained, wi
 
 - Energy (US Atwater factors): 28 kcal, from USDA SR Legacy 170110 only.
 - Energy (UK factors): 17 kcal, from CoFID 2021 13-525 only.
+- Energy (EU labelling factors): 30.4 kcal (range 28.5–32.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.86 g, median of 2 tables, range 0.8–0.92 (USDA SR Legacy 170110: 0.92; CoFID 2021 13-525: 0.8).
 - Fat: 0.15 g, median of 2 tables, range 0.1–0.2 (USDA SR Legacy 170110: 0.2; CoFID 2021 13-525: 0.1).
 - Carbohydrate (by difference, without fibre): 5.5 g, from USDA SR Legacy 170110 only.
@@ -2605,6 +2705,7 @@ Records: USDA SR Legacy 169383 *Peppers, sweet, yellow, raw*; CoFID 2021 13-526 
 
 - Energy (US Atwater factors): 27 kcal, from USDA SR Legacy 169383 only.
 - Energy (UK factors): 23 kcal, from CoFID 2021 13-526 only.
+- Energy (EU labelling factors): 30.2 kcal (range 28.5–32), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.9 g, median of 2 tables, range 0.8–1 (USDA SR Legacy 169383: 1; CoFID 2021 13-526: 0.8).
 - Fat: 0.205 g, median of 2 tables, range 0.2–0.21 (USDA SR Legacy 169383: 0.21; CoFID 2021 13-526: 0.2).
 - Carbohydrate (by difference, without fibre): 5.42 g, from USDA SR Legacy 169383 only.
@@ -2629,6 +2730,7 @@ Records: USDA SR Legacy 169126 *Pineapple, canned, juice pack, solids and liquid
 
 - Energy (US Atwater factors): 60 kcal, from USDA SR Legacy 169126 only.
 - Energy (UK factors): 47 kcal, from CoFID 2021 14-211 only.
+- Energy (EU labelling factors): 63.4 kcal (range 63.1–63.6), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.36 g, median of 2 tables, range 0.3–0.42 (USDA SR Legacy 169126: 0.42; CoFID 2021 14-211: 0.3).
 - Fat: 0.08 g, from USDA SR Legacy 169126 only. Not used: CoFID 2021 14-211 (trace).
 - Carbohydrate (by difference, without fibre): 14.9 g, from USDA SR Legacy 169126 only.
@@ -2653,6 +2755,7 @@ Records: USDA SR Legacy 175200 *Beans, pinto, mature seeds, cooked, boiled, with
 
 - Energy (US Atwater factors): 143 kcal, from USDA SR Legacy 175200 only.
 - Energy (UK factors): 137 kcal, from CoFID 2021 13-107 only.
+- Energy (EU labelling factors): 129 kcal (range 128–129), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 8.96 g, median of 2 tables, range 8.9–9.01 (USDA SR Legacy 175200: 9.01; CoFID 2021 13-107: 8.9).
 - Fat: 0.675 g, median of 2 tables, range 0.65–0.7 (USDA SR Legacy 175200: 0.65; CoFID 2021 13-107: 0.7).
 - Carbohydrate (by difference, without fibre): 17.2 g, from USDA SR Legacy 175200 only.
@@ -2677,6 +2780,7 @@ Records: USDA SR Legacy 169949 *Plums, raw*; CoFID 2021 14-372 *Plums, dessert, 
 
 - Energy (US Atwater factors): 46 kcal, from USDA SR Legacy 169949 only.
 - Energy (UK factors): 41 kcal, from CoFID 2021 14-372 only.
+- Energy (EU labelling factors): 48 kcal (range 47.6–48.4), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.65 g, median of 2 tables, range 0.6–0.7 (USDA SR Legacy 169949: 0.7; CoFID 2021 14-372: 0.6).
 - Fat: 0.29 g, median of 2 tables, range 0.28–0.3 (USDA SR Legacy 169949: 0.28; CoFID 2021 14-372: 0.3).
 - Carbohydrate (by difference, without fibre): 10 g, from USDA SR Legacy 169949 only.
@@ -2701,6 +2805,7 @@ Records: USDA SR Legacy 173904 *Cereals, oats, regular and quick, not fortified,
 
 - Energy (US Atwater factors): 379 kcal, from USDA SR Legacy 173904 only.
 - Energy (UK factors): 381 kcal, from CoFID 2021 11-788 only.
+- Energy (EU labelling factors): 362 kcal (range 348–376), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 12 g, median of 2 tables, range 10.9–13.2 (USDA SR Legacy 173904: 13.2; CoFID 2021 11-788: 10.9).
 - Fat: 7.31 g, median of 2 tables, range 6.52–8.1 (USDA SR Legacy 173904: 6.52; CoFID 2021 11-788: 8.1).
 - Carbohydrate (by difference, without fibre): 57.6 g, from USDA SR Legacy 173904 only.
@@ -2725,6 +2830,7 @@ Records: USDA SR Legacy 170093 *Potatoes, baked, flesh and skin, without salt*; 
 
 - Energy (US Atwater factors): 93 kcal, from USDA SR Legacy 170093 only.
 - Energy (UK factors): 97 kcal, from CoFID 2021 13-491 only.
+- Energy (EU labelling factors): 92.1 kcal (range 91.4–92.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.5 g, median of 2 tables, range 2.5–2.5 (USDA SR Legacy 170093: 2.5; CoFID 2021 13-491: 2.5).
 - Fat: 0.165 g, median of 2 tables, range 0.13–0.2 (USDA SR Legacy 170093: 0.13; CoFID 2021 13-491: 0.2).
 - Carbohydrate (by difference, without fibre): 18.9 g, from USDA SR Legacy 170093 only.
@@ -2749,6 +2855,7 @@ Records: USDA SR Legacy 170556 *Seeds, pumpkin and squash seed kernels, dried*; 
 
 - Energy (US Atwater factors): 559 kcal, from USDA SR Legacy 170556 only.
 - Energy (UK factors): 565 kcal, from CoFID 2021 14-842 only.
+- Energy (EU labelling factors): 566 kcal (range 539–593), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 27.3 g, median of 2 tables, range 24.4–30.2 (USDA SR Legacy 170556: 30.2; CoFID 2021 14-842: 24.4).
 - Fat: 47.3 g, median of 2 tables, range 45.6–49 (USDA SR Legacy 170556: 49; CoFID 2021 14-842: 45.6).
 - Carbohydrate (by difference, without fibre): 4.71 g, from USDA SR Legacy 170556 only.
@@ -2773,6 +2880,7 @@ Records: USDA SR Legacy 168449 *Pumpkin, cooked, boiled, drained, without salt*;
 
 - Energy (US Atwater factors): 20 kcal, from USDA SR Legacy 168449 only.
 - Energy (UK factors): 12 kcal, from CoFID 2021 13-549 only.
+- Energy (EU labelling factors): 21.7 kcal (range 20.4–23), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.66 g, median of 2 tables, range 0.6–0.72 (USDA SR Legacy 168449: 0.72; CoFID 2021 13-549: 0.6).
 - Fat: 0.185 g, median of 2 tables, range 0.07–0.3 (USDA SR Legacy 168449: 0.07; CoFID 2021 13-549: 0.3). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 3.8 g, from USDA SR Legacy 168449 only.
@@ -2797,6 +2905,7 @@ Records: USDA SR Legacy 168448 *Pumpkin, raw*; CoFID 2021 13-326 *Pumpkin, flesh
 
 - Energy (US Atwater factors): 26 kcal, from USDA SR Legacy 168448 only.
 - Energy (UK factors): 13 kcal, from CoFID 2021 13-326 only.
+- Energy (EU labelling factors): 29.8 kcal (range 28.7–30.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.85 g, median of 2 tables, range 0.7–1 (USDA SR Legacy 168448: 1; CoFID 2021 13-326: 0.7).
 - Fat: 0.15 g, median of 2 tables, range 0.1–0.2 (USDA SR Legacy 168448: 0.1; CoFID 2021 13-326: 0.2).
 - Carbohydrate (by difference, without fibre): 6 g, from USDA SR Legacy 168448 only.
@@ -2821,6 +2930,7 @@ Records: USDA SR Legacy 168163 *Quinces, raw*; CoFID 2021 14-241 *Quinces, flesh
 
 - Energy (US Atwater factors): 57 kcal, from USDA SR Legacy 168163 only.
 - Energy (UK factors): 26 kcal, from CoFID 2021 14-241 only.
+- Energy (EU labelling factors): 59.7 kcal (range 59.5–59.9), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.35 g, median of 2 tables, range 0.3–0.4 (USDA SR Legacy 168163: 0.4; CoFID 2021 14-241: 0.3).
 - Fat: 0.1 g, median of 2 tables, range 0.1–0.1 (USDA SR Legacy 168163: 0.1; CoFID 2021 14-241: 0.1).
 - Carbohydrate (by difference, without fibre): 13.4 g, from USDA SR Legacy 168163 only.
@@ -2845,6 +2955,7 @@ Records: USDA SR Legacy 168165 *Raisins, dark, seedless (Includes foods for USDA
 
 - Energy (US Atwater factors): 299 kcal, from USDA SR Legacy 168165 only.
 - Energy (UK factors): 256 kcal, from CoFID 2021 14-393 only.
+- Energy (EU labelling factors): 325 kcal (range 319–330), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 3.15 g, median of 2 tables, range 3–3.3 (USDA SR Legacy 168165: 3.3; CoFID 2021 14-393: 3).
 - Fat: 0.625 g, median of 2 tables, range 0.25–1 (USDA SR Legacy 168165: 0.25; CoFID 2021 14-393: 1). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 74.8 g, from USDA SR Legacy 168165 only.
@@ -2869,6 +2980,7 @@ Records: USDA SR Legacy 172336 *Oil, canola*; CoFID 2021 17-041 *Oil, rapeseed*.
 
 - Energy (US Atwater factors): 884 kcal, from USDA SR Legacy 172336 only.
 - Energy (UK factors): 899 kcal, from CoFID 2021 17-041 only.
+- Energy (EU labelling factors): 900 kcal (range 899–900), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0 g, from USDA SR Legacy 172336 only. Not used: CoFID 2021 17-041 (trace).
 - Fat: 100 g, median of 2 tables, range 99.9–100 (USDA SR Legacy 172336: 100; CoFID 2021 17-041: 99.9).
 - Carbohydrate (by difference, without fibre): 0 g, from USDA SR Legacy 172336 only.
@@ -2893,6 +3005,7 @@ Records: USDA SR Legacy 167755 *Raspberries, raw*; CoFID 2021 14-375 *Raspberrie
 
 - Energy (US Atwater factors): 52 kcal, from USDA SR Legacy 167755 only.
 - Energy (UK factors): 25 kcal, from CoFID 2021 14-375 only.
+- Energy (EU labelling factors): 40.2 kcal (range 35.1–45.4), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1 g, median of 2 tables, range 0.8–1.2 (USDA SR Legacy 167755: 1.2; CoFID 2021 14-375: 0.8).
 - Fat: 0.475 g, median of 2 tables, range 0.3–0.65 (USDA SR Legacy 167755: 0.65; CoFID 2021 14-375: 0.3). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 5.44 g, from USDA SR Legacy 167755 only.
@@ -2917,6 +3030,7 @@ Records: USDA SR Legacy 169977 *Cabbage, red, raw*; CoFID 2021 13-190 *Cabbage, 
 
 - Energy (US Atwater factors): 31 kcal, from USDA SR Legacy 169977 only.
 - Energy (UK factors): 21 kcal, from CoFID 2021 13-190 only.
+- Energy (EU labelling factors): 33.2 kcal (range 31.1–35.3), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.26 g, median of 2 tables, range 1.1–1.43 (USDA SR Legacy 169977: 1.43; CoFID 2021 13-190: 1.1).
 - Fat: 0.23 g, median of 2 tables, range 0.16–0.3 (USDA SR Legacy 169977: 0.16; CoFID 2021 13-190: 0.3).
 - Carbohydrate (by difference, without fibre): 5.27 g, from USDA SR Legacy 169977 only.
@@ -2941,6 +3055,7 @@ Records: USDA SR Legacy 175194 *Beans, kidney, red, mature seeds, cooked, boiled
 
 - Energy (US Atwater factors): 127 kcal, from USDA SR Legacy 175194 only.
 - Energy (UK factors): 100 kcal, from CoFID 2021 13-659 only.
+- Energy (EU labelling factors): 121 kcal (range 115–127), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 8.63 g, median of 2 tables, range 8.6–8.67 (USDA SR Legacy 175194: 8.67; CoFID 2021 13-659: 8.6).
 - Fat: 0.75 g, median of 2 tables, range 0.5–1 (USDA SR Legacy 175194: 0.5; CoFID 2021 13-659: 1).
 - Carbohydrate (by difference, without fibre): 15.4 g, from USDA SR Legacy 175194 only.
@@ -2965,6 +3080,7 @@ Records: USDA SR Legacy 174284 *Lentils, pink or red, raw*; CoFID 2021 13-657 *L
 
 - Energy (US Atwater factors): 358 kcal, from USDA SR Legacy 174284 only.
 - Energy (UK factors): 311 kcal, from CoFID 2021 13-657 only.
+- Energy (EU labelling factors): 354 kcal (range 343–366), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 24.8 g, median of 2 tables, range 23.9–25.6 (USDA SR Legacy 174284: 23.9; CoFID 2021 13-657: 25.6).
 - Fat: 1.99 g, median of 2 tables, range 1.8–2.17 (USDA SR Legacy 174284: 2.17; CoFID 2021 13-657: 1.8).
 - Carbohydrate (by difference, without fibre): 52.3 g, from USDA SR Legacy 174284 only.
@@ -2989,6 +3105,7 @@ Records: USDA SR Legacy 170108 *Peppers, sweet, red, raw*; CoFID 2021 13-524 *Pe
 
 - Energy (US Atwater factors): 26 kcal, from USDA SR Legacy 170108 only.
 - Energy (UK factors): 21 kcal, from CoFID 2021 13-524 only.
+- Energy (EU labelling factors): 25.9 kcal (range 24.9–26.8), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.895 g, median of 2 tables, range 0.8–0.99 (USDA SR Legacy 170108: 0.99; CoFID 2021 13-524: 0.8).
 - Fat: 0.25 g, median of 2 tables, range 0.2–0.3 (USDA SR Legacy 170108: 0.3; CoFID 2021 13-524: 0.2).
 - Carbohydrate (by difference, without fibre): 3.93 g, from USDA SR Legacy 170108 only.
@@ -3013,6 +3130,7 @@ Records: USDA SR Legacy 175168 *Fish, salmon, Atlantic, farmed, cooked, dry heat
 
 - Energy (US Atwater factors): 206 kcal, from USDA SR Legacy 175168 only.
 - Energy (UK factors): 232 kcal, from CoFID 2021 16-359 only.
+- Energy (EU labelling factors): 216 kcal (range 200–232), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 23.6 g, median of 2 tables, range 22.1–25.2 (USDA SR Legacy 175168: 22.1; CoFID 2021 16-359: 25.2).
 - Fat: 13.5 g, median of 2 tables, range 12.3–14.6 (USDA SR Legacy 175168: 12.3; CoFID 2021 16-359: 14.6).
 - Carbohydrate (by difference, without fibre): 0 g, from USDA SR Legacy 175168 only.
@@ -3037,6 +3155,7 @@ Records: USDA SR Legacy 167759 *Sapodilla, raw*; CoFID 2021 14-256 *Sapodilla, f
 
 - Energy (US Atwater factors): 83 kcal, from USDA SR Legacy 167759 only.
 - Energy (UK factors): 69 kcal, from CoFID 2021 14-256 only.
+- Energy (EU labelling factors): 80.3 kcal (range 79.1–81.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.52 g, median of 2 tables, range 0.44–0.6 (USDA SR Legacy 167759: 0.44; CoFID 2021 14-256: 0.6).
 - Fat: 1 g, median of 2 tables, range 0.9–1.1 (USDA SR Legacy 167759: 1.1; CoFID 2021 14-256: 0.9).
 - Carbohydrate (by difference, without fibre): 14.7 g, from USDA SR Legacy 167759 only.
@@ -3061,6 +3180,7 @@ Records: USDA SR Legacy 172205 *Milk, reduced fat, fluid, 2% milkfat, without ad
 
 - Energy (US Atwater factors): 50 kcal, from USDA SR Legacy 172205 only.
 - Energy (UK factors): 46 kcal, from CoFID 2021 12-313 only.
+- Energy (EU labelling factors): 49.4 kcal (range 47.7–51), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 3.4 g, median of 2 tables, range 3.3–3.5 (USDA SR Legacy 172205: 3.3; CoFID 2021 12-313: 3.5).
 - Fat: 1.84 g, median of 2 tables, range 1.7–1.98 (USDA SR Legacy 172205: 1.98; CoFID 2021 12-313: 1.7).
 - Carbohydrate (by difference, without fibre): 4.8 g, from USDA SR Legacy 172205 only.
@@ -3085,6 +3205,7 @@ Records: USDA SR Legacy 170150 *Seeds, sesame seeds, whole, dried*; CoFID 2021 1
 
 - Energy (US Atwater factors): 573 kcal, from USDA SR Legacy 170150 only.
 - Energy (UK factors): 598 kcal, from CoFID 2021 14-844 only.
+- Energy (EU labelling factors): 627 kcal (range 588–665), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 18 g, median of 2 tables, range 17.7–18.2 (USDA SR Legacy 170150: 17.7; CoFID 2021 14-844: 18.2).
 - Fat: 53.8 g, median of 2 tables, range 49.7–58 (USDA SR Legacy 170150: 49.7; CoFID 2021 14-844: 58).
 - Carbohydrate (by difference, without fibre): 11.7 g, from USDA SR Legacy 170150 only.
@@ -3109,6 +3230,7 @@ Records: USDA SR Legacy 173432 *Milk, nonfat, fluid, without added vitamin A and
 
 - Energy (US Atwater factors): 35 kcal, from USDA SR Legacy 173432 only.
 - Energy (UK factors): 34 kcal, from CoFID 2021 12-307 only.
+- Energy (EU labelling factors): 35.3 kcal (range 34.5–36.1), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 3.44 g, median of 2 tables, range 3.37–3.5 (USDA SR Legacy 173432: 3.37; CoFID 2021 12-307: 3.5).
 - Fat: 0.24 g, median of 2 tables, range 0.18–0.3 (USDA SR Legacy 173432: 0.18; CoFID 2021 12-307: 0.3).
 - Carbohydrate (by difference, without fibre): 4.86 g, from USDA SR Legacy 173432 only.
@@ -3133,6 +3255,7 @@ Records: USDA SR Legacy 174270 *Soybeans, mature seeds, raw*; CoFID 2021 13-115 
 
 - Energy (US Atwater factors): 446 kcal, from USDA SR Legacy 174270 only.
 - Energy (UK factors): 370 kcal, from CoFID 2021 13-115 only.
+- Energy (EU labelling factors): 420 kcal (range 413–427), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 36.2 g, median of 2 tables, range 35.9–36.5 (USDA SR Legacy 174270: 36.5; CoFID 2021 13-115: 35.9).
 - Fat: 19.3 g, median of 2 tables, range 18.6–19.9 (USDA SR Legacy 174270: 19.9; CoFID 2021 13-115: 18.6).
 - Carbohydrate (by difference, without fibre): 20.9 g, from USDA SR Legacy 174270 only.
@@ -3157,6 +3280,7 @@ Records: USDA SR Legacy 172429 *Peas, split, mature seeds, cooked, boiled, witho
 
 - Energy (US Atwater factors): 118 kcal, from USDA SR Legacy 172429 only.
 - Energy (UK factors): 126 kcal, from CoFID 2021 13-142 only.
+- Energy (EU labelling factors): 107 kcal (range 105–109), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 8.32 g, median of 2 tables, range 8.3–8.34 (USDA SR Legacy 172429: 8.34; CoFID 2021 13-142: 8.3).
 - Fat: 0.645 g, median of 2 tables, range 0.39–0.9 (USDA SR Legacy 172429: 0.39; CoFID 2021 13-142: 0.9). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 12.8 g, from USDA SR Legacy 172429 only.
@@ -3181,6 +3305,7 @@ Records: USDA SR Legacy 167762 *Strawberries, raw*; CoFID 2021 14-324 *Strawberr
 
 - Energy (US Atwater factors): 32 kcal, from USDA SR Legacy 167762 only.
 - Energy (UK factors): 30 kcal, from CoFID 2021 14-324 only.
+- Energy (EU labelling factors): 34.7 kcal (range 31.8–37.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.635 g, median of 2 tables, range 0.6–0.67 (USDA SR Legacy 167762: 0.67; CoFID 2021 14-324: 0.6).
 - Fat: 0.4 g, median of 2 tables, range 0.3–0.5 (USDA SR Legacy 167762: 0.3; CoFID 2021 14-324: 0.5).
 - Carbohydrate (by difference, without fibre): 5.68 g, from USDA SR Legacy 167762 only.
@@ -3205,6 +3330,7 @@ Records: USDA SR Legacy 170562 *Seeds, sunflower seed kernels, dried*; CoFID 202
 
 - Energy (US Atwater factors): 584 kcal, from USDA SR Legacy 170562 only.
 - Energy (UK factors): 576 kcal, from CoFID 2021 14-845 only.
+- Energy (EU labelling factors): 589 kcal (range 570–609), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 20.3 g, median of 2 tables, range 19.8–20.8 (USDA SR Legacy 170562: 20.8; CoFID 2021 14-845: 19.8).
 - Fat: 49.5 g, median of 2 tables, range 47.5–51.5 (USDA SR Legacy 170562: 51.5; CoFID 2021 14-845: 47.5).
 - Carbohydrate (by difference, without fibre): 11.4 g, from USDA SR Legacy 170562 only.
@@ -3229,6 +3355,7 @@ Records: USDA SR Legacy 168455 *Rutabagas, cooked, boiled, drained, without salt
 
 - Energy (US Atwater factors): 30 kcal, from USDA SR Legacy 168455 only.
 - Energy (UK factors): 26 kcal, from CoFID 2021 13-650 only.
+- Energy (EU labelling factors): 29.5 kcal (range 27.5–31.5), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.815 g, median of 2 tables, range 0.7–0.93 (USDA SR Legacy 168455: 0.93; CoFID 2021 13-650: 0.7).
 - Fat: 0.14 g, median of 2 tables, range 0.1–0.18 (USDA SR Legacy 168455: 0.18; CoFID 2021 13-650: 0.1).
 - Carbohydrate (by difference, without fibre): 5.04 g, from USDA SR Legacy 168455 only.
@@ -3253,6 +3380,7 @@ Records: USDA SR Legacy 168454 *Rutabagas, raw*; CoFID 2021 13-359 *Swede, flesh
 
 - Energy (US Atwater factors): 37 kcal, from USDA SR Legacy 168454 only.
 - Energy (UK factors): 24 kcal, from CoFID 2021 13-359 only.
+- Energy (EU labelling factors): 35.5 kcal (range 34.1–36.9), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.89 g, median of 2 tables, range 0.7–1.08 (USDA SR Legacy 168454: 1.08; CoFID 2021 13-359: 0.7).
 - Fat: 0.23 g, median of 2 tables, range 0.16–0.3 (USDA SR Legacy 168454: 0.16; CoFID 2021 13-359: 0.3).
 - Carbohydrate (by difference, without fibre): 6.32 g, from USDA SR Legacy 168454 only.
@@ -3279,6 +3407,7 @@ Records: USDA SR Legacy 168488 *Taro leaves, cooked, steamed, without salt*; CoF
 
 - Energy (US Atwater factors): 24 kcal, from USDA SR Legacy 168488 only.
 - Energy (UK factors): no value to use. Not used: CoFID 2021 13-381 (borrowed from USDA SR Legacy (counted once), 19 kcal).
+- Energy (EU labelling factors): 26.6 kcal (range 26.6–26.6), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.72 g, from USDA SR Legacy 168488 only. Not used: CoFID 2021 13-381 (borrowed from USDA SR Legacy (counted once), 2.4 g).
 - Fat: 0.41 g, from USDA SR Legacy 168488 only. Not used: CoFID 2021 13-381 (borrowed from USDA SR Legacy (counted once), 0.5 g).
 - Carbohydrate (by difference, without fibre): 2.02 g, from USDA SR Legacy 168488 only.
@@ -3303,6 +3432,7 @@ Records: USDA SR Legacy 168487 *Taro leaves, raw*; CoFID 2021 13-380 *Taro leave
 
 - Energy (US Atwater factors): 42 kcal, from USDA SR Legacy 168487 only.
 - Energy (UK factors): 35 kcal, from CoFID 2021 13-380 only.
+- Energy (EU labelling factors): 45.5 kcal (range 43.7–47.4), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 4.69 g, median of 2 tables, range 4.4–4.98 (USDA SR Legacy 168487: 4.98; CoFID 2021 13-380: 4.4).
 - Fat: 0.82 g, median of 2 tables, range 0.74–0.9 (USDA SR Legacy 168487: 0.74; CoFID 2021 13-380: 0.9).
 - Carbohydrate (by difference, without fibre): 3 g, from USDA SR Legacy 168487 only.
@@ -3327,6 +3457,7 @@ Records: USDA SR Legacy 170058 *Turnips, cooked, boiled, drained, without salt*;
 
 - Energy (US Atwater factors): 22 kcal, from USDA SR Legacy 170058 only.
 - Energy (UK factors): 12 kcal, from CoFID 2021 13-391 only.
+- Energy (EU labelling factors): 20.1 kcal (range 19.4–20.9), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 0.655 g, median of 2 tables, range 0.6–0.71 (USDA SR Legacy 170058: 0.71; CoFID 2021 13-391: 0.6).
 - Fat: 0.14 g, median of 2 tables, range 0.08–0.2 (USDA SR Legacy 170058: 0.08; CoFID 2021 13-391: 0.2). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 3.06 g, from USDA SR Legacy 170058 only.
@@ -3351,6 +3482,7 @@ Records: USDA SR Legacy 170187 *Nuts, walnuts, english*; CoFID 2021 14-879 *Waln
 
 - Energy (US Atwater factors): 654 kcal, from USDA SR Legacy 170187 only.
 - Energy (UK factors): 688 kcal, from CoFID 2021 14-879 only.
+- Energy (EU labelling factors): 703 kcal (range 687–719), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 15 g, median of 2 tables, range 14.7–15.2 (USDA SR Legacy 170187: 15.2; CoFID 2021 14-879: 14.7).
 - Fat: 66.9 g, median of 2 tables, range 65.2–68.5 (USDA SR Legacy 170187: 65.2; CoFID 2021 14-879: 68.5).
 - Carbohydrate (by difference, without fibre): 7.01 g, from USDA SR Legacy 170187 only.
@@ -3375,6 +3507,7 @@ Records: USDA SR Legacy 170068 *Watercress, raw*; CoFID 2021 13-669 *Watercress,
 
 - Energy (US Atwater factors): 11 kcal, from USDA SR Legacy 170068 only.
 - Energy (UK factors): 10 kcal, from CoFID 2021 13-669 only.
+- Energy (EU labelling factors): 15.4 kcal (range 12.7–18.1), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.1 g, median of 2 tables, range 1.9–2.3 (USDA SR Legacy 170068: 2.3; CoFID 2021 13-669: 1.9).
 - Fat: 0.2 g, median of 2 tables, range 0.1–0.3 (USDA SR Legacy 170068: 0.1; CoFID 2021 13-669: 0.3). ⚠ values differ more than 2-fold.
 - Carbohydrate (by difference, without fibre): 0.79 g, from USDA SR Legacy 170068 only.
@@ -3399,6 +3532,7 @@ Records: USDA SR Legacy 169757 *Rice, white, long-grain, regular, unenriched, co
 
 - Energy (US Atwater factors): 130 kcal, from USDA SR Legacy 169757 only.
 - Energy (UK factors): 131 kcal, from CoFID 2021 11-862 only.
+- Energy (EU labelling factors): 126 kcal (range 125–127), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 2.75 g, median of 2 tables, range 2.69–2.8 (USDA SR Legacy 169757: 2.69; CoFID 2021 11-862: 2.8).
 - Fat: 0.34 g, median of 2 tables, range 0.28–0.4 (USDA SR Legacy 169757: 0.28; CoFID 2021 11-862: 0.4).
 - Carbohydrate (by difference, without fibre): 27.8 g, from USDA SR Legacy 169757 only.
@@ -3423,6 +3557,7 @@ Records: USDA SR Legacy 172217 *Milk, whole, 3.25% milkfat, without added vitami
 
 - Energy (US Atwater factors): 61 kcal, from USDA SR Legacy 172217 only.
 - Energy (UK factors): 63 kcal, from CoFID 2021 12-596 only.
+- Energy (EU labelling factors): 63.1 kcal (range 61.1–65.1), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 3.27 g, median of 2 tables, range 3.15–3.4 (USDA SR Legacy 172217: 3.15; CoFID 2021 12-596: 3.4).
 - Fat: 3.44 g, median of 2 tables, range 3.27–3.6 (USDA SR Legacy 172217: 3.27; CoFID 2021 12-596: 3.6).
 - Carbohydrate (by difference, without fibre): 4.78 g, from USDA SR Legacy 172217 only.
@@ -3447,6 +3582,7 @@ Records: USDA SR Legacy 168893 *Wheat flour, whole-grain (Includes foods for USD
 
 - Energy (US Atwater factors): 340 kcal, from USDA SR Legacy 168893 only.
 - Energy (UK factors): 327 kcal, from CoFID 2021 11-889 only.
+- Energy (EU labelling factors): 336 kcal (range 330–342), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 12.4 g, median of 2 tables, range 11.6–13.2 (USDA SR Legacy 168893: 13.2; CoFID 2021 11-889: 11.6).
 - Fat: 2.25 g, median of 2 tables, range 2–2.5 (USDA SR Legacy 168893: 2.5; CoFID 2021 11-889: 2).
 - Carbohydrate (by difference, without fibre): 61.3 g, from USDA SR Legacy 168893 only.
@@ -3471,6 +3607,7 @@ Records: USDA SR Legacy 168910 *Pasta, whole-wheat, cooked (Includes foods for U
 
 - Energy (US Atwater factors): 149 kcal, from USDA SR Legacy 168910 only.
 - Energy (UK factors): 134 kcal, from CoFID 2021 11-723 only.
+- Energy (EU labelling factors): 148 kcal (range 143–152), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 5.59 g, median of 2 tables, range 5.2–5.99 (USDA SR Legacy 168910: 5.99; CoFID 2021 11-723: 5.2).
 - Fat: 1.41 g, median of 2 tables, range 1.1–1.71 (USDA SR Legacy 168910: 1.71; CoFID 2021 11-723: 1.1).
 - Carbohydrate (by difference, without fibre): 26.2 g, from USDA SR Legacy 168910 only.
@@ -3495,6 +3632,7 @@ Records: USDA SR Legacy 169726 *Wild rice, raw*; CoFID 2021 11-872 *Rice, wild, 
 
 - Energy (US Atwater factors): 357 kcal, from USDA SR Legacy 169726 only.
 - Energy (UK factors): 343 kcal, from CoFID 2021 11-872 only.
+- Energy (EU labelling factors): 349 kcal (range 342–356), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 13.5 g, median of 2 tables, range 12.2–14.7 (USDA SR Legacy 169726: 14.7; CoFID 2021 11-872: 12.2).
 - Fat: 1.09 g, median of 2 tables, range 1.08–1.1 (USDA SR Legacy 169726: 1.08; CoFID 2021 11-872: 1.1).
 - Carbohydrate (by difference, without fibre): 68.7 g, from USDA SR Legacy 169726 only.
@@ -3519,6 +3657,7 @@ Records: USDA SR Legacy 170071 *Yam, raw*; CoFID 2021 13-397 *Yam, flesh only, r
 
 - Energy (US Atwater factors): 118 kcal, from USDA SR Legacy 170071 only.
 - Energy (UK factors): 114 kcal, from CoFID 2021 13-397 only.
+- Energy (EU labelling factors): 111 kcal (range 111–112), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 1.51 g, median of 2 tables, range 1.5–1.53 (USDA SR Legacy 170071: 1.53; CoFID 2021 13-397: 1.5).
 - Fat: 0.235 g, median of 2 tables, range 0.17–0.3 (USDA SR Legacy 170071: 0.17; CoFID 2021 13-397: 0.3).
 - Carbohydrate (by difference, without fibre): 23.8 g, from USDA SR Legacy 170071 only.
@@ -3543,6 +3682,7 @@ Records: USDA SR Legacy 170886 *Yogurt, plain, low fat*; CoFID 2021 12-379 *Yogu
 
 - Energy (US Atwater factors): 63 kcal, from USDA SR Legacy 170886 only.
 - Energy (UK factors): 57 kcal, from CoFID 2021 12-379 only.
+- Energy (EU labelling factors): 59.7 kcal (range 56.4–63.1), calculated: 4 x protein + 9 x fat + 4 x carbohydrate (by weight) + 2 x fibre (Regulation (EU) 1169/2011, Annex XIV).
 - Protein: 5.03 g, median of 2 tables, range 4.8–5.25 (USDA SR Legacy 170886: 5.25; CoFID 2021 12-379: 4.8).
 - Fat: 1.27 g, median of 2 tables, range 1–1.55 (USDA SR Legacy 170886: 1.55; CoFID 2021 12-379: 1).
 - Carbohydrate (by difference, without fibre): 7.04 g, from USDA SR Legacy 170886 only.

@@ -157,15 +157,16 @@ Targets are compared with values under the definition they are expressed in (`st
 
 | | UK | US | EU |
 |---|---|---|---|
-| Energy | UK factors (derived: PHE's carbohydrate grams use 3.75 kcal/g) | USDA's Atwater factors (convention) | UK factors (*assumed*: neither table uses the EU labelling factors) |
-| Carbohydrate | available, as monosaccharides (derived, as above) | by difference, without fibre (*assumed*) | by difference, without fibre (*assumed*) |
+| Energy | UK factors (derived: PHE's carbohydrate grams use 3.75 kcal/g) | USDA's Atwater factors (convention) | EU labelling factors, calculated from blended parts (confirmed: Regulation 1169/2011, Annex XIV) |
+| Carbohydrate | available, as monosaccharides (derived, as above) | by difference, without fibre: digestible carbohydrate by weight (confirmed: NASEM summary) | the same (confirmed: Regulation 1169/2011, Annex I point 7) |
 | Vitamin A | retinol equivalents (confirmed via the 1991 DRV report) | retinol activity equivalents (confirmed) | retinol equivalents (confirmed) |
 | Vitamin E | no target | alpha-tocopherol (confirmed) | alpha-tocopherol (confirmed) |
 | Folate | total folate (confirmed) | dietary folate equivalents (confirmed) | dietary folate equivalents (confirmed) |
-| Fibre | AOAC (*assumed*: SACN 2015 not archived) | AOAC (*assumed*: DRI report not archived) | AOAC-type (confirmed) |
+| Fibre | AOAC (confirmed: SACN 2015, S.21–S.22) | AOAC, the *closest* to the target's total fibre (NASEM summary; SACN 2015, 2.32–2.33) | AOAC-type (confirmed) |
 
-If a food lacks the preferred definition, the next one is used with an *Assumption* caveat; an *assumed* choice
-carries a *Not yet checked* caveat. `blend.py` writes each food's choice per standard (`planner` in the JSON).
+If a food lacks the preferred definition, the next one is used with an *Assumption* caveat; the *closest* choice
+(US fibre) carries an *Assumption* caveat saying what differs; an *assumed* choice would carry *Not yet checked*
+(none remain). `blend.py` writes each food's choice per standard (`planner` in the JSON).
 
 ## Permanent ids
 

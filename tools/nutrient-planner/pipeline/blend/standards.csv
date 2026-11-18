@@ -6,17 +6,17 @@ uk,vitaminA,VITA; VITA_RAE,confirmed,"phe-2016-government-dietary-recommendation
 uk,vitaminE,VITE; TOCPHA,no target,phe-2016-government-dietary-recommendations.pdf: no vitamin E recommendation,UK tables give alpha-tocopherol equivalents
 uk,vitaminD,VITD,confirmed,"phe-2016-government-dietary-recommendations.pdf, vitamin D from SACN Vitamin D and Health (2016), in µg",D2 + D3; the 25-hydroxy variant is not used
 uk,folate,FOL; FOLDFE,confirmed,"phe-2016-government-dietary-recommendations.pdf, Folate (µg/day); from Dietary Reference Values (1991), before dietary folate equivalents existed",
-uk,fibre,FIBTG,assumed,"phe-2016-government-dietary-recommendations.pdf: fibre from SACN Carbohydrate and Health (2015), which isn't archived here",SACN's definition (AOAC) not yet checked against the report
+uk,fibre,FIBTG,confirmed,"sacn2015_SACN_Carbohydrates_and_Health.pdf, recommendations S.21–S.22: dietary fibre 'chemically determined using the prevailing AOAC methods'; the 30 g/day value 'measured using the AOAC methods'",
 us,energy,ENERC_KCAL:atwater-specific; ENERC_KCAL:uk-factors,convention,"Energy targets are needs, not a food-table definition; US intakes are measured with USDA's own factors (usda-sr28-documentation.pdf, Food Energy)",
-us,carbohydrate,CHOAVLDF; CHOAVLM; CHOCDF,assumed,nasem-dri-rda-ai-water-macronutrients.pdf: the summary table doesn't define carbohydrate,DRI carbohydrate is digestible carbohydrate; not yet checked against the DRI report
+us,carbohydrate,CHOAVLDF; CHOAVLM; CHOCDF,confirmed,"nasem-dri-macronutrients-summary.pdf, Carbohydrate row: total digestible carbohydrate; starch and sugar are the major types",USDA's carbohydrate by difference without fibre is available carbohydrate by weight
 us,sugars,SUGAR; SUGARM,no target,"Dietary Guidelines limit added sugars, which food tables don't separate","Shown, not assessed"
 us,vitaminA,VITA_RAE; VITA,confirmed,"nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as retinol activity equivalents (RAEs)",
 us,vitaminE,TOCPHA; VITE,confirmed,"nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as alpha-tocopherol",
 us,vitaminD,VITD,confirmed,"nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as cholecalciferol, µg",
 us,folate,FOLDFE; FOL,confirmed,"nasem-dri-rda-ai-vitamins-elements.pdf, footnote: as dietary folate equivalents (DFE)",Total folate equals DFE only for foods without added folic acid
-us,fibre,FIBTG,assumed,nasem-dri-rda-ai-water-macronutrients.pdf: the summary table doesn't define fiber,DRI total fiber includes functional fibre; not yet checked against the DRI report
-eu,energy,ENERC_KCAL:uk-factors; ENERC_KCAL:atwater-specific,assumed,"Neither table uses the EU labelling factors (carbohydrate by weight 4, fibre 2 kcal/g); the UK factors share the available-carbohydrate basis",Could be calculated with the EU factors once the regulation is archived
-eu,carbohydrate,CHOAVLDF; CHOAVLM; CHOCDF,assumed,"efsa-2017-drv-summary-report.pdf, section 3.2: a reference intake range for total carbohydrate as a percentage of energy, without a gram definition; the planner converts it at 4 kcal/g, by weight",
+us,fibre,FIBTG,closest,"nasem-dri-macronutrients-summary.pdf, Total Fiber row: includes dietary fiber and functional fiber; sacn2015_SACN_Carbohydrates_and_Health.pdf, paragraphs 2.32–2.33: AOAC methods 985.29 and 991.43 measure non-starch polysaccharides, some resistant starch, lignin and some inulin","Food tables give AOAC total dietary fibre, the closest available to total fibre"
+eu,energy,ENERC_KCAL:eu-1169; ENERC_KCAL:uk-factors; ENERC_KCAL:atwater-specific,confirmed,"eu1169_OJ_L_2011_304_0018_0063_EN.pdf, Annex XIV: carbohydrate (except polyols) 4, protein 4, fat 9, alcohol 7, fibre 2 kcal/g","Calculated from the blended protein, fat, carbohydrate (by weight) and fibre"
+eu,carbohydrate,CHOAVLDF; CHOAVLM; CHOCDF,confirmed,"eu1169_OJ_L_2011_304_0018_0063_EN.pdf, Annex I point 7: 'any carbohydrate which is metabolised by humans, and includes polyols' (by weight); efsa-2017-drv-summary-report.pdf, section 3.2",
 eu,sugars,SUGAR; SUGARM,no target,"efsa-2017-drv-summary-report.pdf, section 3.2: no reference value for sugars","Shown, not assessed"
 eu,vitaminA,VITA; VITA_RAE,confirmed,"efsa-2017-drv-summary-report.pdf, section 5.9: in µg retinol equivalents (1 µg RE = 1 µg retinol, 6 µg beta-carotene, 12 µg other carotenoids)",
 eu,vitaminE,TOCPHA; VITE,confirmed,"efsa-2017-drv-summary-report.pdf, section 5.13: vitamin E as alpha-tocopherol only",

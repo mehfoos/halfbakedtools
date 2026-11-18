@@ -57,7 +57,7 @@ TABLES = {
 FLAG_RATIO = 2.0
 STATUS_TEXT = {"missing": "no value", "trace": "trace", "present, amount not known": "present, amount not known"}
 # The definitions explained in the preview (the rest are in the JSON and audit files)
-HEADLINE = ["ENERC_KCAL:atwater-specific", "ENERC_KCAL:uk-factors", "PROCNT", "FAT", "CHOAVLDF", "CHOAVLM",
+HEADLINE = ["ENERC_KCAL:atwater-specific", "ENERC_KCAL:uk-factors", "ENERC_KCAL:eu-1169", "PROCNT", "FAT", "CHOAVLDF", "CHOAVLM",
             "FIBTG", "SUGAR", "SUGARM", "NA", "CA", "FE", "VITA_RAE", "VITA", "FOL", "THIA", "VITB6", "PANTAC"]
 
 
@@ -76,7 +76,9 @@ def borrowed_rules() -> list[tuple[str, str, re.Pattern, str]]:
             for r in V.read_csv(HERE / "borrowed.csv")]
 
 
-STANDARD_STATUS = {"confirmed", "derived", "convention", "assumed", "no target", "table fallback"}
+STANDARD_STATUS = {"confirmed", "derived", "convention", "closest", "assumed", "no target", "table fallback"}
+# Regulation (EU) No 1169/2011, Annex XIV (kcal per g)
+EU_FACTORS = {"PROCNT": 4, "FAT": 9, "CHOAVLDF": 4, "FIBTG": 2}
 
 
 def standards() -> dict[tuple[str, str], dict]:
@@ -107,6 +109,8 @@ def for_standard(values: dict, standard: str, defs: dict, std: dict) -> dict:
                     cav.append("other-definition")
                 if row and row["status"] == "assumed" and n == 0:
                     cav.append("definition-not-checked")
+                if row and row["status"] == "closest" and n == 0:
+                    cav.append("closest-definition")
                 # the number itself is under values[definition]; this only says which one, and why to be careful
                 out[key] = {"definition": d, **({"caveats": cav} if cav else {})}
                 break
@@ -141,6 +145,16 @@ def blend_food(concept: dict, decision: dict, sides: list[dict], defs: dict) -> 
                 entry["flag"] = f"values differ more than {FLAG_RATIO:g}-fold"
         values[d] = entry
     derived = {}
+    # Energy with the EU labelling factors, from the blended parts (never blended itself). Foods with alcohol are
+    # left out: neither table gives alcohol per 100 g in a form used here.
+    parts = {d: values.get(d, {}) for d in EU_FACTORS}
+    if all(p.get("value") is not None for p in parts.values()) and not any(s.get("alcohol") for s in sides):
+        calc = lambda k: round(sum(EU_FACTORS[d] * parts[d][k] for d in EU_FACTORS), 6)  # noqa: E731
+        values["ENERC_KCAL:eu-1169"] = {"n": 0, "value": calc("value"), "min": calc("min"), "max": calc("max"),
+                                        "contributions": [],
+                                        "derived": {"formula": "4 x protein + 9 x fat + 4 x carbohydrate (by weight) "
+                                                               "+ 2 x fibre (Regulation (EU) 1169/2011, Annex XIV)",
+                                                    "from": list(EU_FACTORS)}}
     if values.get("NA", {}).get("value") is not None:
         derived["salt"] = {"value": round(values["NA"]["value"] * 2.5 / 1000, 6), "formula": "sodium (mg) x 2.5 / 1000",
                            "from": ["NA"]}
@@ -169,6 +183,9 @@ def explain(food: dict, d: str, defs: dict) -> str:
         return f"{TABLES[c['table']]['title']} {c['code']}"
     used = [c for c in e["contributions"] if c["used"]]
     unused = [c for c in e["contributions"] if not c["used"]]
+    if e.get("derived"):
+        return (f"{label}: {fmt(e['value'])} {unit} (range {fmt(e['min'])}–{fmt(e['max'])}), calculated: "
+                f"{e['derived']['formula']}.")
     if not used:
         text = f"{label}: no value to use"
     elif len(used) == 1:
@@ -210,9 +227,11 @@ def main() -> int:
         borrowed = next((frm for _t, frm, pat, _n in rules if pat.search(f["ref"] or "")), "")
         sides = [
             {"table": "usda-sr-legacy", "code": c["anchor"], "name": usda_names()[c["anchor"]], "ref": "",
-             "values": V.values_for("usda-sr-legacy", usda[c["anchor"]]), "borrowed": ""},
+             "values": V.values_for("usda-sr-legacy", usda[c["anchor"]]), "borrowed": "",
+             "alcohol": float(usda[c["anchor"]].get("1018") or 0)},
             {"table": table, "code": rec["code"], "name": rec["name"], "ref": f["ref"],
-             "values": V.values_for(table, f["cells"], f["group"]), "borrowed": borrowed},
+             "values": V.values_for(table, f["cells"], f["group"]), "borrowed": borrowed,
+             "alcohol": float(f["cells"].get("ALCO") or 0) if V.NUMBER.match(str(f["cells"].get("ALCO") or "0")) else 1.0},
         ]
         food = blend_food(c, d, sides, defs)
         food["planner"] = {st: for_standard(food["values"], st, defs, STD) for st in ("uk", "us", "eu")}

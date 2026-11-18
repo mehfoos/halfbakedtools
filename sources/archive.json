@@ -719,6 +719,39 @@
       "manual": "Moved from the repository's sources/ folder in Nov 2026 (the history clean-up); first archived there before Nov 2026: uploaded by the site owner.",
       "retrieved": null,
       "checked": "2026-11-18"
+    },
+    {
+      "file": "sacn2015_SACN_Carbohydrates_and_Health.pdf",
+      "title": "SACN Carbohydrates and Health (2015)",
+      "publisher": "Scientific Advisory Committee on Nutrition (Public Health England)",
+      "licence": "© Crown copyright 2015; Open Government Licence v3.0",
+      "origin": "https://www.gov.uk/government/publications/sacn-carbohydrates-and-health-report",
+      "originalName": "SACN_Carbohydrates_and_Health.pdf",
+      "sha256": "e97aff6779ef99615e09043b43bfcc0e211df1d623db28e801fa2efc430ae1a7",
+      "manual": "Downloaded from https://assets.publishing.service.gov.uk/media/5a7f7cc3ed915d74e622ac2a/SACN_Carbohydrates_and_Health.pdf and checked by the editor; attached to the release by the owner",
+      "checked": "2026-11-18"
+    },
+    {
+      "file": "eu1169_OJ_L_2011_304_0018_0063_EN.pdf",
+      "title": "Regulation (EU) No 1169/2011 on the provision of food information to consumers (Official Journal L 304, 22.11.2011, as adopted)",
+      "publisher": "European Parliament and Council of the European Union (EUR-Lex)",
+      "licence": "© European Union, https://eur-lex.europa.eu; re-use authorised with acknowledgement of the source (Commission Decision 2011/833/EU)",
+      "origin": "https://eur-lex.europa.eu/eli/reg/2011/1169/oj",
+      "originalName": "LexUriServ.do?uri=OJ:L:2011:304:0018:0063:EN:PDF",
+      "sha256": "a291b1e5777d47033085b74dac7b1f5fc9903b1875fd079a99678858f25269d5",
+      "manual": "Downloaded from https://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2011:304:0018:0063:EN:PDF and checked by the editor; attached to the release by the owner",
+      "checked": "2026-11-18"
+    },
+    {
+      "file": "eu1169_consolidated_2025-04-01_EN.pdf",
+      "title": "Regulation (EU) No 1169/2011, consolidated text 02011R1169-20250401 (documentary value only)",
+      "publisher": "Publications Office of the European Union (EUR-Lex)",
+      "licence": "© European Union, https://eur-lex.europa.eu; re-use authorised with acknowledgement of the source (Commission Decision 2011/833/EU)",
+      "origin": "https://eur-lex.europa.eu/eli/reg/2011/1169/2025-04-01",
+      "originalName": "CELEX_02011R1169-20250401_EN_TXT.pdf",
+      "sha256": "6cdf4190d6fa4a99d2e7d3124611724ec4cf69159563f88b35dc3c50dd416c63",
+      "manual": "Downloaded from https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX:02011R1169-20250401 and checked by the editor; attached to the release by the owner",
+      "checked": "2026-11-18"
     }
   ]
 }
