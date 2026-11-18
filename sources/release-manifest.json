@@ -1,4 +1,19 @@
 {
+  "afcd3_AFCD_Release_3_December_2025.zip": {
+    "sha256": "ee25b09cb8bc0cb5f268a5fc09f36e7b48d738cdf918897b2886d8a5438351b3",
+    "bytes": 4068798,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": [
+      "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Food%20Details.xlsx",
+      "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Food%20group%20information.xlsx",
+      "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Nutrient%20details.xlsx",
+      "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Nutrient%20profiles.xlsx",
+      "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Recipes.xlsx",
+      "https://www.foodstandards.gov.au/sites/default/files/2025-12/AFCD%20Release%203%20-%20Reference%20List.xlsx",
+      "https://www.foodstandards.gov.au/sites/default/files/2025-12/About%20the%20Australian%20Food%20Composition%20Database%20-%20Release%203.pdf"
+    ]
+  },
   "bls4_BLS_3_02_4_0_Code_Mapping_DE_EN.xlsx": {
     "sha256": "d6ff6b750acb8d2e19d78729e400660795e462c827c6825bdb5b757109c85f85",
     "bytes": 849912,
@@ -67,6 +82,13 @@
       "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666246",
       "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666248"
     ]
+  },
+  "cnf2026_cnf_fcen_all-files-data_2026.zip": {
+    "sha256": "f5faad8977ee6bbdd9d69c8649077cacd87d8658ad200509a4047db1e29edcdd",
+    "bytes": 26656195,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://open.canada.ca/data/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109/resource/019f2a90-e3a9-489d-b6e1-f74f4ba1d006/download/cnf_fcen_all-files-data_2026.zip"
   },
   "cofid2021_McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021.xlsx": {
     "sha256": "436e9445ef2adb2a75f3d7edd51302de3adad25385f9795fc94ba58bd030e97d",
