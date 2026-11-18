@@ -92,6 +92,37 @@ class Matches(unittest.TestCase):
                                      "evidence is out of date: run match.py")
                     self.assertEqual(e["fingerprint"], match.fingerprint(e))
 
+    def test_rule_v2_decisions_follow_the_rule(self):
+        """A decision labelled rule v2 must be what the rule gives on the recorded evidence (no hand edits)."""
+        for tag in TABLES:
+            evidence: dict[str, list[dict]] = {}
+            for e in read(match.MATCHES / f"evidence-{tag}.csv"):
+                evidence.setdefault(e["concept"], []).append(e)
+            for d in read(match.MATCHES / f"{tag}.csv"):
+                if d["by"] != match.RULE_V2_BY:
+                    continue
+                with self.subTest(table=tag, concept=d["concept"]):
+                    self.assertEqual((d["grade"], d["id"], d["reason"]),
+                                     match.rule_v2(evidence.get(d["concept"], [])))
+
+    def test_rule_v2(self):
+        def ev(**k):
+            base = {"id": "x:1", "name": "Okra, boiled in unsalted water", "identity": "same", "facets_differ": "",
+                    "facets_unstated": "", "composition": "agrees", "composition_flags": "",
+                    "compared": "water, protein, fat, sodium, calcium"}
+            return base | k
+        self.assertEqual(match.rule_v2([ev()])[0], "same")
+        self.assertEqual(match.rule_v2([ev(facets_unstated="portion: drained / —")])[0], "same")
+        # details the composition check can't catch block "same"
+        for u in ("fortification: fortified / —", "sugar: — / with", "medium: — / syrup", "preservation: frozen / —",
+                  "form: juice / —", "cooking-fat: — / oil", "part: breast / —"):
+            self.assertEqual(match.rule_v2([ev(facets_unstated=u)])[0], "similar", u)
+        self.assertEqual(match.rule_v2([ev(identity="narrower")])[0], "similar")
+        self.assertEqual(match.rule_v2([ev(compared="water, protein")])[0], "similar")
+        self.assertEqual(match.rule_v2([ev(name="Vegetables, mixed, frozen")])[0], "similar")
+        self.assertEqual(match.rule_v2([ev(), ev(id="x:2")])[0], "similar", "two fit: choose neither")
+        self.assertEqual(match.rule_v2([ev(identity="differs")])[0], "none")
+
     def test_rule_v1_never_says_same_when_anything_differs(self):
         self.assertEqual(match.auto_grade("same", [], [], "agrees"), "same")
         self.assertNotEqual(match.auto_grade("narrower", [], [], "agrees"), "same")

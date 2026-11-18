@@ -20,7 +20,7 @@ food the planner uses, in every table, in the same terms. **When in doubt, foods
 | `facets/REPORT.md` | How much of each table the vocabulary describes, conflicts, and the most common unclassified phrases | **generated** |
 | `test_facets.py` | Rules and past mistakes as tests; also checks the generated files are up to date | hand |
 | `synonyms.csv` | Names that mean the same food (US/UK names, spellings, word order), each with a note. Only true synonyms: a close but different food must not be listed | hand, reviewed |
-| `concepts.csv` | One row per blended food (now the planner's 116 common foods), anchored to the planner's USDA record | hand |
+| `concepts.csv` | One row per planner food (2,244; the 116 common ones flagged), anchored to the planner's USDA record | hand |
 | `inputs.py` | Fetches the raw tables from the releases and checks their SHA-256 | hand |
 | `match.py` | Compares each concept with another table's records; writes the evidence and a review report | hand |
 | `matches/<table>.csv` | **The decisions**: one per concept, with grade, reason, who decided, date, and the evidence fingerprint it was reviewed against | hand, reviewed |
@@ -82,6 +82,31 @@ food, part, state and processing first, then composition):
 Decisions so far (CoFID, 18 Nov 2026; automated review, without manual human verification, beta): 63 same, 3 equivalent,
 35 similar, 15 none. The owner has agreed that such reviews may be used, labelled this way; the blended list will be
 marked beta wherever it is shown.
+
+### Rule v2: the review rule applied automatically (all 2,244 planner foods)
+
+The 116 common foods were decided one by one. The other 2,128 planner foods are decided by **rule v2**, which
+applies the same review rule mechanically and is re-run by `match.py` (its decisions follow the evidence). A food is
+*same* only if exactly one CoFID record has:
+
+- the **same name** after synonyms ("narrower" is not enough: "Chinese cabbage" is narrower than "cabbage");
+- **no facet that differs**;
+- details stated by one table only **only where the composition check would catch a mistake** (state, cooking,
+  salt, drained or not, fat level, bone, flavour, "average") or where the term changes nothing (fresh, pasteurised,
+  chilled; flesh, kernels). Fortification, sugar, packing medium, form, cooking fat and freezing block *same*;
+- **agreeing composition**, with at least 3 of the 5 nutrients compared;
+- and isn't a **mixture** ("mixed", "assorted"), whose recipe differs between countries.
+
+If two records fit, neither is chosen. Otherwise the closest record by name is recorded as *similar*, with what
+failed, or *none*. Rule v2 never gives *equivalent*. Its decisions say "Automated rule v2, without manual human
+verification (beta)", and a test checks each is exactly what the rule gives on the recorded evidence.
+
+Checked (18 Nov 2026): on the 116 foods decided one by one, rule v2 never said *same* where the review didn't (it
+found 23 of the 63); and all of its own *same* matches were read against their published names (one mixture
+found, which led to the mixture rule).
+
+Result for CoFID: 139 same (63 reviewed + 76 by rule), 3 equivalent, 1,424 similar, 678 none. Most foods are kept
+separate: that is the rule working ("when in doubt, keep separate"), and they stay available on their own.
 
 `../crosswalk/crosswalk.json` (17 Nov) is kept only for the single-table CoFID file, where "the planner's food"
 can be a UK record whose composition differs. Blending uses `matches/` only.

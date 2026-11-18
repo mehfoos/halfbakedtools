@@ -36,6 +36,7 @@ import sources  # noqa: E402  (crosswalk loaders for the raw tables)
 
 MATCHES = HERE / "matches"
 RULE = "rule v1"
+RULE_V2_DATE = "2026-11-18"  # when rule v2 was last changed; its decisions carry this date
 # Facets compared. 'origin' and 'grade' are not: a country of sale or a US meat grade doesn't make a different
 # food (they are shown). 'detail' (e.g. "3.25% milkfat") is compared as text where both sides state it.
 COMPARED = ["state", "cooking", "cooking-fat", "preservation", "salt", "sugar", "medium", "portion",
@@ -128,20 +129,21 @@ def compare_facets(a: dict, b: dict) -> tuple[list[str], list[str]]:
     return differs, unstated
 
 
-def composition(a: sources.Record | None, b: sources.Record | None) -> tuple[str, list[str]]:
+def composition(a: sources.Record | None, b: sources.Record | None) -> tuple[str, list[str], list[str]]:
+    """(agrees / differs / no data, the differences, the nutrients compared)."""
     if a is None or b is None:
-        return "no data", []
-    flags, compared = [], 0
+        return "no data", [], []
+    flags, compared = [], []
     for key, (abs_tol, rel_tol) in TOL.items():
         x, y = a.num(key), b.num(key)
         if x is None or y is None:
             continue
-        compared += 1
+        compared.append(key)
         if abs(x - y) > max(abs_tol, rel_tol * max(x, y)):
             flags.append(f"{key} {x:g} vs {y:g}")
     if not compared:
-        return "no data", []
-    return ("differs" if flags else "agrees"), flags
+        return "no data", [], []
+    return ("differs" if flags else "agrees"), flags, compared
 
 
 def identity_relation(ia: set[str], ib: set[str]) -> str:
@@ -169,6 +171,70 @@ def auto_grade(rel: str, differs: list[str], unstated: list[str], comp: str) -> 
     return "review: incomplete"
 
 
+# ---- rule v2: the owner-confirmed review rule, applied automatically (see README.md) ----
+RULE_V2_BY = "Automated rule v2, without manual human verification (beta)"
+# A detail stated by one table only is accepted when the composition check would catch a mistake (state, cooking,
+# salt, drained or not, fat level, bone), or when it says nothing that changes the food. Fortification, sugar,
+# packing medium, form, cooking fat and freezing can't be caught by the check, so they block "same".
+ONE_SIDED_OK = {"state", "cooking", "salt", "portion", "flavour", "bone", "fat", "generic"}
+ONE_SIDED_OK_TERMS = {"preservation": {"fresh", "pasteurised", "chilled"},
+                      "part": {"flesh", "flesh-and-skin", "kernels", "whole-egg"}}
+MIN_COMPARED = 3
+# A mixture's recipe differs between countries even when a few nutrients agree ("Vegetables, mixed, frozen").
+MIXTURE = re.compile(r"\b(mixed|mixture|assorted|medley)\b", re.I)
+
+
+def one_sided_blockers(unstated: str) -> list[str]:
+    out = []
+    for item in filter(None, unstated.split(" | ")):
+        facet, _, values = item.partition(": ")
+        values = values.replace(" (one is general)", "")
+        stated = {t for side in values.split(" / ") for t in side.split(", ") if t and t != "—"}
+        if facet in ONE_SIDED_OK or (facet in ONE_SIDED_OK_TERMS and stated <= ONE_SIDED_OK_TERMS[facet]):
+            continue
+        out.append(item)
+    return out
+
+
+def passes_v2(e: dict) -> bool:
+    return (e["identity"] == "same" and not e["facets_differ"] and e["composition"] == "agrees"
+            and not MIXTURE.search(e["name"])
+            and len(e["compared"].split(", ")) >= MIN_COMPARED and not one_sided_blockers(e["facets_unstated"]))
+
+
+def rule_v2(rows: list[dict]) -> tuple[str, str, str]:
+    """(grade, record id, reason) for one concept, from its evidence rows (best candidates first)."""
+    passing = [e for e in rows if passes_v2(e)]
+    if len(passing) == 1:
+        e = passing[0]
+        extra = f" Stated by one table only: {e['facets_unstated']}." if e["facets_unstated"] else ""
+        return "same", e["id"], (f"Rule v2: same name, no facet differs, composition agrees "
+                                 f"({e['compared']}).{extra}")
+    if len(passing) > 1:
+        return "similar", passing[0]["id"], ("Rule v2: more than one CoFID record fits ("
+                                            + ", ".join(e["id"] for e in passing) + "), so none is chosen.")
+    plausible = [e for e in rows if e["identity"] in ("same", "narrower")]
+    if not plausible:
+        return "none", "", "Rule v2: no CoFID record with the same food name was found."
+    e = sorted(plausible, key=lambda e: (e["identity"] != "same", e["facets_differ"].count("|") + bool(e["facets_differ"]),
+                                         e["composition"] != "agrees"))[0]
+    why = []
+    if MIXTURE.search(e["name"]):
+        why.append("a mixture, whose recipe may differ")
+    if e["identity"] != "same":
+        why.append("the names differ in detail")
+    if e["facets_differ"]:
+        why.append("facets differ: " + e["facets_differ"])
+    blockers = one_sided_blockers(e["facets_unstated"])
+    if blockers:
+        why.append("stated by one table only: " + " | ".join(blockers))
+    if e["composition"] == "differs":
+        why.append("composition differs: " + e["composition_flags"])
+    elif e["composition"] == "no data" or len(e["compared"].split(", ")) < MIN_COMPARED:
+        why.append("too few nutrients to compare")
+    return "similar", e["id"], "Rule v2: closest record by name, kept separate: " + "; ".join(why) + "."
+
+
 def main() -> int:
     table, tag = "cofid-2021", "cofid"
     syn = load_synonyms()
@@ -187,19 +253,20 @@ def main() -> int:
         return cofid_raw.get(f"{r['code']}|{r['name']}")
 
     other_ident = {r["id"]: identity(r, syn) for r in other_rows}
+    index: dict[str, list[dict]] = {}
+    for r in other_rows:
+        for w in other_ident[r["id"]]:
+            index.setdefault(w, []).append(r)
+    common = {c["concept"] for c in concepts if c.get("common") == "yes"}
     evidence, report, disagree = [], [], []
     for c in concepts:
         anchor = usda_rows[c["anchor"]]
         ia = identity(anchor, syn)
         # candidates: records sharing an identity word, best overlap first; plus the decided record
-        scored = []
-        for r in other_rows:
-            ib = other_ident[r["id"]]
-            shared = ia & ib
-            if shared:
-                scored.append((len(shared) / len(ia | ib), r))
+        pool = {r["id"]: r for w in ia for r in index.get(w, [])}
+        scored = [(len(ia & other_ident[i]) / len(ia | other_ident[i]), r) for i, r in pool.items()]
         scored.sort(key=lambda s: (-s[0], s[1]["name"]))
-        cands = [r for _, r in scored[:5]]
+        cands = [r for _, r in scored[:5 if c["concept"] in common else 3]]
         d = decisions.get(c["concept"])
         if d and d["id"] and d["id"] in by_id and by_id[d["id"]] not in cands:
             cands.insert(0, by_id[d["id"]])
@@ -207,15 +274,24 @@ def main() -> int:
         for r in cands:
             rel = identity_relation(ia, other_ident[r["id"]])
             differs, unstated = compare_facets(anchor, r)
-            comp, flags = composition(usda_raw.get(c["anchor"]), raw_other(r))
+            comp, flags, compared = composition(usda_raw.get(c["anchor"]), raw_other(r))
             auto = auto_grade(rel, differs, unstated, comp)
             row = {"concept": c["concept"], "id": r["id"], "name": r["name"], "decided": "",
                    "identity": rel, "facets_differ": " | ".join(differs), "facets_unstated": " | ".join(unstated),
-                   "composition": comp, "composition_flags": " | ".join(flags), "rule_v1": auto}
+                   "composition": comp, "composition_flags": " | ".join(flags), "rule_v1": auto,
+                   "compared": ", ".join(compared)}
             row["fingerprint"] = fingerprint(row)
-            if d and d["id"] == r["id"]:
-                row["decided"] = d["grade"]
             rows.append(row)
+        # concepts without a reviewed decision get rule v2's (re-made on every run, so they follow the evidence)
+        if not d or d["by"] == RULE_V2_BY:
+            grade, rid, reason = rule_v2(rows)
+            fp = next((x["fingerprint"] for x in rows if x["id"] == rid), "")
+            d = {"concept": c["concept"], "id": rid, "grade": grade, "reason": reason, "by": RULE_V2_BY,
+                 "date": RULE_V2_DATE, "checked": fp}
+            decisions[c["concept"]] = d
+        for row in rows:
+            if d["id"] == row["id"]:
+                row["decided"] = d["grade"]
         evidence += rows
         # a decision needs attention if it was never reviewed, or if its evidence changed since it was reviewed
         note = ""
@@ -232,8 +308,13 @@ def main() -> int:
         report.append((c, anchor, d, rows, note))
 
     MATCHES.mkdir(exist_ok=True)
+    with (MATCHES / f"{tag}.csv").open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=["concept", "id", "grade", "reason", "by", "date", "checked"],
+                           lineterminator="\n")
+        w.writeheader()
+        w.writerows(decisions[c["concept"]] for c in concepts)
     cols = ["concept", "id", "name", "decided", "identity", "facets_differ", "facets_unstated", "composition",
-            "composition_flags", "rule_v1", "fingerprint"]
+            "composition_flags", "rule_v1", "fingerprint", "compared"]
     with (MATCHES / f"evidence-{tag}.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
         w.writeheader()
@@ -253,8 +334,13 @@ def write_report(tag: str, report, disagree) -> None:
            "Decisions: " + ", ".join(f"{g} {n}" for g, n in sorted(grades.items())), "",
            f"## Needs attention ({len(disagree)})", ""]
     out += [f"- `{c['concept']}` {c['name']}: {n}" for c, n in disagree] or ["None."]
-    out += ["", "## Every concept", ""]
+    out += ["", "## Reviewed decisions", "",
+            "Each decided one by one against the evidence below.", ""]
+    ruled = []
     for c, anchor, d, rows, note in report:
+        if d and d["by"] == RULE_V2_BY:
+            ruled.append((c, anchor, d))
+            continue
         out += [f"### {c['name']} (`{c['concept']}`)", "",
                 f"Anchor: USDA {anchor['code']}, {anchor['name']}", "",
                 f"Decision: **{d['grade'] if d else 'pending'}**" + (f" → `{d['id']}`" if d and d['id'] else "")
@@ -270,6 +356,14 @@ def write_report(tag: str, report, disagree) -> None:
             out.append(f"| `{r['id']}` {r['name']}{mark} | {r['identity']} | {r['facets_differ'] or '—'} | "
                        f"{r['facets_unstated'] or '—'} | {comp} | {r['rule_v1']} | `{r['fingerprint']}` |")
         out.append("")
+    out += ["## Decisions by rule v2", "",
+            f"{len(ruled)} foods, decided automatically by rule v2 (README.md) from the evidence in "
+            f"`evidence-{tag}.csv`. Only *same* is blended.", "",
+            "| Planner food (USDA) | Decision | CoFID record | Reason |", "|---|---|---|---|"]
+    for c, anchor, d in sorted(ruled, key=lambda x: ({"same": 0, "similar": 1}.get(x[2]["grade"], 2), x[0]["name"])):
+        out.append(f"| {c['name']} ({anchor['code']}) | {d['grade']} | {('`' + d['id'] + '`') if d['id'] else '—'} | "
+                   f"{d['reason'].replace('|', '/')} |")
+    out.append("")
     (MATCHES / f"REVIEW-{tag}.md").write_text("\n".join(out))
 
 
