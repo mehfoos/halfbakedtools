@@ -68,7 +68,7 @@ food, part, state and processing first, then composition):
 | different / none | not the same food / the table has no such food | no |
 | pending | not reviewed yet | no |
 
-**Review rule** (owner: when in doubt, keep foods separate):
+**Review rule** (owner: when in doubt, keep foods separate; this reading confirmed by the owner, 18 Nov 2026):
 
 - *Same* when the facets agree and either the composition agrees, or the food is a single unprocessed raw food
   and the difference is within natural variation.
@@ -79,8 +79,9 @@ food, part, state and processing first, then composition):
   against, so a later change to the vocabulary, synonyms or data flags it for review again. The tests enforce
   both.
 
-Decisions so far (CoFID, 18 Nov 2026, by Claude (AI), not yet checked by the owner): 63 same, 3 equivalent,
-35 similar, 15 none.
+Decisions so far (CoFID, 18 Nov 2026; automated review, without manual human verification, beta): 63 same, 3 equivalent,
+35 similar, 15 none. The owner has agreed that such reviews may be used, labelled this way; the blended list will be
+marked beta wherever it is shown.
 
 `../crosswalk/crosswalk.json` (17 Nov) is kept only for the single-table CoFID file, where "the planner's food"
 can be a UK record whose composition differs. Blending uses `matches/` only.

@@ -14,7 +14,7 @@ None.
 
 Anchor: USDA 172421, Lentils, mature seeds, cooked, boiled, without salt
 
-Decision: **same** → `cofid:13-661`. Names differ: CoFID names the type (green and brown), USDA doesn't; USDA lentils are this type. Both dried lentils boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-661`. Names differ: CoFID names the type (green and brown), USDA doesn't; USDA lentils are this type. Both dried lentils boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -29,7 +29,7 @@ Decision: **same** → `cofid:13-661`. Names differ: CoFID names the type (green
 
 Anchor: USDA 173757, Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt
 
-Decision: **same** → `cofid:13-662`. Names differ: CoFID names the type (Kabuli). Both whole dried chickpeas boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-662`. Names differ: CoFID names the type (Kabuli). Both whole dried chickpeas boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -43,7 +43,7 @@ Decision: **same** → `cofid:13-662`. Names differ: CoFID names the type (Kabul
 
 Anchor: USDA 175194, Beans, kidney, red, mature seeds, cooked, boiled, without salt
 
-Decision: **same** → `cofid:13-659`. Both dried red kidney beans boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-659`. Both dried red kidney beans boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -57,7 +57,7 @@ Decision: **same** → `cofid:13-659`. Both dried red kidney beans boiled withou
 
 Anchor: USDA 173735, Beans, black, mature seeds, cooked, boiled, without salt
 
-Decision: **none**. CoFID has no black (turtle) beans. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID has no black (turtle) beans. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -71,7 +71,7 @@ Decision: **none**. CoFID has no black (turtle) beans. (Claude (AI); not yet che
 
 Anchor: USDA 175182, Beans, baked, canned, plain or vegetarian
 
-Decision: **same** → `cofid:13-532`. UK baked beans in tomato sauce are the USDA 'plain or vegetarian' kind; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-532`. UK baked beans in tomato sauce are the USDA 'plain or vegetarian' kind; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -85,7 +85,7 @@ Decision: **same** → `cofid:13-532`. UK baked beans in tomato sauce are the US
 
 Anchor: USDA 172429, Peas, split, mature seeds, cooked, boiled, without salt
 
-Decision: **same** → `cofid:13-142`. Both dried split peas boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-142`. Both dried split peas boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -100,7 +100,7 @@ Decision: **same** → `cofid:13-142`. Both dried split peas boiled without salt
 
 Anchor: USDA 168411, Edamame, frozen, prepared
 
-Decision: **similar** → `cofid:13-667`. Both frozen edamame, cooked; fat 7.6 vs 5.2 g is not explained, so kept separate. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-667`. Both frozen edamame, cooked; fat 7.6 vs 5.2 g is not explained, so kept separate. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -110,7 +110,7 @@ Decision: **similar** → `cofid:13-667`. Both frozen edamame, cooked; fat 7.6 v
 
 Anchor: USDA 172475, Tofu, raw, firm, prepared with calcium sulfate
 
-Decision: **similar** → `cofid:13-570`. CoFID tofu is steamed (water 85 g); USDA is raw firm calcium-set tofu. Different product. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-570`. CoFID tofu is steamed (water 85 g); USDA is raw firm calcium-set tofu. Different product. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -123,7 +123,7 @@ Decision: **similar** → `cofid:13-570`. CoFID tofu is steamed (water 85 g); US
 
 Anchor: USDA 172456, Soymilk, original and vanilla, with added calcium, vitamins A and D
 
-Decision: **similar** → `cofid:12-523`. Both sweetened, fortified soya drinks, but fortification differs by country and brand, so vitamin and mineral values belong to different products. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:12-523`. Both sweetened, fortified soya drinks, but fortification differs by country and brand, so vitamin and mineral values belong to different products. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -137,7 +137,7 @@ Decision: **similar** → `cofid:12-523`. Both sweetened, fortified soya drinks,
 
 Anchor: USDA 173904, Cereals, oats, regular and quick, not fortified, dry
 
-Decision: **same** → `cofid:11-788`. Names differ: 'porridge oats' (UK) and 'oats, regular and quick' (US) are the same rolled oats. Both unfortified, dry; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:11-788`. Names differ: 'porridge oats' (UK) and 'oats, regular and quick' (US) are the same rolled oats. Both unfortified, dry; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -151,7 +151,7 @@ Decision: **same** → `cofid:11-788`. Names differ: 'porridge oats' (UK) and 'o
 
 Anchor: USDA 169704, Rice, brown, long-grain, cooked (Includes foods for USDA's Food Distribution Program)
 
-Decision: **same** → `cofid:11-869`. Names differ: USDA says long-grain, CoFID wholegrain; both brown rice, boiled (USDA: cooked) without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:11-869`. Names differ: USDA says long-grain, CoFID wholegrain; both brown rice, boiled (USDA: cooked) without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -166,7 +166,7 @@ Decision: **same** → `cofid:11-869`. Names differ: USDA says long-grain, CoFID
 
 Anchor: USDA 169757, Rice, white, long-grain, regular, unenriched, cooked without salt
 
-Decision: **same** → `cofid:11-862`. Both long-grain white rice boiled without salt, unfortified (UK rice isn't fortified); composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:11-862`. Both long-grain white rice boiled without salt, unfortified (UK rice isn't fortified); composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -180,7 +180,7 @@ Decision: **same** → `cofid:11-862`. Both long-grain white rice boiled without
 
 Anchor: USDA 172688, Bread, whole-wheat, commercially prepared
 
-Decision: **similar** → `cofid:11-981`. Same kind of bread, but protein 12.5 vs 9.4 g: UK and US recipes differ. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:11-981`. Same kind of bread, but protein 12.5 vs 9.4 g: UK and US recipes differ. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -194,7 +194,7 @@ Decision: **similar** → `cofid:11-981`. Same kind of bread, but protein 12.5 v
 
 Anchor: USDA 168910, Pasta, whole-wheat, cooked (Includes foods for USDA's Food Distribution Program)
 
-Decision: **same** → `cofid:11-723`. Both wholewheat pasta made from dried, boiled; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:11-723`. Both wholewheat pasta made from dried, boiled; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -208,7 +208,7 @@ Decision: **same** → `cofid:11-723`. Both wholewheat pasta made from dried, bo
 
 Anchor: USDA 168917, Quinoa, cooked
 
-Decision: **none**. CoFID has raw quinoa only. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID has raw quinoa only. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -218,7 +218,7 @@ Decision: **none**. CoFID has raw quinoa only. (Claude (AI); not yet checked by 
 
 Anchor: USDA 170285, Barley, pearled, cooked
 
-Decision: **same** → `cofid:11-003`. Both pearl barley, boiled; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:11-003`. Both pearl barley, boiled; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -231,7 +231,7 @@ Decision: **same** → `cofid:11-003`. Both pearl barley, boiled; composition ag
 
 Anchor: USDA 170093, Potatoes, baked, flesh and skin, without salt
 
-Decision: **same** → `cofid:13-491`. Both potatoes baked in their skin; CoFID 'old' means main-crop, as USDA's are; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-491`. Both potatoes baked in their skin; CoFID 'old' means main-crop, as USDA's are; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -246,7 +246,7 @@ Decision: **same** → `cofid:13-491`. Both potatoes baked in their skin; CoFID 
 
 Anchor: USDA 168483, Sweet potato, cooked, baked in skin, flesh, without salt
 
-Decision: **similar** → `cofid:13-672`. Water 65.6 vs 75.8 g, and CoFID doesn't say whether the skin is included. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-672`. Water 65.6 vs 75.8 g, and CoFID doesn't say whether the skin is included. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -260,7 +260,7 @@ Decision: **similar** → `cofid:13-672`. Water 65.6 vs 75.8 g, and CoFID doesn'
 
 Anchor: USDA 171287, Egg, whole, raw, fresh
 
-Decision: **same** → `cofid:12-937`. Both whole raw chicken eggs; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:12-937`. Both whole raw chicken eggs; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -275,7 +275,7 @@ Decision: **same** → `cofid:12-937`. Both whole raw chicken eggs; composition 
 
 Anchor: USDA 172205, Milk, reduced fat, fluid, 2% milkfat, without added vitamin A and vitamin D
 
-Decision: **equivalent** → `cofid:12-313`. USDA record is 2% fat milk; UK semi-skimmed is 1.5–1.8%. Composition within tolerance; the fat standard differs, so equivalent, not same. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **equivalent** → `cofid:12-313`. USDA record is 2% fat milk; UK semi-skimmed is 1.5–1.8%. Composition within tolerance; the fat standard differs, so equivalent, not same. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -289,7 +289,7 @@ Decision: **equivalent** → `cofid:12-313`. USDA record is 2% fat milk; UK semi
 
 Anchor: USDA 171284, Yogurt, plain, whole milk
 
-Decision: **similar** → `cofid:12-184`. Both whole-milk plain yoghurt, but protein 5.7 vs 3.5 g: the UK product is thicker. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:12-184`. Both whole-milk plain yoghurt, but protein 5.7 vs 3.5 g: the UK product is thicker. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -303,7 +303,7 @@ Decision: **similar** → `cofid:12-184`. Both whole-milk plain yoghurt, but pro
 
 Anchor: USDA 170894, Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)
 
-Decision: **similar** → `cofid:12-555`. CoFID Greek-style yoghurt is full fat (10 g); the planner food is fat-free. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:12-555`. CoFID Greek-style yoghurt is full fat (10 g); the planner food is fat-free. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -317,7 +317,7 @@ Decision: **similar** → `cofid:12-555`. CoFID Greek-style yoghurt is full fat 
 
 Anchor: USDA 173414, Cheese, cheddar (Includes foods for USDA's Food Distribution Program)
 
-Decision: **same** → `cofid:12-346`. Both full-fat Cheddar; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:12-346`. Both full-fat Cheddar; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -331,7 +331,7 @@ Decision: **same** → `cofid:12-346`. Both full-fat Cheddar; composition agrees
 
 Anchor: USDA 172182, Cheese, cottage, lowfat, 2% milkfat
 
-Decision: **equivalent** → `cofid:12-550`. Facet difference accepted: USDA 'lowfat, 2% milkfat' and CoFID 'reduced fat' describe the same fat level here; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **equivalent** → `cofid:12-550`. Facet difference accepted: USDA 'lowfat, 2% milkfat' and CoFID 'reduced fat' describe the same fat level here; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -345,7 +345,7 @@ Decision: **equivalent** → `cofid:12-550`. Facet difference accepted: USDA 'lo
 
 Anchor: USDA 169288, Spinach, frozen, chopped or leaf, cooked, boiled, drained, without salt
 
-Decision: **similar** → `cofid:13-458`. Both frozen spinach boiled without salt, but sodium 97 vs 16 mg is not explained. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-458`. Both frozen spinach boiled without salt, but sodium 97 vs 16 mg is not explained. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -359,7 +359,7 @@ Decision: **similar** → `cofid:13-458`. Both frozen spinach boiled without sal
 
 Anchor: USDA 168421, Kale, raw
 
-Decision: **similar** → `cofid:13-234`. Both raw kale (CoFID: curly), but calcium 254 vs 130 mg is too large for natural variation. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-234`. Both raw kale (CoFID: curly), but calcium 254 vs 130 mg is too large for natural variation. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -370,7 +370,7 @@ Decision: **similar** → `cofid:13-234`. Both raw kale (CoFID: curly), but calc
 
 Anchor: USDA 169967, Broccoli, cooked, boiled, drained, without salt
 
-Decision: **same** → `cofid:13-503`. Both green broccoli boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-503`. Both green broccoli boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -384,7 +384,7 @@ Decision: **same** → `cofid:13-503`. Both green broccoli boiled without salt; 
 
 Anchor: USDA 170393, Carrots, raw
 
-Decision: **same** → `cofid:13-496`. Both raw main-crop ('old') carrots; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-496`. Both raw main-crop ('old') carrots; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -398,7 +398,7 @@ Decision: **same** → `cofid:13-496`. Both raw main-crop ('old') carrots; compo
 
 Anchor: USDA 170017, Peas, green, frozen, cooked, boiled, drained, without salt
 
-Decision: **similar** → `cofid:13-536`. Both frozen peas boiled without salt, but sodium 72 vs 4 mg: UK frozen peas may have salt added. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-536`. Both frozen peas boiled without salt, but sodium 72 vs 4 mg: UK frozen peas may have salt added. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -412,7 +412,7 @@ Decision: **similar** → `cofid:13-536`. Both frozen peas boiled without salt, 
 
 Anchor: USDA 170051, Tomatoes, red, ripe, canned, packed in tomato juice
 
-Decision: **similar** → `cofid:13-530`. Both canned tomatoes, but sodium 115 vs 5 mg: salt is probably added in the UK product. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-530`. Both canned tomatoes, but sodium 115 vs 5 mg: salt is probably added in the UK product. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -426,7 +426,7 @@ Decision: **similar** → `cofid:13-530`. Both canned tomatoes, but sodium 115 v
 
 Anchor: USDA 170000, Onions, raw
 
-Decision: **same** → `cofid:13-499`. Both raw onions; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-499`. Both raw onions; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -441,7 +441,7 @@ Decision: **same** → `cofid:13-499`. Both raw onions; composition agrees. (Cla
 
 Anchor: USDA 170108, Peppers, sweet, red, raw
 
-Decision: **same** → `cofid:13-524`. Both raw red sweet (capsicum) peppers; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-524`. Both raw red sweet (capsicum) peppers; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -455,7 +455,7 @@ Decision: **same** → `cofid:13-524`. Both raw red sweet (capsicum) peppers; co
 
 Anchor: USDA 169975, Cabbage, raw
 
-Decision: **same** → `cofid:13-582`. USDA unspecified raw cabbage; CoFID gives an average of types. Composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-582`. USDA unspecified raw cabbage; CoFID gives an average of types. Composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -469,7 +469,7 @@ Decision: **same** → `cofid:13-582`. USDA unspecified raw cabbage; CoFID gives
 
 Anchor: USDA 169251, Mushrooms, white, raw
 
-Decision: **same** → `cofid:13-505`. Same food despite: protein 3.1 vs 1.0 g. Both raw white mushrooms; the difference is likely the nitrogen-to-protein factor, which the component step will check. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-505`. Same food despite: protein 3.1 vs 1.0 g. Both raw white mushrooms; the difference is likely the nitrogen-to-protein factor, which the component step will check. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -483,7 +483,7 @@ Decision: **same** → `cofid:13-505`. Same food despite: protein 3.1 vs 1.0 g. 
 
 Anchor: USDA 170143, Mushrooms, portabella, exposed to ultraviolet light, raw
 
-Decision: **none**. CoFID has no UV-exposed mushrooms. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID has no UV-exposed mushrooms. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -497,7 +497,7 @@ Decision: **none**. CoFID has no UV-exposed mushrooms. (Claude (AI); not yet che
 
 Anchor: USDA 173944, Bananas, raw
 
-Decision: **same** → `cofid:14-318`. Both raw banana flesh; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-318`. Both raw banana flesh; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -511,7 +511,7 @@ Decision: **same** → `cofid:14-318`. Both raw banana flesh; composition agrees
 
 Anchor: USDA 171688, Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)
 
-Decision: **same** → `cofid:14-319`. Names differ: CoFID says eating apple, USDA doesn't; USDA raw apples are eating apples. Flesh and skin; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-319`. Names differ: CoFID says eating apple, USDA doesn't; USDA raw apples are eating apples. Flesh and skin; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -526,7 +526,7 @@ Decision: **same** → `cofid:14-319`. Names differ: CoFID says eating apple, US
 
 Anchor: USDA 169097, Oranges, raw, all commercial varieties
 
-Decision: **same** → `cofid:14-327`. Both raw orange flesh (USDA: all varieties); composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-327`. Both raw orange flesh (USDA: all varieties); composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -540,7 +540,7 @@ Decision: **same** → `cofid:14-327`. Both raw orange flesh (USDA: all varietie
 
 Anchor: USDA 173950, Blueberries, frozen, unsweetened (Includes foods for USDA's Food Distribution Program)
 
-Decision: **similar** → `cofid:14-325`. CoFID blueberries are fresh; the planner food is frozen. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:14-325`. CoFID blueberries are fresh; the planner food is frozen. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -550,7 +550,7 @@ Decision: **similar** → `cofid:14-325`. CoFID blueberries are fresh; the plann
 
 Anchor: USDA 167762, Strawberries, raw
 
-Decision: **same** → `cofid:14-324`. Both raw; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-324`. Both raw; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -563,7 +563,7 @@ Decision: **same** → `cofid:14-324`. Both raw; composition agrees. (Claude (AI
 
 Anchor: USDA 168165, Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)
 
-Decision: **same** → `cofid:14-393`. Both raisins; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-393`. Both raisins; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -577,7 +577,7 @@ Decision: **same** → `cofid:14-393`. Both raisins; composition agrees. (Claude
 
 Anchor: USDA 173941, Apricots, dried, sulfured, uncooked
 
-Decision: **similar** → `cofid:14-031`. Water 14.7 vs 30.9 g: dried to a different degree. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:14-031`. Water 14.7 vs 30.9 g: dried to a different degree. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -591,7 +591,7 @@ Decision: **similar** → `cofid:14-031`. Water 14.7 vs 30.9 g: dried to a diffe
 
 Anchor: USDA 170187, Nuts, walnuts, english
 
-Decision: **same** → `cofid:14-879`. Both walnut kernels; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-879`. Both walnut kernels; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -605,7 +605,7 @@ Decision: **same** → `cofid:14-879`. Both walnut kernels; composition agrees. 
 
 Anchor: USDA 170567, Nuts, almonds
 
-Decision: **same** → `cofid:14-896`. Both whole almond kernels; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-896`. Both whole almond kernels; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -619,7 +619,7 @@ Decision: **same** → `cofid:14-896`. Both whole almond kernels; composition ag
 
 Anchor: USDA 173806, Peanuts, all types, dry-roasted, without salt
 
-Decision: **similar** → `cofid:14-878`. CoFID dry-roasted peanuts are salted (sodium 790 mg); the planner food is unsalted. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:14-878`. CoFID dry-roasted peanuts are salted (sodium 790 mg); the planner food is unsalted. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -633,7 +633,7 @@ Decision: **similar** → `cofid:14-878`. CoFID dry-roasted peanuts are salted (
 
 Anchor: USDA 172470, Peanut butter, smooth style, without salt
 
-Decision: **similar** → `cofid:14-892`. CoFID smooth peanut butter is salted (sodium 350 vs 17 mg). (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:14-892`. CoFID smooth peanut butter is salted (sodium 350 vs 17 mg). (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -647,7 +647,7 @@ Decision: **similar** → `cofid:14-892`. CoFID smooth peanut butter is salted (
 
 Anchor: USDA 170562, Seeds, sunflower seed kernels, dried
 
-Decision: **same** → `cofid:14-845`. Both sunflower seed kernels; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-845`. Both sunflower seed kernels; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -661,7 +661,7 @@ Decision: **same** → `cofid:14-845`. Both sunflower seed kernels; composition 
 
 Anchor: USDA 170556, Seeds, pumpkin and squash seed kernels, dried
 
-Decision: **same** → `cofid:14-842`. Both pumpkin seed kernels; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-842`. Both pumpkin seed kernels; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -675,7 +675,7 @@ Decision: **same** → `cofid:14-842`. Both pumpkin seed kernels; composition ag
 
 Anchor: USDA 169414, Seeds, flaxseed
 
-Decision: **none**. Not in CoFID. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. Not in CoFID. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -689,7 +689,7 @@ Decision: **none**. Not in CoFID. (Claude (AI); not yet checked by the owner, 20
 
 Anchor: USDA 170554, Seeds, chia seeds, dried
 
-Decision: **none**. Not in CoFID. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. Not in CoFID. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -703,7 +703,7 @@ Decision: **none**. Not in CoFID. (Claude (AI); not yet checked by the owner, 20
 
 Anchor: USDA 170189, Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)
 
-Decision: **similar** → `cofid:14-847`. Both tahini, but sodium 115 vs 20 mg: salt probably added in the UK product. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:14-847`. Both tahini, but sodium 115 vs 20 mg: salt probably added in the UK product. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -717,7 +717,7 @@ Decision: **similar** → `cofid:14-847`. Both tahini, but sodium 115 vs 20 mg: 
 
 Anchor: USDA 172336, Oil, canola
 
-Decision: **same** → `cofid:17-041`. Rapeseed oil (canola is a rapeseed cultivar group); composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:17-041`. Rapeseed oil (canola is a rapeseed cultivar group); composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -731,7 +731,7 @@ Decision: **same** → `cofid:17-041`. Rapeseed oil (canola is a rapeseed cultiv
 
 Anchor: USDA 171413, Oil, olive, salad or cooking
 
-Decision: **same** → `cofid:17-038`. Both olive oil; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:17-038`. Both olive oil; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -745,7 +745,7 @@ Decision: **same** → `cofid:17-038`. Both olive oil; composition agrees. (Clau
 
 Anchor: USDA 167717, Yeast extract spread
 
-Decision: **none**. CoFID yeast extract (Marmite type) has protein 40.7 vs 23.9 g: a different product. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID yeast extract (Marmite type) has protein 40.7 vs 23.9 g: a different product. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -759,7 +759,7 @@ Decision: **none**. CoFID yeast extract (Marmite type) has protein 40.7 vs 23.9 
 
 Anchor: USDA 170397, Cauliflower, cooked, boiled, drained, without salt
 
-Decision: **same** → `cofid:13-513`. Both boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-513`. Both boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -773,7 +773,7 @@ Decision: **same** → `cofid:13-513`. Both boiled without salt; composition agr
 
 Anchor: USDA 169291, Squash, summer, zucchini, includes skin, raw
 
-Decision: **same** → `cofid:13-627`. Both raw courgette (zucchini); composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-627`. Both raw courgette (zucchini); composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -788,7 +788,7 @@ Decision: **same** → `cofid:13-627`. Both raw courgette (zucchini); compositio
 
 Anchor: USDA 168409, Cucumber, with peel, raw
 
-Decision: **same** → `cofid:13-523`. Both raw, flesh and skin; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-523`. Both raw, flesh and skin; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -799,7 +799,7 @@ Decision: **same** → `cofid:13-523`. Both raw, flesh and skin; composition agr
 
 Anchor: USDA 169247, Lettuce, cos or romaine, raw
 
-Decision: **similar** → `cofid:13-520`. CoFID has only 'average' lettuce; the planner food is cos. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-520`. CoFID has only 'average' lettuce; the planner food is cos. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -810,7 +810,7 @@ Decision: **similar** → `cofid:13-520`. CoFID has only 'average' lettuce; the 
 
 Anchor: USDA 169963, Beans, snap, green, frozen, cooked, boiled, drained without salt
 
-Decision: **similar** → `cofid:13-515`. CoFID green beans are fresh; the planner food is frozen. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-515`. CoFID green beans are fresh; the planner food is frozen. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -824,7 +824,7 @@ Decision: **similar** → `cofid:13-515`. CoFID green beans are fresh; the plann
 
 Anchor: USDA 168399, Corn, sweet, yellow, frozen, kernels cut off cob, boiled, drained, without salt
 
-Decision: **none**. CoFID has canned, raw or on-the-cob sweetcorn, not frozen kernels. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID has canned, raw or on-the-cob sweetcorn, not frozen kernels. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -838,7 +838,7 @@ Decision: **none**. CoFID has canned, raw or on-the-cob sweetcorn, not frozen ke
 
 Anchor: USDA 169971, Brussels sprouts, cooked, boiled, drained, without salt
 
-Decision: **same** → `cofid:13-630`. Both boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-630`. Both boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -850,7 +850,7 @@ Decision: **same** → `cofid:13-630`. Both boiled without salt; composition agr
 
 Anchor: USDA 169246, Leeks, (bulb and lower leaf-portion), raw
 
-Decision: **similar** → `cofid:13-624`. USDA includes the lower leaf; water 83.0 vs 90.7 g, so the part may differ. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-624`. USDA includes the lower leaf; water 83.0 vs 90.7 g, so the part may differ. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -864,7 +864,7 @@ Decision: **similar** → `cofid:13-624`. USDA includes the lower leaf; water 83
 
 Anchor: USDA 169230, Garlic, raw
 
-Decision: **similar** → `cofid:13-244`. Both raw garlic, but water 58.6 vs 64.3 g and calcium 181 vs 19 mg are too large for natural variation. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-244`. Both raw garlic, but water 58.6 vs 64.3 g and calcium 181 vs 19 mg are too large for natural variation. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -877,7 +877,7 @@ Decision: **similar** → `cofid:13-244`. Both raw garlic, but water 58.6 vs 64.
 
 Anchor: USDA 169146, Beets, cooked, boiled, drained
 
-Decision: **same** → `cofid:13-633`. Both boiled; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-633`. Both boiled; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -890,7 +890,7 @@ Decision: **same** → `cofid:13-633`. Both boiled; composition agrees. (Claude 
 
 Anchor: USDA 170009, Parsnips, cooked, boiled, drained, without salt
 
-Decision: **same** → `cofid:13-631`. Both boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-631`. Both boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -902,7 +902,7 @@ Decision: **same** → `cofid:13-631`. Both boiled without salt; composition agr
 
 Anchor: USDA 169988, Celery, raw
 
-Decision: **same** → `cofid:13-636`. Both raw; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-636`. Both raw; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -915,7 +915,7 @@ Decision: **same** → `cofid:13-636`. Both raw; composition agrees. (Claude (AI
 
 Anchor: USDA 169977, Cabbage, red, raw
 
-Decision: **same** → `cofid:13-190`. Both raw; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-190`. Both raw; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -929,7 +929,7 @@ Decision: **same** → `cofid:13-190`. Both raw; composition agrees. (Claude (AI
 
 Anchor: USDA 170068, Watercress, raw
 
-Decision: **same** → `cofid:13-669~watercress-raw`. Both raw. CoFID 2021 also uses code 13-669 for roasted aubergine; this is the watercress record. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-669~watercress-raw`. Both raw. CoFID 2021 also uses code 13-669 for roasted aubergine; this is the watercress record. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -939,7 +939,7 @@ Decision: **same** → `cofid:13-669~watercress-raw`. Both raw. CoFID 2021 also 
 
 Anchor: USDA 171705, Avocados, raw, all commercial varieties
 
-Decision: **same** → `cofid:14-386`. Names differ: CoFID gives Hass (and Fuerte) separately, USDA all varieties. Raw flesh of a single food; composition agrees, so natural variation. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-386`. Names differ: CoFID gives Hass (and Fuerte) separately, USDA all varieties. Raw flesh of a single food; composition agrees, so natural variation. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -952,7 +952,7 @@ Decision: **same** → `cofid:14-386`. Names differ: CoFID gives Hass (and Fuert
 
 Anchor: USDA 167776, Pears, raw, bartlett (Includes foods for USDA's Food Distribution Program)
 
-Decision: **same** → `cofid:14-321`. Names differ: USDA names Bartlett, CoFID no variety. Raw, flesh and skin; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-321`. Names differ: USDA names Bartlett, CoFID no variety. Raw, flesh and skin; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -967,7 +967,7 @@ Decision: **same** → `cofid:14-321`. Names differ: USDA names Bartlett, CoFID 
 
 Anchor: USDA 174683, Grapes, red or green (European type, such as Thompson seedless), raw
 
-Decision: **same** → `cofid:14-350`. CoFID gives the average of green and red, USDA 'red or green'; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-350`. CoFID gives the average of green and red, USDA 'red or green'; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -981,7 +981,7 @@ Decision: **same** → `cofid:14-350`. CoFID gives the average of green and red,
 
 Anchor: USDA 168153, Kiwifruit, green, raw
 
-Decision: **same** → `cofid:14-371`. Both raw green kiwi fruit flesh; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-371`. Both raw green kiwi fruit flesh; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -995,7 +995,7 @@ Decision: **same** → `cofid:14-371`. Both raw green kiwi fruit flesh; composit
 
 Anchor: USDA 169910, Mangos, raw
 
-Decision: **same** → `cofid:14-378`. Both raw ripe mango flesh; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-378`. Both raw ripe mango flesh; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1008,7 +1008,7 @@ Decision: **same** → `cofid:14-378`. Both raw ripe mango flesh; composition ag
 
 Anchor: USDA 169949, Plums, raw
 
-Decision: **same** → `cofid:14-372`. Both raw dessert plums; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-372`. Both raw dessert plums; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1022,7 +1022,7 @@ Decision: **same** → `cofid:14-372`. Both raw dessert plums; composition agree
 
 Anchor: USDA 169092, Melons, cantaloupe, raw
 
-Decision: **same** → `cofid:14-339`. Both raw cantaloupe flesh; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-339`. Both raw cantaloupe flesh; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1036,7 +1036,7 @@ Decision: **same** → `cofid:14-339`. Both raw cantaloupe flesh; composition ag
 
 Anchor: USDA 167755, Raspberries, raw
 
-Decision: **same** → `cofid:14-375`. Both raw; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-375`. Both raw; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1048,7 +1048,7 @@ Decision: **same** → `cofid:14-375`. Both raw; composition agrees. (Claude (AI
 
 Anchor: USDA 173746, Beans, navy, mature seeds, cooked, boiled, without salt
 
-Decision: **similar** → `cofid:13-087`. Both dried haricot (navy) beans boiled without salt, but water 63.8 vs 69.6 g: cooked differently. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-087`. Both dried haricot (navy) beans boiled without salt, but water 63.8 vs 69.6 g: cooked differently. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1062,7 +1062,7 @@ Decision: **similar** → `cofid:13-087`. Both dried haricot (navy) beans boiled
 
 Anchor: USDA 174253, Lima beans, large, mature seeds, cooked, boiled, without salt
 
-Decision: **same** → `cofid:13-663`. Butter beans are large lima beans; both dried, boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-663`. Butter beans are large lima beans; both dried, boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1076,7 +1076,7 @@ Decision: **same** → `cofid:13-663`. Butter beans are large lima beans; both d
 
 Anchor: USDA 175200, Beans, pinto, mature seeds, cooked, boiled, without salt
 
-Decision: **same** → `cofid:13-107`. Both dried, boiled without salt; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-107`. Both dried, boiled without salt; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1090,7 +1090,7 @@ Decision: **same** → `cofid:13-107`. Both dried, boiled without salt; composit
 
 Anchor: USDA 174284, Lentils, pink or red, raw
 
-Decision: **same** → `cofid:13-657`. Both raw red lentils (CoFID: split); composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:13-657`. Both raw red lentils (CoFID: split); composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1104,7 +1104,7 @@ Decision: **same** → `cofid:13-657`. Both raw red lentils (CoFID: split); comp
 
 Anchor: USDA 174289, Hummus, commercial
 
-Decision: **none**. CoFID hummus has fat 26.7 vs 17.8 g: a different recipe. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID hummus has fat 26.7 vs 17.8 g: a different recipe. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1113,7 +1113,7 @@ Decision: **none**. CoFID hummus has fat 26.7 vs 17.8 g: a different recipe. (Cl
 
 Anchor: USDA 174272, Tempeh
 
-Decision: **similar** → `cofid:13-118`. Fat 10.8 vs 6.4 g is not explained. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:13-118`. Fat 10.8 vs 6.4 g is not explained. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1124,7 +1124,7 @@ Decision: **similar** → `cofid:13-118`. Fat 10.8 vs 6.4 g is not explained. (C
 
 Anchor: USDA 170845, Cheese, mozzarella, whole milk
 
-Decision: **similar** → `cofid:12-360`. CoFID is fresh mozzarella (water 57 g); USDA whole-milk mozzarella (water 50 g) is a firmer product. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:12-360`. CoFID is fresh mozzarella (water 57 g); USDA whole-milk mozzarella (water 50 g) is a firmer product. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1138,7 +1138,7 @@ Decision: **similar** → `cofid:12-360`. CoFID is fresh mozzarella (water 57 g)
 
 Anchor: USDA 173420, Cheese, feta
 
-Decision: **same** → `cofid:12-525`. Both feta; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:12-525`. Both feta; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1152,7 +1152,7 @@ Decision: **same** → `cofid:12-525`. Both feta; composition agrees. (Claude (A
 
 Anchor: USDA 170848, Cheese, parmesan, hard
 
-Decision: **same** → `cofid:12-526`. Both Parmesan; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:12-526`. Both Parmesan; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1166,7 +1166,7 @@ Decision: **same** → `cofid:12-526`. Both Parmesan; composition agrees. (Claud
 
 Anchor: USDA 172217, Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D
 
-Decision: **equivalent** → `cofid:12-596`. USDA 3.25% fat; UK whole milk averages about 3.6%. Composition within tolerance; the fat standard differs, so equivalent. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **equivalent** → `cofid:12-596`. USDA 3.25% fat; UK whole milk averages about 3.6%. Composition within tolerance; the fat standard differs, so equivalent. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1180,7 +1180,7 @@ Decision: **equivalent** → `cofid:12-596`. USDA 3.25% fat; UK whole milk avera
 
 Anchor: USDA 173432, Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)
 
-Decision: **same** → `cofid:12-307`. Both skimmed milk, unfortified; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:12-307`. Both skimmed milk, unfortified; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1194,7 +1194,7 @@ Decision: **same** → `cofid:12-307`. Both skimmed milk, unfortified; compositi
 
 Anchor: USDA 171304, Yogurt, Greek, plain, whole milk
 
-Decision: **similar** → `cofid:12-555`. CoFID Greek-style is 10 g fat vs 5 g: a different product. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:12-555`. CoFID Greek-style is 10 g fat vs 5 g: a different product. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1208,7 +1208,7 @@ Decision: **similar** → `cofid:12-555`. CoFID Greek-style is 10 g fat vs 5 g: 
 
 Anchor: USDA 173430, Butter, without salt
 
-Decision: **same** → `cofid:17-661`. Both unsalted butter; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:17-661`. Both unsalted butter; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1222,7 +1222,7 @@ Decision: **same** → `cofid:17-661`. Both unsalted butter; composition agrees.
 
 Anchor: USDA 169700, Couscous, cooked
 
-Decision: **similar** → `cofid:11-902`. Water 53.8 vs 72.6 g: cooked with a different amount of water. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:11-902`. Water 53.8 vs 72.6 g: cooked with a different amount of water. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1233,7 +1233,7 @@ Decision: **similar** → `cofid:11-902`. Water 53.8 vs 72.6 g: cooked with a di
 
 Anchor: USDA 170287, Bulgur, cooked
 
-Decision: **none**. CoFID has raw bulgur only. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID has raw bulgur only. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1243,7 +1243,7 @@ Decision: **none**. CoFID has raw bulgur only. (Claude (AI); not yet checked by 
 
 Anchor: USDA 168893, Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)
 
-Decision: **same** → `cofid:11-889`. Both wholemeal wheat flour; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:11-889`. Both wholemeal wheat flour; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1257,7 +1257,7 @@ Decision: **same** → `cofid:11-889`. Both wholemeal wheat flour; composition a
 
 Anchor: USDA 170162, Nuts, cashew nuts, raw
 
-Decision: **same** → `cofid:14-811`. Both raw (plain, not roasted) cashew kernels; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-811`. Both raw (plain, not roasted) cashew kernels; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1271,7 +1271,7 @@ Decision: **same** → `cofid:14-811`. Both raw (plain, not roasted) cashew kern
 
 Anchor: USDA 170581, Nuts, hazelnuts or filberts
 
-Decision: **same** → `cofid:14-874`. Both hazelnut kernels; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-874`. Both hazelnut kernels; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1285,7 +1285,7 @@ Decision: **same** → `cofid:14-874`. Both hazelnut kernels; composition agrees
 
 Anchor: USDA 170569, Nuts, brazilnuts, dried, unblanched
 
-Decision: **same** → `cofid:14-871`. Both Brazil nut kernels; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-871`. Both Brazil nut kernels; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1299,7 +1299,7 @@ Decision: **same** → `cofid:14-871`. Both Brazil nut kernels; composition agre
 
 Anchor: USDA 170150, Seeds, sesame seeds, whole, dried
 
-Decision: **same** → `cofid:14-844`. Both whole sesame seeds; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:14-844`. Both whole sesame seeds; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1313,7 +1313,7 @@ Decision: **same** → `cofid:14-844`. Both whole sesame seeds; composition agre
 
 Anchor: USDA 170148, Seeds, hemp seed, hulled
 
-Decision: **none**. Not in CoFID. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. Not in CoFID. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1327,7 +1327,7 @@ Decision: **none**. Not in CoFID. (Claude (AI); not yet checked by the owner, 20
 
 Anchor: USDA 174832, Beverages, almond milk, unsweetened, shelf stable
 
-Decision: **none**. Not in CoFID. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. Not in CoFID. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1341,7 +1341,7 @@ Decision: **none**. Not in CoFID. (Claude (AI); not yet checked by the owner, 20
 
 Anchor: USDA 171477, Chicken, broilers or fryers, breast, meat only, cooked, roasted
 
-Decision: **similar** → `cofid:18-330`. CoFID 'light meat' is breast and wing meat, not breast only. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:18-330`. CoFID 'light meat' is breast and wing meat, not breast only. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1356,7 +1356,7 @@ Decision: **similar** → `cofid:18-330`. CoFID 'light meat' is breast and wing 
 
 Anchor: USDA 172388, Chicken, broilers or fryers, thigh, meat only, cooked, roasted
 
-Decision: **none**. CoFID has casseroled thighs only; the planner food is roasted. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID has casseroled thighs only; the planner food is roasted. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1370,7 +1370,7 @@ Decision: **none**. CoFID has casseroled thighs only; the planner food is roaste
 
 Anchor: USDA 171506, Turkey, Ground, cooked
 
-Decision: **none**. CoFID has stewed turkey mince only (fat 6.8 vs 10.4 g). (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID has stewed turkey mince only (fat 6.8 vs 10.4 g). (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1384,7 +1384,7 @@ Decision: **none**. CoFID has stewed turkey mince only (fat 6.8 vs 10.4 g). (Cla
 
 Anchor: USDA 174032, Beef, ground, 85% lean meat / 15% fat, patty, cooked, broiled
 
-Decision: **similar** → `cofid:18-042`. CoFID mince patties are barbecued and their fat level isn't stated; the planner food is 15% fat, grilled. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:18-042`. CoFID mince patties are barbecued and their fat level isn't stated; the planner food is 15% fat, grilled. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1398,7 +1398,7 @@ Decision: **similar** → `cofid:18-042`. CoFID mince patties are barbecued and 
 
 Anchor: USDA 168635, Beef, top sirloin, steak, separable lean only, trimmed to 0" fat, choice, cooked, broiled
 
-Decision: **similar** → `cofid:18-070`. US 'top sirloin' and UK sirloin are cut differently, even though both are lean, grilled and their composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:18-070`. US 'top sirloin' and UK sirloin are cut differently, even though both are lean, grilled and their composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1412,7 +1412,7 @@ Decision: **similar** → `cofid:18-070`. US 'top sirloin' and UK sirloin are cu
 
 Anchor: USDA 168250, Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted
 
-Decision: **none**. CoFID pork fillet medallions are grilled (water 59.7 vs 69.5 g); the planner food is roasted. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. CoFID pork fillet medallions are grilled (water 59.7 vs 69.5 g); the planner food is roasted. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1426,7 +1426,7 @@ Decision: **none**. CoFID pork fillet medallions are grilled (water 59.7 vs 69.5
 
 Anchor: USDA 172516, Lamb, New Zealand, imported, frozen, leg, whole (shank and sirloin), separable lean only, cooked, roasted
 
-Decision: **same** → `cofid:18-191`. Both New Zealand leg, whole, frozen, roasted, lean; composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:18-191`. Both New Zealand leg, whole, frozen, roasted, lean; composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1440,7 +1440,7 @@ Decision: **same** → `cofid:18-191`. Both New Zealand leg, whole, frozen, roas
 
 Anchor: USDA 173864, Ham, sliced, regular (approximately 11% fat)
 
-Decision: **similar** → `cofid:19-496`. CoFID 'Ham' has fat 3.3 vs 8.8 g: a different product. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:19-496`. CoFID 'Ham' has fat 3.3 vs 8.8 g: a different product. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1454,7 +1454,7 @@ Decision: **similar** → `cofid:19-496`. CoFID 'Ham' has fat 3.3 vs 8.8 g: a di
 
 Anchor: USDA 168626, Beef, variety meats and by-products, liver, cooked, braised
 
-Decision: **similar** → `cofid:18-416`. Ox (beef) liver, stewed vs braised; fat 9.5 vs 5.3 g is not explained. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:18-416`. Ox (beef) liver, stewed vs braised; fat 9.5 vs 5.3 g is not explained. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1468,7 +1468,7 @@ Decision: **similar** → `cofid:18-416`. Ox (beef) liver, stewed vs braised; fa
 
 Anchor: USDA 175168, Fish, salmon, Atlantic, farmed, cooked, dry heat
 
-Decision: **same** → `cofid:16-359`. Both farmed salmon flesh, baked (dry heat); composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:16-359`. Both farmed salmon flesh, baked (dry heat); composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1482,7 +1482,7 @@ Decision: **same** → `cofid:16-359`. Both farmed salmon flesh, baked (dry heat
 
 Anchor: USDA 173690, Fish, salmon, pink, canned, total can contents
 
-Decision: **similar** → `cofid:16-420`. CoFID is drained without bones (calcium 109 mg); USDA is the whole can contents with bones (215 mg). (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:16-420`. CoFID is drained without bones (calcium 109 mg); USDA is the whole can contents with bones (215 mg). (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1496,7 +1496,7 @@ Decision: **similar** → `cofid:16-420`. CoFID is drained without bones (calciu
 
 Anchor: USDA 173709, Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)
 
-Decision: **similar** → `cofid:16-416`. Canned in brine vs in water; protein 24.9 vs 19.4 g. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:16-416`. Canned in brine vs in water; protein 24.9 vs 19.4 g. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1510,7 +1510,7 @@ Decision: **similar** → `cofid:16-416`. Canned in brine vs in water; protein 2
 
 Anchor: USDA 175139, Fish, sardine, Atlantic, canned in oil, drained solids with bone
 
-Decision: **similar** → `cofid:16-440`. CoFID is canned in olive oil; USDA doesn't name the oil. The oil changes the fatty acids (linoleic acid), so kept separate. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:16-440`. CoFID is canned in olive oil; USDA doesn't name the oil. The oil changes the fatty acids (linoleic acid), so kept separate. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1524,7 +1524,7 @@ Decision: **similar** → `cofid:16-440`. CoFID is canned in olive oil; USDA doe
 
 Anchor: USDA 175120, Fish, mackerel, Atlantic, cooked, dry heat
 
-Decision: **same** → `cofid:16-394`. Both mackerel flesh, grilled (dry heat); composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:16-394`. Both mackerel flesh, grilled (dry heat); composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1538,7 +1538,7 @@ Decision: **same** → `cofid:16-394`. Both mackerel flesh, grilled (dry heat); 
 
 Anchor: USDA 171956, Fish, cod, Atlantic, cooked, dry heat
 
-Decision: **same** → `cofid:16-373`. Both cod flesh, baked (dry heat); composition agrees. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **same** → `cofid:16-373`. Both cod flesh, baked (dry heat); composition agrees. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1552,7 +1552,7 @@ Decision: **same** → `cofid:16-373`. Both cod flesh, baked (dry heat); composi
 
 Anchor: USDA 174198, Fish, haddock, cooked, dry heat
 
-Decision: **similar** → `cofid:16-376`. Both haddock flesh, grilled, but sodium 261 vs 92 mg is not explained (the USDA value may reflect processing). (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:16-376`. Both haddock flesh, grilled, but sodium 261 vs 92 mg is not explained (the USDA value may reflect processing). (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1566,7 +1566,7 @@ Decision: **similar** → `cofid:16-376`. Both haddock flesh, grilled, but sodiu
 
 Anchor: USDA 171971, Crustaceans, shrimp, mixed species, cooked, moist heat (may contain additives to retain moisture)
 
-Decision: **none**. No CoFID prawns are cooked the same way: water 84 vs 72 g, protein 15 vs 23 g. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **none**. No CoFID prawns are cooked the same way: water 84 vs 72 g, protein 15 vs 23 g. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
@@ -1580,7 +1580,7 @@ Decision: **none**. No CoFID prawns are cooked the same way: water 84 vs 72 g, p
 
 Anchor: USDA 174217, Mollusks, mussel, blue, cooked, moist heat
 
-Decision: **similar** → `cofid:16-390`. CoFID mussels are bought cooked; water 75.5 vs 61 g. (Claude (AI); not yet checked by the owner, 2026-11-18)
+Decision: **similar** → `cofid:16-390`. CoFID mussels are bought cooked; water 75.5 vs 61 g. (Automated review, without manual human verification (beta), 2026-11-18)
 
 | Candidate | Identity | Facets differ | Stated on one side only | Composition | Rule v1 | Evidence |
 |---|---|---|---|---|---|---|
