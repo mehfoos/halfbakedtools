@@ -1,5 +1,5 @@
 {
-  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Archived copies live in the repository's shared sources/ folder (or as a release asset); scripts/archive_sources.py fetches any that are missing. Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
+  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Archived copies are in the source-archive release (older ones in the shared sources/ folder), listed in sources/archive.json; never commit the files themselves (see sources/README.md). Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
   "sources": [
     {
       "id": "usda-sr",

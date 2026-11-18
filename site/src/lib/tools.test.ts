@@ -47,7 +47,7 @@ for (const slug of folders) {
     if (template) return;
     for (const r of refs) {
       assert.ok(r.archive.length, `${r.id} has no archived copy`);
-      for (const a of r.archive) if (a.file) assert.ok(manifest[a.file]?.sha256, `${r.id}: sources/${a.file} missing (run the Archive sources workflow or upload it)`);
+      for (const a of r.archive) if (a.file) assert.ok(manifest[a.file]?.sha256, `${r.id}: sources/${a.file} missing`);
       // A release copy must be in the registry; until the workflow has verified it, the page says it isn't available yet.
       for (const a of r.archive) if (a.asset) assert.ok(registry.has(a.asset), `${r.id}: ${a.asset} is not listed in sources/archive.json`);
     }
@@ -64,4 +64,28 @@ test("source archive registry: each file has a way in and a checksum or zip part
     if (f.zip) for (const m of f.zip) assert.match(m.sha256, /^[0-9a-f]{64}$/, `${f.file}: ${m.name} needs a sha256`);
     else assert.match(f.sha256 ?? "", /^[0-9a-f]{64}$/, `${f.file}: needs the sha256 of the checked copy`);
   }
+});
+
+// Reference files (PDFs, spreadsheets, datasets, saved web pages) are kept in the source-archive release, never
+// committed: anything committed stays in the repository's history for good. Only the copies committed before
+// Nov 2026 (listed in the old manifests) are allowed until they are moved to the release. See sources/README.md.
+test("no new reference files are committed to the repository", () => {
+  const legacy = new Set<string>([
+    ...Object.keys(manifest).map((f) => join(ROOT, "sources", f)),
+    ...(json(join(ROOT, "sources", "food-tables", "manifest.json")).files as { file: string }[])
+      .map((f) => join(ROOT, "sources", "food-tables", f.file)),
+  ]);
+  const listsAndNotes = /\/sources\/(food-tables\/)?(README\.md|[^/]+\.json)$/;
+  for (const f of walk(join(ROOT, "sources")))
+    assert.ok(legacy.has(f) || listsAndNotes.test(f.replaceAll("\\", "/")),
+      `${f.slice(ROOT.length)}: don't commit reference files; list it in sources/archive.json and attach it to the source-archive release`);
+  const skip = new Set(["node_modules", "dist", "sources"]);
+  const files = (dir: string): string[] => readdirSync(dir).flatMap((f) => {
+    if (f.startsWith(".") || skip.has(f)) return [];
+    const p = join(dir, f);
+    return statSync(p).isDirectory() ? files(p) : [p];
+  });
+  const kind = /\.(pdf|xlsx?|xlsm|ods|docx?|odt|zip|7z|gz|tar|xml|csv|tsv|mht(ml)?|html?|epub)$/i;
+  for (const f of files(ROOT))
+    assert.ok(!kind.test(f), `${f.slice(ROOT.length)}: reference files go in the source-archive release, not the repository`);
 });

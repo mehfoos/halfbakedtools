@@ -18,10 +18,10 @@ automatically.
 4. **Write the code** in `web/`. Keep calculations in pure modules (no DOM) with `*.test.ts` tests beside them; they
    run with `npm test` and must pass before anything deploys.
 5. **Cite everything.** Add each source to `references.json`, in the order the tool first cites it, and cite it in the
-   text with `cite("id")`, which produces a numbered IEEE-style link ([1], [2], …). Each source needs an archived copy:
-   give a `fetch` URL and the *Archive sources* workflow saves it to `sources/` when the change reaches `main`. If the
-   publisher blocks downloads, download it by hand and commit it as `sources/<file>`. The tests fail if a citation
-   isn't in `references.json` or a reference has no archived copy.
+   text with `cite("id")`, which produces a numbered IEEE-style link ([1], [2], …). Each source needs an archived copy
+   in the `source-archive` release, given as `{"asset": "<file>"}`; follow `sources/README.md` (check the file, list
+   it in `sources/archive.json`, the owner attaches it). **Never commit the file itself.** The tests fail if a
+   citation isn't in `references.json`, a reference has no archived copy, or a reference file is committed.
 6. **Record verification** in `VERIFICATION.md`: each value or table, the document and page it was checked against,
    and the date. Until something is checked, say so on the methods page.
 7. **Data:** anything in `data/` (`*.json`, any depth) is published at `/tools/<slug>/data/…`. Scripts that build it

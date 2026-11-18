@@ -14,8 +14,8 @@
 
 - **Deploys** run on every push to `main` that touches the site, a tool, the sources or the build config.
   The build runs every test first; a failing test stops the deploy.
-- **Archived sources:** when a tool's `references.json` changes on `main`, the *Archive sources* workflow fetches any
-  missing copies into `sources/`. Some publishers block automated downloads (the WHO, for example); the workflow log
-  lists those, and they can be downloaded by hand and committed with the file name given in `references.json`.
-  The tests fail until every reference has an archived copy.
+- **Archived sources:** kept in the `source-archive` release, never committed. When an editor adds a reference,
+  they check the file and list it in `sources/archive.json`; the owner attaches it to the release by hand (*Releases*
+  -> *Source archive* -> *Edit*). See `sources/README.md`. The tests fail until every reference has an archived
+  copy, and if a reference file is committed.
 - **Tool data jobs** are named `<slug>-*.yml` and described in the tool's README.

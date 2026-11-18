@@ -61,18 +61,18 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
 - **In practice:**
   - **Citations:** IEEE style, [1], [2], …, numbered in each tool's `references.json`, in the order first cited.
   - **Reference list:** collapsible on the tool's pages. Each entry has the original link and a link to the archived
-    copy in `sources/`.
-  - **Archived copies:** kept as files of the repository's `source-archive` release, not in the repository itself,
-    so the repository stays small however many sources are added. `sources/archive.json` lists each file with its
-    official address, publisher, licence and the SHA-256 checksum of the copy that was checked; a workflow the
-    owner runs downloads, checks and uploads them, and records the verified checksums in
-    `sources/release-manifest.json`. A file that differs from the checked copy is never accepted. (Older copies
-    in `sources/` have their checksums in `sources/manifest.json` and will be moved to the release.)
-  - **Uploaded files:** documents the owner uploads are listed in `sources/archive.json`, staged on the temporary
-    `source-inbox` branch (deleted by the workflow once they are in the release) and cited the same way.
+    copy (in the `source-archive` release, or `sources/` for older files).
+  - **Archived copies:** kept as files of the repository's `source-archive` release, never committed to the
+    repository, so it stays small however many sources are added. An editor checks each new file is the right one
+    and lists it in `sources/archive.json` with its official address, publisher, licence and the SHA-256 checksum
+    of the copy checked; the owner attaches it to the release by hand; the editor then verifies the release copy
+    (`scripts/archive_release.py --check`) and commits the result, `sources/release-manifest.json`. A file that
+    differs from the checked copy is never accepted. (Older copies in `sources/` have their checksums in
+    `sources/manifest.json` and will be moved to the release.)
   - **Blocked downloads:** if a document can't be downloaded automatically, say so and ask the owner to download it.
     Never substitute a guess, and never work around a site's blocks or terms.
-  - **Tests:** they fail if a citation is missing from the reference list or a reference has no archived copy.
+  - **Tests:** they fail if a citation is missing from the reference list, a reference has no archived copy, or a
+    new reference file is committed to the repository.
 
 ## 4. Privacy by default
 
@@ -157,6 +157,7 @@ reason.
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-18 | New archived copies are checked by an editor and attached to the release by the owner by hand; the editor verifies them with `archive_release.py --check`. No reference file is committed, on any branch; a test enforces it. The old *Archive sources* workflow, which committed downloads to `sources/`, is removed | Owner's choice: a manual upload after checking is simpler than more automation, and the repository must not grow |
 | 2026-11-18 | Archived copies go to a `source-archive` GitHub release, listed in `sources/archive.json` with the checksum of the checked copy; an owner-run workflow downloads, checks and uploads them. Older files in `sources/` (and their history) to be moved in a one-off clean-up later | Committed files stay in the repository's history for good: the repository had reached 127 MB, a third of it files already deleted. Releases are created only when the owner runs the workflow |
 | 2026-11-18 | Home page lists topics in a set order, food and health first (`TOPIC_ORDER` in `site/src/lib/tools.ts`); About says where source licences are recorded and how to ask for removal | Owner's request; the evidence-based tools are the site's main purpose. Licence text stays out of tool pages, as agreed |
 | 2026-11-17 | Rule made explicit: data is never invented, estimated, interpolated or extrapolated; missing stays missing and is shown as NA, never as zero (principle 2; also in `AGENTS.md`) | Owner's requirement; zero-filling missing values could understate intake against a limit and was not disclosed per food |

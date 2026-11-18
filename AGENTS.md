@@ -21,15 +21,18 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
    change the result. Read principle 2 in `docs/PRINCIPLES.md` before touching any calculation that uses data.
 3. **Cite and archive.**
    - Every fact on the site cites a source with `cite("id")`; the id is listed in the tool's `references.json`.
-   - Every reference has an archived copy: in the **`source-archive` release** for anything new (list it in
-     `sources/archive.json` with its official download address or "manual", and the SHA-256 of the copy you
-     checked; the owner runs the *Archive sources to release* workflow), or in `sources/` for older files. Don't
-     commit new PDFs or datasets to the repository: they stay in its history for good. See `sources/README.md`.
+   - **Never commit reference files** (PDFs, spreadsheets, datasets, zips, saved web pages) to the repository, on
+     any branch, even temporarily: they stay in its history for good. The tests fail if you do.
+   - Every reference has an archived copy in the **`source-archive` release** (older ones are still in `sources/`
+     until a clean-up moves them). For a new one: find the official copy and check it's the right document and
+     version; list it in `sources/archive.json` with its origin, licence and SHA-256; give it to the owner (or ask
+     them to download it), who attaches it to the release by hand; then run
+     `python3 -I scripts/archive_release.py --check`, commit `sources/release-manifest.json`, and cite it as
+     `{"asset": "<file>"}`. You can't create or change releases yourself. See `sources/README.md`.
    - If you can't download a document (a blocked site or a paywall), **say so and ask the owner to download and upload
      it**. Don't work around the block, and don't fall back to a guess.
-   - A document the owner uploads: record it in `sources/archive.json` (with its checksum), commit it to the
-     temporary orphan branch `source-inbox` (never to `main`), and ask the owner to run the workflow, which uploads
-     it after checking it and then deletes the branch; then cite it.
+   - A document the owner uploads to you: check it the same way, list it in `sources/archive.json`, and ask the
+     owner to attach it to the release. Don't commit it.
 4. **Privacy.** No cookies, analytics, third-party scripts, fonts or embeds; no sending visitor input anywhere;
    local storage only when the visitor opts in.
 5. **Don't mislead with charts.** Use linear scales, no silent clipping, distinct targets, and never colour alone.

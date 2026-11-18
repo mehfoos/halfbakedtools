@@ -1,5 +1,5 @@
 {
-  "_comment": "Archived copies of national food composition tables used, or being prepared, for the nutrient planner. File names add a short table prefix to the publisher's name ('originalName'). Not managed by scripts/archive_sources.py (which handles the top level of sources/ only).",
+  "_comment": "Archived copies of national food composition tables used, or being prepared, for the nutrient planner. File names add a short table prefix to the publisher's name ('originalName'). Being moved: these files are now in the source-archive release (sources/archive.json) and will be removed from the repository.",
   "files": [
     {
       "file": "bls4_BLS_3_02_4_0_Code_Mapping_DE_EN.xlsx",

@@ -1,5 +1,5 @@
 {
-  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Each needs an archived copy: give 'fetch' (one URL or a list to try) and the Archive sources workflow saves it as sources/<file>; set 'render': true for web pages. Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
+  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Each needs an archived copy in the source-archive release, given as {\"asset\": \"<file>\"} and listed in sources/archive.json; never commit the file itself (see sources/README.md). Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
   "sources": [
     {
       "id": "example-2020",
@@ -9,7 +9,7 @@
       "url": "https://doi.org/10.0000/example",
       "licence": "Licence or reuse terms",
       "usedFor": "What the tool uses it for",
-      "archive": [{ "file": "author-2020-short-title.pdf", "fetch": "https://example.org/paper.pdf" }]
+      "archive": [{ "asset": "author2020_short-title.pdf" }]
     }
   ]
 }

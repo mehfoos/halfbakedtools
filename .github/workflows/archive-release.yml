@@ -1,9 +1,9 @@
-# Keeps the reference files listed in sources/archive.json in the "source-archive" release, so large files stay
-# out of the repository's history. Run by hand from the Actions tab (Archive sources to release -> Run workflow):
-# it downloads what it can from the official sites, checks every file against the checksum recorded when it was
-# first checked, uploads matching files, and lists anything that must be attached by hand. Files a publisher will
-# not let a script download can be staged on the temporary "source-inbox" branch instead: they are checked the same
-# way, and the branch is deleted once all of them are in the release. See sources/README.md.
+# Checks the reference files listed in sources/archive.json against the "source-archive" release and records the
+# verified checksums in sources/release-manifest.json. Run by hand from the Actions tab. It was used to fill the
+# release with the files collected before Nov 2026 (downloading those it could from the official sites). New files
+# are attached to the release by hand by the owner, after an editor has checked them; an editor then runs
+# `python3 -I scripts/archive_release.py --check` (or this workflow) to verify them. See sources/README.md.
+# Reference files are never committed to the repository.
 name: Archive sources to release
 on:
   workflow_dispatch:
@@ -21,19 +21,8 @@ jobs:
           gh release view source-archive >/dev/null 2>&1 || gh release create source-archive \
             --title "Source archive" \
             --notes "Archived copies of reference files (datasets and documents) cited by Half-Baked Tools, kept here instead of in the repository. What each file is, its publisher, licence, origin and SHA-256 checksum are listed in sources/archive.json and sources/release-manifest.json. Each file keeps its publisher's licence."
-      - name: Collect staged files from the source-inbox branch, if there is one
-        run: |
-          mkdir inbox
-          if git fetch --depth=1 origin source-inbox; then git archive FETCH_HEAD | tar -x -C inbox; fi
-          ls -l inbox
       - name: Fetch, check and upload
-        env:
-          ARCHIVE_INBOX: inbox
-          INBOX_CLEAR: ${{ runner.temp }}/inbox-clear
         run: python3 -I scripts/archive_release.py
-      - name: Delete the source-inbox branch once everything on it is in the release
-        run: |
-          if [ -f "$RUNNER_TEMP/inbox-clear" ]; then git push origin --delete source-inbox; fi
       - name: Commit the checksum list
         run: |
           git config user.name "github-actions[bot]"
