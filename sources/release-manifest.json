@@ -1,1 +1,176 @@
-{}
+{
+  "bls4_BLS_3_02_4_0_Code_Mapping_DE_EN.xlsx": {
+    "sha256": "d6ff6b750acb8d2e19d78729e400660795e462c827c6825bdb5b757109c85f85",
+    "bytes": 849912,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "note": "staged by the owner (publisher blocks scripted downloads)"
+  },
+  "bls4_BLS_4_0_Components_DE_EN.xlsx": {
+    "sha256": "359aefcd2086f45e62ff3dbd0c8536306e594a5806ac325d8bf86f484561bdf4",
+    "bytes": 21741,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "note": "staged by the owner (publisher blocks scripted downloads)"
+  },
+  "bls4_BLS_4_0_Data_2025_EN.xlsx": {
+    "sha256": "89b7d248bd49e22e33103db47138e87b038b7c16d5367bf887c015f08d6ddfc7",
+    "bytes": 14092939,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "note": "staged by the owner (publisher blocks scripted downloads)"
+  },
+  "bls4_BLS_4_0_Documentation_EN.pdf": {
+    "sha256": "c3a7c0d44d4a7638da935de75a37e06e78409f9306262e6fe060a9371adaeee6",
+    "bytes": 469728,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "note": "staged by the owner (publisher blocks scripted downloads)"
+  },
+  "bls4_BLS_4_0_Dokumentation_DE.pdf": {
+    "sha256": "b3ebfc7173c91bba3df91a05262f060f13aa73ec2da8ea4edd5330f7f0bf58a7",
+    "bytes": 488455,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "note": "staged by the owner (publisher blocks scripted downloads)"
+  },
+  "bls4_Erratum_BLS_4_0_DE.pdf": {
+    "sha256": "ae021760436f1b6af09fd1df46e93b64d94e415f0a3b665e1d901cdee4ddd8c3",
+    "bytes": 767250,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "note": "staged by the owner (publisher blocks scripted downloads)"
+  },
+  "ciqual2025_Table_Ciqual_2025_doc_FR_2025_11_19.pdf": {
+    "sha256": "b95704eb6bb775e73e6f5824eca8bebed1634bb3b3d9631dae1987828e5a95d5",
+    "bytes": 4236848,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666748"
+  },
+  "ciqual2025_XML_2025_11_03.zip": {
+    "sha256": "1a5fb5d2b873cb140ba82b6c2e1e155eefda509dc1799ae0b41e2b85bc8e05d4",
+    "bytes": 2124636,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": [
+      "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666252",
+      "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666250",
+      "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666249",
+      "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666246",
+      "https://entrepot.recherche.data.gouv.fr/api/access/datafile/666248"
+    ]
+  },
+  "cofid2021_McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021.xlsx": {
+    "sha256": "436e9445ef2adb2a75f3d7edd51302de3adad25385f9795fc94ba58bd030e97d",
+    "bytes": 4629542,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://assets.publishing.service.gov.uk/media/60538b91e90e07527df82ae4/McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021..xlsx"
+  },
+  "cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf": {
+    "sha256": "cbac83af403531f1db260a15de058ceca1c1bae6707a8748ee3788fee7f945ec",
+    "bytes": 777103,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://assets.publishing.service.gov.uk/media/60538e66d3bf7f03249bac58/McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021.pdf"
+  },
+  "fineli20_Fineli_Rel20__74_ravintotekijaa.zip": {
+    "sha256": "e7e6bd8d4b9261d751229e763dad436b297d36d48fe853faf49e1fd2a116d262",
+    "bytes": 1954388,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "note": "staged by the owner (publisher blocks scripted downloads)"
+  },
+  "fineli20_Fineli_nutrient_factors.pdf": {
+    "sha256": "75abe29cdaa79d8eb9a9d85ceeb539345300bdd1f666ffb8a78a1c1a30f2e6c6",
+    "bytes": 180839,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "note": "staged by the owner (publisher blocks scripted downloads)"
+  },
+  "frida55_Frida5.5_Documentation_English.pdf": {
+    "sha256": "9bddd4bffff553484e7f7e4874904cc4beaa32596314548965bc3a803dd6b694",
+    "bytes": 2009881,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://ndownloader.figshare.com/files/60901597"
+  },
+  "frida55_Frida5.5_Dokumentation_Dansk.pdf": {
+    "sha256": "440290f6a39a15416535e6d90948479cc8c070e9f00e24d9d0840b4301abed53",
+    "bytes": 1907311,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://ndownloader.figshare.com/files/60901594"
+  },
+  "frida55_Frida_5.5_Dataset.xlsx": {
+    "sha256": "6b1952a35df3c0d4d7b2699ae0a3e377add42b231108309329b40256ef600e5e",
+    "bytes": 12298422,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://ndownloader.figshare.com/files/60901603"
+  },
+  "japan_1374049_0r10.xlsx": {
+    "sha256": "c72e78e30ea096315603f945f9b1f8d0581588b14dff44aed765474e3aa51efe",
+    "bytes": 47662,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://www.mext.go.jp/component/english/__icsFiles/afieldfile/2017/06/22/1374049_0r10.xlsx"
+  },
+  "japan_20230428-mxt_kagsei-mext_00001_021.pdf": {
+    "sha256": "50042ac896a73964df4ea019fd3fe649fc2d84afc65498b970ce1fc1062f6af8",
+    "bytes": 1537993,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://www.mext.go.jp/content/20230428-mxt_kagsei-mext_00001_021.pdf"
+  },
+  "japan_20230428-mxt_kagsei-mext_00001_031.pdf": {
+    "sha256": "79588a2b9532a4aeac1dfbddb2b217b440f8879cc3309c56bdf484a13ecadfd6",
+    "bytes": 1246667,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://www.mext.go.jp/content/20230428-mxt_kagsei-mext_00001_031.pdf"
+  },
+  "japan_20260327-mxt_kagsei-mext-000029402_0001.pdf": {
+    "sha256": "d1196cc8fc5ddab1faa5e4a2b4ef9ed2ccc2ea333c9994ee79d9a49f2628f116",
+    "bytes": 5267334,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://www.mext.go.jp/content/20260327-mxt_kagsei-mext-000029402_0001.pdf"
+  },
+  "japan_20260327-mxt_kagsei-mext-000029402_02.xlsx": {
+    "sha256": "0d5a77077dd6cd91cbc2e6e317b8b218a38728c409eed452f1c10635a0d3099c",
+    "bytes": 1973402,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://www.mext.go.jp/content/20260327-mxt_kagsei-mext-000029402_02.xlsx"
+  },
+  "japan_20260327-mxt_kagsei-mext-000029402_04.xlsx": {
+    "sha256": "8786e8581e03ae25e2ecd770c48a8d1060e61ae6f7464cf1607614dcde543bc4",
+    "bytes": 936856,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://www.mext.go.jp/content/20260327-mxt_kagsei-mext-000029402_04.xlsx"
+  },
+  "japan_20260327-mxt_kagsei-mext-000029402_09.xlsx": {
+    "sha256": "435ab7125d3de26fba968de952b463b71d011c6b0f50e8966112293c521fd5fd",
+    "bytes": 1481333,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://www.mext.go.jp/content/20260327-mxt_kagsei-mext-000029402_09.xlsx"
+  },
+  "japan_20260327-mxt_kagsei-mext-000029402_16.xlsx": {
+    "sha256": "fb61037c7f66af0db1fb0729977913a629bc17097bc3ff7bf75217f9110acabb",
+    "bytes": 68693,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "url": "https://www.mext.go.jp/content/20260327-mxt_kagsei-mext-000029402_16.xlsx"
+  },
+  "kfcdb93_StandardFoodCompositionTableEng.xlsx": {
+    "sha256": "4ec31824eba6299b570ec9ea1aebb6a6f6e90237aa6ad2f86af8eb1d31b165d8",
+    "bytes": 2356279,
+    "retrieved": "2026-11-18",
+    "verified": "2026-11-18",
+    "note": "staged by the owner (publisher blocks scripted downloads)"
+  }
+}
