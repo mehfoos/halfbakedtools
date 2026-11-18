@@ -28,7 +28,7 @@ export function setupBuilder(app: App, charts: Charts) {
       return;
     }
     list.innerHTML = `<div class="table-scroll builder-table"><table><thead><tr><th>Food</th><th>Amount</th><th class="num">kcal</th><th class="num">Protein</th><th></th></tr></thead><tbody>${
-      its.map((it, i) => `<tr><td>${esc(it.food.name)}</td>
+      its.map((it, i) => `<tr><td>${esc(it.food.name)}${it.food.blend ? ' <span class="tag">blended</span>' : ""}</td>
         <td><span class="amt"><input type="number" min="0" step="${it.food.unit === "g" ? 5 : 0.5}" data-row="${i}" value="${Math.round(unitAmount(it.food, it.grams) * 10) / 10}" aria-label="Amount of ${esc(it.food.name)}" /> ${esc(unitLabel(it.food))}${it.food.unit !== "g" ? ` <span class="muted small">(${Math.round(it.grams)} g)</span>` : ""}</span></td>
         <td class="num">${fmt(amountOf("energy", it.food, it.grams))}</td>
         <td class="num">${fmt(amountOf("protein", it.food, it.grams))} g</td>
@@ -74,7 +74,7 @@ export function setupBuilder(app: App, charts: Charts) {
     hits = q.length < 2 ? [] : app.dietFoods().filter((f) => matches(f, q))
       .sort((a, b) => Number(b.common) - Number(a.common) || a.name.length - b.name.length).slice(0, 40);
     active = -1;
-    addList.innerHTML = hits.map((f, i) => `<li role="option" id="add-${i}" data-i="${i}">${esc(f.name)}${f.common ? ' <span class="tag">common</span>' : ""}<span class="path">${esc(app.categoryName.get(f.cat) ?? "")} › ${esc(f.group)}</span></li>`).join("")
+    addList.innerHTML = hits.map((f, i) => `<li role="option" id="add-${i}" data-i="${i}">${esc(f.name)}${f.common ? ' <span class="tag">common</span>' : ""}${f.blend ? ' <span class="tag">blended</span>' : ""}<span class="path">${esc(app.categoryName.get(f.cat) ?? "")} › ${esc(f.group)}</span></li>`).join("")
       || (q.length >= 2 ? `<li aria-disabled="true">No matches</li>` : "");
     addList.hidden = !addList.childElementCount;
     addSearch.setAttribute("aria-expanded", String(!addList.hidden));

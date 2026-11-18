@@ -3,7 +3,7 @@
 // each section (see main.ts).
 import { splitAssessable, type ResolvedTarget } from "../solver.ts";
 import type { Standard } from "../profiles.ts";
-import { dietOk, isOn, type FoodsData, type PlannerFood } from "../foods.ts";
+import { applySource, dietOk, isOn, type BlendData, type FoodsData, type PlannerFood } from "../foods.ts";
 import { ORDER, analyse, gapsOf, totals, type Report } from "../analysis.ts";
 import { personFrom, targetsFor, type Person } from "../person.ts";
 import { decode, encode, fresh, loadRemembered, remember, type Settings } from "../state.ts";
@@ -20,6 +20,7 @@ export type Item = { food: PlannerFood; grams: number };
 export type App = {
   root: HTMLElement;
   data: FoodsData;
+  blend: BlendData | null;          // the beta blended source, once loaded
   standards: Standard[];
   s: Settings;                      // the settings; the single source of truth for what the page shows
   toggled: Set<string>;             // food ids switched away from the preset (kept as a set for speed)
@@ -34,6 +35,8 @@ export type App = {
   items(list: { id: string; grams: number }[]): Item[];
   report(items: Item[]): Report;                  // a day's foods measured against the targets
 
+  /** Put the values of the chosen food source (and, for the blend, standard) on the foods. */
+  applySource(): void;
   save(): void;                                   // write the settings to the page address (and device, if opted in)
   load(s: Settings): void;                        // replace the settings (import)
 };
@@ -46,7 +49,7 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
   const s = location.search.length > 1 ? decode(location.search) : remembered ?? fresh();
 
   const app: App = {
-    root, data, standards, s,
+    root, data, standards, s, blend: null,
     toggled: new Set(s.toggled),
     foodById: new Map(data.foods.map((f) => [f.id, f])),
     nutrientMeta: new Map(data.nutrients.map((n) => [n.key, { label: n.label, unit: n.unit }])),
@@ -66,6 +69,10 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
       // Vitamin D is reported on its own line unless the person has asked for it to be planned from food.
       const aside = new Set(app.s.vitaminD ? [] : ["vitaminD"]);
       return analyse(totals(items, ORDER), targets, new Set(notAssessed.map((t) => t.key)), app.nutrientMeta, aside, gapsOf(items, ORDER));
+    },
+
+    applySource() {
+      applySource(app.data, app.blend, app.blend ? app.s.source : "usda", app.person().standard.id);
     },
 
     save() {

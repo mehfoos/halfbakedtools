@@ -137,7 +137,7 @@ Caveats (`caveats.csv`) are attached to the values they apply to and shown with 
 style. Fallbacks are separate definitions too: USDA's C18:2 "undifferentiated" when n-6 isn't given, CoFID's total C20:5
 when n-3 isn't given, USDA's label fat when total lipid isn't given.
 
-## Blending (step 5, beta: not yet used by the planner)
+## Blending (step 5, beta)
 
 For each food matched *same* or *equivalent*, and each definition, `blend.py` gives the **median** of the tables'
 values (owner's decision; with two tables, their average) and the range. A value is left out, with the reason shown,
@@ -150,6 +150,22 @@ column and published cell.
 The preview's **check of the definitions** compares the tables across the matched foods: same-definition pairs
 centre near 1 (protein 0.97, calcium and potassium 1.00); different definitions show the expected gap (UK-factor
 energy about 9% lower; vitamin E equivalents about 26% higher).
+
+## In the planner (step 6, beta)
+
+`planner_pack.py` turns the blend into `data/foods/foods-blend.json`, an overlay on the USDA data that the planner
+loads when the visitor chooses "USDA + UK CoFID, blended". Only the 142 blended foods change; every other food keeps
+its USDA values. Per standard, each nutrient comes from the definition `standards.csv` chooses; salt and EPA + DHA
+are calculated from the blended parts; nutrients CoFID doesn't give (amino acids, vitamin D2 and D3) keep the USDA
+value, marked "USDA only". A missing value stays missing. For each blended food in a day, the page shows the median,
+the range, each table's published value (and why any was left out), the two-fold flags, and the caveats, in the
+site's caveat style. `test_planner_pack.py` checks the file is current and follows the blend; `web/foods.test.ts`
+checks that switching source and standard changes only the blended foods and restores USDA exactly.
+
+```bash
+python3 -I tools/nutrient-planner/pipeline/blend/blend.py
+python3 -I tools/nutrient-planner/pipeline/blend/planner_pack.py
+```
 
 ## Definitions by standard
 

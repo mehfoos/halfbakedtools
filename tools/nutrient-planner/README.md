@@ -29,7 +29,9 @@ pipeline/             Python (standard library only)
   crosswalk/          links from planner foods to records in other food tables (UK CoFID, ...), reviewed by
                       hand; method in crosswalk/README.md. Not merged into foods.json yet
   tables/             one food file per national table (tables/README.md); cofid.py -> data/foods/foods-cofid.json.
-                      Built but not yet offered on the page
+                      Built but not offered on the page
+  blend/              the blended food database (blend/README.md); planner_pack.py -> data/foods/foods-blend.json,
+                      the beta "USDA + UK CoFID, blended" source on the page
 ```
 
 ## Code map (`web/`)
@@ -75,6 +77,8 @@ Where to change things:
 ```bash
 python3 -I tools/nutrient-planner/pipeline/build_targets.py
 python3 -I tools/nutrient-planner/pipeline/build_foods.py     # downloads ~10 MB from USDA
+python3 -I tools/nutrient-planner/pipeline/blend/blend.py      # then planner_pack.py (see pipeline/blend/README.md)
+python3 -I tools/nutrient-planner/pipeline/blend/planner_pack.py
 ```
 
 ## First-time setup

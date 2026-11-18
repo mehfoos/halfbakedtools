@@ -77,6 +77,14 @@ const tool = `${base}tools/nutrient-planner/`;
           </div>
           <span class="sans" id="foodCount"></span>
         </div>
+        <div class="food-head">
+          <div class="segmented" role="radiogroup" aria-label="Food data">
+            <label><input type="radio" name="source" value="usda" /><span>USDA data</span></label>
+            <label><input type="radio" name="source" value="blend" /><span>USDA + UK CoFID, blended</span></label>
+          </div>
+          <span class="small muted sans" id="sourceStatus" role="status" aria-live="polite"></span>
+        </div>
+        <Caveat kind="beta" id="blendNote" hidden>For foods found to be the same food in the USDA and UK (CoFID) tables, each nutrient is the median of the tables, with the range shown; the foods are marked <span class="tag">blended</span>. Matches and values were made by automated steps without manual human verification. Some nutrients are defined differently by each target standard, so the values follow the standard you chose. All other foods use the USDA data unchanged. <a href="https://github.com/mehfoos/halfbakedtools/tree/main/tools/nutrient-planner/pipeline/blend">How the blend is made</a></Caveat>
         <details id="foodsBox">
           <summary>Choose foods <span class="summary-note" id="foodsNote"></span></summary>
           <div class="details-body">

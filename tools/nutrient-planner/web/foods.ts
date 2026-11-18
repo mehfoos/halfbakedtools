@@ -6,6 +6,8 @@ export type PlannerFood = Food & {
   noteRef?: string | null;   // the reference a food's note rests on
   fortified?: boolean | null; // a US product with nutrients added; not part of the "Everything" preset
   wider?: boolean | null;     // part of the "Wider selection" preset (rules in pipeline/wider_selection.json)
+  blend?: BlendFood | null;   // set while the beta blended source is in use and this food is blended
+  usdaPer100g?: Record<string, number>;   // the USDA values, kept while the blend is applied
 };
 export type FoodsData = {
   generated?: string; missing?: boolean;
@@ -24,6 +26,54 @@ export function unpack(raw: { keys: string[]; foods: RawFood[]; nutrients: Nutri
     return { ...rest, per100g } as PlannerFood;
   });
   return { generated: raw.generated, missing: raw.missing, nutrients: raw.nutrients ?? [], categories: raw.categories ?? [], foods };
+}
+
+// ---- The beta blended source: an overlay on the USDA data (built by pipeline/blend/planner_pack.py).
+// Each overlaid food has values per target standard, because the standards define some nutrients differently.
+export type Source = "usda" | "blend";
+type StdRows<T> = Record<string, T>;
+export type BlendFood = {
+  records: { table: string; code: string; name: string; borrowedFrom?: string }[];
+  match: { by: string; date: string; reason: string };
+  caveats: string[];
+  v: StdRows<(number | null)[]>;
+  r: StdRows<([number, number, number] | null)[]>;   // [min, max, number of tables] where more than one source
+  d: StdRows<(string | null)[]>;                     // the definition used, or null for a USDA-only value
+  c: StdRows<Record<string, string[]>>;              // caveat ids per nutrient key
+  s: Record<string, string>;                         // each definition's values per table, in words
+};
+export type BlendData = {
+  keys: string[]; usdaOnly: string[]; tables: string[];
+  definitions: Record<string, string>;
+  caveats: Record<string, { kind: string; text: string }>;
+  foods: Record<string, BlendFood>;
+};
+
+/** One nutrient of a blended food under a standard, for display. */
+export type BlendValue = { key: string; value: number | null; range: [number, number, number] | null; definition: string | null; caveats: string[] };
+
+/**
+ * Switch the food values between the USDA data and the blend for one standard. The USDA values are kept on each
+ * food the first time, so switching back restores them exactly. Foods the blend doesn't cover are never touched.
+ */
+export function applySource(data: FoodsData, blend: BlendData | null, source: Source, standard: string) {
+  const std = blend && ["uk", "us", "eu"].includes(standard) ? standard : "uk";
+  for (const f of data.foods) {
+    const b = source === "blend" ? blend?.foods[f.id] : undefined;
+    if (!b && !f.usdaPer100g) continue;
+    f.usdaPer100g ??= f.per100g;
+    f.blend = b ?? null;
+    if (!b) { f.per100g = f.usdaPer100g; continue; }
+    const per100g: Record<string, number> = {};
+    blend!.keys.forEach((k, i) => { const v = b.v[std][i]; if (v !== null && v !== undefined) per100g[k] = v; });
+    f.per100g = per100g;
+  }
+}
+
+/** Every nutrient of a blended food under a standard. */
+export function blendValues(blend: BlendData, b: BlendFood, standard: string): BlendValue[] {
+  const std = ["uk", "us", "eu"].includes(standard) ? standard : "uk";
+  return blend.keys.map((key, i) => ({ key, value: b.v[std][i], range: b.r[std][i], definition: b.d[std][i], caveats: b.c[std][key] ?? [] }));
 }
 
 export type Base = "common" | "wider" | "all" | "none";

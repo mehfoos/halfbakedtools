@@ -1,6 +1,6 @@
 // "Share or save": copy a link, export or import a settings file, and the opt-in "remember on this device".
 import { exportFile, forget, importFile, remember } from "../state.ts";
-import type { App } from "./app.ts";
+import { cite, type App } from "./app.ts";
 import { $, esc, int } from "./dom.ts";
 
 /** `onImport` is called after settings have been loaded from a file. */
@@ -34,7 +34,7 @@ export function setupShare(app: App, onImport: () => void) {
 
   // Where the food data came from, at the foot of the tool.
   const { refreshUrl, methodsUrl } = root.dataset;
-  $(root, "#dataInfo").innerHTML = `Food data: USDA FoodData Central, snapshot from ${esc(app.data.generated ?? "unknown date")} (${int(app.data.foods.length)} foods). `
+  $(root, "#dataInfo").innerHTML = `Food data: USDA FoodData Central, snapshot from ${esc(app.data.generated ?? "unknown date")} (${int(app.data.foods.length)} foods); the beta blended option also uses UK CoFID 2021 ${cite("cofid-2021")}. `
     + (refreshUrl ? `<a href="${esc(refreshUrl)}">Request a data refresh</a> (allowed once every 3 months). ` : "")
     + `<a href="${esc(methodsUrl)}">Methods and sources</a>`;
 }

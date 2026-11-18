@@ -1,10 +1,10 @@
 // The advice and caveats shown with a day's results. Each statement of fact carries its reference.
 import type { Report } from "../analysis.ts";
-import { avoidReasons } from "../foods.ts";
+import { avoidReasons, blendValues } from "../foods.ts";
 import type { App, Item } from "./app.ts";
 import { cite } from "./app.ts";
-import { esc } from "./dom.ts";
-import { caveat } from "../../../../site/src/lib/caveats.ts";
+import { esc, fmt } from "./dom.ts";
+import { caveat, KINDS, type CaveatKind } from "../../../../site/src/lib/caveats.ts";
 
 /** Shown above every set of results. */
 export const CAVEAT = caveat("estimate", `Results use average food composition, mostly from US data ${cite("usda-sr")}, so real foods vary with brand, variety and cooking. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).`);
@@ -33,5 +33,45 @@ export function foodNotes(app: App, items: Item[]) {
   // Suggestions leave such foods out, so these warnings matter in the builder.
   const warnings = avoidReasons(items.map((i) => i.food), { age: app.s.age, life: app.person().life })
     .map((r) => `<p class="notice bad small"><b>Advised to avoid:</b> ${esc(r.text)} ${cite(r.ref)}</p>`).join("");
-  return warnings + (notes.length ? `<p class="small muted sans">${notes.join(" ")}</p>` : "");
+  return warnings + (notes.length ? `<p class="small muted sans">${notes.join(" ")}</p>` : "") + blendNotes(app, items);
+}
+
+/**
+ * For blended foods in a day (beta source only): where each value came from, its range across the tables, the
+ * definition used under the chosen standard, and its caveats, each in the site's one caveat style.
+ */
+export function blendNotes(app: App, items: Item[]) {
+  const blend = app.blend;
+  const foods = [...new Map(items.filter((i) => i.food.blend).map((i) => [i.food.id, i.food])).values()];
+  if (!blend || !foods.length) return "";
+  const std = app.person().standard.id;
+  const kind = (k: string): CaveatKind => (k in KINDS ? (k as CaveatKind) : "assumption");
+  const sections = foods.map((f) => {
+    const b = f.blend!;
+    const used = new Map<string, number>();   // caveat id -> its number in this food's list
+    const mark = (ids: string[]) => ids.map((id) => {
+      if (!used.has(id)) used.set(id, used.size + 1);
+      return `<sup>${used.get(id)}</sup>`;
+    }).join("");
+    b.caveats.forEach((id) => mark([id]));
+    const rows = blendValues(blend, b, std).filter((v) => v.value !== null && app.nutrientMeta.has(v.key)).map((v) => {
+      const meta = app.nutrientMeta.get(v.key)!;
+      const name = v.definition ? (blend.definitions[v.definition] ?? meta.label).replace(/, calculated:.*$/, "") : meta.label;
+      const range = v.range && v.range[0] !== v.range[1] ? `${fmt(v.range[0])}–${fmt(v.range[1])}` : "";
+      const from = v.definition === null ? "USDA only (CoFID doesn't give it)" : b.s[v.definition] ?? "";
+      const how = v.definition && blend.definitions[v.definition]?.includes("calculated:") ? `${blend.definitions[v.definition].replace(/^.*?calculated: /, "Calculated: ")}. ` : "";
+      const detail = `${esc(how)}${esc(from).replace(/\. Flagged: (.*)$/, ". <b>Flagged: $1</b>")}`;
+      return `<tr><td>${esc(name)}${mark(v.caveats)}<br /><span class="muted">${detail}</span></td><td class="num">${fmt(v.value!)} ${esc(meta.unit)}</td><td class="num">${range}</td></tr>`;
+    }).join("");
+    const records = b.records.map((r) => `${esc(r.table)} ${esc(r.code)}, “${esc(r.name)}”${r.borrowedFrom ? ` (cites ${esc(r.borrowedFrom)})` : ""}`).join("; ");
+    const notes = [...used].map(([id, n]) => {
+      const c = blend.caveats[id];
+      return c ? caveat(kind(c.kind), `<sup>${n}</sup> ${esc(c.text)}`) : "";
+    }).join("");
+    return `<details><summary>${esc(f.name)}</summary>
+      <p class="small">Sources: ${records}.<br />Match: ${esc(b.match.reason)} (${esc(b.match.by)}, ${esc(b.match.date)})</p>
+      <div class="table-scroll"><table class="small"><thead><tr><th>Nutrient (definition), per 100 g; each table's value</th><th class="num">Value (median)</th><th class="num">Range</th></tr></thead><tbody>${rows}</tbody></table></div>
+      ${notes}</details>`;
+  }).join("");
+  return `<div class="blend-notes sans">${caveat("beta", `${foods.length === 1 ? "One food in this day uses" : `${foods.length} foods in this day use`} blended values (the median of the USDA and UK CoFID tables), matched and combined by automated steps without manual human verification. Open a food to see each value's range, sources and caveats.`)}${sections}</div>`;
 }

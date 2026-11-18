@@ -13,7 +13,7 @@ Two values more than two-fold apart are flagged, never dropped.
 
 Derived values are worked out from the blended parts, never blended themselves: salt from sodium; EPA + DHA.
 
-Output (generated, don't edit; beta, not yet used by the planner):
+Output (generated, don't edit; beta; planner_pack.py turns it into the planner's blended source):
   output/blended-<table>.json   values, ranges and every contribution
   output/audit-<table>.csv      one row per contribution: the full trail to table, file, code, column and cell
   output/PREVIEW-<table>.md     the explanation for each food, and a check of the definitions

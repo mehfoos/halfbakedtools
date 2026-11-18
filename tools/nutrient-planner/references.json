@@ -125,10 +125,10 @@
       "pre": "European Parliament and Council of the European Union,",
       "title": "Regulation (EU) No 1169/2011 on the provision of food information to consumers",
       "style": "quoted",
-      "post": "<i>Official Journal of the European Union</i>, vol. L 304, pp. 18–63, Nov. 2011, Annex XIII Part B.",
+      "post": "<i>Official Journal of the European Union</i>, vol. L 304, pp. 18–63, Nov. 2011, Annex I point 7, Annex XIII Part B and Annex XIV.",
       "url": "https://eur-lex.europa.eu/eli/reg/2011/1169/oj",
       "licence": "© European Union; re-use authorised with acknowledgement of the source",
-      "usedFor": "Food-label categories and reference intakes in the “At a glance” chart",
+      "usedFor": "Food-label categories and reference intakes in the “At a glance” chart; the EU definition of carbohydrate and the EU energy factors used for the blended food values",
       "archive": [
         {
           "asset": "eu-2011-regulation-1169.pdf",
@@ -137,6 +137,10 @@
             "https://www.legislation.gov.uk/eur/2011/1169/pdfs/eur_20111169_adopted_en.pdf"
           ],
           "label": "Archived copy (text as adopted, via legislation.gov.uk)"
+        },
+        {
+          "asset": "eu1169_consolidated_2025-04-01_EN.pdf",
+          "label": "Archived copy (consolidated text, 1 Apr 2025)"
         }
       ]
     },
@@ -268,6 +272,26 @@
       ]
     },
     {
+      "id": "cofid-2021",
+      "pre": "Office for Health Improvement and Disparities and Food Standards Agency,",
+      "title": "McCance and Widdowson's Composition of Foods Integrated Dataset (CoFID) 2021",
+      "style": "italic",
+      "post": "London, U.K., 2021.",
+      "url": "https://www.gov.uk/government/publications/composition-of-foods-integrated-dataset-cofid",
+      "licence": "© Crown copyright; Open Government Licence v3.0",
+      "usedFor": "UK food composition in the beta blended food data",
+      "archive": [
+        {
+          "asset": "cofid2021_McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021.xlsx",
+          "label": "Archived copy (dataset)"
+        },
+        {
+          "asset": "cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf",
+          "label": "Archived copy (user guide)"
+        }
+      ]
+    },
+    {
       "id": "efsa-sodium-2019",
       "pre": "EFSA Panel on Nutrition, Novel Foods and Food Allergens,",
       "title": "Dietary reference values for sodium",
@@ -294,26 +318,6 @@
       "archive": [
         {
           "asset": "sacn2015_SACN_Carbohydrates_and_Health.pdf"
-        }
-      ]
-    },
-    {
-      "id": "eu-1169-2011",
-      "pre": "European Parliament and Council of the European Union,",
-      "title": "Regulation (EU) No 1169/2011 on the provision of food information to consumers",
-      "style": "quoted",
-      "post": "<i>Official Journal of the European Union</i>, vol. L 304, pp. 18–63, Nov. 2011.",
-      "url": "https://eur-lex.europa.eu/eli/reg/2011/1169/oj",
-      "licence": "© European Union; re-use authorised with acknowledgement of the source",
-      "usedFor": "EU definition of carbohydrate (Annex I, point 7) and energy conversion factors (Annex XIV)",
-      "archive": [
-        {
-          "asset": "eu1169_OJ_L_2011_304_0018_0063_EN.pdf",
-          "label": "Archived copy (as adopted)"
-        },
-        {
-          "asset": "eu1169_consolidated_2025-04-01_EN.pdf",
-          "label": "Archived copy (consolidated, 1 Apr 2025)"
         }
       ]
     }

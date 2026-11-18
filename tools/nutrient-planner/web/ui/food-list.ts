@@ -48,7 +48,7 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
   const foodsOf = new Map<string, PlannerFood[]>();   // category or group id -> its foods
 
   const foodBox = (f: PlannerFood, label: string, path = "") =>
-    `<label class="item"><input type="checkbox" data-food="${f.id}" /> <span>${esc(label)}${f.common ? ' <span class="tag">common</span>' : ""}${f.fortified ? ' <span class="tag">US-fortified</span>' : ""}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`;
+    `<label class="item"><input type="checkbox" data-food="${f.id}" /> <span>${esc(label)}${f.common ? ' <span class="tag">common</span>' : ""}${f.fortified ? ' <span class="tag">US-fortified</span>' : ""}${f.blend ? ' <span class="tag">blended</span>' : ""}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`;
   const groupBox = (attr: string, id: string) => `<input type="checkbox" ${attr}="${esc(id)}" />`;
 
   function renderTree() {

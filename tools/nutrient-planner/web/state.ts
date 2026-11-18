@@ -1,7 +1,7 @@
 // Planner settings: defaults, page-address (URL) encoding, file export/import,
 // and the optional, opt-in "remember on this device" storage.
 import type { Override } from "./solver.ts";
-import type { Base, Diet } from "./foods.ts";
+import type { Base, Diet, Source } from "./foods.ts";
 import type { LifeStage, Sex } from "./profiles.ts";
 
 export type BuilderItem = { id: string; grams: number };
@@ -24,6 +24,7 @@ export type Settings = {
   builder: BuilderItem[];
   compare: boolean;               // show the other standards' targets on the charts
   vitaminD: boolean;              // suggestions also try to reach the vitamin D target from food
+  source: Source;                 // food data: USDA, or the beta USDA + CoFID blend
 };
 
 /** Most options one search can ask for. The search runs in the visitor's browser and can be stopped at any
@@ -33,7 +34,7 @@ export const MAX_OPTIONS = 50;
 export const DEFAULTS: Settings = {
   sex: "female", age: 35, weight: null, diet: "none", standard: "uk", life: "none",
   n: 6, options: 3, energyLow: null, energyHigh: null, base: "common", toggled: [], overrides: {},
-  mode: "suggest", builder: [], compare: true, vitaminD: false,
+  mode: "suggest", builder: [], compare: true, vitaminD: false, source: "usda",
 };
 
 export const fresh = (): Settings => ({ ...DEFAULTS, toggled: [], overrides: {}, builder: [] });
@@ -66,6 +67,7 @@ export function encode(s: Settings): string {
   if (s.mode === "build") p.set("mode", "build");
   if (!s.compare) p.set("cmp", "0");
   if (s.vitaminD) p.set("vd", "1");
+  if (s.source === "blend") p.set("src", "blend");
   if (s.builder.length) p.set("b", s.builder.map((b) => `${b.id}~${Math.round(b.grams * 10) / 10}`).join("_"));
   return p.toString();
 }
@@ -106,6 +108,7 @@ export function decode(query: string): Settings {
   if (p.get("mode") === "build") s.mode = "build";
   if (p.get("cmp") === "0") s.compare = false;
   if (p.get("vd") === "1") s.vitaminD = true;
+  if (p.get("src") === "blend") s.source = "blend";
   if (p.get("b")) {
     for (const part of p.get("b")!.split("_")) {
       const [id, g] = part.split("~");
