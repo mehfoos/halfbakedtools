@@ -8,7 +8,6 @@ export const site = {
   repo,
   repoUrl: `https://github.com/${repo}`,
   /** Where archived copies of references are kept (the repository's sources/ folder). */
-  archiveUrl: `https://github.com/${repo}/blob/main/sources/`,
   /** Where large archived files are kept (the "source-archive" release; registry in sources/archive.json). */
   releaseArchiveUrl: `https://github.com/${repo}/releases/download/source-archive/`,
   issueUrl: (template: string, title: string) =>

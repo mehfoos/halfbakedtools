@@ -61,14 +61,13 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
 - **In practice:**
   - **Citations:** IEEE style, [1], [2], …, numbered in each tool's `references.json`, in the order first cited.
   - **Reference list:** collapsible on the tool's pages. Each entry has the original link and a link to the archived
-    copy (in the `source-archive` release, or `sources/` for older files).
+    copy in the `source-archive` release.
   - **Archived copies:** kept as files of the repository's `source-archive` release, never committed to the
     repository, so it stays small however many sources are added. An editor checks each new file is the right one
     and lists it in `sources/archive.json` with its official address, publisher, licence and the SHA-256 checksum
     of the copy checked; the owner attaches it to the release by hand; the editor then verifies the release copy
     (`scripts/archive_release.py --check`) and commits the result, `sources/release-manifest.json`. A file that
-    differs from the checked copy is never accepted. (Older copies in `sources/` have their checksums in
-    `sources/manifest.json` and will be moved to the release.)
+    differs from the checked copy is never accepted.
   - **Blocked downloads:** if a document can't be downloaded automatically, say so and ask the owner to download it.
     Never substitute a guess, and never work around a site's blocks or terms.
   - **Tests:** they fail if a citation is missing from the reference list, a reference has no archived copy, or a
@@ -134,7 +133,7 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
 - **Rule:** each tool lives entirely in `tools/<slug>/`. Adding a tool needs no edits elsewhere.
 - **Why:** the site will grow. Tools should be added, changed or retired without touching each other.
 - **In practice:**
-  - The shared look, layout and site pages live in `site/`. Archived sources are shared in `sources/`.
+  - The shared look, layout and site pages live in `site/`. Archived sources are shared: one release, one registry in `sources/`.
   - Tests check that every tool folder follows the conventions.
   - Per-tool jobs are named `<slug>-*.yml`.
 
@@ -157,6 +156,7 @@ reason.
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-18 | History clean-up: the 39 copies once committed to `sources/` (and `docs/sources/`), the food tables, and deleted OpenStax copies were moved to the release and removed from the repository's history; `main`, `office-to-pdf` and the release tags were force-pushed | The repository had reached about 180 MB of reference files; clones now stay small |
 | 2026-11-18 | New archived copies are checked by an editor and attached to the release by the owner by hand; the editor verifies them with `archive_release.py --check`. No reference file is committed, on any branch; a test enforces it. The old *Archive sources* workflow, which committed downloads to `sources/`, is removed | Owner's choice: a manual upload after checking is simpler than more automation, and the repository must not grow |
 | 2026-11-18 | Archived copies go to a `source-archive` GitHub release, listed in `sources/archive.json` with the checksum of the checked copy; an owner-run workflow downloads, checks and uploads them. Older files in `sources/` (and their history) to be moved in a one-off clean-up later | Committed files stay in the repository's history for good: the repository had reached 127 MB, a third of it files already deleted. Releases are created only when the owner runs the workflow |
 | 2026-11-18 | Home page lists topics in a set order, food and health first (`TOPIC_ORDER` in `site/src/lib/tools.ts`); About says where source licences are recorded and how to ask for removal | Owner's request; the evidence-based tools are the site's main purpose. Licence text stays out of tool pages, as agreed |

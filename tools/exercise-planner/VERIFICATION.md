@@ -1,7 +1,7 @@
 # Verification log
 
-Every number or classification the tool relies on, what it was checked against (archived copies in
-[`sources/`](../../sources/), with checksums in `sources/manifest.json`), and when.
+Every number or classification the tool relies on, what it was checked against (archived copies in the
+`source-archive` release, listed with checksums in [`sources/archive.json`](../../sources/archive.json)), and when.
 
 | Item | Status | Checked against | Date |
 |---|---|---|---|

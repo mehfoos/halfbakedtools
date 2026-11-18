@@ -74,7 +74,7 @@ links: edit by hand, with a note).
 - Owner review of the `accept` and `check` verdicts for CoFID (first pass by Claude, 17 November 2026).
 - Ciqual 2025 (newer than the 2020 file checked before): its files are on a host this environment can't reach.
 - AFCD and CNF loaders. CNF records carry the USDA NDB code, so many links can be exact rather than reviewed.
-- The merge into `foods.json`, the per-value source display and the archived copy of each table in `sources/`.
+- The merge into `foods.json`, the per-value source display and the archived copy of each table (in the `source-archive` release).
 
 ## References
 

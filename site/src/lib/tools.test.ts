@@ -9,7 +9,6 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("../../../", import.meta.url));
 const TOOLS = join(ROOT, "tools");
 const json = (p: string) => JSON.parse(readFileSync(p, "utf8"));
-const manifest = json(join(ROOT, "sources", "manifest.json"));
 const registry = new Set((json(join(ROOT, "sources", "archive.json")).files as { file: string }[]).map((f) => f.file));
 const folders = readdirSync(TOOLS).filter((d) => statSync(join(TOOLS, d)).isDirectory());
 const walk = (dir: string): string[] => !existsSync(dir) ? [] : readdirSync(dir).flatMap((f) => {
@@ -38,7 +37,7 @@ for (const slug of folders) {
   test(`${slug}: every citation is in the reference list, and every reference has an archived copy`, () => {
     const refsPath = join(dir, "references.json");
     if (!existsSync(refsPath)) return;
-    const refs = json(refsPath).sources as { id: string; archive: { file?: string; asset?: string; release?: string }[] }[];
+    const refs = json(refsPath).sources as { id: string; archive: { asset?: string; release?: string }[] }[];
     const ids = refs.map((r) => r.id);
     assert.equal(new Set(ids).size, ids.length, "duplicate reference ids");
     const code = walk(dir).filter((f) => /\.(astro|ts)$/.test(f)).map((f) => readFileSync(f, "utf8")).join("\n");
@@ -47,7 +46,7 @@ for (const slug of folders) {
     if (template) return;
     for (const r of refs) {
       assert.ok(r.archive.length, `${r.id} has no archived copy`);
-      for (const a of r.archive) if (a.file) assert.ok(manifest[a.file]?.sha256, `${r.id}: sources/${a.file} missing`);
+      for (const a of r.archive) assert.ok(a.asset || a.release, `${r.id}: archived copies are release files ({"asset": ...})`);
       // A release copy must be in the registry; until the workflow has verified it, the page says it isn't available yet.
       for (const a of r.archive) if (a.asset) assert.ok(registry.has(a.asset), `${r.id}: ${a.asset} is not listed in sources/archive.json`);
     }
@@ -67,17 +66,10 @@ test("source archive registry: each file has a way in and a checksum or zip part
 });
 
 // Reference files (PDFs, spreadsheets, datasets, saved web pages) are kept in the source-archive release, never
-// committed: anything committed stays in the repository's history for good. Only the copies committed before
-// Nov 2026 (listed in the old manifests) are allowed until they are moved to the release. See sources/README.md.
-test("no new reference files are committed to the repository", () => {
-  const legacy = new Set<string>([
-    ...Object.keys(manifest).map((f) => join(ROOT, "sources", f)),
-    ...(json(join(ROOT, "sources", "food-tables", "manifest.json")).files as { file: string }[])
-      .map((f) => join(ROOT, "sources", "food-tables", f.file)),
-  ]);
-  const listsAndNotes = /\/sources\/(food-tables\/)?(README\.md|[^/]+\.json)$/;
+// committed: anything committed stays in the repository's history for good. See sources/README.md.
+test("no reference files are committed to the repository", () => {
   for (const f of walk(join(ROOT, "sources")))
-    assert.ok(legacy.has(f) || listsAndNotes.test(f.replaceAll("\\", "/")),
+    assert.ok(/\/sources\/(README\.md|[^/]+\.json)$/.test(f.replaceAll("\\", "/")),
       `${f.slice(ROOT.length)}: don't commit reference files; list it in sources/archive.json and attach it to the source-archive release`);
   const skip = new Set(["node_modules", "dist", "sources"]);
   const files = (dir: string): string[] => readdirSync(dir).flatMap((f) => {

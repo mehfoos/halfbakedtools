@@ -35,9 +35,9 @@ site/                      the shared site shell
   src/lib/                 tool registry, IEEE reference formatting
   src/pages/               site-wide pages only: home, about, privacy
   src/styles/, public/     shared design, logo, fonts
-sources/                   archived copies of every referenced document, shared by all tools,
-                           with manifest.json (retrieval date, original URL, SHA-256)
-scripts/                   site-wide scripts: data sync, source archiving
+sources/                   registry of archived copies (archive.json) and their verified checksums;
+                           the copies themselves are files of the source-archive release
+scripts/                   site-wide scripts: data sync, archive checking
 docs/                      principles (PRINCIPLES.md), setup and contributor guides
 AGENTS.md, CLAUDE.md       instructions for AI assistants
 .github/workflows/         deploy, source archiving, per-tool data jobs (named <slug>-*.yml)
@@ -57,7 +57,7 @@ Tool-specific data builds are described in each tool's README.
 
 - Code: MIT (see `LICENSE`).
 - Fonts: Averia Serif Libre and Averia Sans Libre, SIL Open Font Licence (`site/src/assets/fonts/OFL.txt`).
-- Archived source documents in `sources/` remain under their publishers' terms; each tool's
+- Archived source documents (the `source-archive` release) remain under their publishers' terms; each tool's
   `references.json` records the licence of every document it cites.
 
 Information only; not medical, financial or legal advice.

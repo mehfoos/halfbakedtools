@@ -1,21 +1,20 @@
 // IEEE-style numbered references, one list per tool (tools/<slug>/references.json).
 // A tool's pages number its sources [1], [2], ... in the order of that file, so a number means the
-// same source on every page of that tool. Archived copies live in the shared sources/ folder.
-import manifest from "../../../sources/manifest.json";
+// same source on every page of that tool. Archived copies are files of the "source-archive" release
+// (sources/archive.json); none are committed to the repository.
 import releaseManifest from "../../../sources/release-manifest.json";
 import { site } from "../site.config.ts";
 
-// file: a copy in sources/; asset: a copy in the "source-archive" release (sources/archive.json);
+// asset: a copy in the "source-archive" release (sources/archive.json);
 // release: a link to another release asset (older USDA snapshots).
-type Archive = { label?: string; file?: string; asset?: string; release?: string; fetch?: string | string[]; render?: boolean };
+type Archive = { label?: string; asset?: string; release?: string; fetch?: string | string[]; render?: boolean };
 export type Source = {
   id: string; pre: string; title: string; style: "quoted" | "italic"; post: string; url: string;
   licence: string; usedFor: string; archive: Archive[];
 };
 export type ReferenceFile = { sources: Source[] };
-export type ArchiveLink = { label: string; href: string; sha256?: string; retrieved?: string | null };
+export type ArchiveLink = { label: string; href: string; sha256?: string; retrieved?: string | null; verified?: boolean };
 
-const MANIFEST = manifest as Record<string, { retrieved?: string | null; sha256?: string }>;
 const RELEASE = releaseManifest as Record<string, { retrieved?: string | null; added?: string; sha256?: string }>;
 const MONTHS = ["Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."];
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -27,14 +26,10 @@ const ieeeDate = (iso: string) => {
 export function archiveLinks(s: Source): ArchiveLink[] {
   return s.archive.map((a) => {
     if (a.release) return { label: a.label ?? "Archived copy", href: a.release };
-    if (a.asset) {
-      const meta = RELEASE[a.asset];  // present only once the archive workflow has verified the file
-      return { label: a.label ?? "Archived copy", href: site.releaseArchiveUrl + a.asset, sha256: meta?.sha256,
-               retrieved: meta?.retrieved ?? meta?.added };
-    }
-    const meta = MANIFEST[a.file!];
-    return { label: a.label ?? "Archived copy", href: site.archiveUrl + a.file, sha256: meta?.sha256, retrieved: meta?.retrieved };
-  }).filter((l) => l.href.includes("/releases/") || l.sha256); // only copies that actually exist
+    const meta = RELEASE[a.asset!];  // present only once the file has been verified in the release
+    return { label: a.label ?? "Archived copy", href: site.releaseArchiveUrl + a.asset, sha256: meta?.sha256,
+             retrieved: meta?.retrieved ?? meta?.added, verified: !!meta };
+  }).filter((l) => l.verified !== false).map(({ verified, ...l }) => l); // only copies that are actually there
 }
 
 /** One reference-list entry as HTML (the reference files are our own and may contain <i>). */

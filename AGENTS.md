@@ -9,7 +9,7 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
 
 ## Non-negotiables
 
-1. **Accuracy first.** Take values from the primary source (the archived copy in `sources/`), never from memory or a
+1. **Accuracy first.** Take values from the primary source (its archived copy in the `source-archive` release), never from memory or a
    secondary summary. Check each value against that copy, and record the check in the tool's `VERIFICATION.md`
    (document, table, page, date). Label anything unchecked as "Not yet checked" on the site.
 2. **Claim less.** Don't describe a value as checked, a feature as complete or a result as precise unless it is.
@@ -23,8 +23,7 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
    - Every fact on the site cites a source with `cite("id")`; the id is listed in the tool's `references.json`.
    - **Never commit reference files** (PDFs, spreadsheets, datasets, zips, saved web pages) to the repository, on
      any branch, even temporarily: they stay in its history for good. The tests fail if you do.
-   - Every reference has an archived copy in the **`source-archive` release** (older ones are still in `sources/`
-     until a clean-up moves them). For a new one: find the official copy and check it's the right document and
+   - Every reference has an archived copy in the **`source-archive` release**. For a new one: find the official copy and check it's the right document and
      version; list it in `sources/archive.json` with its origin, licence and SHA-256; give it to the owner (or ask
      them to download it), who attaches it to the release by hand; then run
      `python3 -I scripts/archive_release.py --check`, commit `sources/release-manifest.json`, and cite it as
@@ -58,4 +57,4 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
 - `docs/SETUP.md`: hosting and repository setup
 - `tools/<slug>/README.md`, `DECISIONS.md`, `VERIFICATION.md`: per-tool details
 - `sources/`: `archive.json` (registry of files in the `source-archive` release), `release-manifest.json`
-  (their verified checksums), older archived documents and `manifest.json`
+  (their verified checksums). The files themselves are only in the release

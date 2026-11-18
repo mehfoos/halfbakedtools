@@ -56,13 +56,13 @@ def gh(*args: str, capture: bool = True) -> str:
     return r.stdout if capture else ""
 
 
-def download(url: str) -> bytes:
+def download(url: str, publisher: bool = True) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "*/*"})
     with urllib.request.urlopen(req, timeout=300) as r:
         data = r.read()
     if not data:
         raise RuntimeError("the download was empty")
-    if any(m in data[:20000] for m in BLOCK_MARKERS):
+    if publisher and any(m in data[:20000] for m in BLOCK_MARKERS):  # saved web pages may contain these words
         raise RuntimeError("the site returned a bot check, not the file")
     return data
 
@@ -98,7 +98,7 @@ def release_assets(tag: str, check_only: bool) -> set[str]:
 
 def fetch_asset(tag: str, name: str, tmp: str, check_only: bool) -> bytes:
     if check_only:  # the release is public: plain HTTPS, no token needed
-        return download(f"https://github.com/{REPO}/releases/download/{tag}/{name}")
+        return download(f"https://github.com/{REPO}/releases/download/{tag}/{name}", publisher=False)
     gh("release", "download", tag, "--pattern", name, "--dir", tmp, "--clobber")
     return (Path(tmp) / name).read_bytes()
 
@@ -125,19 +125,6 @@ def main() -> int:
                         if e.get("retrieved"):
                             first = first | {"retrieved": e["retrieved"]}
                         manifest[name] = first | {"sha256": sha256(data), "bytes": len(data), "verified": today}
-                elif "fromRepo" in e and (ROOT / e["fromRepo"]).is_file() and not check_only:
-                    # one-off move of a copy committed before Nov 2026 (see sources/README.md)
-                    data = (ROOT / e["fromRepo"]).read_bytes()
-                    if sha256(data) != e["sha256"]:
-                        status = f"NOT UPLOADED: {e['fromRepo']} differs from its recorded checksum"
-                    else:
-                        p = Path(tmp) / name
-                        p.write_bytes(data)
-                        if not dry:
-                            gh("release", "upload", tag, str(p), capture=False)
-                        manifest[name] = {"sha256": sha256(data), "bytes": len(data), "retrieved": e.get("retrieved"),
-                                          "verified": today, "note": "moved from the repository's sources/ folder"}
-                        status = "downloaded from the repository copy, checked and uploaded"
                 elif check_only:
                     status = "NOT IN THE RELEASE YET: the owner attaches it by hand"
                 elif "fetch" in e or "zip" in e:

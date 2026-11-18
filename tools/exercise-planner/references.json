@@ -13,7 +13,7 @@
       "archive": [
         {
           "label": "Archived copy (preprint, version 2)",
-          "file": "pelland-2024-dose-response-preprint-v2.pdf",
+          "asset": "pelland-2024-dose-response-preprint-v2.pdf",
           "fetch": "https://sportrxiv.org/index.php/server/preprint/download/460/967/908"
         }
       ]
@@ -29,7 +29,7 @@
       "usedFor": "How much multi-joint exercises (presses, rows, squats) work the arm and leg muscles they don't mainly target",
       "archive": [
         {
-          "file": "schoenfeld-2019-set-volume-multi-joint.pdf",
+          "asset": "schoenfeld-2019-set-volume-multi-joint.pdf",
           "fetch": [
             "https://www.mdpi.com/2075-4663/7/7/177/pdf",
             "https://vuir.vu.edu.au/42522/1/sports-07-00177.pdf",
@@ -50,35 +50,35 @@
       "archive": [
         {
           "label": "Archived copy: 11.3 saved by the site owner (PDF)",
-          "file": "openstax-ap2e-11-3-owner-saved.pdf"
+          "asset": "openstax-ap2e-11-3-owner-saved.pdf"
         },
         {
           "label": "web archive (.mht)",
-          "file": "openstax-ap2e-11-3-owner-saved.mht"
+          "asset": "openstax-ap2e-11-3-owner-saved.mht"
         },
         {
           "label": "11.4 saved by the site owner (PDF)",
-          "file": "openstax-ap2e-11-4-owner-saved.pdf"
+          "asset": "openstax-ap2e-11-4-owner-saved.pdf"
         },
         {
           "label": "web archive (.mht)",
-          "file": "openstax-ap2e-11-4-owner-saved.mht"
+          "asset": "openstax-ap2e-11-4-owner-saved.mht"
         },
         {
           "label": "11.5 saved by the site owner (PDF)",
-          "file": "openstax-ap2e-11-5-owner-saved.pdf"
+          "asset": "openstax-ap2e-11-5-owner-saved.pdf"
         },
         {
           "label": "web archive (.mht)",
-          "file": "openstax-ap2e-11-5-owner-saved.mht"
+          "asset": "openstax-ap2e-11-5-owner-saved.mht"
         },
         {
           "label": "11.6 saved by the site owner (PDF)",
-          "file": "openstax-ap2e-11-6-owner-saved.pdf"
+          "asset": "openstax-ap2e-11-6-owner-saved.pdf"
         },
         {
           "label": "web archive (.mht)",
-          "file": "openstax-ap2e-11-6-owner-saved.mht"
+          "asset": "openstax-ap2e-11-6-owner-saved.mht"
         }
       ]
     },
@@ -94,10 +94,10 @@
       "archive": [
         {
           "label": "Archived copy",
-          "file": "who-2020-guidelines-physical-activity-sedentary-behaviour.pdf"
+          "asset": "who-2020-guidelines-physical-activity-sedentary-behaviour.pdf"
         },
         {
-          "file": "bull-2020-who-physical-activity-guidelines.pdf",
+          "asset": "bull-2020-who-physical-activity-guidelines.pdf",
           "fetch": [
             "https://ueaeprints.uea.ac.uk/id/eprint/77844/1/Published_Version.pdf",
             "https://bjsm.bmj.com/content/bjsports/54/24/1451.full.pdf"
@@ -118,12 +118,12 @@
       "archive": [
         {
           "label": "Archived copy (activity list)",
-          "file": "compendium-2024-adult-activity-list.pdf",
+          "asset": "compendium-2024-adult-activity-list.pdf",
           "fetch": "https://pacompendium.com/wp-content/uploads/2024/01/2024-adult-compendium_1_2024.pdf"
         },
         {
           "label": "article",
-          "file": "herrmann-2024-adult-compendium.pdf",
+          "asset": "herrmann-2024-adult-compendium.pdf",
           "fetch": [
             "https://rcastoragev2.blob.core.windows.net/21bf8ca80a76a05a52608ccd69dff716/main.PMC10818145.pdf"
           ],
