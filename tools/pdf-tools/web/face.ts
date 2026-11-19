@@ -67,8 +67,8 @@ const CLINGS = /[\p{M}\u200C\u200D\uFE00-\uFE0F]/u;
 
 /**
  * Splits `text` into runs of one direction (Unicode Bidirectional Algorithm), puts the runs in display order, splits each
- * run by font (each character goes to the font of the character before it if that font has it, otherwise to the first
- * font that has it, otherwise to the first font), shapes each piece, and returns the glyphs left to right.
+ * run by font (each character goes to the first font that has it, marks and joiners to their letter's font), shapes
+ * each piece, and returns the glyphs left to right.
  */
 export function shapeRuns(text: string, fonts: ShapeFont[]): { glyphs: PlacedIn[]; width: number } {
   if (!text || !fonts.length) return { glyphs: [], width: 0 };
@@ -96,7 +96,9 @@ export function shapeRuns(text: string, fonts: ShapeFont[]): { glyphs: PlacedIn[
     const pieces: { font: number; text: string }[] = [];
     for (const ch of part) {
       const cp = ch.codePointAt(0)!, last = pieces[pieces.length - 1];
-      const font = last && (fonts[last.font].has(cp) || CLINGS.test(ch)) ? last.font : Math.max(0, fonts.findIndex((f) => f.has(cp)));
+      // marks and joiners stay with their letter; any other character goes to the first font that has it, the same rule
+      // used to decide which fonts to load (noto.ts), so nothing is drawn from a font that was not loaded for it
+      const font = last && CLINGS.test(ch) ? last.font : Math.max(0, fonts.findIndex((f) => f.has(cp)));
       if (last && last.font === font) last.text += ch; else pieces.push({ font, text: ch });
     }
     if (rtl) pieces.reverse();   // right-to-left: the last piece in reading order is leftmost
@@ -139,23 +141,24 @@ export type FacePart = { fk: FkFont; font: PDFFont; shape: Shaper };
 export const ownFace = (fk: FkFont, font: PDFFont, shape: Shaper): Face => multiFace(() => [{ fk, font, shape }]);
 
 /**
- * A face made of several fonts, tried in order for each character (see shapeRuns). `parts` is read each time, so fonts
- * added later (loaded on demand) are used from then on.
+ * A face made of several fonts, tried in order for each character (see shapeRuns). `parts(text)` gives the fonts in
+ * the order to try for that text; it is read each time, so fonts added later (loaded on demand) are used from then on.
  */
-export function multiFace(parts: () => FacePart[]): Face {
+export function multiFace(parts: (text: string) => FacePart[]): Face {
   const encoders = new WeakMap<PDFFont, (g: FkGlyph) => number>();
   const fontsOf = (ps: FacePart[]): ShapeFont[] => ps.map((p) => ({ shape: p.shape, has: (cp) => p.fk.hasGlyphForCodePoint(cp), upem: p.fk.unitsPerEm }));
   return {
-    widthOfTextAtSize: (t, s) => shapeRuns(t, fontsOf(parts())).width * s,
+    widthOfTextAtSize: (t, s) => shapeRuns(t, fontsOf(parts(t))).width * s,
     heightAtSize(s, o) {
-      const ps = parts(); if (!ps.length) return s;
+      const ps = parts(""); if (!ps.length) return s;
       const up = Math.max(...ps.map((p) => p.fk.ascent / p.fk.unitsPerEm)), down = Math.max(...ps.map((p) => -p.fk.descent / p.fk.unitsPerEm));
       return (up + (o?.descender === false ? 0 : down)) * s;
     },
-    missing: (t) => { const ps = parts(); return [...new Set([...t].filter((c) => { const cp = c.codePointAt(0)!; return cp > 0x20 && !/\p{Cf}|\p{Zs}/u.test(c) && !ps.some((p) => p.fk.hasGlyphForCodePoint(cp)); }))]; },
+    missing: (t) => { const ps = parts(t); return [...new Set([...t].filter((c) => { const cp = c.codePointAt(0)!; return cp > 0x20 && !/\p{Cf}|\p{Zs}/u.test(c) && !ps.some((p) => p.fk.hasGlyphForCodePoint(cp)); }))]; },
     draw(page, text, o) {
-      const ps = parts(), { glyphs } = shapeRuns(text, fontsOf(ps)); if (!glyphs.length) return;
-      const keys = ps.map((p) => page.node.newFontDictionary(p.font.name, p.font.ref));
+      const ps = parts(text), { glyphs } = shapeRuns(text, fontsOf(ps)); if (!glyphs.length) return;
+      const keys = new Map<number, ReturnType<typeof page.node.newFontDictionary>>();   // only the fonts this line uses go into the page
+      const keyOf = (i: number) => { let k = keys.get(i); if (!k) keys.set(i, (k = page.node.newFontDictionary(ps[i].font.name, ps[i].font.ref))); return k; };
       const encoderFor = (p: FacePart) => { let e = encoders.get(p.font); if (!e) encoders.set(p.font, (e = glyphEncoder(p.font))); return e; };
       const a = (o.rotate * Math.PI) / 180, cos = Math.cos(a), sin = Math.sin(a), k = o.size;
       const ops: PDFOperator[] = [pushGraphicsState()];
@@ -169,7 +172,7 @@ export function multiFace(parts: () => FacePart[]): Face {
       ops.push(beginText(), setFillingColor(rgb(o.color.r, o.color.g, o.color.b)));
       let current = -1;
       for (const g of glyphs) {
-        if (g.font !== current) { ops.push(setFontAndSize(keys[g.font], o.size)); current = g.font; }
+        if (g.font !== current) { ops.push(setFontAndSize(keyOf(g.font), o.size)); current = g.font; }
         const p = ps[g.font], u = (g.x + g.dx) * k, v = g.dy * k;
         const id = encoderFor(p)(p.fk.getGlyph(g.id, [...g.chars].map((c) => c.codePointAt(0)!)));   // the characters go into the font's character map, for search
         ops.push(setTextMatrix(cos, sin, -sin, cos, o.x + u * cos - v * sin, o.y + u * sin + v * cos), showText(PDFHexString.of(id.toString(16).padStart(4, "0"))));

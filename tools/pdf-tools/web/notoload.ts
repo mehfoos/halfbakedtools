@@ -1,5 +1,5 @@
 // Browser side of the shipped Noto fonts: each file is bundled into the site as its own small script (loaded only when
-// needed, from this site), holding the WOFF file as base64.
+// needed, from this site), holding the WOFF file as base64. Chinese, Japanese and Korean: only their numbered files.
 import type { NotoLoader } from "./noto.ts";
 
 const files = import.meta.glob([
@@ -20,6 +20,11 @@ const files = import.meta.glob([
     "../../../node_modules/@fontsource/noto-sans-telugu/files/noto-sans-telugu-telugu-400-normal.woff",
     "../../../node_modules/@fontsource/noto-sans-kannada/files/noto-sans-kannada-kannada-400-normal.woff",
     "../../../node_modules/@fontsource/noto-sans-thai/files/noto-sans-thai-thai-400-normal.woff"
+,
+    "../../../node_modules/@fontsource/noto-sans-sc/files/noto-sans-sc-[0-9]*-400-normal.woff",
+    "../../../node_modules/@fontsource/noto-sans-tc/files/noto-sans-tc-[0-9]*-400-normal.woff",
+    "../../../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-[0-9]*-400-normal.woff",
+    "../../../node_modules/@fontsource/noto-sans-kr/files/noto-sans-kr-[0-9]*-400-normal.woff"
   ], { query: "?inline", import: "default" }) as Record<string, () => Promise<string>>;
 
 export const loadNoto: NotoLoader = async (id) => {

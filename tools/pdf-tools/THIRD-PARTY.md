@@ -27,19 +27,20 @@ The font choice "Noto Sans (many alphabets)" uses these files, all version 5.3.0
 noto-sans (latin, latin-ext, cyrillic, cyrillic-ext, greek, greek-ext, vietnamese), noto-sans-malayalam (malayalam),
 noto-sans-arabic (arabic), noto-sans-hebrew (hebrew), noto-sans-devanagari (devanagari), noto-sans-bengali (bengali),
 noto-sans-gurmukhi (gurmukhi), noto-sans-tamil (tamil), noto-sans-telugu (telugu), noto-sans-kannada (kannada),
-noto-sans-thai (thai). The list, with the characters each file covers, is `web/notofiles.ts` (a test checks it against
-each package's `unicode.json`).
+noto-sans-thai (thai); and for Chinese, Japanese and Korean, version 5.3.1 of noto-sans-sc, noto-sans-tc, noto-sans-jp
+and noto-sans-kr, each split by Google Fonts into 97 to 120 numbered files (only those). The lists, with the characters
+each file covers, are `web/notofiles.ts` and `web/cjkfiles.ts` (tests check them against each package's `unicode.json`).
 
 - **Licence:** SIL Open Font License 1.1. Each package's `LICENSE` holds the copyright line ("Copyright 2022 The Noto
-  Project Authors", with the year and the notofonts repository for each family) and the licence text, and names **no
-  Reserved Font Name** (checked 2026-11-19: the only match for the phrase is the licence's own definition of it).
+  Project Authors", with the year and the notofonts repository for each family; "Google Inc." for the Chinese, Japanese
+  and Korean packages) and the licence text, and names **no Reserved Font Name** (checked 2026-11-19: the only match for the phrase is the licence's own definition of it).
 - **How they are shipped:** each file is bundled into the site as its own script (base64), loaded only when text needs
   that alphabet. The licence of every family is served beside them in `vendor/licenses/` and linked from the methods
   page, as the OFL asks when fonts are redistributed (OFL FAQ 1.8: hosting fonts for others is allowed "as long as you
   make the full font package available"; archived as `pdftools_OFL-FAQ-1.1-update8.txt`).
 - **In saved PDFs:** only the letters used are embedded. OFL FAQ 1.12: embedding in documents is allowed, "either in
   full or a subset", and 1.13: it does not change the document's licence. Fonts are not sold, by themselves or at all.
-- **Not shipped (yet):** Chinese, Japanese and Korean (3 to 5 MB per family in Fontsource's many small files); bold.
+- **Not shipped (yet):** bold; Urdu in the Nastaliq style (Urdu uses Noto Sans Arabic, Naskh style).
 
 ## OCR language models
 

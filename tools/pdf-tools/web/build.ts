@@ -6,7 +6,7 @@ import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
 import { standardFace, type Face } from "./face.ts";
 import { embedOwnFont, type OwnFont } from "./ownfont.ts";
-import { notoFace, notoLibrary, type NotoLoader } from "./noto.ts";
+import { notoFace, notoLibrary, type NotoLoader, type HanStyle } from "./noto.ts";
 import { placeText, placeImage, placeBox, shapePath, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
 import { numberMark, watermarkMarks, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import type { PageItem, Rotation } from "./session.ts";
@@ -16,7 +16,7 @@ export type SourceData =
   /** `turn`: degrees clockwise the stored pixels must be turned to look right (a photo's orientation note). */
   | { kind: "image"; bytes: Uint8Array; type: "png" | "jpeg"; turn?: Rotation };
 
-export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions; ownFont?: OwnFont; noto?: NotoLoader };
+export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions; ownFont?: OwnFont; noto?: NotoLoader; han?: HanStyle };
 /** For building one page out of a longer document (a preview): its position, and the document's length. */
 export type Place = { index: number; total: number };
 
@@ -40,13 +40,13 @@ export const OWN_FONT_MISSING = "Text is set in your own font, but no font file 
 /** Faces for added text in `doc`: built-in fonts, or the visitor's own font (embedded on first use, so a file
  *  that doesn't use it doesn't carry it). Bold has no effect on the visitor's own font. */
 const libraries = new WeakMap<NotoLoader, ReturnType<typeof notoLibrary>>();
-export function faceSet(doc: PDFDocument, own?: OwnFont, noto?: NotoLoader) {
+export function faceSet(doc: PDFDocument, own?: OwnFont, noto?: NotoLoader, han: HanStyle = "auto") {
   const fonts = fontSet(doc); let mine: Promise<Face> | null = null, shipped: Face | null = null;
   return async (font: FontKey, bold: boolean): Promise<Face> => {
     if (font === "noto") {
       if (!noto) throw new Error("The shipped Noto fonts aren't available here.");
       let lib = libraries.get(noto); if (!lib) libraries.set(noto, (lib = notoLibrary(noto)));
-      return (shipped ??= notoFace(doc, lib));
+      return (shipped ??= notoFace(doc, lib, han));
     }
     if (font !== "own") return standardFace(fonts(font, bold));
     if (!own) throw new Error(OWN_FONT_MISSING);
@@ -115,7 +115,7 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       if (!img) embedded.set(id, (img = d.type === "png" ? await out.embedPng(d.bytes) : await out.embedJpg(d.bytes)));
       return img;
     };
-    const faces = faceSet(out, opts.ownFont, opts.noto);
+    const faces = faceSet(out, opts.ownFont, opts.noto, opts.han);
     const prepared = async (font: FontKey, bold: boolean, text: string) => { const f = await faces(font, bold); await f.prepare?.(text); return f; };
     async function drawMarks(page: PDFPage, marks: Mark[]) {
       const box = page.getCropBox(), rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
@@ -125,7 +125,7 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
           const bad = face.missing(m.text.replace(/\n/g, ""));
           if (bad.length) throw new Error(m.font === "own"
             ? `Your font has no letters for: ${bad.slice(0, 12).join(" ")}. Choose a font that covers them.`
-            : m.font === "noto" ? `The shipped Noto fonts have no letters for: ${bad.slice(0, 12).join(" ")}. For these, choose \u201cYour own font\u201d.`
+            : m.font === "noto" ? `The Noto fonts on this site have no letters for: ${bad.slice(0, 12).join(" ")}. For these, choose \u201cYour own font\u201d.`
             : `Added text contains characters the built-in fonts can't write: ${bad.slice(0, 12).join(" ")}. They cover Western European letters, digits and common punctuation; for other alphabets choose \u201cYour own font\u201d.`);
           const placed = placeText(m, face, box, rotation), c = parseColor(m.color);
           for (const l of placed.lines) if (l.text) face.draw(page, l.text, { x: l.x, y: l.y, size: m.size, color: c, rotate: placed.angle, opacity: m.opacity ?? 1 });

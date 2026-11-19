@@ -145,8 +145,10 @@ const policy = import.meta.env.PROD ? CSP : "";
         </div>
 
         <details id="ownFontBox" class="sans opts" data-part="marks numbers watermark">
-          <summary>Your own font <span class="small muted">(for other alphabets)</span></summary>
-          <p class="small">Helvetica, Times and Courier cover Western European letters only. “Noto Sans (many alphabets)” in the Font lists covers Latin, Greek, Cyrillic, Vietnamese, Arabic (also Persian and Urdu), Hebrew, Devanagari (Hindi, Marathi, Nepali), Bengali, Gurmukhi (Punjabi), Tamil, Telugu, Malayalam, Kannada and Thai; it is part of this site and loads the alphabets you use. For anything else, such as Chinese, Japanese or Korean, use a font file from this device.</p>
+          <summary>Fonts for other alphabets</summary>
+          <p class="small">Helvetica, Times and Courier cover Western European letters only. “Noto Sans (many alphabets)” in the Font lists covers Latin, Greek, Cyrillic, Vietnamese, Arabic (also Persian and Urdu), Hebrew, Devanagari (Hindi, Marathi, Nepali), Bengali, Gurmukhi (Punjabi), Tamil, Telugu, Malayalam, Kannada and Thai; Chinese, Japanese and Korean. It is part of this site and loads only the alphabets you use.</p>
+          <p><label class="field">Chinese characters in Noto Sans <select id="hanStyle"><option value="auto">Automatic (Japanese with kana, Korean with Hangul, otherwise Simplified Chinese)</option><option value="sc">Simplified Chinese</option><option value="tc">Traditional Chinese</option><option value="jp">Japanese</option><option value="kr">Korean</option></select></label><br /><span class="small muted">Chinese, Japanese and Korean share many characters but draw some of them differently.</span></p>
+          <p class="small">For anything else, or to use a typeface of your own, use a font file from this device:</p>
           <p><button type="button" class="small" id="ownPick">Choose a font file…</button>
             <input id="ownFile" class="sr-only" type="file" accept={FONT_ACCEPT} /></p>
           <p id="ownFaceRow" hidden><label class="field">Style <select id="ownFace"></select></label></p>

@@ -3,7 +3,7 @@ import { PDFDocument } from "@cantoo/pdf-lib";
 import { fontSet } from "./build.ts";
 import { standardFace } from "./face.ts";
 import { fontFaces, prepareOwnFont, embedOwnFont, type OwnFont } from "./ownfont.ts";
-import { notoFace, notoLibrary } from "./noto.ts";
+import { notoFace, notoLibrary, type HanStyle } from "./noto.ts";
 import { loadNoto } from "./notoload.ts";
 import { POINTS_PER, type CropUnit } from "./crop.ts";
 import { PAGE_MIN, PAGE_MAX } from "./layout.ts";
@@ -66,7 +66,7 @@ export function startText() {
       const layout = { ...TEXT_DEFAULTS, width, height, margin, fontSize: size };
       const doc = await PDFDocument.create(), choice = $<HTMLSelectElement>("txFont").value;
       if (choice === "own" && !own) return say("Choose a font file first (Font: “Your own font…”).", "bad");
-      const face = choice === "own" ? await embedOwnFont(doc, own!) : choice === "noto" ? notoFace(doc, notoLib) : standardFace(fontSet(doc)(choice as "mono" | "sans" | "serif", false));
+      const face = choice === "own" ? await embedOwnFont(doc, own!) : choice === "noto" ? notoFace(doc, notoLib, ($<HTMLSelectElement>("txHan").value as HanStyle) || "auto") : standardFace(fontSet(doc)(choice as "mono" | "sans" | "serif", false));
       if (face.prepare) { say("Loading the fonts this text needs…"); await face.prepare(raw); }
       const gaps = new Set(face.missing(raw.replace(/[\t\r\n]/g, ""))), miss = { chars: [...gaps], count: [...raw].filter((c) => gaps.has(c)).length };
       const text = miss.count ? [...raw].map((c) => (gaps.has(c) ? "?" : c)).join("") : raw;

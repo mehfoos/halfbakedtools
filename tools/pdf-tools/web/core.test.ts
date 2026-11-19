@@ -965,8 +965,9 @@ test("own font: a WOFF file is unpacked to the plain font; WOFF 2 is refused wit
 
 // ---- shipped Noto fonts ----
 import { NOTO_FILES, notoId } from "./notofiles.ts";
-import { notoFilesFor, notoMissing, notoFace, notoLibrary } from "./noto.ts";
-const fsNoto = async (id: string) => { const f = NOTO_FILES.find((x) => notoId(x) === id)!; return new Uint8Array(readFileSync(new URL(`../../../node_modules/@fontsource/${f.family}/files/${id}-400-normal.woff`, import.meta.url))); };
+import { notoFilesFor, notoMissing, notoFace, notoLibrary, loadCjkIndex, hanStyleFor, notoOrder } from "./noto.ts";
+import { CJK_FILES } from "./cjkfiles.ts";
+const fsNoto = async (id: string) => { const fam = id.match(/^(noto-sans(?:-(?:sc|tc|jp|kr|malayalam|arabic|hebrew|devanagari|bengali|gurmukhi|tamil|telugu|kannada|thai))?)-/)![1]; return new Uint8Array(readFileSync(new URL(`../../../node_modules/@fontsource/${fam}/files/${id}-400-normal.woff`, import.meta.url))); };
 test("noto: the list of shipped files matches the installed packages' coverage", () => {
   for (const f of NOTO_FILES) {
     const u = JSON.parse(readFileSync(new URL(`../../../node_modules/@fontsource/${f.family}/unicode.json`, import.meta.url), "utf8")) as Record<string, string>;
@@ -981,7 +982,7 @@ test("noto: only the files a text needs are chosen; uncovered characters are rep
   assert.deepEqual(notoFilesFor("Hello").map(notoId), ["noto-sans-latin"]);
   assert.deepEqual(notoFilesFor("അവൻ 25 വയസ്സ്").map(notoId), ["noto-sans-latin", "noto-sans-malayalam-malayalam"]);
   assert.deepEqual(notoFilesFor("Привет मराठी").map(notoId), ["noto-sans-latin", "noto-sans-cyrillic", "noto-sans-devanagari-devanagari"]);
-  assert.deepEqual(notoMissing("abc 日本 😀"), ["日", "本", "😀"]);
+  assert.deepEqual(notoMissing("abc 😀"), ["😀"]);
 });
 test("noto: mixed Malayalam, Hindi and English text is drawn with each script's font, embedded only as needed", async () => {
   const doc = await PDFDocument.create(), face = notoFace(doc, notoLibrary(fsNoto)), page = doc.addPage([400, 200]);
@@ -994,4 +995,45 @@ test("noto: mixed Malayalam, Hindi and English text is drawn with each script's 
   const fams = back.context.enumerateIndirectObjects().map(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("BaseFont"))?.toString() ?? "").filter((n) => /Noto/.test(n));
   assert.ok(fams.some((n) => /Malayalam/.test(n)) && fams.some((n) => /Devanagari/.test(n)) && fams.some((n) => /NotoSans-/.test(n)), fams.join(" "));
   assert.ok(!fams.some((n) => /Arabic|Thai|Tamil|Bengali/.test(n)), "fonts not needed are not embedded");
+});
+test("noto CJK: the index matches the packages; the style follows the text or the choice; Han characters are drawn in the chosen style", async () => {
+  for (const k of ["sc", "tc", "jp", "kr"] as const) {
+    const fam = CJK_FILES[k].family, u = JSON.parse(readFileSync(new URL(`../../../node_modules/@fontsource/${fam}/unicode.json`, import.meta.url), "utf8")) as Record<string, string>;
+    const numbered = Object.keys(u).filter((x) => /^\[\d+\]$/.test(x));
+    assert.equal(CJK_FILES[k].files.length, numbered.length, fam);
+    for (const [sub, r] of CJK_FILES[k].files) {
+      const want = u[`[${sub}]`].split(",").map((p) => p.trim().replace("U+", "")).map((p) => { const [a, b] = p.split("-"); return [parseInt(a, 16), parseInt(b ?? a, 16)]; });
+      const got = r.split(",").map((p) => { const [a, b] = p.split("-"); return [parseInt(a, 16), parseInt(b ?? a, 16)]; });
+      assert.deepEqual(got, want, `${fam} ${sub}`);
+    }
+    const meta = JSON.parse(readFileSync(new URL("../tool.json", import.meta.url), "utf8")) as { vendor: Record<string, string> };
+    assert.equal(meta.vendor[`licenses/${fam}-LICENSE.txt`], `@fontsource/${fam}/LICENSE`, `${fam}: its licence must be served`);
+  }
+  assert.equal(hanStyleFor("直す", "auto"), "jp"); assert.equal(hanStyleFor("한국 直", "auto"), "kr"); assert.equal(hanStyleFor("直接", "auto"), "sc"); assert.equal(hanStyleFor("直接", "tc"), "tc");
+  await loadCjkIndex();
+  assert.deepEqual(notoMissing("abc 日本 😀"), ["😀"], "after loading the index, Han characters are covered");
+  assert.ok(notoFilesFor("日本語の文章", "auto").every((f) => f.family === "noto-sans-jp"));
+  assert.ok(notoFilesFor("我们学习中文", "auto").every((f) => f.family === "noto-sans-sc"));
+  assert.ok(notoFilesFor("我們學習中文", "tc").every((f) => f.family === "noto-sans-tc"));
+  assert.ok(notoFilesFor("한국어 문장", "auto").every((f) => f.family === "noto-sans-kr" || f.family === "noto-sans"));
+  assert.equal(notoOrder("x", "jp").findIndex((f) => f.family === "noto-sans-jp") < notoOrder("x", "jp").findIndex((f) => f.family === "noto-sans-sc"), true);
+  // 直 is drawn differently in Chinese and Japanese: the two files' outlines for it differ
+  const lib = notoLibrary(fsNoto), outline = async (style: "sc" | "jp") => { const f = notoFilesFor("直", style)[0], r = await lib(f); return (r.fk as unknown as { glyphForCodePoint(c: number): { path: { toSVG(): string } } }).glyphForCodePoint(0x76f4).path.toSVG(); };
+  assert.notEqual(await outline("sc"), await outline("jp"));
+  const doc = await PDFDocument.create(), face = notoFace(doc, lib, "auto"), page = doc.addPage([400, 200]);
+  const lines = ["我们在图书馆学习中文", "日本語の文章を読みます", "한국어 문장을 읽습니다"];
+  await face.prepare!(lines.join("\n"));   // prepared together, as Text to PDF does; each line drawn in its own style
+  for (const t of lines) { assert.deepEqual(face.missing(t), []); face.draw(page, t, { x: 10, y: 100, size: 20, color: { r: 0, g: 0, b: 0 }, rotate: 0, opacity: 1 }); }
+  const back = await PDFDocument.load(await doc.save());
+  // every embedded font holds at least one glyph besides .notdef (none was loaded for nothing), and every character
+  // drawn is in the fonts' character maps
+  const maps = back.context.enumerateIndirectObjects().filter(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("ToUnicode"))).map(([, o]) => {
+    const st = back.context.lookup((o as unknown as { get(n: PDFName): unknown }).get(PDFName.of("ToUnicode")) as never) as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown } };
+    const raw = st.getContents(); return new TextDecoder("latin1").decode(st.dict.get(PDFName.of("Filter")) ? unzlibSync(raw) : raw);
+  });
+  for (const m of maps) assert.match(m, /beginbfchar\s*<0001>/, "an embedded font with no glyphs");
+  const mapped = new Set(maps.flatMap((m) => [...m.matchAll(/<[0-9A-F]{4}> <([0-9A-F]{4})>/g)].map((x) => String.fromCodePoint(parseInt(x[1], 16)))));
+  for (const ch of lines.join("").replace(/\s/g, "")) assert.ok(mapped.has(ch), `${ch} is not in any embedded font`);
+  const fams = back.context.enumerateIndirectObjects().map(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("BaseFont"))?.toString() ?? "").filter((n) => /Noto/.test(n));
+  assert.ok(fams.some((n) => /SC/.test(n)) && fams.some((n) => /JP/.test(n)) && fams.some((n) => /KR/.test(n)) && !fams.some((n) => /TC/.test(n)), fams.join(" "));
 });

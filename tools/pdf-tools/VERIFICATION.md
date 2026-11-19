@@ -267,3 +267,14 @@ signs in display order; the Arabic phrase sits right to left inside the left-to-
 PDF: a Malayalam text box in Noto Sans had no warning, saved, and poppler extracted it exactly; Chinese text in Noto Sans
 gave the warning pointing to "Your own font". Not checked: Firefox, Safari, phones, very long texts, every alphabet
 individually (Hebrew, Bengali, Gurmukhi, Telugu, Kannada untested in the browser).
+
+### Noto Sans: Chinese, Japanese and Korean (2026-11-19)
+
+Unit tests: each family's numbered files and ranges equal its unicode.json; the style choice; 直 has different outlines in
+the Chinese and Japanese files; three lines prepared together and drawn each in its own style leave no character outside
+the embedded fonts and no empty font. Headless Chrome, Text to PDF with Chinese, Japanese, Korean and Malayalam/English
+lines (automatic style): only the needed files were fetched (the index and 17 font files), all from this site; poppler and
+PDF.js extracted all four lines exactly and PDF.js drew them correctly. Before the line-by-line fix, "국" was drawn as a
+box in both readers (found by this check). Traditional Chinese chosen: only Noto Sans TC files were used and the line
+extracted exactly. Edit PDF with Japanese text: no warning, saved, extracted exactly. Not checked: vertical text, rare
+characters beyond the files' coverage, Firefox, Safari, phones.
