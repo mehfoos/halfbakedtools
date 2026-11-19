@@ -3,7 +3,7 @@
 // memory, and results are handed back as downloads created inside the page.
 import { perScreen, screenCount, clampScreen, screenRange, screenOf, pagerItems, MIN_PER_SCREEN } from "./paging.ts";
 import { zipSync } from "fflate";
-import { PDFDocument } from "@cantoo/pdf-lib";
+import { PDFDocument, StandardFonts } from "@cantoo/pdf-lib";
 import { NO_COMPRESSION, PRESETS, saving, greyInPlace, type CompressOptions, type CompressStats } from "./compress-core.ts";
 import { recompressImages } from "./compress.ts";
 import {
@@ -14,10 +14,11 @@ import {
 import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
 import { extractPictures } from "./extract.ts";
+import { addTextLayer, ocrScale, meanConfidence, LOW_CONFIDENCE } from "./ocr.ts";
 import { listFields, fillForm, type FieldInfo, type Values } from "./forms.ts";
 import { toLines, toBlocks, toMarkdown, toHtml, type Line } from "./structure.ts";
 import { comparePages, diffReport, type PageDiff } from "./diff.ts";
-import { looksLikePdfBody, rewrite, repairNote } from "./repair.ts";
+import { looksLikePdfBody, rewrite, repairNote, listPages } from "./repair.ts";
 import { createEditor } from "./editor.ts";
 import { createSignPad } from "./signpad.ts";
 import type { Mark } from "./marks.ts";
@@ -29,7 +30,7 @@ import { jpegOrientation, orientationToRotation } from "./exif.ts";
 import { NO_IMAGE_LAYOUT, imageLayout, PAGE_MIN, PAGE_MAX, MARGIN_MAX as IMAGE_MARGIN_MAX, type ImageLayout } from "./layout.ts";
 import { NO_CROP, CROP_UNITS, MARGIN_LIMIT, toPoints, fromPoints, isCropped, appliesTo, clampMargins, type CropUnit, type Margins } from "./crop.ts";
 import { taskBySlug, showsPages, type Part } from "./tasks.ts";
-import { openPdf, closePdf, drawPage, pageText, pageItems, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle } from "./render.ts";
+import { openPdf, closePdf, drawPage, pageText, pageItems, pixelsToPoints, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle } from "./render.ts";
 
 // The TIFF library is only fetched (from this site) when a TIFF is read or written.
 const utif = async () => { const m = await import("utif2"); return ((m as { default?: typeof m }).default ?? m); };
@@ -355,6 +356,40 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       const label = el("label", { className: "ff" }, el("span", {}, `${f.name}${f.readOnly ? " (read only)" : ""}${f.kind === "radio" ? " (choose one)" : ""}`), input);
       return label;
     }));
+  }
+  async function saveOcr() {
+    if (busy || !ask.hidden) return;
+    const pdfs = session.sources.filter((s) => loaded.get(s.sha256)?.data.kind === "pdf"); if (!pdfs.length) return say("Add a PDF first.", "bad");
+    const dpi = Number($<HTMLSelectElement>("ocrDpi").value) || 300, skip = $<HTMLInputElement>("ocrSkip").checked;
+    const names = pdfs.map(perFileName);
+    if (!(await consent(names.length === 1 ? names : [`${safeName(session.output.name)}.zip`]))) return say("Nothing was saved. Change the file name and try again.");
+    await work("Loading the text-recognition engine…", async (progress) => {
+      const { startRecogniser } = await import("./tess.ts");
+      let step = "";
+      const engine = await startRecogniser(new URL("../tesseract/", new URL(vendor, location.href)).href, (share) => progress(`${step} ${Math.round(share * 100)}%`));
+      const files: { name: string; bytes: Uint8Array }[] = [], lines: string[] = [];
+      try {
+        for (const [k, s] of pdfs.entries()) {
+          const L = loaded.get(s.sha256)!, d = L.data; if (d.kind !== "pdf" || L.handle.kind !== "pdf") continue;
+          const doc = await PDFDocument.load(d.bytes, d.password === undefined ? {} : { password: d.password }), font = doc.embedStandardFont(StandardFonts.Helvetica);
+          let read = 0, skipped = 0, blank = 0, words = 0, dropped = 0; const doubtful: number[] = [];
+          for (let i = 0; i < s.pages; i++) {
+            step = `${s.name}: page ${i + 1} of ${s.pages}…`; progress(step);
+            if (skip && (await pageText(L.handle, i)).trim()) { skipped++; continue; }
+            const size = await pixelsToPoints(L.handle, i, 1), scale = ocrScale(size.width, size.height, dpi), map = await pixelsToPoints(L.handle, i, scale);
+            const canvas = await drawPage(L.handle, i, 0, { pxPerPoint: scale, pxPerImagePx: scale });
+            const found = await engine.read(canvas); canvas.width = canvas.height = 0;
+            const conf = meanConfidence(found); if (conf !== null && conf < LOW_CONFIDENCE) doubtful.push(i + 1);
+            const r = addTextLayer(doc.getPage(i), font, found, map.toPdf); read++; words += r.words; dropped += r.dropped; if (!r.words) blank++;
+          }
+          if (read) files.push({ name: names[k], bytes: await doc.save() });
+          lines.push(`${s.name}: ${read} ${read === 1 ? "page" : "pages"} read, ${words} words added${skipped ? `, ${skipped} skipped (already had text)` : ""}${blank ? `, ${blank} with no words found` : ""}${dropped ? `, ${dropped} characters left out (not in the font)` : ""}.${doubtful.length ? ` The engine was unsure about ${doubtful.length === 1 ? "page" : "pages"} ${listPages(doubtful)}: ${doubtful.length === 1 ? "it" : "they"} may be sideways, handwritten or a poor scan (the text was still added).` : ""}`);
+        }
+      } finally { await engine.stop(); }
+      if (!files.length) throw new Error(`Every page already has text, so nothing was added and no file was saved. To read them anyway, untick "Skip pages that already have text".`);
+      await deliver(files, safeName(session.output.name));
+      say(`Saved ${files.length === 1 ? files[0].name : `${files.length} PDFs in ${safeName(session.output.name)}.zip`}. ${lines.join(" ")} Recognised text can contain mistakes: check anything that matters.`);
+    });
   }
   async function saveForms() {
     if (busy || !ask.hidden) return;
@@ -839,6 +874,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     readOptions(); clearResult(); if (task.slug === "extract-images") return saveExtracted();
     if (task.slug === "compare") return saveCompare();
     if (task.slug === "fill-forms") return saveForms();
+    if (task.slug === "ocr") return saveOcr();
     if (busy || !ask.hidden) return;
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);

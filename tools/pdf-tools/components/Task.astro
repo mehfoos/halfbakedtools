@@ -264,6 +264,12 @@ const policy = import.meta.env.PROD ? CSP : "";
               <p class="small muted">PDF pages can be between half an inch and 200 inches on a side.</p>
             </div>
           </details>
+          <div id="optOcr" data-part="ocr">
+            <p><label class="field">Language <select id="ocrLang"><option value="eng">English</option></select></label> <span class="small muted">The only language so far.</span></p>
+            <p><label class="field">Detail <select id="ocrDpi"><option value="200">Faster (200 dots per inch)</option><option value="300" selected>Normal (300 dots per inch)</option><option value="400">For small print (400 dots per inch)</option></select></label></p>
+            <p><label><input id="ocrSkip" type="checkbox" checked /> Skip pages that already have text</label><br /><span class="small muted">So text isn't added twice. Untick for a page that has a few typed words over a scan.</span></p>
+            <p class="small muted">Each page is drawn as a picture inside this browser and the words are recognised by the open-source Tesseract engine, which this site serves (about 6 MB, fetched the first time you press the button). The pages look exactly as before; the words are added on top as invisible text. Recognition can be wrong, especially with poor scans, handwriting, unusual fonts or tables, and nothing checks it. Pages scanned sideways should be turned upright first (Rotate PDF).</p>
+          </div>
           <div id="optForms" data-part="forms">
             <div id="formFields" class="formfields"></div>
             <p><label><input id="formFlatten" type="checkbox" /> Make the filled-in values permanent (the fields can no longer be edited, and they can't be filled again)</label></p>

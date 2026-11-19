@@ -188,3 +188,15 @@ radio button), and qpdf found no errors. With "make permanent" ticked the saved 
 name, the ticked box, "Medium" and the chosen radio button. A Japanese name was left unset and the message named the field.
 A PDF with no fields got the explanation. No requests left the browser. Not checked: forms from other software (XFA forms,
 JavaScript-driven fields, forms with a custom font), encrypted forms, fields spread over many pages.
+
+### OCR PDF (2026-11-19)
+
+Headless Chrome, 300 dpi picture-only PDFs made with Pillow (no text; DejaVu fonts). A 2-page scan: poppler's pdftotext
+of the result gave every line exactly ("Invoice number 48213", "Total due: 1,250.00 pounds", ...); word boxes were where
+the words are drawn ("Invoice" at x = 48.7 pt, expected 48); the page rendered pixel-identical to the original; qpdf found
+no errors. A cropped page kept the same positions. A page stored turned 90° but shown upright came out right (text and
+positions as seen). A page shown sideways gave junk words and was named as doubtful (engine confidence 37 against 95-96).
+Re-running on an OCR'd file skipped the page and, after the fix above, saves nothing and says why. 4 pages took about
+4-5 s. Only this site's files were fetched (worker, engine, language data); nothing was stored in IndexedDB; no requests
+left the browser. Not checked: real scanner output (noise, skew), phones (memory), Firefox/Safari, documents of hundreds of
+pages, accuracy measured on a labelled set.

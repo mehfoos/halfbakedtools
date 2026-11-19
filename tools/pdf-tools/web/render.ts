@@ -87,6 +87,13 @@ export async function pageText(h: Handle, page: number): Promise<string> {
   return piecesToText(content.items.filter((i): i is typeof i & TextPiece => "str" in i));
 }
 
+/** For a PDF page drawn at `scale` pixels per point (as `drawPage` draws it), turns page pixels into PDF points,
+ *  taking account of the page's stored rotation and crop. Also gives the page's size in points as seen. */
+export async function pixelsToPoints(h: PdfHandle, page: number, scale: number): Promise<{ toPdf: (x: number, y: number) => [number, number]; width: number; height: number }> {
+  const p = await h.doc.getPage(page + 1), vp = p.getViewport({ scale, rotation: p.rotate }), one = p.getViewport({ scale: 1, rotation: p.rotate });
+  return { toPdf: (x, y) => vp.convertToPdfPoint(x, y) as [number, number], width: one.width, height: one.height };
+}
+
 /** Text pieces with where they sit and how big they are (for guessing headings and paragraphs). */
 export async function pageItems(h: Handle, page: number): Promise<Item[]> {
   if (h.kind === "image") return [];

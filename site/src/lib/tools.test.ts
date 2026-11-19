@@ -80,6 +80,10 @@ test("no reference files are committed to the repository", () => {
   const kind = /\.(pdf|xlsx?|xlsm|ods|docx?|odt|zip|7z|gz|tar|xml|csv|tsv|mht(ml)?|html?|epub)$/i;
   // Our own hand-reviewable tables (food descriptions and matching decisions) are CSV by design.
   const ours = /[\\/]tools[\\/][^\\/]+[\\/]pipeline[\\/]blend[\\/].*\.csv$/;
-  for (const f of files(ROOT))
+  // site/public/tools/ is filled at build time from the tools' data and installed packages (scripts/sync-data.mjs)
+  // and is never committed; skipping it is only safe while .gitignore keeps it out.
+  assert.match(readFileSync(join(ROOT, ".gitignore"), "utf8"), /^site\/public\/tools\/$/m, "site/public/tools/ must stay git-ignored");
+  const built = join(ROOT, "site", "public", "tools");
+  for (const f of files(ROOT).filter((f) => !f.startsWith(built)))
     assert.ok(!kind.test(f) || ours.test(f), `${f.slice(ROOT.length)}: reference files go in the source-archive release, not the repository`);
 });

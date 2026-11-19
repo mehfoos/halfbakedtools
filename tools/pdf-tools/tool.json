@@ -121,6 +121,11 @@
       "nav": false
     },
     {
+      "page": "ocr",
+      "label": "OCR PDF",
+      "nav": false
+    },
+    {
       "page": "repair",
       "label": "Repair PDF",
       "nav": false
@@ -154,6 +159,13 @@
     "pdfjs/cmaps": "pdfjs-dist/cmaps",
     "pdfjs/standard_fonts": "pdfjs-dist/standard_fonts",
     "pdfjs/wasm": "pdfjs-dist/wasm",
-    "pdfjs/iccs": "pdfjs-dist/iccs"
+    "pdfjs/iccs": "pdfjs-dist/iccs",
+    "tesseract/worker.min.js": "tesseract.js/dist/worker.min.js",
+    "tesseract/worker.min.js.LICENSE.txt": "tesseract.js/dist/worker.min.js.LICENSE.txt",
+    "tesseract/core/tesseract-core-lstm.wasm.js": "tesseract.js-core/tesseract-core-lstm.wasm.js",
+    "tesseract/core/tesseract-core-simd-lstm.wasm.js": "tesseract.js-core/tesseract-core-simd-lstm.wasm.js",
+    "tesseract/core/tesseract-core-relaxedsimd-lstm.wasm.js": "tesseract.js-core/tesseract-core-relaxedsimd-lstm.wasm.js",
+    "tesseract/core/LICENSE": "tesseract.js-core/LICENSE",
+    "tesseract/lang/eng.traineddata.gz": "@tesseract.js-data/eng/4.0.0_best_int/eng.traineddata.gz"
   }
 }

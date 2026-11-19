@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { PDFDocument, PDFName, degrees } from "@cantoo/pdf-lib";
+import { PDFDocument, PDFName, StandardFonts, degrees } from "@cantoo/pdf-lib";
 import { parseRanges, parsePageList, formatRanges } from "./ranges.ts";
 import {
   emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName,
@@ -817,4 +817,32 @@ test("forms: fields are listed with their kinds and filled values come out; flat
   const flat = await fillForm(bytes, undefined, { name: "Ada" }, true); assert.equal((await listFields(flat.bytes)).length, 0);
   const bad = await fillForm(bytes, undefined, { name: "日本" }, false); assert.equal(bad.changed, 0); assert.match(bad.problems[0], /"name".*character/);
   assert.equal((await fillForm(bytes, undefined, { name: "" }, false)).changed, 0, "an unchanged field is not counted");
+});
+
+// ---- OCR text layer ----
+import { wordMatrix, drawableText, ocrScale, addTextLayer, meanConfidence, OCR_MAX_PIXELS } from "./ocr.ts";
+test("ocr: a word's matrix spans its box exactly, on upright and turned pages", () => {
+  // upright: 2 px per point, page 300 pt tall; pixel (x, y) -> point (x/2, 300 - y/2)
+  const up = (x: number, y: number): [number, number] => [x / 2, 300 - y / 2];
+  const [a, b, c, d, e, f] = wordMatrix({ x0: 100, y0: 100, x1: 300, y1: 140 }, 4, 0.75, 0.25, up);
+  assert.deepEqual([a * 4, b, c, d], [100, 0, 0, 20]);                     // 4 units of text cover 100 pt; 1 em = the 20 pt box height
+  assert.deepEqual([e, f], [50, 300 - 130 / 2]);                             // baseline is a quarter of the box above its bottom
+  // a page stored turned 90°: pixel x runs down the stored page, pixel y runs right-to-left
+  const turned = (x: number, y: number): [number, number] => [y / 2, x / 2];
+  const m = wordMatrix({ x0: 0, y0: 0, x1: 200, y1: 40 }, 2, 0.75, 0.25, turned);
+  assert.deepEqual([m[0] * 2, m[1] * 2], [0, 100]); assert.deepEqual([m[2], m[3]], [-20, 0]);
+});
+test("ocr: unusual characters are mapped or dropped; huge pages are drawn smaller", async () => {
+  const has = new Set([..."fiabc"].map((c) => c.codePointAt(0)!));
+  assert.deepEqual(drawableText("ﬁab☃c", has), { text: "fiabc", dropped: 1 });
+  const b = { x0: 0, y0: 0, x1: 1, y1: 1 }; assert.equal(meanConfidence([{ text: "a", box: b, confidence: 90 }, { text: "b", box: b, confidence: 30 }, { text: "c", box: b }]), 60); assert.equal(meanConfidence([]), null);
+  assert.equal(ocrScale(612, 792, 300), 300 / 72);
+  const s = ocrScale(5000, 5000, 300); assert.ok(Math.abs(5000 * s * 5000 * s - OCR_MAX_PIXELS) < 1);
+  const doc = await PDFDocument.create(), page = doc.addPage([300, 300]), font = doc.embedStandardFont(StandardFonts.Helvetica);
+  const r = addTextLayer(page, font, [{ text: "Hello", box: { x0: 10, y0: 10, x1: 110, y1: 40 } }, { text: "☃", box: { x0: 0, y0: 0, x1: 5, y1: 5 } }], (x, y) => [x, 300 - y]);
+  assert.deepEqual(r, { words: 1, dropped: 1 });
+  const out = await PDFDocument.load(await doc.save()); const stream = out.getPage(0).node.Contents()!;
+  const decode = (x: unknown) => { const st = out.context.lookup(x as never) as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown } }; const raw = st.getContents(); return st.dict.get(PDFName.of("Filter")) ? new TextDecoder("latin1").decode(unzlibSync(raw)) : new TextDecoder("latin1").decode(raw); };
+  const all = ("asArray" in stream ? (stream as unknown as { asArray(): unknown[] }).asArray() : [stream]).map(decode).join("\n");
+  assert.match(all, /3 Tr/); assert.match(all, /BT[\s\S]*ET/);
 });

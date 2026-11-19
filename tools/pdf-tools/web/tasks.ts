@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "forms" | "preview";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "forms" | "ocr" | "preview";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -72,6 +72,9 @@ export const TASKS: Task[] = [
     pick: "Select PDF files", hint: "Choose how hard to compress, then press Compress to see the new size and a before-and-after preview.",
     parts: ["compress"], formats: ["pdf"], which: "all", action: "Compress PDF", perFile: true, suffix: "compressed", tag: "↓" },
 
+  { slug: "ocr", name: "OCR PDF", blurb: "Make scanned PDFs searchable: the words in the page pictures are recognised and added as invisible text you can search, select and copy.", group: "Optimise", accept: "pdf",
+    pick: "Select PDF files", hint: "English only for now. The pages look the same afterwards; recognised text is added on top, invisibly. Recognition takes a few seconds a page and can make mistakes.",
+    parts: ["ocr"], formats: ["pdf"], which: "all", action: "Make searchable", perFile: true, suffix: "ocr", tag: "OCR" },
   { slug: "repair", name: "Repair PDF", blurb: "Open a damaged PDF as far as possible and save a clean copy. It fixes damaged structure; it cannot bring back content that is missing.", group: "Optimise", accept: "pdf",
     pick: "Select PDF files", hint: "Each file is opened leniently and every page is checked. The message says what was found and which pages could not be read. Content missing from the file, for example from a cut-off download, cannot be recovered.",
     parts: [], formats: ["pdf"], which: "all", action: "Repair PDF", perFile: true, suffix: "repaired", tag: "✚" },
@@ -128,7 +131,6 @@ export const WORKSPACE: Task = {
 /** Planned and not built yet. Shown on the home grid, clearly marked, so nobody hunts for them. Each will only be
  *  added if it can be done entirely on the visitor's device. See ROADMAP.md for the order. */
 export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
-  { name: "OCR PDF (make scans searchable)", tag: "OCR", group: "Optimise" },
   { name: "Word to PDF", tag: "DOC", group: "Convert to PDF" }, { name: "PowerPoint to PDF", tag: "PPT", group: "Convert to PDF" },
   { name: "Excel to PDF", tag: "XLS", group: "Convert to PDF" }, { name: "HTML file to PDF", tag: "WEB", group: "Convert to PDF" },
   { name: "PDF to Word", tag: "DOC", group: "Convert from PDF" }, { name: "PDF to PowerPoint", tag: "PPT", group: "Convert from PDF" },
