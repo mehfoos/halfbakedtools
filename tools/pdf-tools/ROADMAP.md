@@ -39,14 +39,14 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | Rotate PDF | Done | |
 | JPG to PDF | Done as "Images to PDF" | Theirs also offers orientation and margins: chunk 6 |
 | PDF to JPG | Done | Theirs can also pull out the pictures stored in a PDF: chunk 6 |
-| Edit PDF | Partly | Text and pictures done; shapes and freehand: chunk 5 |
+| Edit PDF | Partly | Text, pictures, rectangles, ellipses, lines, highlights and freehand drawing done (chunk 5, 2026-11-19). Still missing: changing or removing what is already on a page |
 | Unlock PDF, Protect PDF | **Done 2026-11-16** (chunk 1) | `protect()` in `web/build.ts`; both are per-file tasks. Possible follow-up: offer protection as a last step in the all-in-one workspace |
 | Page numbers | **Done 2026-11-17** (chunk 2a) | `web/stamps.ts`; live preview in `ui.ts` (`drawPreview`) |
 | Watermark | **Done 2026-11-17** (chunk 2b), text only | `watermarkMarks` in `web/stamps.ts`. Follow-ups: a picture (logo) watermark, as a fingerprinted source like placed pictures; a choice of pages; drawing behind the page's content |
 | Crop PDF | **Done 2026-11-19** (chunk 3) | `web/crop.ts`, cropper in `ui.ts`. Sets the crop box; hidden, not removed (stated on the page). Same margins on every chosen page. Follow-ups: margins as a percentage of each page; auto-detect white borders; crop in the all-in-one workspace; keyboard handles on the box (the number boxes work without a mouse) |
 | Sign PDF | Chunk 4 (next) | Draw a signature (canvas), place it as a picture mark. Not a cryptographic signature: say so. "Request signatures from others" is not possible locally |
-| Edit PDF: shapes, freehand | **Chunk 5 (next)** | New mark types |
-| Images to PDF margins/orientation; extract stored pictures | Chunk 6 | Named paper sizes still need an archived source |
+| Edit PDF: shapes, freehand | **Done 2026-11-19** (chunk 5) | `ShapeMark`, `InkMark`, `shapePath`, `placeBox` in `web/marks.ts`; draw mode in `web/editor.ts`. Follow-ups: arrows, text-aware highlight, an eraser for strokes, bring-to-front/back |
+| Images to PDF margins/orientation; extract stored pictures | **Chunk 6 (next)** | Named paper sizes still need an archived source |
 | Repair PDF | Chunk 7 | Re-read leniently and re-save; report honestly what could not be recovered |
 | Compare PDF | Chunk 8 | Side-by-side pages plus a text difference |
 | PDF to Markdown, PDF to HTML, Text/HTML file to PDF | Chunk 9 | Rough by nature; label as such. HTML to PDF from a web address is not possible locally |

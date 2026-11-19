@@ -20,6 +20,7 @@ What the tool relies on, what it was checked against, and when.
 | Split plans (one file, every N, chosen ranges, one per page) and file names | `core.test.ts` "session: planFiles…" |
 | Crop: unit conversion, crop box on upright and turned pages, minimum visible area, chosen pages, settings; resizing keeps an already-cropped page's area | `core.test.ts` "crop: …", "build: crop …", "build: resizing keeps …" |
 | Signature pad ink bounds | `core.test.ts` "signature: …" |
+| Shape paths, placement on turned pages, checks on shapes/ink from settings files, drawing into the page | `core.test.ts` "shapes: …", "build: shapes …" |
 | Paging of long page lists: whole rows that fit the screen, screen counts and ranges, short pager row | `core.test.ts` "perScreen…", "screen arithmetic", "pagerItems…" |
 | Settings file round trip; rejection of foreign, damaged and newer files; no content keys | `core.test.ts` "settings: …" |
 | Written PDFs: merge order, repeated pages independent, rotation adds to existing, resize, image pages, several files from one builder, fonts kept | `core.test.ts` "build: …" |
@@ -118,3 +119,11 @@ Headless Chrome: opened a PDF on the Sign page (editor opens on page 1), pressed
 with a message, a two-stroke signature was drawn with the mouse (including Undo stroke), Use placed it as a movable,
 resizable picture; the saved PDF was read with pypdf (one transparent RGBA picture on page 1, none on the others) and
 rendered with poppler (dark-blue ink visible). No requests left the browser. Not checked: touch or pen input on real devices.
+
+### Shapes, highlight and freehand (2026-11-19)
+
+Headless Chrome: rectangle (with fill), ellipse, line, highlight and a freehand stroke added on Edit PDF, saved, and
+rendered with poppler: green fill, blue outline, yellow see-through highlight and dark-red freehand pixels were all
+present. On a page stored turned 90°, a green rectangle's rendered position and size matched the editor's box to three
+decimals (fractions of the page). Properties panel showed the right rows for each kind (no fill for a line, flip only for
+a line). No requests left the browser. Not checked: touch/pen drawing on real devices; very long strokes.

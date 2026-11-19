@@ -70,3 +70,5 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 | 2026-11-19 | Crop margins are absolute (points, shown in mm, inches or points) and the same on every chosen page | Simple and predictable; a percentage option is a follow-up |
 | 2026-11-19 | Resizing scales every page box itself instead of calling the library's `page.scale` | The library resets the crop box to the full page size, which shows the wrong area on any page that is already cropped |
 | 2026-11-19 | A drawn signature is placed as a picture and is never stored; the page says it is not a digital signature | A cryptographic signature needs certificates and trust this tool can't provide; storing a signature would break "nothing is kept" |
+| 2026-11-19 | Highlight is a see-through coloured rectangle you place, not text-aware | Finding text positions reliably is a separate job; the page says what it is |
+| 2026-11-19 | Freehand strokes are stored as shares (0 to 1) of their box | They resize with their box and stay small in the settings file |

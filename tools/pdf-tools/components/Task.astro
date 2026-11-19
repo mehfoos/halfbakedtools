@@ -42,6 +42,13 @@ const policy = import.meta.env.PROD ? CSP : "";
             <button type="button" class="small" id="edNext" aria-label="Next page">›</button>
             <button type="button" class="small add" id="edText">＋ Text</button>
             <label class="button small add" for="stampPicker">＋ Picture</label>
+            <button type="button" class="small add" id="edRect" data-part="shapes">▭ Rectangle</button>
+            <button type="button" class="small add" id="edEllipse" data-part="shapes">◯ Ellipse</button>
+            <button type="button" class="small add" id="edLine" data-part="shapes">╱ Line</button>
+            <button type="button" class="small add" id="edHi" data-part="shapes">▬ Highlight</button>
+            <button type="button" class="small add" id="edDraw" data-part="shapes" aria-pressed="false">✎ Draw</button>
+            <span id="penBar" class="small" data-part="shapes" hidden>Pen <input id="penColor" type="color" value="#c00000" aria-label="Pen colour" />
+              <select id="penWidth" aria-label="Pen width"><option value="1.5">Thin</option><option value="3" selected>Medium</option><option value="6">Thick</option></select> Drag on the page to draw.</span>
             <button type="button" class="small add" id="edSign" data-part="sign">✍ Draw signature</button>
             <button type="button" class="small" data-act="undo" id="edUndo">Undo</button>
           </div>
@@ -126,6 +133,11 @@ const policy = import.meta.env.PROD ? CSP : "";
             <select id="mFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option></select></label></p>
           <p data-for="text"><label><input id="mBold" type="checkbox" /> Bold</label></p>
           <p data-for="text"><label class="field">Colour <input id="mColor" type="color" /></label></p>
+          <p data-for="shape ink"><label class="field">Line colour <input id="mStroke" type="color" /></label></p>
+          <p data-for="shape ink"><label class="field">Line width <input id="mLine" type="number" min="0" max="100" step="0.5" inputmode="decimal" /> points</label></p>
+          <p data-for="shape"><label><input id="mFillOn" type="checkbox" /> Fill</label> <input id="mFill" type="color" aria-label="Fill colour" /></p>
+          <p data-for="shape" id="mFlipRow"><label><input id="mFlip" type="checkbox" /> Other diagonal</label></p>
+          <p data-for="shape ink"><label class="field">Strength <input id="mOpacity" type="range" min="5" max="100" step="5" /> <span id="mOpacityNote" class="small"></span></label><br /><span class="small muted">Fainter lets more of the page show through.</span></p>
           <p><label class="field">Turn by <input id="mRotate" type="number" min="-360" max="360" step="1" inputmode="numeric" />°</label> <span class="small muted">clockwise</span></p>
           <p><button type="button" class="small" id="mDelete">Remove this addition</button></p>
         </div>
@@ -378,6 +390,9 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .tile .edit { margin-top: 2px; }
     #pdftools .sigpad { border: 2px solid var(--navy); border-radius: 6px; padding: 10px; margin: 0 0 10px; background: #fff; }
     #pdftools .sigpad canvas { width: 100%; display: block; background: repeating-linear-gradient(#fff, #fff 38px, #e6e6dc 39px); box-shadow: 0 0 0 1px #999; touch-action: none; cursor: crosshair; }
+    #pdftools .layer.drawing { cursor: crosshair; touch-action: none; }
+    #pdftools .layer.drawing .mark { pointer-events: none; }
+    #pdftools .layer svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
     #pdftools .cropper { max-width: 520px; margin: 0 auto 14px; }
     #pdftools .cropnav { justify-content: center; align-items: center; margin-bottom: 6px; }
     #pdftools .crbox { position: absolute; box-sizing: border-box; border: 2px solid var(--navy); box-shadow: 0 0 0 9999px rgba(0, 0, 40, 0.45); cursor: move; touch-action: none; }

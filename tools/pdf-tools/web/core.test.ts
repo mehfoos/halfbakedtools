@@ -586,3 +586,41 @@ test("signature: ink bounds include pen thickness, padding, and nothing drawn gi
   assert.deepEqual(inkBounds([{ pts: [{ x: 10, y: 20 }, { x: 50, y: 30 }], width: 4 }, { pts: [{ x: 5, y: 60 }], width: 2 }]), { x: 4, y: 18, w: 48, h: 43 });
   assert.deepEqual(inkBounds([{ pts: [{ x: 10, y: 10 }], width: 2 }], 5), { x: 4, y: 4, w: 12, h: 12 });
 });
+
+// ---- shapes and freehand lines ----
+import { shapePath, placeBox, cleanMark as cleanM } from "./marks.ts";
+test("shapes: paths in the box's own coordinates", () => {
+  const r = { type: "shape", shape: "rect", x: 0, y: 0, rotate: 0, w: 10, h: 20, color: "#000000", fill: "", width: 1 } as const;
+  assert.equal(shapePath(r), "M 0 0 L 10 0 L 10 20 L 0 20 Z");
+  assert.equal(shapePath({ ...r, shape: "line" }), "M 0 0 L 10 20");
+  assert.equal(shapePath({ ...r, shape: "line", flip: true }), "M 0 20 L 10 0");
+  assert.match(shapePath({ ...r, shape: "ellipse" }), /^M 0 10 C .* Z$/);
+  const ink = { type: "ink", x: 0, y: 0, rotate: 0, w: 100, h: 50, strokes: [[0, 0, 0.5, 1], [0.2, 0.2]], color: "#000000", width: 2 } as const;
+  assert.equal(shapePath(ink), "M 0 0 L 50 50 M 20 10 L 20.01 10");
+});
+test("shapes: position follows the page as shown, including turned pages", () => {
+  const box = { x: 0, y: 0, width: 400, height: 600 };
+  assert.deepEqual(placeBox({ x: 40, y: 30, rotate: 0 }, box, 0), { x: 40, y: 570, angle: 0 });
+  assert.deepEqual(placeBox({ x: 40, y: 30, rotate: 15 }, box, 90), { x: 30, y: 40, angle: 75 });
+});
+test("shapes: marks from a settings file are checked", () => {
+  const ok = { type: "shape", shape: "ellipse", x: 1, y: 2, rotate: 0, w: 30, h: 20, color: "#ff0000", fill: "#00ff00", width: 2, opacity: 0.5 };
+  assert.deepEqual(cleanM(ok, () => false), ok);
+  assert.equal(cleanM({ ...ok, shape: "star" }, () => false), null); assert.equal(cleanM({ ...ok, fill: "red" }, () => false), null); assert.equal(cleanM({ ...ok, width: -1 }, () => false), null);
+  const ink = { type: "ink", x: 0, y: 0, rotate: 0, w: 10, h: 10, strokes: [[0, 0, 1, 1]], color: "#000000", width: 1 };
+  assert.deepEqual(cleanM(ink, () => false), ink);
+  assert.equal(cleanM({ ...ink, strokes: [[0, 0, 2, 1]] }, () => false), null); assert.equal(cleanM({ ...ink, strokes: [[0, 0, 1]] }, () => false), null);
+  assert.equal(cleanM({ ...ink, strokes: Array(201).fill([0, 0]) }, () => false), null);
+});
+test("build: shapes and freehand lines are drawn into the saved page", async () => {
+  const data = new Map<string, SourceData>([["a", { kind: "pdf", bytes: await sample(1) }]]);
+  const marks = [
+    { type: "shape", shape: "rect", x: 10, y: 10, rotate: 0, w: 30, h: 20, color: "#ff0000", fill: "#ffff00", width: 2, opacity: 0.5 },
+    { type: "ink", x: 10, y: 50, rotate: 0, w: 40, h: 20, strokes: [[0, 0, 1, 1]], color: "#0000ff", width: 3 },
+    { type: "shape", shape: "line", x: 10, y: 90, rotate: 30, w: 40, h: 10, color: "#000000", fill: "", width: 1 },
+  ] as const;
+  const out = await makeBuilder(data, { imageDpi: 96 })([{ ...P("a", 0), marks: [...marks] }]);
+  const plain = await makeBuilder(data, { imageDpi: 96 })([P("a", 0)]);
+  assert.equal((await inspectPdf(out)).pages, 1);
+  assert.ok(out.length > plain.length + 100, "the page gained drawing instructions (their appearance is checked by rendering, in VERIFICATION.md)");
+});

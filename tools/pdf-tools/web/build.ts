@@ -3,7 +3,7 @@
 // only the page order, rotation and size change.
 import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
-import { placeText, placeImage, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
+import { placeText, placeImage, placeBox, shapePath, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
 import { numberMark, watermarkMarks, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import type { PageItem, Rotation } from "./session.ts";
 
@@ -103,6 +103,15 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
           if (bad.length) throw new Error(`Added text contains characters this tool can't write yet: ${bad.slice(0, 12).join(" ")}. It can write Western European letters, digits and common punctuation.`);
           const placed = placeText(m, font, box, rotation), c = parseColor(m.color);
           for (const l of placed.lines) if (l.text) page.drawText(l.text, { x: l.x, y: l.y, size: m.size, font, color: rgb(c.r, c.g, c.b), rotate: degrees(placed.angle), opacity: m.opacity ?? 1 });
+        } else if (m.type === "shape" || m.type === "ink") {
+          const at = placeBox(m, box, rotation), c = parseColor(m.color), f = m.type === "shape" && m.fill ? parseColor(m.fill) : null;
+          const line = m.type === "ink" || m.shape === "line", op = m.opacity ?? 1;
+          if (m.type === "shape" && !m.width && !f) continue;
+          page.drawSvgPath(shapePath(m), {
+            x: at.x, y: at.y, rotate: degrees(at.angle),
+            ...(f && !line ? { color: rgb(f.r, f.g, f.b), opacity: op } : {}),
+            ...(m.width > 0 ? { borderColor: rgb(c.r, c.g, c.b), borderWidth: m.width, borderOpacity: op, borderLineCap: 1 /* round */ } : {}),
+          });
         } else {
           const at = placeImage(m, box, rotation);
           page.drawImage(await picture(m.src), { x: at.x, y: at.y, width: at.width, height: at.height, rotate: degrees(at.angle), opacity: m.opacity ?? 1 });

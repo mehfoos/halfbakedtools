@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "preview";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "preview";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -56,9 +56,9 @@ export const TASKS: Task[] = [
     pick: "Select PDF files", hint: "Type a percentage and press Resize. Tick pages first to resize only those.",
     parts: ["select", "scale"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "resized", tag: "⤢" , selectAll: true },
 
-  { slug: "edit", name: "Edit PDF", blurb: "Add text and pictures to pages: fill in a form, add a note, a date, a signature picture or a logo.", group: "Edit", accept: "both",
-    pick: "Select PDF file", hint: "Press ＋ Text or ＋ Picture, then drag it into place. This adds to pages; it can't yet change or remove what is already on them.",
-    parts: ["marks"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "edited", tag: "✎" },
+  { slug: "edit", name: "Edit PDF", blurb: "Add text, pictures, shapes, highlights and freehand drawing to pages: fill in a form, add a note, a date, a signature picture or a logo.", group: "Edit", accept: "both",
+    pick: "Select PDF file", hint: "Press ＋ Text, ＋ Picture, a shape, Highlight or Draw, then drag it into place. This adds to pages; it can't yet change or remove what is already on them.",
+    parts: ["marks", "shapes"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "edited", tag: "✎" },
   { slug: "crop", name: "Crop PDF", blurb: "Trim the margins off pages: drag the edges of the page, or type the margins. Cut-off parts are hidden, not deleted.", group: "Edit", accept: "pdf",
     pick: "Select PDF files", hint: "Drag the edges of the box on the page, or type the margins. Everything outside the box is hidden when the PDF is opened, but is still stored in the file.",
     parts: ["crop"], formats: ["pdf"], which: "all", action: "Crop PDF", perFile: true, suffix: "cropped", tag: "▢" },
@@ -101,7 +101,7 @@ export const TASKS: Task[] = [
 export const WORKSPACE: Task = {
   slug: "workspace", name: "All-in-one workspace", blurb: "Every tool on one page, for jobs that need several steps: arrange, then split or convert, and save your settings to carry on later.", group: "Organise", accept: "both",
   pick: "Select PDFs or images", hint: "Tick pages to select them, then use the buttons. Drag pages to reorder them.",
-  parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo", "scale", "split", "imageDpi", "compress", "marks", "numbers", "watermark"],
+  parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo", "scale", "split", "imageDpi", "compress", "marks", "shapes", "numbers", "watermark"],
   formats: ["pdf", "png", "jpeg", "webp", "tiff", "bmp", "txt"], which: "all", action: "Save all pages", suffix: "edited", tag: "ALL",
 };
 

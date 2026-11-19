@@ -10,8 +10,15 @@ export type FontKey = "sans" | "serif" | "mono";
 export type TextMark = { type: "text"; x: number; y: number; rotate: number; text: string; size: number; color: string; font: FontKey; bold: boolean; opacity?: number };
 /** src: id of an image source in the session. w, h: size on the page in points. */
 export type ImageMark = { type: "image"; x: number; y: number; rotate: number; w: number; h: number; src: string; opacity?: number };
+/** A rectangle, ellipse or straight line in the box x, y, w, h. `fill` is "" for none; `width` is the outline's thickness in
+ *  points (0 = no outline). A line runs from the box's top-left to bottom-right corner, or from bottom-left to top-right when `flip`. */
+export type ShapeMark = { type: "shape"; shape: "rect" | "ellipse" | "line"; x: number; y: number; rotate: number; w: number; h: number; color: string; fill: string; width: number; flip?: boolean; opacity?: number };
+/** A freehand line: each stroke is a flat list u1, v1, u2, v2, ... with every number from 0 to 1, as a share of the box x, y, w, h. */
+export type InkMark = { type: "ink"; x: number; y: number; rotate: number; w: number; h: number; strokes: number[][]; color: string; width: number; opacity?: number };
 /** `opacity`: 1 or absent = solid; lower lets the page show through. */
-export type Mark = TextMark | ImageMark;
+export type Mark = TextMark | ImageMark | ShapeMark | InkMark;
+export const WIDTH_MAX = 100;
+export const STROKES_MAX = 200, STROKE_NUMBERS_MAX = 20000;
 
 /** The two font measurements needed to lay text out (pdf-lib's fonts provide them). */
 export type Measurer = { widthOfTextAtSize(text: string, size: number): number; heightAtSize(size: number, options?: { descender?: boolean }): number };
@@ -75,6 +82,31 @@ export function placeImage(m: ImageMark, box: Box, rotation: Quarter): { x: numb
   return { ...toUser(m.x + o.dx, m.y + o.dy, box, rotation), width: m.w, height: m.h, angle: rotation - m.rotate };
 }
 
+/** Where to draw a shape or freehand line: the box's top-left corner in the PDF's own coordinates (the origin for an
+ *  SVG-style path, drawn downwards) and the anticlockwise angle. */
+export function placeBox(m: { x: number; y: number; rotate: number }, box: Box, rotation: Quarter): { x: number; y: number; angle: number } {
+  return { ...toUser(m.x, m.y, box, rotation), angle: rotation - m.rotate };
+}
+
+const KAPPA = 0.5522847498;   // control-point distance that makes four cubic curves a circle
+const n2 = (v: number) => String(Math.round(v * 1000) / 1000);
+/** The shape as an SVG path in the box's own coordinates (from its top-left corner, y downwards, in points). */
+export function shapePath(m: ShapeMark | InkMark): string {
+  const { w, h } = m;
+  if (m.type === "ink") {
+    return m.strokes.map((st) => {
+      const pts: string[] = [];
+      for (let i = 0; i + 1 < st.length; i += 2) pts.push(`${n2(st[i] * w)} ${n2(st[i + 1] * h)}`);
+      if (pts.length === 1) pts.push(`${n2(st[0] * w + 0.01)} ${n2(st[1] * h)}`);   // a tap: a dot, drawn with round caps
+      return pts.length ? `M ${pts.join(" L ")}` : "";
+    }).join(" ");
+  }
+  if (m.shape === "rect") return `M 0 0 L ${n2(w)} 0 L ${n2(w)} ${n2(h)} L 0 ${n2(h)} Z`;
+  if (m.shape === "line") return m.flip ? `M 0 ${n2(h)} L ${n2(w)} 0` : `M 0 0 L ${n2(w)} ${n2(h)}`;
+  const cx = w / 2, cy = h / 2, kx = cx * KAPPA, ky = cy * KAPPA;
+  return `M 0 ${n2(cy)} C 0 ${n2(cy - ky)} ${n2(cx - kx)} 0 ${n2(cx)} 0 C ${n2(cx + kx)} 0 ${n2(w)} ${n2(cy - ky)} ${n2(w)} ${n2(cy)} C ${n2(w)} ${n2(cy + ky)} ${n2(cx + kx)} ${n2(h)} ${n2(cx)} ${n2(h)} C ${n2(cx - kx)} ${n2(h)} 0 ${n2(cy + ky)} 0 ${n2(cy)} Z`;
+}
+
 /** "#rrggbb" -> red, green, blue from 0 to 1. Anything else is black. */
 export function parseColor(hex: string): { r: number; g: number; b: number } {
   const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
@@ -104,6 +136,22 @@ export function cleanMark(v: unknown, isImageSource: (id: string) => boolean): M
   if (m.type === "image") {
     if (!finite(m.w, 1, FAR) || !finite(m.h, 1, FAR) || typeof m.src !== "string" || !isImageSource(m.src)) return null;
     return { type: "image", x: m.x, y: m.y, rotate: m.rotate, w: m.w, h: m.h, src: m.src, ...see };
+  }
+  const hex = (c: unknown): c is string => typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c);
+  if (m.type === "shape") {
+    if ((m.shape !== "rect" && m.shape !== "ellipse" && m.shape !== "line") || !finite(m.w, 0, FAR) || !finite(m.h, 0, FAR) || !hex(m.color)
+      || !(m.fill === "" || hex(m.fill)) || !finite(m.width, 0, WIDTH_MAX) || (m.flip !== undefined && typeof m.flip !== "boolean")) return null;
+    return { type: "shape", shape: m.shape, x: m.x, y: m.y, rotate: m.rotate, w: m.w, h: m.h, color: m.color, fill: m.fill as string, width: m.width, ...(m.flip ? { flip: true } : {}), ...see };
+  }
+  if (m.type === "ink") {
+    if (!finite(m.w, 0, FAR) || !finite(m.h, 0, FAR) || !hex(m.color) || !finite(m.width, 0.1, WIDTH_MAX)) return null;
+    if (!Array.isArray(m.strokes) || m.strokes.length > STROKES_MAX) return null;
+    const strokes: number[][] = [];
+    for (const st of m.strokes) {
+      if (!Array.isArray(st) || st.length % 2 || st.length > STROKE_NUMBERS_MAX || !st.every((n) => finite(n, 0, 1))) return null;
+      strokes.push(st as number[]);
+    }
+    return { type: "ink", x: m.x, y: m.y, rotate: m.rotate, w: m.w, h: m.h, strokes, color: m.color, width: m.width, ...see };
   }
   return null;
 }
