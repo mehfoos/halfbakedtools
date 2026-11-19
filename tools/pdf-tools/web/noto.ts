@@ -105,8 +105,11 @@ export function notoFace(doc: PDFDocument, library: ReturnType<typeof notoLibrar
     // a line of nothing but spaces still needs a font with a space in it
     if (/\p{Zs}/u.test(text) && ![...parts.values()].some((p) => p.fk.hasGlyphForCodePoint(32))) await face.prepare!("a");
   };
-  // Height: of every font loaded so far (a taller one, such as Nastaliq, needs more room between lines)
+  // Height: of every font loaded so far (a taller one, such as Nastaliq, needs more room between lines); with a text,
+  // of the fonts that text uses (a form field's own text, say)
+  const ofText = face.heightAtSize;
   face.heightAtSize = (size, o) => {
+    if (o?.text) return ofText(size, o);
     const ps = [...parts.values()]; if (!ps.length) return size;
     const up = Math.max(...ps.map((p) => p.fk.ascent / p.fk.unitsPerEm)), down = Math.max(...ps.map((p) => -p.fk.descent / p.fk.unitsPerEm));
     return (up + (o?.descender === false ? 0 : down)) * size;

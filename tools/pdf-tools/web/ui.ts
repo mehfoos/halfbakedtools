@@ -12,7 +12,7 @@ import {
   type Session, type PageItem, type Edit, type OutputFormat, type SplitMode, type Rotation, type SourceRef,
 } from "./session.ts";
 import { parsePageList, formatRanges } from "./ranges.ts";
-import { makeBuilder, inspectPdf, protect, fontSet, type SourceData } from "./build.ts";
+import { makeBuilder, inspectPdf, protect, fontSet, faceSet, type SourceData } from "./build.ts";
 import { standardFace, type Face } from "./face.ts";
 import { fontFaces, prepareOwnFont, embedOwnFont, type OwnFont } from "./ownfont.ts";
 import { notoFace, notoLibrary, notoMissing, notoFilesFor, needsCjk, loadCjkIndex, type HanStyle, type ArabicStyle } from "./noto.ts";
@@ -21,7 +21,7 @@ import { extractPictures } from "./extract.ts";
 import { addGlyphlessFont } from "./glyphless.ts";
 import { chosenLangs } from "./ocrlangs.ts";
 import { addTextLayer, ocrScale, meanConfidence, LOW_CONFIDENCE } from "./ocr.ts";
-import { listFields, fillForm, type FieldInfo, type Values } from "./forms.ts";
+import { listFields, fillForm, type FieldInfo, type Values, type FormFont, type FormFonts } from "./forms.ts";
 import { toLines, toBlocks, toMarkdown, toHtml, type Line } from "./structure.ts";
 import { comparePages, diffReport, type PageDiff } from "./diff.ts";
 import { looksLikePdfBody, rewrite, repairNote, listPages } from "./repair.ts";
@@ -348,7 +348,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     box.replaceChildren(el("p", { className: "small muted" }, `${info.length} ${info.length === 1 ? "field" : "fields"} found in ${first.name}.`), ...info.map((f) => {
       let input: HTMLElement;
       if (f.kind === "text") {
-        input = f.multiline ? el("textarea", { rows: 3 }) : el("input", { type: "text" }); (input as HTMLInputElement).value = String(f.value); if (f.maxLength) (input as HTMLInputElement).maxLength = f.maxLength;
+        input = f.multiline ? el("textarea", { rows: 3, dir: "auto" }) : el("input", { type: "text", dir: "auto" }); (input as HTMLInputElement).value = String(f.value); if (f.maxLength) (input as HTMLInputElement).maxLength = f.maxLength;
         input.addEventListener("input", () => { formState.values[f.name] = (input as HTMLInputElement).value; });
       } else if (f.kind === "check") {
         input = el("input", { type: "checkbox" }); (input as HTMLInputElement).checked = f.value === true; input.addEventListener("change", () => { formState.values[f.name] = (input as HTMLInputElement).checked; });
@@ -406,7 +406,10 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     await renderFields(); if (!formState.info.length) return say("This PDF has no fillable fields to save.", "bad");
     const d = loaded.get(s.sha256)!.data; if (d.kind !== "pdf") return;
     await work("Filling the form…", async () => {
-      const r = await fillForm(d.bytes, d.password, formState.values, $<HTMLInputElement>("formFlatten").checked), name = perFileName(s);
+      const choice = ($<HTMLSelectElement>("formFont").value || "auto") as FormFont;
+      if (choice === "own" && !ownFont) throw new Error("Choose your font file first, under “Fonts for other alphabets”.");
+      const fonts: FormFonts = { choice, faces: (doc) => { const fs = faceSet(doc, ownFont ?? undefined, loadNoto, han(), undefined, arabic()); return (k) => fs(k, false); } };
+      const r = await fillForm(d.bytes, d.password, formState.values, $<HTMLInputElement>("formFlatten").checked, fonts), name = perFileName(s);
       if (!r.changed && !$<HTMLInputElement>("formFlatten").checked) throw new Error(`You haven't changed any field yet.${r.problems.length ? ` ${r.problems.join("; ")}.` : ""}`);
       if (!(await consent([name]))) return say("Nothing was saved. Change the file name and try again.");
       download(name, new Blob([r.bytes as BlobPart], { type: "application/pdf" }));

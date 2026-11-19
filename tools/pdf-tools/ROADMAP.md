@@ -53,7 +53,7 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | Text file to PDF | **Done 2026-11-19** (chunk 9a; `web/textpdf.ts`, `components/TextTask.astro`) | Own page (no PDF pages to arrange); built-in fonts only, so characters outside Western European ones become "?" and are counted. Follow-ups: embedded font for other scripts (needs a licensed, archived font); Markdown rendering |
 | PDF to Markdown, PDF to HTML | **Done 2026-11-19** (chunk 9b; `web/structure.ts`) | Headings by size, paragraphs by line gaps, bullet lists; text is read in the file's own order. Not recovered: tables, columns, pictures, links, bold/italic. Follow-ups: tables, columns, bold/italic from font names, links, page images |
 | HTML file to PDF | Not planned yet | Needs a layout engine in the browser; converting only its text would misrepresent it. Revisit with a rendering approach that can be verified | Rough by nature; label as such. HTML to PDF from a web address is not possible locally |
-| PDF Forms (fill in) | **Done 2026-11-19** (chunk 10; `web/forms.ts`) | Fills existing fillable fields (text, tick boxes, radio, drop-down, list), optionally flattens. Follow-ups: a live preview of the page with its fields; creating forms; filling several files; a Western-only font limit (other scripts need an embedded font); signature fields |
+| PDF Forms (fill in) | **Done 2026-11-19** (chunk 10; `web/forms.ts`) | Fills existing fillable fields (text, tick boxes, radio, drop-down, list), optionally flattens. Other alphabets drawn with Noto Sans or the visitor's font (2026-11-19). Follow-ups: a live preview of the page with its fields; creating forms; filling several files; signature fields; border styles other than a full box (underline, dashed, bevelled), which the library also ignores; comb fields in other alphabets (drawn as ordinary text) |
 | OCR PDF | **Done 2026-11-19** (chunk 11; `web/ocr.ts`, `web/tess.ts`, `web/glyphless.ts`, `web/ocrlangs.ts`) | Tesseract (tesseract.js 7, Apache-2.0) served from `vendor/tesseract/`; 40 languages (each 0.4–3 MB, fetched only when chosen; about 67 MB on the site in all), up to two at once; our own glyph-less font for the invisible text, so every script works; right-to-left lines stored in visual order; no-space scripts joined; no browser storage. See `THIRD-PARTY.md`. Follow-ups: Sorani Kurdish (no LSTM model exists); vertical Chinese/Japanese; automatic page-orientation detection; Korean words are split where the engine splits them |
 | Redact PDF | Chunk 12 | Must truly remove content (see "Phase 3: what is left") |
 | PDF to PDF/A | Chunk 13 | Demanding standard; may only be partly achievable. Don't claim conformance without a validator |
@@ -109,13 +109,13 @@ items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
       integerised tessdata_best). Read through mirrors on 2026-11-19; see `THIRD-PARTY.md`.
 - [x] **Your own font** (owner's option 1, 2026-11-19): a font file from the visitor's device for Edit PDF text,
       Text to PDF, page numbers and watermarks; HarfBuzz shaping and bidi (owner's option 3, needed: fontkit misplaced
-      accents). Bold added 2026-11-19. Not yet: form filling; a font kept between visits.
+      accents). Bold added 2026-11-19. Form filling added 2026-11-19. Not yet: a font kept between visits.
 - [x] **Shipped fonts (owner's option 2): "Noto Sans (many alphabets)"** (2026-11-19): Latin, Greek, Cyrillic, Vietnamese,
       Malayalam, Arabic, Hebrew, Devanagari, Bengali, Gurmukhi, Tamil, Telugu, Kannada, Thai, from Fontsource (OFL 1.1, no
       reserved names), loaded per alphabet, with per-character font fallback. OFL text and FAQ downloaded and handed to the
       owner for the release (verified in the release 2026-11-19, cited on the methods page). Chinese, Japanese and Korean
       added the same day (Fontsource's numbered files, only those a text needs; style chosen per line or by the visitor).
-      Bold added the same day (Noto's bold files; own font: its bold file if added, else simulated). Urdu in Nastaliq (Noto Nastaliq Urdu) added the same day, with copied text fixed for letters that share a glyph and every line tagged (see DECISIONS.md). Next: form filling with these fonts.
+      Bold added the same day (Noto's bold files; own font: its bold file if added, else simulated). Urdu in Nastaliq (Noto Nastaliq Urdu) added the same day, with copied text fixed for letters that share a glyph and every line tagged (see DECISIONS.md). Form filling with these fonts added the same day.
 - [ ] Pages with a `UserUnit` other than 1 (rare, very large pages) are untested.
 - [ ] Multi-image TIFF: use every image, not only the first (`loadImage` in `web/ui.ts`; a source would then have
       several pages and `SourceData` needs one image per page).

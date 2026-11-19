@@ -803,6 +803,8 @@ test("structure: text that looks like markdown or html is escaped; items on one 
 
 // ---- forms ----
 import { listFields, fillForm } from "./forms.ts";
+import { faceSet } from "./build.ts";
+import { TextAlignment } from "@cantoo/pdf-lib";
 test("forms: fields are listed with their kinds and filled values come out; flattening removes the fields", async () => {
   const doc = await PDFDocument.create(), page = doc.addPage([300, 300]), form = doc.getForm();
   form.createTextField("name").addToPage(page, { x: 10, y: 250, width: 150, height: 20 });
@@ -1121,4 +1123,56 @@ test("build: the Arabic-script style chosen for Noto reaches added text (Urdu in
   const auto = await fontsOf(), naskh = await fontsOf("naskh");
   assert.ok(auto.length > 0 && auto.every((n) => /NastaliqUrdu/.test(n)), auto.join(" "));
   assert.ok(naskh.length > 0 && naskh.every((n) => /NotoSansArabic/.test(n)), naskh.join(" "));
+});
+test("forms: text in other alphabets is drawn with Noto Sans or the visitor's font, laid out as the library lays out fields", async () => {
+  const doc = await PDFDocument.create(), page = doc.addPage([400, 400]), form = doc.getForm();
+  form.createTextField("ml").addToPage(page, { x: 10, y: 350, width: 200, height: 24 });
+  const multi = form.createTextField("notes"); multi.enableMultiline(); multi.addToPage(page, { x: 10, y: 250, width: 120, height: 80 });
+  const right = form.createTextField("right"); right.setAlignment(TextAlignment.Right); right.addToPage(page, { x: 220, y: 350, width: 150, height: 24 });
+  form.createTextField("turned").addToPage(page, { x: 330, y: 150, width: 150, height: 24, rotate: degrees(90) });
+  const dd = form.createDropdown("city"); dd.addOptions(["York", "കൊച്ചി"]); dd.enableEditing(); dd.addToPage(page, { x: 10, y: 200, width: 150, height: 24 });
+  const ls = form.createOptionList("langs"); ls.addOptions(["English", "മലയാളം", "اردو"]); ls.enableMultiselect(); ls.addToPage(page, { x: 10, y: 100, width: 150, height: 60 });
+  form.createTextField("plain").addToPage(page, { x: 220, y: 300, width: 150, height: 24 });
+  const auto = form.createTextField("auto"); auto.enableMultiline(); auto.addToPage(page, { x: 200, y: 200, width: 150, height: 60 });
+  await doc.save(); auto.acroField.setDefaultAppearance("/Helv 0 Tf 0 g");   // automatic size, kept as forms made elsewhere keep it
+  const bytes = await doc.save({ updateFieldAppearances: false });
+  const fonts = { choice: "auto" as const, faces: (d: PDFDocument) => { const fs = faceSet(d, undefined, fsNoto); return (k: "noto" | "own") => fs(k, false); } };
+  const values: Record<string, string | string[]> = { ml: "അവൻ പുസ്തകം വായിക്കുന്നു", notes: "مرحبا بكم في المكتبة العامة\nनमस्ते", right: "שלום", turned: "हिन्दी", city: "കൊച്ചി", langs: ["മലയാളം", "اردو"], plain: "Ada" };
+  const r = await fillForm(bytes, undefined, values, false, fonts);
+  assert.deepEqual(r.problems, []); assert.equal(r.changed, 7); assert.equal(r.drawn, 6, "all but the English field are drawn with Noto");
+  const back = Object.fromEntries((await listFields(r.bytes)).map((x) => [x.name, x.value])); assert.deepEqual(Object.fromEntries(Object.entries(back).filter(([k]) => k in values)), values, "values are stored as typed");
+  const out = await PDFDocument.load(r.bytes), of = out.getForm();
+  assert.equal(of.acroForm.dict.get(PDFName.of("NeedAppearances"))?.toString(), "false", "viewers are told not to redraw the fields in the form's own font");
+  const apText = (name: string) => { const w = of.getField(name).acroField.getWidgets()[0], ap = w.getNormalAppearance() as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown; lookup(n: PDFName): unknown } }; const st = (out.context.lookup(ap as never) ?? ap) as typeof ap; const raw = st.getContents(); return { ops: new TextDecoder("latin1").decode(st.dict.get(PDFName.of("Filter")) ? unzlibSync(raw) : raw), fonts: String(st.dict.lookup(PDFName.of("Resources"))) }; };
+  const ml = apText("ml"); assert.match(ml.fonts, /NotoSansMalayalam/); assert.match(ml.ops, /\/Tx BMC/); assert.match(ml.ops, /ActualText/);
+  assert.match(apText("langs").ops, /0\.6 0\.75\d* 0\.85\d* rg/, "chosen options are highlighted in the library's blue");
+  // rotation, background, border and clip are the library's own: compare with its appearance of the same fields in English
+  const lib = await PDFDocument.load((await fillForm(bytes, undefined, { turned: "Hindi", ml: "Malayalam", langs: ["English"] }, false)).bytes);
+  for (const name of ["turned", "ml", "langs"]) {
+    const w = lib.getForm().getField(name).acroField.getWidgets()[0], st = lib.context.lookup(w.getNormalAppearance() as never) as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown } };
+    const raw = st.getContents(), theirs = new TextDecoder("latin1").decode(st.dict.get(PDFName.of("Filter")) ? unzlibSync(raw) : raw);
+    const frame = (t: string) => t.slice(0, t.indexOf("/Tx BMC")).replace(/q\n[^qQ]*0\.6 0\.75\d* 0\.85\d* rg[^qQ]*Q\n/g, "");   // highlights differ with the chosen options
+    assert.equal(frame(apText(name).ops), frame(theirs), `${name}: same frame as the library draws`);
+  }
+  assert.doesNotMatch(apText("plain").ops, /ActualText/, "English is left to the library (Helvetica)");
+  // automatic size in a multi-line field: each line is spaced by its own fonts, and the last line's descenders stay inside the box
+  const a2 = await fillForm(bytes, undefined, { auto: "مرحبا بكم\nनमस्ते" }, false, fonts), back2 = await PDFDocument.load(a2.bytes);
+  const st2 = back2.context.lookup(back2.getForm().getField("auto").acroField.getWidgets()[0].getNormalAppearance() as never) as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown } };
+  const ops2 = new TextDecoder("latin1").decode(st2.dict.get(PDFName.of("Filter")) ? unzlibSync(st2.getContents()) : st2.getContents());
+  const ys = [...ops2.matchAll(/ ([\d.-]+) Tm/g)].map((m) => Number(m[1])), size2 = Number(ops2.match(/ ([\d.]+) Tf/)![1]);
+  const m2 = await faceSet(await PDFDocument.create(), undefined, fsNoto)("noto", false); await m2.prepare!("مرحبا بكم\nनमस्ते");
+  const full = (t: string) => m2.heightAtSize(size2, { text: t }), down = (t: string) => full(t) - m2.heightAtSize(size2, { text: t, descender: false });
+  assert.equal(ys.length, 2); assert.ok(size2 > 4);
+  assert.ok(Math.abs(ys[0] - ys[1] - 1.2 * full("नमस्ते")) < 1e-6, "the Hindi line is spaced by the Devanagari font, not the Arabic one");
+  assert.ok(ys[1] - down("नमस्ते") >= 2 - 1e-6, `last line's descenders inside the box (baseline ${ys[1]} at ${size2} pt)`);
+  assert.ok(full("مرحبا بكم") > full("नमस्ते") * 1.3, "(the Arabic font does ask for more room)");
+  // the visitor's own font, and a character it lacks
+  const reg = new Uint8Array(readFileSync(new URL("../../../node_modules/pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf", import.meta.url)));
+  const own = { choice: "own" as const, faces: (d: PDFDocument) => { const fs = faceSet(d, { bytes: reg, subset: true, name: "Liberation Sans" }, fsNoto); return (k: "noto" | "own") => fs(k, false); } };
+  const o = await fillForm(bytes, undefined, { plain: "Ада", ml: "അ" }, false, own);
+  assert.equal(o.changed, 1); assert.match(o.problems.join(" "), /"ml": contains a character the chosen font cannot show \(അ\)/);
+  // without fonts given (as before), other alphabets are refused with a reason
+  assert.match((await fillForm(bytes, undefined, { ml: "അ" }, false)).problems[0], /"ml".*character/);
+  // flattening keeps the drawn text on the page
+  const flat = await fillForm(bytes, undefined, values, true, fonts); assert.equal((await listFields(flat.bytes)).length, 0); assert.deepEqual(flat.problems, []);
 });

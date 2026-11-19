@@ -12,7 +12,7 @@
  * string is tagged with the text it stands for (PDF "ActualText"), so copying and searching give the words as typed.
  */
 import bidiFactory from "bidi-js";
-import { PDFFont, PDFHexString, PDFName, PDFOperator, PDFPage, rgb, degrees, setTextRise, setTextRenderingMode, TextRenderingMode, setStrokingColor, setLineWidth, setLineJoin, LineJoinStyle, beginText, endText, setFontAndSize, setTextMatrix, showText, setFillingColor, pushGraphicsState, popGraphicsState, setGraphicsState } from "@cantoo/pdf-lib";
+import { PDFFont, PDFHexString, PDFName, PDFOperator, PDFPage, type PDFContext, type PDFRef, type PDFDict, rgb, degrees, setTextRise, setTextRenderingMode, TextRenderingMode, setStrokingColor, setLineWidth, setLineJoin, LineJoinStyle, beginText, endText, setFontAndSize, setTextMatrix, showText, setFillingColor, pushGraphicsState, popGraphicsState, setGraphicsState } from "@cantoo/pdf-lib";
 import { unsupported } from "./marks.ts";
 
 export type Rgb = { r: number; g: number; b: number };
@@ -21,11 +21,21 @@ export interface Face {
   /** Loads whatever this face needs to draw `text` (fonts loaded on demand); not every face needs it. */
   prepare?(text: string): Promise<void>;
   widthOfTextAtSize(text: string, size: number): number;
-  heightAtSize(size: number, options?: { descender?: boolean }): number;
+  /** Ascent plus descent (or ascent only) at `size`; with `text`, of the fonts that text is drawn with. */
+  heightAtSize(size: number, options?: { descender?: boolean; text?: string }): number;
   /** Characters of `text` this face cannot draw (each listed once). */
   missing(text: string): string[];
   draw(page: PDFPage, text: string, o: DrawOptions): void;
+  /** Draws into something other than a page (a form field's appearance); faces with embedded fonts only. */
+  drawInto?(target: DrawTarget, text: string, o: DrawOptions): void;
 }
+/** Where a face with embedded fonts draws: a page, or anything that keeps fonts and graphics states by name the same
+ *  way (a form field's appearance stream). */
+export type DrawTarget = {
+  doc: { context: PDFContext };
+  node: { newFontDictionary(tag: string, ref: PDFRef): PDFName; newExtGState(tag: string, dict: PDFDict): PDFName };
+  pushOperators(...ops: PDFOperator[]): void;
+};
 
 /** One of the built-in fonts. */
 export function standardFace(font: PDFFont): Face {
@@ -199,15 +209,18 @@ export const SIMULATED_BOLD = 0.03;
 export function multiFace(parts: (text: string) => FacePart[], simulatedBold = false): Face {
   const encoders = new WeakMap<PDFFont, (g: FkGlyph, chars: string) => number>();
   const fontsOf = (ps: FacePart[]): ShapeFont[] => ps.map((p) => ({ shape: p.shape, has: (cp) => p.fk.hasGlyphForCodePoint(cp), upem: p.fk.unitsPerEm }));
-  return {
+  const face: Face = {
     widthOfTextAtSize: (t, s) => shapeRuns(t, fontsOf(parts(t))).width * s,
     heightAtSize(s, o) {
-      const ps = parts(""); if (!ps.length) return s;
+      let ps = parts(o?.text ?? "");
+      if (o?.text) { const used = new Set(shapeRuns(o.text, fontsOf(ps)).glyphs.map((g) => g.font)); if (used.size) ps = ps.filter((_, i) => used.has(i)); }
+      if (!ps.length) return s;
       const up = Math.max(...ps.map((p) => p.fk.ascent / p.fk.unitsPerEm)), down = Math.max(...ps.map((p) => -p.fk.descent / p.fk.unitsPerEm));
       return (up + (o?.descender === false ? 0 : down)) * s;
     },
     missing: (t) => { const ps = parts(t); return [...new Set([...t].filter((c) => { const cp = c.codePointAt(0)!; return cp > 0x20 && !/\p{Cf}|\p{Zs}/u.test(c) && !ps.some((p) => p.fk.hasGlyphForCodePoint(cp)); }))]; },
-    draw(page, text, o) {
+    draw: (page, text, o) => face.drawInto!(page, text, o),
+    drawInto(page: DrawTarget, text: string, o: DrawOptions) {
       const ps = parts(text), { glyphs } = shapeRuns(text, fontsOf(ps)); if (!glyphs.length) return;
       const keys = new Map<number, ReturnType<typeof page.node.newFontDictionary>>();   // only the fonts this line uses go into the page
       const keyOf = (i: number) => { let k = keys.get(i); if (!k) keys.set(i, (k = page.node.newFontDictionary(ps[i].font.name, ps[i].font.ref))); return k; };
@@ -246,6 +259,7 @@ export function multiFace(parts: (text: string) => FacePart[], simulatedBold = f
       page.pushOperators(...ops);
     },
   };
+  return face;
 }
 
 // ---------- checking a font file the visitor chose ----------

@@ -327,3 +327,33 @@ and poppler 4, with control characters in all but poppler. For comparison, the s
 by Chrome from the same fonts: poppler split words with spaces, PDFium gave Arabic in reverse order and broke the Urdu
 into fragments, and PDF.js gave mostly null characters. No reader showed control characters after these changes.
 Not tested: Adobe Acrobat, Apple Preview.
+
+### Filling forms in other alphabets (2026-11-19)
+
+Unit tests (form made by the library: single-line, right-aligned, multi-line, turned 90°, editable drop-down, multi-choice
+list box, plain English field): Malayalam, Hebrew, Arabic with Hindi, Hindi in the turned field, a Malayalam drop-down
+value and Malayalam and Urdu list choices are drawn with Noto Sans (6 fields), the English field by the library; values
+read back as typed; the form is marked NeedAppearances false; the drawn fields carry ActualText; the frame (rotation,
+background, border, clip) is identical, operator for operator, to the library's own appearance of the same field; chosen
+list options have the library's highlight; with the visitor's font (Liberation Sans) a Malayalam field is refused and
+named with the missing letter; without fonts given the old refusal remains; flattening works. Automatic size, Arabic over
+Hindi in a multi-line field: the Hindi line is spaced by the Devanagari font and its descenders stay inside the box (the
+check failed, at 3.2 points above the box bottom at 11 points, with the fitting step turned off).
+
+Rendered with poppler and PDFium (pypdfium2, with form drawing) and after flattening: the same in all three, nothing
+clipped once realistic sizes were used. (A form saved by the library itself fixes "automatic" sizes to whatever fitted the
+empty field, 20 to 82 points here; forms from other software keep automatic size, as the ReportLab form below does.)
+Copied text from the flattened copy: PDFium exact in every field; poppler reverses the right-to-left lines, as recorded
+above.
+
+Headless Chrome, Fill in PDF forms page, with a form made by ReportLab 5.0 (not by this site's library: automatic-size name,
+11-point multi-line address, editable drop-down, list, underlined date field, tick box): Malayalam name, a three-line
+address in Arabic, Hindi and English, a Hindi date, "Pakistan", "Urdu" and the tick box; saved filled and made permanent:
+6 fields changed, values read back with pypdf as typed, qpdf finds no errors, poppler, PDFium and the flattened copy look
+the same and match the form's other fields. Found and fixed on the way: (1) heights came from every font loaded for the
+document, so Nastaliq loaded for one field made the others small and low; (2) the three-line address lost its last line,
+because the library spaces lines by one font height and Noto Sans Arabic asks for about 2.1 em; (3) the last line's
+descenders were clipped at an automatic size. "Your own font" with no file chosen gives a clear message; with a
+Latin-only font the message names each field and the letters it lacks. No requests left the browser.
+Known difference from the blank form: the underlined date field gets a full box once filled, in English too (the library
+ignores border styles).

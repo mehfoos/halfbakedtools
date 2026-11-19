@@ -144,7 +144,7 @@ const policy = import.meta.env.PROD ? CSP : "";
           <p><button type="button" class="small" id="mDelete">Remove this addition</button></p>
         </div>
 
-        <details id="ownFontBox" class="sans opts" data-part="marks numbers watermark">
+        <details id="ownFontBox" class="sans opts" data-part="marks numbers watermark forms">
           <summary>Fonts for other alphabets</summary>
           <p class="small">Helvetica, Times and Courier cover Western European letters only. “Noto Sans (many alphabets)” in the Font lists covers Latin, Greek, Cyrillic, Vietnamese, Arabic (also Persian and Urdu), Hebrew, Devanagari (Hindi, Marathi, Nepali), Bengali, Gurmukhi (Punjabi), Tamil, Telugu, Malayalam, Kannada and Thai; Chinese, Japanese and Korean. It is part of this site and loads only the alphabets you use.</p>
           <p><label class="field">Chinese characters in Noto Sans <select id="hanStyle"><option value="auto">Automatic (Japanese with kana, Korean with Hangul, otherwise Simplified Chinese)</option><option value="sc">Simplified Chinese</option><option value="tc">Traditional Chinese</option><option value="jp">Japanese</option><option value="kr">Korean</option></select></label><br /><span class="small muted">Chinese, Japanese and Korean share many characters but draw some of them differently.</span></p>
@@ -152,7 +152,7 @@ const policy = import.meta.env.PROD ? CSP : "";
           <p class="small">For anything else, or to use a typeface of your own, use a font file from this device:</p>
           <p><button type="button" class="small" id="ownPick">Choose a font file…</button>
             <input id="ownFile" class="sr-only" type="file" accept={FONT_ACCEPT} /></p>
-          <p><button type="button" class="small" id="ownBoldPick">Add its bold version (optional)…</button>
+          <p data-part="marks numbers watermark"><button type="button" class="small" id="ownBoldPick">Add its bold version (optional)…</button>
             <input id="ownBoldFile" class="sr-only" type="file" accept={FONT_ACCEPT} /><br /><span id="ownBoldNote" class="small muted">Without it, bold text in your font is simulated by outlining each letter, which thickens it.</span></p>
           <p id="ownFaceRow" hidden><label class="field">Style <select id="ownFace"></select></label></p>
           <p id="ownNote" class="small" role="status" aria-live="polite"></p>
@@ -290,7 +290,8 @@ const policy = import.meta.env.PROD ? CSP : "";
           <div id="optForms" data-part="forms">
             <div id="formFields" class="formfields"></div>
             <p><label><input id="formFlatten" type="checkbox" /> Make the filled-in values permanent (the fields can no longer be edited, and they can't be filled again)</label></p>
-            <p class="small muted">Only the first PDF added is used. Fields are listed in the order the form stores them. Text is drawn in the form's own font, which covers Western European characters; a field with other characters is left as it was and named in the message. Signature fields are not filled. Only the fields you change are changed.</p>
+            <p><label class="field">Font for filled-in text <select id="formFont"><option value="auto">Automatic: Helvetica for Western European text, Noto Sans for other alphabets</option><option value="noto">Noto Sans (many alphabets) for all text</option><option value="own">Your own font (choose it under “Fonts for other alphabets”)</option></select></label></p>
+            <p class="small muted">Only the first PDF added is used. Fields are listed in the order the form stores them. Western European text is drawn in Helvetica, as the PDF library this site uses draws form fields (not always the font the form names). Text in other alphabets is drawn in Noto Sans, or in your own font, shaped and laid out like the other fields; the file is then marked so viewers show it as drawn instead of redrawing it in the form's own font. If such a field is edited later in another program, that program may redraw it in the form's own font, which may lack those letters; making the values permanent avoids this. A field whose text the chosen font can't show is left as it was and named in the message. Signature fields are not filled. Only the fields you change are changed.</p>
           </div>
           <div id="optCompare" data-part="compare">
             <p class="small muted">The first file you added is the original and the second is the changed version. The result lists, page by page, the words only in the original (struck through) and the words only in the changed version (underlined), and can show the two pages next to each other. It reads text, so scanned pages and pictures show no differences, and a page that has been re-laid-out shows many.</p>
