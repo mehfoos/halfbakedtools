@@ -245,6 +245,23 @@ const policy = import.meta.env.PROD ? CSP : "";
             <p class="small muted">The same margins are used on every page chosen, so pages of different sizes lose the same width. <strong>Cropping hides; it does not delete.</strong> Anything outside the box is still stored in the PDF, and some software can show it again. For information that must be gone, wait for the Redact tool.</p>
             <p><button type="button" class="small" id="crReset">Reset margins</button></p>
           </div>
+          <details id="optImages" data-part="imagePage">
+            <summary>Page size and margin for pictures</summary>
+            <div class="details-body">
+              <p><label class="field">Measure in
+                <select id="imUnit"><option value="mm">millimetres</option><option value="in">inches</option><option value="pt">points</option></select></label></p>
+              <p><label class="field">Page
+                <select id="imSize"><option value="picture">Same size as the picture</option><option value="custom">A size I choose</option></select></label></p>
+              <div id="imCustom">
+                <p><label class="field">Width <input id="imW" type="number" min="1" step="any" inputmode="decimal" /></label>
+                   <label class="field">Height <input id="imH" type="number" min="1" step="any" inputmode="decimal" /></label></p>
+                <p><label class="field">Direction
+                  <select id="imOrient"><option value="auto">Follow each picture's shape</option><option value="portrait">Always upright (taller than wide)</option><option value="landscape">Always sideways (wider than tall)</option></select></label></p>
+              </div>
+              <p><label class="field">Margin <input id="imMargin" type="number" min="0" step="any" inputmode="decimal" /></label><br /><span class="small muted">Space around the picture on every side. A picture is never enlarged, only shrunk to fit inside the margins; it is centred. The small previews show the picture alone.</span></p>
+              <p class="small muted">PDF pages can be between half an inch and 200 inches on a side.</p>
+            </div>
+          </details>
           <div id="optProtect" data-part="protect">
             <p><label class="field">Password <input id="pw1" type="password" autocomplete="off" size="16" /></label></p>
             <p><label class="field">Type it again <input id="pw2" type="password" autocomplete="off" size="16" /></label></p>

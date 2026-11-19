@@ -21,6 +21,7 @@ import { SIZE_MIN, SIZE_MAX } from "./marks.ts";
 import { encodeBmp } from "./bmp.ts";
 import { pagesToText } from "./text.ts";
 import { jpegOrientation, orientationToRotation } from "./exif.ts";
+import { NO_IMAGE_LAYOUT, imageLayout, PAGE_MIN, PAGE_MAX, MARGIN_MAX as IMAGE_MARGIN_MAX, type ImageLayout } from "./layout.ts";
 import { NO_CROP, CROP_UNITS, MARGIN_LIMIT, toPoints, fromPoints, isCropped, appliesTo, clampMargins, type CropUnit, type Margins } from "./crop.ts";
 import { taskBySlug, showsPages, type Part } from "./tasks.ts";
 import { openPdf, closePdf, drawPage, pageText, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle } from "./render.ts";
@@ -340,6 +341,10 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       put("crUnit", c.unit); put("crTop", show(c.top)); put("crBottom", show(c.bottom)); put("crLeft", show(c.left)); put("crRight", show(c.right));
       if (c.pages.trim()) put("crWhich", "some"); put("crPages", c.pages);
     }
+    if (can("imagePage")) {
+      const c = o.images, dp = c.unit === "in" ? 3 : c.unit === "mm" ? 1 : 0, show = (x: number) => String(Math.round(fromPoints(x, c.unit) * 10 ** dp) / 10 ** dp);
+      put("imUnit", c.unit); put("imSize", c.size); put("imW", show(c.width)); put("imH", show(c.height)); put("imOrient", c.orientation); put("imMargin", show(c.margin));
+    }
     const wm = o.watermark;
     put("wText", wm.text); put("wLayout", wm.layout); put("wAngle", String(wm.angle)); put("wOpacity", String(Math.round(wm.opacity * 100)));
     put("wSize", String(wm.size)); put("wFont", wm.font); put("wColor", wm.color); tick("wOn", wm.on); tick("wBold", wm.bold);
@@ -423,7 +428,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   // ---------- pages with additions, and the editor ----------
   const dataMap = () => new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
-  const buildOne = (p: PageItem) => makeBuilder(dataMap(), { imageDpi: session.output.imageDpi })([{ ...p, scale: 1 }]);
+  const buildOne = (p: PageItem) => makeBuilder(dataMap(), { imageDpi: session.output.imageDpi, images: session.output.images })([{ ...p, scale: 1 }]);
   /** What to draw or read for a page. A page with additions is first built as it will be saved, so pictures and
    *  text made from it include them. Call `done` afterwards. */
   async function drawable(p: PageItem): Promise<{ handle: Handle; page: number; rotate: Rotation; done: () => void }> {
@@ -436,7 +441,14 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   const editor = can("marks") ? createEditor({
     root, say,
     page: (i) => session.pages[i], count: () => session.pages.length,
-    baseSize: (p) => pageSize(loaded.get(src(p.src).sha256)!.handle, p.page, session.output.imageDpi),
+    baseSize: async (p) => {
+      const h = loaded.get(src(p.src).sha256)!.handle, o = session.output;
+      if (h.kind !== "image") return pageSize(h, p.page, o.imageDpi);
+      // a picture's page follows the page size and margin chosen for pictures (the handle holds the upright picture)
+      const vw = (h.width * 72) / o.imageDpi, vh = (h.height * 72) / o.imageDpi, side = h.turn % 180 !== 0;
+      const L = imageLayout(side ? vh : vw, side ? vw : vh, h.turn, o.images);
+      return side ? { w: L.pageH, h: L.pageW } : { w: L.pageW, h: L.pageH };
+    },
     async draw(p, pxPerPoint) {
       const doc = await openPdf(await buildOne(p), vendor);
       try { return await drawPage({ kind: "pdf", doc }, 0, 0, { pxPerPoint, pxPerImagePx: pxPerPoint }); } finally { closePdf(doc); }
@@ -489,6 +501,13 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       const pages = v("crWhich") === "some" ? v("crPages") : "";
       crop = unit !== o.crop.unit ? { ...o.crop, unit, pages } : { top: pt("crTop", o.crop.top), bottom: pt("crBottom", o.crop.bottom), left: pt("crLeft", o.crop.left), right: pt("crRight", o.crop.right), unit, pages };
     }
+    let images = o.images;
+    if (root.querySelector("#imSize")) {
+      const unit = (CROP_UNITS.find((u) => u === v("imUnit")) ?? o.images.unit) as CropUnit;
+      const pt = (id: string, lo: number, hi: number, d: number) => { const x = Number(v(id)); return v(id) !== "" && Number.isFinite(x) ? Math.min(hi, Math.max(lo, toPoints(x, unit))) : d; };
+      const same = { size: (v("imSize") === "custom" ? "custom" : "picture") as ImageLayout["size"], orientation: v("imOrient") as ImageLayout["orientation"], unit };
+      images = unit !== o.images.unit ? { ...o.images, ...same } : { ...same, width: pt("imW", PAGE_MIN, PAGE_MAX, o.images.width), height: pt("imH", PAGE_MIN, PAGE_MAX, o.images.height), margin: pt("imMargin", 0, IMAGE_MARGIN_MAX, o.images.margin) };
+    }
     let numbers = o.numbers;
     if (root.querySelector("#nPos")) {
       const ticked = (id: string) => !!root.querySelector<HTMLInputElement>(`#${id}`)?.checked;
@@ -511,7 +530,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       };
     }
     session = { ...session, output: {
-      compress, numbers, watermark, crop,
+      compress, numbers, watermark, crop, images,
       name: safeName(v("outName")), format: v("format") as OutputFormat, split: v("split") as SplitMode,
       every: Math.max(1, Math.round(Number(v("every")) || 1)), ranges: v("ranges"),
       dpi: clamp(Number(v("dpi")), DPI_MIN, DPI_MAX, o.dpi), quality: clamp(Number(v("quality")) / 100, 0.1, 1, o.quality),
@@ -526,6 +545,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const c = session.output.compress;
     hide("optWatermark", f !== "pdf"); hide("wFields", !session.output.watermark.on); hide("wOnRow", task.slug === "watermark");
     const wNote = root.querySelector<HTMLElement>("#wOpacityNote"); if (wNote) wNote.textContent = `${Math.round(session.output.watermark.opacity * 100)}%`;
+    hide("imCustom", session.output.images.size !== "custom");
     const cw = root.querySelector<HTMLSelectElement>("#crWhich"); if (cw) hide("crPagesRow", cw.value !== "some");
     hide("optNumbers", f !== "pdf"); hide("nFields", !session.output.numbers.on); hide("nOnRow", task.slug === "page-numbers");
     hide("optCompress", f !== "pdf"); hide("cCustom", level !== "custom");
@@ -538,6 +558,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   }
   $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); if (task.perFile) clearResult(); schedulePreview(); });
   $("savePanel").addEventListener("input", (e) => { if ((e.target as HTMLElement).closest("#optNumbers, #optWatermark")) { readOptions(); showOptions(); schedulePreview(); } });
+  $("savePanel").addEventListener("input", (e) => { if (e.target instanceof HTMLInputElement && e.target.closest("#optImages")) { readOptions(); clearResult(); } });
+  $("savePanel").addEventListener("change", (e) => { if ((e.target as HTMLElement).id === "imUnit") render(); });
   $("savePanel").addEventListener("input", (e) => { if (e.target instanceof HTMLInputElement && e.target.closest("#optCrop")) { readOptions(); showOptions(); cropOverlay(); clearResult(); } });
   // (the general change handler above has already read the options, including a new unit)
   $("savePanel").addEventListener("change", (e) => { if ((e.target as HTMLElement).closest("#optCrop")) { if ((e.target as HTMLElement).id === "crUnit") render(); else showOptions(); cropOverlay(); } });
@@ -552,7 +574,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const pp = task.perFile ? session.pages.filter((p) => p.src === first.id) : session.pages.filter(has);
     const index = Math.min(pp.length - 1, Math.max(0, o.numbers.on ? o.numbers.from - 1 : 0));
     try {
-      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, numbers: o.numbers, watermark: o.watermark })([pp[index]], { index, total: pp.length });
+      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, images: o.images, numbers: o.numbers, watermark: o.watermark })([pp[index]], { index, total: pp.length });
       const doc = await openPdf(bytes, vendor);
       let canvas: HTMLCanvasElement;
       try {
@@ -708,7 +730,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (o.format === "pdf") {
         const data = new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
         if (o.watermark.on && !o.watermark.text.trim()) throw new Error("Type the words for the watermark first.");
-        const build = makeBuilder(data, { imageDpi: o.imageDpi, crop: o.crop, numbers: o.numbers, watermark: o.watermark });
+        const build = makeBuilder(data, { imageDpi: o.imageDpi, images: o.images, crop: o.crop, numbers: o.numbers, watermark: o.watermark });
         const c = o.compress;
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };
@@ -849,6 +871,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (!can("watermark")) next.output.watermark = { ...NO_WATERMARK };
       else if (task.slug === "watermark") next.output.watermark.on = true;
       if (!can("crop")) next.output.crop = { ...NO_CROP };
+      if (!can("imagePage")) next.output.images = { ...NO_IMAGE_LAYOUT };
       if (!can("numbers")) next.output.numbers = { ...NO_NUMBERS };
       else if (task.slug === "page-numbers") next.output.numbers.on = true;
       if (!can("compress")) next.output.compress = { ...NO_COMPRESSION };

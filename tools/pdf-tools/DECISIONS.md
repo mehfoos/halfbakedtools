@@ -72,3 +72,5 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 | 2026-11-19 | A drawn signature is placed as a picture and is never stored; the page says it is not a digital signature | A cryptographic signature needs certificates and trust this tool can't provide; storing a signature would break "nothing is kept" |
 | 2026-11-19 | Highlight is a see-through coloured rectangle you place, not text-aware | Finding text positions reliably is a separate job; the page says what it is |
 | 2026-11-19 | Freehand strokes are stored as shares (0 to 1) of their box | They resize with their box and stay small in the settings file |
+| 2026-11-19 | Pictures are never enlarged to fit a page, only shrunk and centred | Enlarging only blurs; the page says so |
+| 2026-11-19 | Images to PDF offers a size you type, not named sizes, for now | A4 and Letter dimensions need a cited, archived source first (owner action: see ROADMAP "Sources to archive") |

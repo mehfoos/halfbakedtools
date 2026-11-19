@@ -46,7 +46,8 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | Crop PDF | **Done 2026-11-19** (chunk 3) | `web/crop.ts`, cropper in `ui.ts`. Sets the crop box; hidden, not removed (stated on the page). Same margins on every chosen page. Follow-ups: margins as a percentage of each page; auto-detect white borders; crop in the all-in-one workspace; keyboard handles on the box (the number boxes work without a mouse) |
 | Sign PDF | Chunk 4 (next) | Draw a signature (canvas), place it as a picture mark. Not a cryptographic signature: say so. "Request signatures from others" is not possible locally |
 | Edit PDF: shapes, freehand | **Done 2026-11-19** (chunk 5) | `ShapeMark`, `InkMark`, `shapePath`, `placeBox` in `web/marks.ts`; draw mode in `web/editor.ts`. Follow-ups: arrows, text-aware highlight, an eraser for strokes, bring-to-front/back |
-| Images to PDF margins/orientation; extract stored pictures | **Chunk 6 (next)** | Named paper sizes still need an archived source |
+| Images to PDF page size, direction and margin | **Done 2026-11-19** (chunk 6a) | `web/layout.ts`; size is "same as the picture" or a size the visitor types. **Named sizes (A4, Letter) are NOT offered yet: they need an archived source (see "Sources to archive"); then add them as presets in `Task.astro` (#imSize) and `web/layout.ts`** |
+| Extract stored pictures from a PDF | **Chunk 6b (next)** | Raw JPEGs can be copied out unchanged; other picture types need decoding; say which could not be extracted |
 | Repair PDF | Chunk 7 | Re-read leniently and re-save; report honestly what could not be recovered |
 | Compare PDF | Chunk 8 | Side-by-side pages plus a text difference |
 | PDF to Markdown, PDF to HTML, Text/HTML file to PDF | Chunk 9 | Rough by nature; label as such. HTML to PDF from a web address is not possible locally |

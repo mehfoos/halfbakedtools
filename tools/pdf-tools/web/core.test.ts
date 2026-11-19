@@ -624,3 +624,36 @@ test("build: shapes and freehand lines are drawn into the saved page", async () 
   assert.equal((await inspectPdf(out)).pages, 1);
   assert.ok(out.length > plain.length + 100, "the page gained drawing instructions (their appearance is checked by rendering, in VERIFICATION.md)");
 });
+
+// ---- picture page layout ----
+import { imageLayout, cleanImageLayout, NO_IMAGE_LAYOUT } from "./layout.ts";
+test("layout: default is the picture itself; a margin adds to the page", () => {
+  assert.deepEqual(imageLayout(300, 200, 0, NO_IMAGE_LAYOUT), { pageW: 300, pageH: 200, x: 0, y: 0, w: 300, h: 200 });
+  assert.deepEqual(imageLayout(300, 200, 0, { ...NO_IMAGE_LAYOUT, margin: 10 }), { pageW: 320, pageH: 220, x: 10, y: 10, w: 300, h: 200 });
+  const t = imageLayout(300, 200, 90, NO_IMAGE_LAYOUT);   // stored sideways, shown upright: page is turned afterwards
+  assert.deepEqual([t.pageW, t.pageH, t.w, t.h], [300, 200, 300, 200]);
+});
+test("layout: custom page, direction, shrink-to-fit and never enlarging", () => {
+  const c = { ...NO_IMAGE_LAYOUT, size: "custom" as const, width: 400, height: 600, margin: 20 };
+  let L = imageLayout(1000, 500, 0, c);                    // wide picture: auto picks a sideways page 600 x 400
+  assert.deepEqual([L.pageW, L.pageH], [600, 400]); near(L.w, 560); near(L.h, 280); near(L.x, 20); near(L.y, 60);
+  L = imageLayout(1000, 500, 0, { ...c, orientation: "portrait" });
+  assert.deepEqual([L.pageW, L.pageH], [400, 600]); near(L.w, 360); near(L.h, 180);
+  L = imageLayout(100, 50, 0, c);                          // small picture stays small, centred
+  assert.deepEqual([L.w, L.h], [100, 50]); near(L.x, 250); near(L.y, 175);   // wide picture: auto makes the page sideways (600 x 400)
+  L = imageLayout(500, 1000, 90, { ...c, orientation: "landscape" });   // stored 500x1000 shown 1000x500; page stored turned
+  assert.deepEqual([L.pageW, L.pageH], [400, 600]); near(L.w, 280); near(L.h, 560);   // shown 560 x 280 inside a 600 x 400 sideways page
+});
+test("layout: absurd margins and sizes are held to sane limits; settings are checked", () => {
+  const L = imageLayout(100, 100, 0, { ...NO_IMAGE_LAYOUT, size: "custom", width: 100, height: 100, margin: 1000 });
+  assert.ok(L.w > 0 && L.h > 0 && L.x >= 0);
+  assert.deepEqual(cleanImageLayout(undefined), NO_IMAGE_LAYOUT);
+  assert.deepEqual(cleanImageLayout({ size: "custom", width: 1, height: 1e9, orientation: "x", margin: -3, unit: "yd" }), { ...NO_IMAGE_LAYOUT, size: "custom" });
+  assert.deepEqual(cleanImageLayout({ size: "custom", width: 500, height: 700, orientation: "landscape", margin: 20, unit: "in" }), { size: "custom", width: 500, height: 700, orientation: "landscape", margin: 20, unit: "in" });
+});
+test("build: pictures follow the page size and margin chosen", async () => {
+  const data = new Map<string, SourceData>([["i", { kind: "image", bytes: PNG, type: "png" }]]);   // 1x1 pixel; at 1 dpi it is 72 points
+  const out = await makeBuilder(data, { imageDpi: 1, images: { ...NO_IMAGE_LAYOUT, size: "custom", width: 400, height: 600, margin: 30 } })([{ src: "i", page: 0, rotate: 0, scale: 1 }]);
+  const pg = (await PDFDocument.load(out)).getPage(0);
+  assert.deepEqual([pg.getWidth(), pg.getHeight()], [400, 600]);
+});

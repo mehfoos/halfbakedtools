@@ -21,6 +21,7 @@ What the tool relies on, what it was checked against, and when.
 | Crop: unit conversion, crop box on upright and turned pages, minimum visible area, chosen pages, settings; resizing keeps an already-cropped page's area | `core.test.ts` "crop: …", "build: crop …", "build: resizing keeps …" |
 | Signature pad ink bounds | `core.test.ts` "signature: …" |
 | Shape paths, placement on turned pages, checks on shapes/ink from settings files, drawing into the page | `core.test.ts` "shapes: …", "build: shapes …" |
+| Picture page layout: default, margin, custom size, direction, never enlarging, turned pictures, settings checks, building | `core.test.ts` "layout: …", "build: pictures follow …" |
 | Paging of long page lists: whole rows that fit the screen, screen counts and ranges, short pager row | `core.test.ts` "perScreen…", "screen arithmetic", "pagerItems…" |
 | Settings file round trip; rejection of foreign, damaged and newer files; no content keys | `core.test.ts` "settings: …" |
 | Written PDFs: merge order, repeated pages independent, rotation adds to existing, resize, image pages, several files from one builder, fonts kept | `core.test.ts` "build: …" |
@@ -127,3 +128,11 @@ rendered with poppler: green fill, blue outline, yellow see-through highlight an
 present. On a page stored turned 90°, a green rectangle's rendered position and size matched the editor's box to three
 decimals (fractions of the page). Properties panel showed the right rows for each kind (no fill for a line, flip only for
 a line). No requests left the browser. Not checked: touch/pen drawing on real devices; very long strokes.
+
+### Images to PDF page size and margin (2026-11-19)
+
+Headless Chrome: two pictures converted with the default layout gave pages the size of the picture; with a custom
+200 × 300 mm page and 10 mm margin the saved pages were 850.4 × 566.9 points (a wide picture made the page sideways, as
+"follow each picture's shape" promises), the picture kept its natural size (never enlarged) and was centred in the
+render; switching the unit to inches kept the same size (7.874 × 11.811 in); "always sideways" gave the same sideways page.
+No requests left the browser.

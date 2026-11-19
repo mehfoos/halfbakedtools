@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "preview";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "preview";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -93,15 +93,15 @@ export const TASKS: Task[] = [
     parts: [], formats: ["txt"], which: "all", action: "Convert to text", suffix: "text", tag: "TXT" , selectAll: true },
 
   { slug: "image-to-pdf", name: "Images to PDF", blurb: "Turn JPG, PNG, TIFF, BMP, WebP, GIF or SVG pictures into a PDF, one picture per page.", group: "Convert to PDF", accept: "image",
-    pick: "Select images", hint: "Drag the pictures into order and turn any that are sideways.",
-    parts: ["select", "move", "turn", "remove", "imageDpi"], formats: ["pdf"], which: "all", action: "Convert to PDF", suffix: "images", tag: "IMG" },
+    pick: "Select images", hint: "Drag the pictures into order and turn any that are sideways. Under Page, choose a page size and margin.",
+    parts: ["select", "move", "turn", "remove", "imageDpi", "imagePage"], formats: ["pdf"], which: "all", action: "Convert to PDF", suffix: "images", tag: "IMG" },
 ];
 
 /** Everything at once, including saving in any format and the settings file. */
 export const WORKSPACE: Task = {
   slug: "workspace", name: "All-in-one workspace", blurb: "Every tool on one page, for jobs that need several steps: arrange, then split or convert, and save your settings to carry on later.", group: "Organise", accept: "both",
   pick: "Select PDFs or images", hint: "Tick pages to select them, then use the buttons. Drag pages to reorder them.",
-  parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo", "scale", "split", "imageDpi", "compress", "marks", "shapes", "numbers", "watermark"],
+  parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo", "scale", "split", "imageDpi", "compress", "marks", "shapes", "imagePage", "numbers", "watermark"],
   formats: ["pdf", "png", "jpeg", "webp", "tiff", "bmp", "txt"], which: "all", action: "Save all pages", suffix: "edited", tag: "ALL",
 };
 

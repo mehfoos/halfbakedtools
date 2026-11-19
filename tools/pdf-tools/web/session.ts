@@ -6,6 +6,7 @@
 import { parseRanges } from "./ranges.ts";
 import { NO_COMPRESSION, type CompressOptions } from "./compress-core.ts";
 import { cleanMark, type Mark } from "./marks.ts";
+import { NO_IMAGE_LAYOUT, cleanImageLayout, type ImageLayout } from "./layout.ts";
 import { NO_CROP, cleanCrop, type CropOptions } from "./crop.ts";
 import { NO_NUMBERS, cleanNumbers, NO_WATERMARK, cleanWatermark, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 
@@ -28,6 +29,7 @@ export type Output = {
   dpi: number;           // dots per inch when saving pages as images
   quality: number;       // 0.1-1 for JPEG and WebP
   imageDpi: number;      // dots per inch assumed when placing an added image on a page
+  images: ImageLayout;       // how pictures sit on their pages (absent in older settings files)
   crop: CropOptions;         // PDF only: margins hidden when saving (absent in older settings files)
   numbers: NumberOptions;    // PDF only: page numbers added when saving (absent in older settings files)
   watermark: WatermarkOptions; // PDF only: text drawn across every page when saving (absent in older settings files)
@@ -36,12 +38,12 @@ export type Output = {
 export type Session = { sources: SourceRef[]; pages: PageItem[]; output: Output };
 
 export const DEFAULT_OUTPUT: Output = {
-  name: "document", format: "pdf", split: "none", every: 1, ranges: "", dpi: 150, quality: 0.85, imageDpi: 96, compress: { ...NO_COMPRESSION }, crop: { ...NO_CROP }, numbers: { ...NO_NUMBERS }, watermark: { ...NO_WATERMARK },
+  name: "document", format: "pdf", split: "none", every: 1, ranges: "", dpi: 150, quality: 0.85, imageDpi: 96, compress: { ...NO_COMPRESSION }, crop: { ...NO_CROP }, images: { ...NO_IMAGE_LAYOUT }, numbers: { ...NO_NUMBERS }, watermark: { ...NO_WATERMARK },
 };
 export const SCALE_MIN = 0.1, SCALE_MAX = 10;
 export const DPI_MIN = 36, DPI_MAX = 600;
 
-export const emptySession = (): Session => ({ sources: [], pages: [], output: { ...DEFAULT_OUTPUT, compress: { ...NO_COMPRESSION }, crop: { ...NO_CROP }, numbers: { ...NO_NUMBERS }, watermark: { ...NO_WATERMARK } } });
+export const emptySession = (): Session => ({ sources: [], pages: [], output: { ...DEFAULT_OUTPUT, compress: { ...NO_COMPRESSION }, crop: { ...NO_CROP }, images: { ...NO_IMAGE_LAYOUT }, numbers: { ...NO_NUMBERS }, watermark: { ...NO_WATERMARK } } });
 
 /** Adds a source and appends all its pages. If the session is already waiting for this file
  *  (same checksum, from a loaded settings file), it is matched instead and no pages are added. */
@@ -239,6 +241,7 @@ export function parseSettings(text: string): Session {
     imageDpi: num(o.imageDpi, DPI_MIN, DPI_MAX) ? (o.imageDpi as number) : d.imageDpi,
     compress: parseCompress(o.compress),
     crop: cleanCrop(o.crop),
+    images: cleanImageLayout(o.images),
     numbers: cleanNumbers(o.numbers),
     watermark: cleanWatermark(o.watermark),
   };

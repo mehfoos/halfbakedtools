@@ -1,6 +1,7 @@
 // Writes the output PDF(s) from the session's page list. No DOM, so it runs in tests as well as in the browser.
 // Pages are copied from the source files as they are (text stays text, images are not re-compressed);
 // only the page order, rotation and size change.
+import { imageLayout, NO_IMAGE_LAYOUT, type ImageLayout } from "./layout.ts";
 import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
 import { placeText, placeImage, placeBox, shapePath, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
@@ -12,7 +13,7 @@ export type SourceData =
   /** `turn`: degrees clockwise the stored pixels must be turned to look right (a photo's orientation note). */
   | { kind: "image"; bytes: Uint8Array; type: "png" | "jpeg"; turn?: Rotation };
 
-export type BuildOptions = { imageDpi: number; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions };
+export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions };
 /** For building one page out of a longer document (a preview): its position, and the document's length. */
 export type Place = { index: number; total: number };
 
@@ -125,8 +126,9 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       else {
         const img = await picture(p.src);
         const w = (img.width * 72) / opts.imageDpi, h = (img.height * 72) / opts.imageDpi; // PDF units are 1/72 inch
-        page = out.addPage([w, h]);
-        page.drawImage(img, { x: 0, y: 0, width: w, height: h });
+        const L = imageLayout(w, h, d.turn ?? 0, opts.images ?? NO_IMAGE_LAYOUT);
+        page = out.addPage([L.pageW, L.pageH]);
+        page.drawImage(img, { x: L.x, y: L.y, width: L.w, height: L.h });
       }
       // Marks are positioned on the page as the file shows it (a photo's orientation note included), before any
       // turn made in this tool, so they are drawn first and then turn with the page.
