@@ -12,7 +12,9 @@ import {
   type Session, type PageItem, type Edit, type OutputFormat, type SplitMode, type Rotation, type SourceRef,
 } from "./session.ts";
 import { parsePageList, formatRanges } from "./ranges.ts";
-import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
+import { makeBuilder, inspectPdf, protect, fontSet, type SourceData } from "./build.ts";
+import { standardFace, type Face } from "./face.ts";
+import { fontFaces, prepareOwnFont, embedOwnFont, type OwnFont } from "./ownfont.ts";
 import { extractPictures } from "./extract.ts";
 import { addGlyphlessFont } from "./glyphless.ts";
 import { chosenLangs } from "./ocrlangs.ts";
@@ -23,7 +25,7 @@ import { comparePages, diffReport, type PageDiff } from "./diff.ts";
 import { looksLikePdfBody, rewrite, repairNote, listPages } from "./repair.ts";
 import { createEditor } from "./editor.ts";
 import { createSignPad } from "./signpad.ts";
-import type { Mark } from "./marks.ts";
+import type { Mark, FontKey } from "./marks.ts";
 import { NO_NUMBERS, NO_WATERMARK, OPACITY_MIN, MARGIN_MAX, COUNT_MAX, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import { SIZE_MIN, SIZE_MAX } from "./marks.ts";
 import { encodeBmp } from "./bmp.ts";
@@ -533,7 +535,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   // ---------- pages with additions, and the editor ----------
   const dataMap = () => new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
-  const buildOne = (p: PageItem) => makeBuilder(dataMap(), { imageDpi: session.output.imageDpi, images: session.output.images })([{ ...p, scale: 1 }]);
+  const buildOne = (p: PageItem) => makeBuilder(dataMap(), { imageDpi: session.output.imageDpi, images: session.output.images, ...(ownFont ? { ownFont } : {}) })([{ ...p, scale: 1 }]);
   /** What to draw or read for a page. A page with additions is first built as it will be saved, so pictures and
    *  text made from it include them. Call `done` afterwards. */
   async function drawable(p: PageItem): Promise<{ handle: Handle; page: number; rotate: Rotation; done: () => void }> {
@@ -543,6 +545,39 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   }
   let fonts: ReturnType<typeof fontSet> | null = null;
   PDFDocument.create().then((d) => { fonts = fontSet(d); });   // only used to measure text for the editor's handles
+
+  // ---------- your own font (a font file from this device; kept only while the page is open) ----------
+  let ownFont: OwnFont | null = null, ownMeasure: Face | null = null, ownBytes: Uint8Array | null = null;
+  const ownBox = root.querySelector<HTMLDetailsElement>("#ownFontBox");
+  const faceFor = (m: { font: FontKey; bold: boolean }): Face => (m.font === "own" && ownMeasure ? ownMeasure : standardFace(fonts!(m.font, m.bold)));
+  function ownSay(text: string, kind: "info" | "bad" | "warn" = "info") { const n = root.querySelector<HTMLElement>("#ownNote"); if (n) { n.textContent = text; n.className = `small notice ${kind}`; } }
+  function ownLabels() {
+    for (const id of ["mFont", "nFont", "wFont"]) { const o = root.querySelector<HTMLOptionElement>(`#${id} option[value="own"]`); if (o) o.textContent = ownFont ? `Your font: ${ownFont.name}` : "Your own font…"; }
+  }
+  async function useFace(postscriptName?: string) {
+    if (!ownBytes) return;
+    const r = await prepareOwnFont(ownBytes, postscriptName);
+    if ("reason" in r) { ownFont = null; ownMeasure = null; ownLabels(); ownSay(`This font can't be used: ${r.reason}.`, "bad"); render(); return; }
+    ownFont = r; ownMeasure = await embedOwnFont(await PDFDocument.create(), r);   // a scratch copy, for measuring text on screen
+    ownLabels(); ownSay(`Using “${r.name}”.${r.note ? ` Note: ${r.note}.` : ""} Choose “Your font” in a Font or Typeface list to use it.`, r.note ? "warn" : "info");
+    editor?.refresh(); render();
+  }
+  root.querySelector("#ownPick")?.addEventListener("click", () => root.querySelector<HTMLInputElement>("#ownFile")?.click());
+  root.querySelector("#ownFile")?.addEventListener("change", async (e) => {
+    const f = (e.target as HTMLInputElement).files?.[0]; (e.target as HTMLInputElement).value = ""; if (!f) return;
+    ownSay(`Reading ${f.name}…`);
+    try {
+      const bytes = new Uint8Array(await f.arrayBuffer()), faces = await fontFaces(bytes);
+      ownBytes = bytes;
+      const row = root.querySelector<HTMLElement>("#ownFaceRow"), sel1 = root.querySelector<HTMLSelectElement>("#ownFace");
+      if (row && sel1) { sel1.replaceChildren(...faces.map((x) => el("option", { value: x.postscriptName }, x.name))); row.hidden = faces.length < 2; }
+      await useFace(faces.length > 1 ? faces[0].postscriptName : undefined);
+    } catch (err) { console.error(err); ownSay(err instanceof Error ? err.message : "Couldn't read this font file.", "bad"); }
+  });
+  root.querySelector("#ownFace")?.addEventListener("change", (e) => { void useFace((e.target as HTMLSelectElement).value); });
+  for (const id of ["mFont", "nFont", "wFont"]) root.querySelector(`#${id}`)?.addEventListener("change", (e) => {
+    if ((e.target as HTMLSelectElement).value === "own" && !ownFont) { if (ownBox) ownBox.open = true; root.querySelector<HTMLInputElement>("#ownFile")?.click(); }
+  });
   const editor = can("marks") ? createEditor({
     root, say,
     page: (i) => session.pages[i], count: () => session.pages.length,
@@ -558,8 +593,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       const doc = await openPdf(await buildOne(p), vendor);
       try { return await drawPage({ kind: "pdf", doc }, 0, 0, { pxPerPoint, pxPerImagePx: pxPerPoint }); } finally { closePdf(doc); }
     },
-    font: (m) => fonts!(m.font, m.bold),
-    cantDraw: (m) => cantDraw(m.text, fonts!(m.font, m.bold)),
+    font: (m) => faceFor(m),
+    cantDraw: (m) => (m.font === "own" && !ownMeasure ? [] : faceFor(m).missing(m.text.replace(/\n/g, ""))),
     setMarks(i, marks: Mark[], quiet) { if (!quiet) remember(); session = { ...session, pages: setMarks(session.pages, i, marks).pages }; render(); },
     async addPicture(file) {
       try {
@@ -679,7 +714,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const pp = task.perFile ? session.pages.filter((p) => p.src === first.id) : session.pages.filter(has);
     const index = Math.min(pp.length - 1, Math.max(0, o.numbers.on ? o.numbers.from - 1 : 0));
     try {
-      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, images: o.images, numbers: o.numbers, watermark: o.watermark })([pp[index]], { index, total: pp.length });
+      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, images: o.images, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}) })([pp[index]], { index, total: pp.length });
       const doc = await openPdf(bytes, vendor);
       let canvas: HTMLCanvasElement;
       try {
@@ -752,7 +787,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   root.querySelector("#crReset")?.addEventListener("click", () => { session = { ...session, output: { ...session.output, crop: { ...NO_CROP, unit: session.output.crop.unit } } }; clearResult(); render(); });
 
   // ---------- this page's task: show only its controls ----------
-  root.querySelectorAll<HTMLElement>("[data-part]").forEach((e) => { if (!can(e.dataset.part as Part)) e.remove(); });
+  root.querySelectorAll<HTMLElement>("[data-part]").forEach((e) => { if (!e.dataset.part!.split(" ").some((p) => can(p as Part))) e.remove(); });   // a panel can serve several tasks
   if (task.slug === "compress") root.querySelector("#cLevel option[value=none]")?.remove();
   if (task.perFile) $("outName").closest("p")!.hidden = true;
   root.querySelector<HTMLInputElement>("#pwShow")?.addEventListener("change", (e) => { for (const id of ["pw1", "pw2"]) $<HTMLInputElement>(id).type = (e.target as HTMLInputElement).checked ? "text" : "password"; });
@@ -901,7 +936,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (o.format === "pdf") {
         const data = new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
         if (o.watermark.on && !o.watermark.text.trim()) throw new Error("Type the words for the watermark first.");
-        const build = makeBuilder(data, { imageDpi: o.imageDpi, images: o.images, crop: o.crop, numbers: o.numbers, watermark: o.watermark });
+        const build = makeBuilder(data, { imageDpi: o.imageDpi, images: o.images, crop: o.crop, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}) });
         const c = o.compress;
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };

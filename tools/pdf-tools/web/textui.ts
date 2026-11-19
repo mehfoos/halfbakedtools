@@ -1,9 +1,11 @@
 // Text to PDF page: reads text, lays it out (textpdf.ts) and saves a PDF. Nothing leaves the browser.
-import { PDFDocument, rgb } from "@cantoo/pdf-lib";
+import { PDFDocument } from "@cantoo/pdf-lib";
 import { fontSet } from "./build.ts";
+import { standardFace } from "./face.ts";
+import { fontFaces, prepareOwnFont, embedOwnFont, type OwnFont } from "./ownfont.ts";
 import { POINTS_PER, type CropUnit } from "./crop.ts";
 import { PAGE_MIN, PAGE_MAX } from "./layout.ts";
-import { TEXT_DEFAULTS, FONT_SIZE_MIN, FONT_SIZE_MAX, wrapText, linesPerPage, paginate, missingChars, replaceMissing } from "./textpdf.ts";
+import { TEXT_DEFAULTS, FONT_SIZE_MIN, FONT_SIZE_MAX, wrapText, linesPerPage, paginate } from "./textpdf.ts";
 import { safeName } from "./session.ts";
 
 export function startText() {
@@ -19,6 +21,28 @@ export function startText() {
     shown = u;
   });
   const say = (t: string, kind: "info" | "bad" | "warn" = "info") => { const s = $("txStatus"); s.textContent = t; s.className = `notice ${kind} small`; s.hidden = !t; };
+
+  // your own font: a font file from this device, kept only while the page is open
+  let own: OwnFont | null = null, ownBytes: Uint8Array | null = null;
+  const ownOption = () => document.querySelector<HTMLOptionElement>('#txFont option[value="own"]')!;
+  async function useFace(name?: string) {
+    const r = await prepareOwnFont(ownBytes!, name);
+    if ("reason" in r) { own = null; ownOption().textContent = "Your own font…"; $<HTMLSelectElement>("txFont").value = "mono"; return say(`This font can't be used: ${r.reason}.`, "bad"); }
+    own = r; ownOption().textContent = `Your font: ${r.name}`; $<HTMLSelectElement>("txFont").value = "own";
+    say(`Using “${r.name}”.${r.note ? ` Note: ${r.note}.` : ""}`, r.note ? "warn" : "info");
+  }
+  $("txFont").addEventListener("change", () => { if ($<HTMLSelectElement>("txFont").value === "own" && !own) $<HTMLInputElement>("txOwnFile").click(); });
+  $("txOwnFile").addEventListener("change", async (e) => {
+    const f = (e.target as HTMLInputElement).files?.[0]; (e.target as HTMLInputElement).value = "";
+    if (!f) { if (!own) $<HTMLSelectElement>("txFont").value = "mono"; return; }
+    try {
+      ownBytes = new Uint8Array(await f.arrayBuffer()); const faces = await fontFaces(ownBytes);
+      $<HTMLSelectElement>("txOwnFace").replaceChildren(...faces.map((x) => Object.assign(document.createElement("option"), { value: x.postscriptName, textContent: x.name })));
+      $("txOwnFaceRow").hidden = faces.length < 2;
+      await useFace(faces.length > 1 ? faces[0].postscriptName : undefined);
+    } catch (err) { if (!own) $<HTMLSelectElement>("txFont").value = "mono"; say(err instanceof Error ? err.message : "Couldn't read this font file.", "bad"); }
+  });
+  $("txOwnFace").addEventListener("change", () => { void useFace($<HTMLSelectElement>("txOwnFace").value); });
 
   $("txFile").addEventListener("change", async (e) => {
     const f = (e.target as HTMLInputElement).files?.[0]; if (!f) return;
@@ -37,13 +61,21 @@ export function startText() {
       if (!(size >= FONT_SIZE_MIN && size <= FONT_SIZE_MAX)) return say(`Type a font size from ${FONT_SIZE_MIN} to ${FONT_SIZE_MAX} points.`, "bad");
       if (!Number.isFinite(margin) || margin < 0 || margin * 2 >= Math.min(width, height) - size) return say("The margin is too big for this page.", "bad");
       const layout = { ...TEXT_DEFAULTS, width, height, margin, fontSize: size };
-      const doc = await PDFDocument.create(), font = fontSet(doc)($<HTMLSelectElement>("txFont").value as "mono" | "sans" | "serif", false);
-      const has = new Set(font.getCharacterSet()), miss = missingChars(raw, has), text = miss.count ? replaceMissing(raw, has) : raw;
-      const lines = wrapText(text, (s) => font.widthOfTextAtSize(s, size), width - 2 * margin, TEXT_DEFAULTS.tab);
+      const doc = await PDFDocument.create(), choice = $<HTMLSelectElement>("txFont").value;
+      if (choice === "own" && !own) return say("Choose a font file first (Font: “Your own font…”).", "bad");
+      const face = choice === "own" ? await embedOwnFont(doc, own!) : standardFace(fontSet(doc)(choice as "mono" | "sans" | "serif", false));
+      const gaps = new Set(face.missing(raw.replace(/[\t\r\n]/g, ""))), miss = { chars: [...gaps], count: [...raw].filter((c) => gaps.has(c)).length };
+      const text = miss.count ? [...raw].map((c) => (gaps.has(c) ? "?" : c)).join("") : raw;
+      const lines = wrapText(text, (s) => face.widthOfTextAtSize(s, size), width - 2 * margin, TEXT_DEFAULTS.tab);
       const pages = paginate(lines, linesPerPage(layout)), step = size * layout.lineGap;
       for (const pl of pages) {
         const page = doc.addPage([width, height]);
-        pl.forEach((l, i) => { if (l) page.drawText(l, { x: margin, y: height - margin - size - i * step, size, font, color: rgb(0, 0, 0) }); });
+        pl.forEach((l, i) => {
+          if (!l.trim()) return;
+          // a line that starts right-to-left (Arabic, Hebrew, Urdu, ...) is set against the right margin
+          const rtl = /^[^\p{L}]*[\p{Script=Arabic}\p{Script=Hebrew}\p{Script=Syriac}\p{Script=Thaana}]/u.test(l), w = face.widthOfTextAtSize(l, size);
+          face.draw(page, l, { x: rtl ? width - margin - w : margin, y: height - margin - size - i * step, size, color: { r: 0, g: 0, b: 0 }, rotate: 0, opacity: 1 });
+        });
       }
       const bytes = await doc.save(), name = `${safeName($<HTMLInputElement>("txName").value) || "text"}.pdf`;
       const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([bytes as BlobPart], { type: "application/pdf" })), download: name });

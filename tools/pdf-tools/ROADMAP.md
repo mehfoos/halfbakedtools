@@ -107,9 +107,13 @@ items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
 - [ ] **OCR licence evidence to archive (owner).** The tessdata_best README and LICENSE
       (github.com/tesseract-ocr/tessdata_best) and the naptha/tessdata README (which says `4.0.0_best_int` is the
       integerised tessdata_best). Read through mirrors on 2026-11-19; see `THIRD-PARTY.md`.
-- [ ] **Fonts for visible text in other scripts** (Edit PDF text, Text to PDF, forms, page numbers, watermarks): needs
-      an owner decision on a font family and its licence before any font file is shipped. See the plan in the final
-      report of 2026-11-19 and `THIRD-PARTY.md`.
+- [x] **Your own font** (owner's option 1, 2026-11-19): a font file from the visitor's device for Edit PDF text,
+      Text to PDF, page numbers and watermarks; HarfBuzz shaping and bidi (owner's option 3, needed: fontkit misplaced
+      accents). Not yet: form filling; bold for own fonts; a font kept between visits.
+- [ ] **Shipped fonts (owner's option 2): Noto, under the SIL Open Font License.** Before shipping any font file: archive
+      the OFL 1.1 text and FAQ and the Noto licence page (source-archive release, owner), check Reserved Font Names,
+      and decide where the files come from (npm packages such as Fontsource, or the Noto project's releases). Then offer
+      them in the font lists by script, loaded on first use, with the OFL text served beside them.
 - [ ] Pages with a `UserUnit` other than 1 (rare, very large pages) are untested.
 - [ ] Multi-image TIFF: use every image, not only the first (`loadImage` in `web/ui.ts`; a source would then have
       several pages and `SourceData` needs one image per page).

@@ -379,7 +379,7 @@ test("build: added text and pictures are written, on plain and rotated pages", a
   assert.equal(fontsOf(2), 1, "a page without additions is unchanged");
   assert.equal(xobjects(0), 1); assert.equal(xobjects(1), 1);
   assert.equal(pages[1].getRotation().angle, 180, "the turn made in the tool is applied after the additions are drawn");
-  await assert.rejects(makeBuilder(data, { imageDpi: 96 })([{ ...P("a", 0), marks: [{ ...T, text: "日本語" }] }]), /can't write yet/);
+  await assert.rejects(makeBuilder(data, { imageDpi: 96 })([{ ...P("a", 0), marks: [{ ...T, text: "日本語" }] }]), /built-in fonts can't write: 日 本 語/);
   await assert.rejects(makeBuilder(data, { imageDpi: 96 })([{ ...P("a", 0), marks: [{ type: "image", x: 0, y: 0, rotate: 0, w: 5, h: 5, src: "zz" }] }]), /picture placed on a page hasn't been added/);
 });
 test("build: the built-in fonts report which characters they can't draw", async () => {
@@ -497,7 +497,7 @@ test("build: the watermark is written on every page, see-through, under the page
   }
   const none = await makeBuilder(data, { imageDpi: 96, watermark: { ...WM, text: "" } })([P("a", 0)]);
   assert.equal(((await PDFDocument.load(none)).getPage(0).node.Resources()!.lookup(PDFName.of("Font")) as any).keys().length, 1);
-  await assert.rejects(makeBuilder(data, { imageDpi: 96, watermark: { ...WM, text: "機密" } })([P("a", 0)]), /can't write yet/);
+  await assert.rejects(makeBuilder(data, { imageDpi: 96, watermark: { ...WM, text: "機密" } })([P("a", 0)]), /built-in fonts can't write: 機 密/);
 });
 
 // ---- paging: showing a long page list a screenful at a time ----
@@ -873,4 +873,68 @@ test("ocr languages: each one is served by the site from an installed package; c
   }
   assert.deepEqual(chosenLangs("urd", "eng"), ["urd", "eng"]); assert.deepEqual(chosenLangs("fra", "fra"), ["fra"]);
   assert.deepEqual(chosenLangs("xx", ""), ["eng"]); assert.deepEqual(chosenLangs("deu", "zzz"), ["deu"]);
+});
+
+// ---- your own font: shaping order, embedding permission, drawing ----
+import { shapeLine, checkEmbedding, fsTypeOf, ownFace, type FkFont } from "./face.ts";
+import { harfBuzzShaper } from "./shaper.ts";
+import fontkit from "@cantoo/fontkit";
+// a stand-in shaper: one glyph per character (id = its code point), reversed for right-to-left runs, as HarfBuzz returns them
+const fakeShaper = (t: string, rtl: boolean) => { const g = [...t].map((c) => ({ id: c.codePointAt(0)!, chars: c, ax: 500, dx: 0, dy: 0 })); return rtl ? g.reverse() : g; };
+const shown = (t: string) => shapeLine(fakeShaper, t).glyphs.map((p) => String.fromCodePoint(p.id)).join("");
+test("own font: mixed right-to-left and left-to-right text is put in display order", () => {
+  assert.equal(shown("abc"), "abc");
+  assert.equal(shown("שלום"), "םולש", "a right-to-left word is drawn from its last letter on the left");
+  assert.equal(shown("מחיר 25 ש"), "ש 25 ריחמ", "numbers inside right-to-left text keep their own order");
+  assert.equal(shown("see שלום now"), "see םולש now");
+  assert.equal(shown("(שלום)"), ")םולש(", "brackets are passed to the shaper as typed (HarfBuzz mirrors them; checked in the browser test)");
+  const r = shapeLine(fakeShaper, "ab"); assert.deepEqual(r.glyphs.map((g) => g.x), [0, 500]); assert.equal(r.width, 1000);
+});
+test("own font: the maker's embedding permission is respected", () => {
+  assert.deepEqual(checkEmbedding(0), { ok: true, subset: true });
+  assert.equal(checkEmbedding(0x2).ok, false);
+  assert.equal(checkEmbedding(0x200).ok, false);
+  assert.equal(checkEmbedding(0x2 | 0x8).ok, true, "older fonts with several bits: the least restrictive applies");
+  const v = checkEmbedding(0x4); assert.ok(v.ok && /viewed and printed/.test(v.note ?? ""));
+  const n = checkEmbedding(0x100); assert.ok(n.ok && !n.subset);
+  assert.equal(fsTypeOf({ "OS/2": { fsType: { noEmbedding: true, noSubsetting: true } } }), 0x102);
+});
+test("own font: text is embedded as a subset, tagged with its real text, and measured by the shaped glyphs", async () => {
+  const bytes = readFileSync(new URL("../../../node_modules/pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf", import.meta.url));
+  const fk = fontkit.create(bytes) as unknown as FkFont;
+  const doc = await PDFDocument.create(); doc.registerFontkit(fontkit as never);
+  const font = await doc.embedFont(bytes, { subset: true }), face = ownFace(fk, font, await harfBuzzShaper(new Uint8Array(bytes))), page = doc.addPage([300, 300]);
+  assert.deepEqual(face.missing("Abc Жα אב"), ["א", "ב"]);
+  assert.ok(Math.abs(face.widthOfTextAtSize("Hello", 20) - font.widthOfTextAtSize("Hello", 20)) < 0.01);
+  face.draw(page, "Hello Жα", { x: 10, y: 100, size: 20, color: { r: 0, g: 0, b: 0 }, rotate: 0, opacity: 0.5 });
+  const saved = await doc.save({ useObjectStreams: false }), back = await PDFDocument.load(saved);
+  const stream = back.getPage(0).node.Contents()!;
+  const decode = (x: unknown) => { const st = back.context.lookup(x as never) as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown } }; const raw = st.getContents(); return new TextDecoder("latin1").decode(st.dict.get(PDFName.of("Filter")) ? unzlibSync(raw) : raw); };
+  const ops = ("asArray" in stream ? (stream as unknown as { asArray(): unknown[] }).asArray() : [stream]).map(decode).join("\n");
+  assert.match(ops, /\/Span <<\s*\/ActualText <FEFF00480065006C006C006F0020041603B1>\s*>> BDC/); assert.match(ops, /EMC/); assert.match(ops, /\/GS-\d+ gs/);
+  assert.equal((ops.match(/> Tj/g) ?? []).length, 8, "one glyph per character, space included");
+  assert.ok(saved.length < bytes.length / 4, "only the letters used are embedded");
+});
+test("build: text in the visitor's own font is embedded once, only when used; a missing font file is reported", async () => {
+  const fontBytes = readFileSync(new URL("../../../node_modules/pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf", import.meta.url));
+  const own = { bytes: new Uint8Array(fontBytes), subset: true, name: "Liberation Sans" };
+  const src = await PDFDocument.create(); src.addPage([300, 300]); const data = new Map([["a", { kind: "pdf" as const, bytes: await src.save() }]]);
+  const T = { type: "text" as const, x: 20, y: 20, rotate: 0, text: "Привет", size: 20, color: "#000000", font: "own" as const, bold: false };
+  const withText = await makeBuilder(data, { imageDpi: 96, ownFont: own })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [T] }]);
+  const fontsIn = async (b: Uint8Array) => { const d = await PDFDocument.load(b); return d.context.enumerateIndirectObjects().filter(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("Subtype"))?.toString() === "/Type0").length; };
+  assert.equal(await fontsIn(withText), 1);
+  const without = await makeBuilder(data, { imageDpi: 96, ownFont: own })([{ src: "a", page: 0, rotate: 0, scale: 1 }]);
+  assert.equal(await fontsIn(without), 0, "a file that doesn't use the font doesn't carry it");
+  await assert.rejects(makeBuilder(data, { imageDpi: 96 })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [T] }]), /no font file is chosen/);
+  await assert.rejects(makeBuilder(data, { imageDpi: 96, ownFont: own })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [{ ...T, text: "日本" }] }]), /Your font has no letters for: 日 本/);
+});
+test("own font: HarfBuzz places accents where the font says (fontkit put the accent of ó after ü in the wrong place)", async () => {
+  const bytes = new Uint8Array(readFileSync(new URL("../../../node_modules/pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf", import.meta.url)));
+  const shape = await harfBuzzShaper(bytes), r = shapeLine(shape, "Hello");
+  assert.equal(r.glyphs.length, 5); assert.equal(r.glyphs.map((g) => g.chars).join(""), "Hello");
+  const fk = fontkit.create(bytes) as unknown as FkFont & { layout(t: string): { positions: { xAdvance: number }[] } };
+  assert.equal(r.width, fk.layout("Hello").positions.reduce((n, p) => n + p.xAdvance, 0), "same advances as the font's own metrics");
+  const comb = shapeLine(shape, "u\u0308o\u0301");   // u + combining diaeresis, o + combining acute
+  const acute = comb.glyphs[comb.glyphs.length - 1], o = comb.glyphs[comb.glyphs.length - 2];
+  assert.ok(acute.x + acute.dx >= o.x - 1, "the acute sits on the o, not back over the u");
 });

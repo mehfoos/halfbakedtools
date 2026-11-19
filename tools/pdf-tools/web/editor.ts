@@ -98,7 +98,9 @@ export function createEditor(host: EditorHost) {
       $<HTMLInputElement>("mBold").checked = m.bold;
       const bad = host.cantDraw(m), warn = $("mWarn");
       warn.hidden = !bad.length;
-      warn.textContent = bad.length ? `This tool can't write these characters yet: ${bad.slice(0, 12).join(" ")}. It can write Western European letters, digits and common punctuation. Remove them to save.` : "";
+      warn.textContent = !bad.length ? "" : m.font === "own"
+        ? `Your font has no letters for: ${bad.slice(0, 12).join(" ")}. Choose a font that covers them, or remove them to save.`
+        : `The built-in fonts can't write: ${bad.slice(0, 12).join(" ")}. They cover Western European letters. For other alphabets choose \u201cYour own font\u201d in the Font list.`;
     }
   }
 

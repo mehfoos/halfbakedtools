@@ -11,6 +11,7 @@
     "test:pipeline": "python3 -I -m unittest discover -s tools/nutrient-planner/pipeline/blend"
   },
   "dependencies": {
+    "@cantoo/fontkit": "^2.0.12",
     "@cantoo/pdf-lib": "^2.11.1",
     "@tesseract.js-data/ara": "^1.0.0",
     "@tesseract.js-data/ben": "^1.0.0",
@@ -53,7 +54,9 @@
     "@tesseract.js-data/urd": "^1.0.0",
     "@tesseract.js-data/vie": "^1.0.0",
     "astro": "^7.4.7",
+    "bidi-js": "^1.1.0",
     "fflate": "^0.8.3",
+    "harfbuzzjs": "^1.6.4",
     "highs": "^1.15.4",
     "pdfjs-dist": "^6.5.438",
     "tesseract.js": "^7.0.0",

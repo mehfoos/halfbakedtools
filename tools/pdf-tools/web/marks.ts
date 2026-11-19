@@ -5,7 +5,8 @@
 // turns and resizes with its page. Two conversions are needed: base view <-> the PDF's own coordinates, which
 // start at the bottom-left of the unrotated page (for saving), and base view <-> the turned view on screen.
 
-export type FontKey = "sans" | "serif" | "mono";
+export type FontKey = "sans" | "serif" | "mono" | "own";   // "own": a font file the visitor chose (ownfont.ts)
+export const FONT_KEYS: FontKey[] = ["sans", "serif", "mono", "own"];
 /** x, y: top-left corner. rotate: degrees clockwise about that corner. */
 export type TextMark = { type: "text"; x: number; y: number; rotate: number; text: string; size: number; color: string; font: FontKey; bold: boolean; opacity?: number };
 /** src: id of an image source in the session. w, h: size on the page in points. */
@@ -130,8 +131,8 @@ export function cleanMark(v: unknown, isImageSource: (id: string) => boolean): M
   const see = m.opacity === undefined || m.opacity === 1 ? {} : { opacity: m.opacity };
   if (m.type === "text") {
     if (typeof m.text !== "string" || m.text.length > 20000 || !finite(m.size, SIZE_MIN, SIZE_MAX) || typeof m.color !== "string" || !/^#[0-9a-f]{6}$/i.test(m.color)
-      || (m.font !== "sans" && m.font !== "serif" && m.font !== "mono") || typeof m.bold !== "boolean") return null;
-    return { type: "text", x: m.x, y: m.y, rotate: m.rotate, text: m.text, size: m.size, color: m.color, font: m.font, bold: m.bold, ...see };
+      || !FONT_KEYS.includes(m.font as FontKey) || typeof m.bold !== "boolean") return null;
+    return { type: "text", x: m.x, y: m.y, rotate: m.rotate, text: m.text, size: m.size, color: m.color, font: m.font as FontKey, bold: m.bold, ...see };
   }
   if (m.type === "image") {
     if (!finite(m.w, 1, FAR) || !finite(m.h, 1, FAR) || typeof m.src !== "string" || !isImageSource(m.src)) return null;

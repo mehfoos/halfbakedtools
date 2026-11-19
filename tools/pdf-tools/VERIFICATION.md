@@ -224,3 +224,23 @@ site; nothing was stored in the browser. Not checked: Ukrainian, Bulgarian, Czec
 Italian, Spanish, Portuguese, Dutch, Punjabi, Telugu, Malayalam, Kannada, Marathi, Nepali, Persian, Turkish, Kurdish,
 Chinese (traditional), Vietnamese, Latin and ancient Greek individually (same mechanism, untested text); real scans; viewers
 other than poppler and PDF.js (for example Chrome's own PDF viewer, Acrobat).
+
+### Your own font (2026-11-19)
+
+Unit tests: display order for mixed right-to-left and left-to-right text (numbers keep their order); the fsType rules;
+subset embedding, ActualText and opacity in the written page; the font embedded only when used; a missing font file and
+missing letters reported; HarfBuzz advances equal the font's metrics, and an accent after "u + diaeresis" sits on its own
+letter.
+
+Headless Chrome, Text to PDF with FreeSerif (GNU FreeFont) chosen from disk, one line each of Polish, Russian, Arabic,
+Arabic with a number and brackets, Hebrew, Hindi, Hindi conjuncts, Bengali, Tamil, Thai, Urdu and a tabbed line; and Noto
+Sans CJK (a collection: the page offered its 10 faces) for Chinese, Japanese and Korean. Rendered with poppler: accents
+in place (after the switch to HarfBuzz), Arabic and Urdu joined and right-to-left against the right margin, "25" in
+order, brackets facing the right way, Indic conjuncts and vowel signs placed, CJK correct. Text extracted: poppler gave
+every line exactly as typed, except that in the mixed Arabic line it placed one bracket oddly; PDF.js gave every line
+exactly except Hindi, Bengali and Tamil, whose vowel signs come out in display order (as for such PDFs from word
+processors). An Arabic watermark (diagonal, faint, with a number) and page numbers rendered correctly, and PDF.js
+extracted the watermark exactly. In Edit PDF, Hindi text gave the warning with a built-in font and none after choosing
+the font file; the saved page rendered correctly and poppler extracted it exactly. No requests left the browser; the
+HarfBuzz WebAssembly file came from this site. Not checked: Firefox and Safari themselves, phones, variable fonts,
+colour fonts, vertical text, fonts with unusual tables; Acrobat and Chrome's PDF viewer (expected to use ActualText).

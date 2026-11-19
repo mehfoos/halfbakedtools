@@ -1,7 +1,7 @@
 // Things applied to every page when saving: page numbers (and, later, a watermark). Pure; no DOM.
 // A stamp is worked out for each page as that page will finally be seen (turned and resized), and is then
 // drawn like any other added text (marks.ts).
-import { LINE_HEIGHT, SIZE_MIN, SIZE_MAX, turn, type FontKey, type Measurer, type TextMark } from "./marks.ts";
+import { LINE_HEIGHT, SIZE_MIN, SIZE_MAX, FONT_KEYS, turn, type FontKey, type Measurer, type TextMark } from "./marks.ts";
 
 export type Corner = "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
 export const CORNERS: Corner[] = ["bottom-center", "bottom-right", "bottom-left", "top-center", "top-right", "top-left"];
@@ -53,7 +53,7 @@ export function cleanNumbers(v: unknown): NumberOptions {
     from: whole(o.from, 1, COUNT_MAX) ? o.from : d.from,
     size: real(o.size, SIZE_MIN, SIZE_MAX) ? o.size : d.size,
     margin: real(o.margin, 0, MARGIN_MAX) ? o.margin : d.margin,
-    font: (["sans", "serif", "mono"] as const).find((f) => f === o.font) ?? d.font,
+    font: FONT_KEYS.find((f) => f === o.font) ?? d.font,
     bold: o.bold === true,
     color: typeof o.color === "string" && /^#[0-9a-f]{6}$/i.test(o.color) ? o.color : d.color,
   };
@@ -101,7 +101,7 @@ export function cleanWatermark(v: unknown): WatermarkOptions {
     angle: real(o.angle, -360, 360) ? o.angle : d.angle,
     opacity: real(o.opacity, OPACITY_MIN, 1) ? o.opacity : d.opacity,
     size: real(o.size, SIZE_MIN, SIZE_MAX) ? o.size : d.size,
-    font: (["sans", "serif", "mono"] as const).find((f) => f === o.font) ?? d.font,
+    font: FONT_KEYS.find((f) => f === o.font) ?? d.font,
     bold: typeof o.bold === "boolean" ? o.bold : d.bold,
     color: typeof o.color === "string" && /^#[0-9a-f]{6}$/i.test(o.color) ? o.color : d.color,
   };

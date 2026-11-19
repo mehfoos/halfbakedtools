@@ -4,6 +4,8 @@
 import { imageLayout, NO_IMAGE_LAYOUT, type ImageLayout } from "./layout.ts";
 import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
+import { standardFace, type Face } from "./face.ts";
+import { embedOwnFont, type OwnFont } from "./ownfont.ts";
 import { placeText, placeImage, placeBox, shapePath, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
 import { numberMark, watermarkMarks, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import type { PageItem, Rotation } from "./session.ts";
@@ -13,11 +15,11 @@ export type SourceData =
   /** `turn`: degrees clockwise the stored pixels must be turned to look right (a photo's orientation note). */
   | { kind: "image"; bytes: Uint8Array; type: "png" | "jpeg"; turn?: Rotation };
 
-export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions };
+export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions; ownFont?: OwnFont };
 /** For building one page out of a longer document (a preview): its position, and the document's length. */
 export type Place = { index: number; total: number };
 
-const FONT_NAMES: Record<FontKey, [StandardFonts, StandardFonts]> = {
+const FONT_NAMES: Record<Exclude<FontKey, "own">, [StandardFonts, StandardFonts]> = {
   sans: [StandardFonts.Helvetica, StandardFonts.HelveticaBold],
   serif: [StandardFonts.TimesRoman, StandardFonts.TimesRomanBold],
   mono: [StandardFonts.Courier, StandardFonts.CourierBold],
@@ -27,10 +29,21 @@ const FONT_NAMES: Record<FontKey, [StandardFonts, StandardFonts]> = {
 export function fontSet(doc: PDFDocument) {
   const made = new Map<string, PDFFont>();
   return (font: FontKey, bold: boolean): PDFFont => {
-    const name = FONT_NAMES[font][bold ? 1 : 0];
+    const name = FONT_NAMES[font === "own" ? "sans" : font][bold ? 1 : 0];
     let f = made.get(name);
     if (!f) made.set(name, (f = doc.embedStandardFont(name)));
     return f;
+  };
+}
+export const OWN_FONT_MISSING = "Text is set in your own font, but no font file is chosen. Font files are not kept in settings files or between visits: choose it again under \u201cYour own font\u201d.";
+/** Faces for added text in `doc`: built-in fonts, or the visitor's own font (embedded on first use, so a file
+ *  that doesn't use it doesn't carry it). Bold has no effect on the visitor's own font. */
+export function faceSet(doc: PDFDocument, own?: OwnFont) {
+  const fonts = fontSet(doc); let mine: Promise<Face> | null = null;
+  return async (font: FontKey, bold: boolean): Promise<Face> => {
+    if (font !== "own") return standardFace(fonts(font, bold));
+    if (!own) throw new Error(OWN_FONT_MISSING);
+    return (mine ??= embedOwnFont(doc, own));
   };
 }
 /** Characters of `text` the built-in fonts can't draw. */
@@ -95,15 +108,17 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       if (!img) embedded.set(id, (img = d.type === "png" ? await out.embedPng(d.bytes) : await out.embedJpg(d.bytes)));
       return img;
     };
-    const fonts = fontSet(out);
+    const faces = faceSet(out, opts.ownFont);
     async function drawMarks(page: PDFPage, marks: Mark[]) {
       const box = page.getCropBox(), rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
       for (const m of marks) {
         if (m.type === "text") {
-          const font = fonts(m.font, m.bold), bad = cantDraw(m.text, font);
-          if (bad.length) throw new Error(`Added text contains characters this tool can't write yet: ${bad.slice(0, 12).join(" ")}. It can write Western European letters, digits and common punctuation.`);
-          const placed = placeText(m, font, box, rotation), c = parseColor(m.color);
-          for (const l of placed.lines) if (l.text) page.drawText(l.text, { x: l.x, y: l.y, size: m.size, font, color: rgb(c.r, c.g, c.b), rotate: degrees(placed.angle), opacity: m.opacity ?? 1 });
+          const face = await faces(m.font, m.bold), bad = face.missing(m.text.replace(/\n/g, ""));
+          if (bad.length) throw new Error(m.font === "own"
+            ? `Your font has no letters for: ${bad.slice(0, 12).join(" ")}. Choose a font that covers them.`
+            : `Added text contains characters the built-in fonts can't write: ${bad.slice(0, 12).join(" ")}. They cover Western European letters, digits and common punctuation; for other alphabets choose \u201cYour own font\u201d.`);
+          const placed = placeText(m, face, box, rotation), c = parseColor(m.color);
+          for (const l of placed.lines) if (l.text) face.draw(page, l.text, { x: l.x, y: l.y, size: m.size, color: c, rotate: placed.angle, opacity: m.opacity ?? 1 });
         } else if (m.type === "shape" || m.type === "ink") {
           const at = placeBox(m, box, rotation), c = parseColor(m.color), f = m.type === "shape" && m.fill ? parseColor(m.fill) : null;
           const line = m.type === "ink" || m.shape === "line", op = m.opacity ?? 1;
@@ -145,11 +160,11 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       // Stamps go on last, placed on the page as it will finally be seen, so they are the same size on every page.
       if (opts.watermark?.on && opts.watermark.text.trim()) {
         const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
-        await drawMarks(page, watermarkMarks(opts.watermark, visibleSize(page.getCropBox(), rotation), fonts(opts.watermark.font, opts.watermark.bold)));
+        await drawMarks(page, watermarkMarks(opts.watermark, visibleSize(page.getCropBox(), rotation), await faces(opts.watermark.font, opts.watermark.bold)));
       }
       if (opts.numbers?.on) {
         const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
-        const n = numberMark(opts.numbers, (place?.index ?? 0) + i, place?.total ?? pages.length, visibleSize(page.getCropBox(), rotation), fonts(opts.numbers.font, opts.numbers.bold));
+        const n = numberMark(opts.numbers, (place?.index ?? 0) + i, place?.total ?? pages.length, visibleSize(page.getCropBox(), rotation), await faces(opts.numbers.font, opts.numbers.bold));
         if (n) await drawMarks(page, [n]);
       }
     }
