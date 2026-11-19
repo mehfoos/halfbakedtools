@@ -23,8 +23,12 @@ the values are combined:
   at least 3 of sodium, calcium, potassium, iron and magnesium compared with at most one outside its tolerance;
 - USDA and CoFID: the reviewed decisions in matches/cofid.csv win. A food decided *same* or *equivalent* is linked to
   that CoFID record; one decided *similar* or *none* is never linked to any CoFID record.
-Linked records form a group. A table with two records in one group keeps the one with more links (on a tie, neither);
-a record whose protein or fat is outside the tolerance of the group's median is dropped. When in doubt, separate.
+Linked records form a group only if every two of them pass `identity_ok` (complete linkage, not chaining): same
+words, preparation, salt (none, reduced, salted), skin, packing, drained or not, flour type, Latin species name and
+fortification, and no sign in the values that one is salted (sodium, any food) or fortified (for flour and cereals:
+iron, folate, thiamin, riboflavin; dairy: vitamins D and A; drinks: vitamin D, calcium, B12, vitamin C; fat spreads:
+vitamins D and A) and the other isn't. One record per table. When in doubt, separate. (Independent review, 19 Nov
+2026: chaining had put salted and unsalted, or peeled and unpeeled, records in one group.)
 
 **Which values count.** One record per source family (common_list.family: CNF values from USDA count as USDA, KFCDb
 borrowed foods as their named source), the family's own table first; a record whose borrowed source isn't named is
@@ -155,8 +159,57 @@ def words_same(a: frozenset, b: frozenset) -> bool:
     return bool(small) and small < big and len(extra) == 1 and extra <= BLEND_QUALIFIER and not small <= cl.GENERIC
 
 
+FLOUR_TYPE = re.compile(r"\b(?:type|typ|t)\s?(\d{2,4})\b", re.I)
+LATIN = re.compile(r"\(([A-Z][a-z]+ [a-z]+)")
+DRAINED = re.compile(r"\bdrained\b", re.I)
+# Nutrients added by fortification, with the absolute difference that, with a three-fold ratio, means one record is
+# fortified and the other isn't (Canadian flour and milk are fortified without the name saying so).
+# Checked only for the kinds of food that get fortified, and only for what is usually added to them.
+FORTIFIABLE = {
+    "grains": (("iron", 1.0), ("folate", 40), ("thiamin", 0.2), ("riboflavin", 0.2)),
+    "cereals": (("iron", 1.0), ("folate", 40), ("thiamin", 0.2), ("riboflavin", 0.2), ("vitaminD", 0.5)),
+    "dairy": (("vitaminD", 0.5), ("vitaminA", 60)),
+    "drinks": (("vitaminD", 0.5), ("calcium", 150), ("vitaminB12", 0.3)),
+    "beverages": (("vitaminC", 15), ("calcium", 150)),
+    "oils": (("vitaminD", 0.5), ("vitaminA", 100)),
+}
+
+
+def identity_ok(a: dict, b: dict, reviewed: bool = False) -> bool:
+    """What must hold between every two records of a group: the same food and preparation, salt, skin, packing,
+    fortification, flour type and species, and no sign in the values that one is salted or fortified and the other
+    isn't. Checked for every pair, so a record that says nothing can't join two that say opposite things."""
+    if not reviewed:
+        if not words_same(a["words"], b["words"]) or not states_same(a, b) or not cl.facet_ok(a["skin"], b["skin"]):
+            return False
+        fa, fb = FLOUR_TYPE.findall(a["name"]), FLOUR_TYPE.findall(b["name"])
+        if (fa or fb) and fa != fb and a["f"]["cat"] in ("grains", "cereals"):
+            return False
+        if a["f"]["cat"] in ("grains", "cereals", "dairy") and bool(re.search(r"\bfresh\b", a["name"], re.I)) != bool(re.search(r"\bfresh\b", b["name"], re.I)):
+            return False   # fresh pasta (often with egg) is not dried pasta; fresh mozzarella is not low-moisture
+    if fortified(a["name"]) or fortified(b["name"]):
+        return False
+    canned = a["state"] == "canned" or b["state"] == "canned" or packing(a["name"]) or packing(b["name"])
+    if canned and (packing(a["name"]) != packing(b["name"]) or bool(DRAINED.search(a["name"])) != bool(DRAINED.search(b["name"]))
+                   or ("unsweetened" in a["name"].lower()) != ("unsweetened" in b["name"].lower())):
+        return False
+    la, lb = LATIN.search(a["name"]), LATIN.search(b["name"])
+    if la and lb and la.group(1).lower() != lb.group(1).lower():
+        return False
+    u, v = a["f"]["v"], b["f"]["v"]
+    cats = {a["f"]["cat"], b["f"]["cat"]}
+    for k, gap in tuple(x for c in cats for x in FORTIFIABLE.get(c, ())) + (("sodium", 100),):
+        x, y = u[IX[k]], v[IX[k]]
+        if x is not None and y is not None and abs(x - y) > gap and max(x, y) > 3 * max(min(x, y), 1e-9):
+            return False
+    for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.5, 0.10)):
+        if u[IX[k]] is not None and v[IX[k]] is not None and not cl.near(u[IX[k]], v[IX[k]], absol, rel):
+            return False
+    return True
+
+
 def composition_same(u: list, v: list) -> bool:
-    for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.5, 0.15)):   # fat tighter than rule v1: 1% and skim milk differ
+    for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.5, 0.10)):   # fat tighter than rule v1: 1% and skim milk differ
         if u[IX[k]] is None or v[IX[k]] is None or not cl.near(u[IX[k]], v[IX[k]], absol, rel):
             return False
     e1, e2 = u[IX["energy"]], v[IX["energy"]]
@@ -181,6 +234,7 @@ def groups(recs: list[dict]) -> list[list[int]]:
     code = lambda r: code_of(r["f"]).upper()  # noqa: E731
     parent = list(range(len(recs)))
     links = collections.Counter()
+    edges: set = set()
 
     def find(x):
         while parent[x] != x:
@@ -192,6 +246,7 @@ def groups(recs: list[dict]) -> list[list[int]]:
         parent[find(i)] = find(j)
         links[i] += 1
         links[j] += 1
+        edges.add(frozenset((i, j)))
 
     def ok(i, j) -> bool:
         a, b = recs[i], recs[j]
@@ -233,28 +288,26 @@ def groups(recs: list[dict]) -> list[list[int]]:
     for i in range(len(recs)):
         if links[i]:
             comp[find(i)].append(i)
+    reviewed_pair = lambda i, j: {recs[i]["table"], recs[j]["table"]} == {"usda", "cofid"} and (  # noqa: E731
+        (fdc(recs[i]), code(recs[j])) in same_rev or (fdc(recs[j]), code(recs[i])) in same_rev)
     out = []
     for members in comp.values():
-        per_table = collections.defaultdict(list)
-        for i in members:
-            per_table[recs[i]["table"]].append(i)
-        kept = []
-        for t, ids in per_table.items():
-            if len(ids) == 1:
-                kept.append(ids[0])
-                continue
-            ids.sort(key=lambda i: -links[i])
-            if links[ids[0]] > links[ids[1]]:
-                kept.append(ids[0])
-        if len(kept) < 2:
-            continue
-        for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.5, 0.15)):
-            xs = [recs[i]["f"]["v"][IX[k]] for i in kept if recs[i]["f"]["v"][IX[k]] is not None]
-            if xs:
-                med = statistics.median(xs)
-                kept = [i for i in kept if recs[i]["f"]["v"][IX[k]] is None or cl.near(recs[i]["f"]["v"][IX[k]], med, absol, rel)]
-        if len(kept) >= 2:
-            out.append(sorted(kept, key=lambda i: ORDER.index(recs[i]["table"])))
+        # Every two records of a group must pass identity_ok (complete linkage): best-linked records first, each
+        # joining the first group where it fits with every member and is linked to at least one; one per table.
+        order = sorted(members, key=lambda i: (-links[i], ORDER.index(recs[i]["table"])))
+        clusters: list[list[int]] = []
+        for i in order:
+            for c in clusters:
+                if any(recs[j]["table"] == recs[i]["table"] for j in c):
+                    continue
+                if all(identity_ok(recs[i], recs[j], reviewed_pair(i, j)) for j in c) and any(frozenset((i, j)) in edges for j in c):
+                    c.append(i)
+                    break
+            else:
+                clusters.append([i])
+        for kept in clusters:
+            if len(kept) >= 2:
+                out.append(sorted(kept, key=lambda i: ORDER.index(recs[i]["table"])))
     return out
 
 

@@ -14,9 +14,10 @@ test("Blended table: values follow the standard's definitions, and the file's va
   const data = loadBlended();
   const before = new Map(data.foods.map((f) => [f.id, JSON.stringify(f.per100g)]));
   const lentils = data.foods.find((f) => f.id === "blend:lentils")!;
-  assert.deepEqual(blend.foods["blend:lentils"].records.map((r) => r.code), ["172421", "13-661", "F005177", "3393", "H730132"]);
+  assert.deepEqual(blend.foods["blend:lentils"].records.map((r) => r.code), ["172421", "F005177", "3393", "H730132"]);
   applySource(data, blend, "blend", "uk");
-  assert.equal(lentils.per100g.energy, 92);          // CoFID's energy with UK factors
+  assert.equal(lentils.per100g.energy, 119);         // no UK-factor value in the group: EU factors (BLS), the UK's next choice
+  assert.deepEqual(lentils.blend!.c.uk.energy, ["one-table"]);
   assert.equal(lentils.per100g.vitaminA, 3.5);       // retinol equivalents
   applySource(data, blend, "blend", "us");
   assert.equal(lentils.per100g.energy, 116);         // USDA's Atwater energy (CNF's copy of it counts once)

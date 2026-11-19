@@ -54,6 +54,36 @@ class SameFood(unittest.TestCase):
         self.assertFalse(b.composition_same(rec("x", "a", **few)["f"]["v"], rec("y", "a", **few)["f"]["v"]))
 
 
+class GroupWide(unittest.TestCase):
+    """Found by the independent review (19 Nov 2026): groups built by chaining joined opposites."""
+
+    def nuts(self, table, name, sodium):
+        r = rec(table, name, "nuts", protein=24, fat=50, energy=580, sodium=sodium, calcium=50, potassium=650, iron=1.5, magnesium=170)
+        r["f"]["common"] = True
+        return r
+
+    def test_no_chaining_through_a_record_that_says_nothing(self):
+        recs = [self.nuts("usda", "Peanuts, dry roasted, without salt", 6), self.nuts("bls", "Peanuts, dry roasted", 8),
+                self.nuts("cofid", "Peanuts, dry roasted, salted", 790)]
+        for g in b.groups(recs):
+            names = {recs[i]["name"] for i in g}
+            self.assertFalse({"Peanuts, dry roasted, without salt", "Peanuts, dry roasted, salted"} <= names, names)
+
+    def test_salt_levels(self):
+        self.assertFalse(cl.facet_ok(cl.read_name("Butter, reduced salt")[2], cl.read_name("Butter")[2]))
+        self.assertEqual(cl.read_name("Nut, pistachio nut, salt")[2], "/yes")
+        self.assertEqual(cl.read_name("Lentils, boiled in unsalted water")[0], frozenset({"lentil"}))
+
+    def test_identity_rules(self):
+        flour = lambda t, n: rec(t, n, "grains", protein=12, fat=2, energy=340, sodium=2, calcium=30, potassium=300)  # noqa: E731
+        self.assertFalse(b.identity_ok(flour("ciqual", "Wheat flour, type 150"), flour("bls", "Wheat flour, Type 1050")))
+        self.assertFalse(b.identity_ok(rec("usda", "Spinach, raw"), rec("afcd", "Spinach, water, fresh, raw")))
+        self.assertNotEqual(cl.read_name("Brown rice boiled, fried without fat (pan)")[1], cl.read_name("Rice, brown, boiled")[1])
+        pita_us = rec("usda", "Bread, pita, white, unenriched", "grains", protein=9, fat=1.2, energy=275, iron=1.4, folate=24)
+        pita_ca = rec("cnf", "Bread, pita, white", "grains", protein=9, fat=1.2, energy=275, iron=4.2, folate=201)
+        self.assertFalse(b.identity_ok(pita_us, pita_ca))   # Canadian flour is fortified without the name saying so
+
+
 class Counting(unittest.TestCase):
     def setUp(self):
         b.TAG.update({t: t.upper() for t in b.ORDER})

@@ -180,6 +180,13 @@ python3 -I tools/nutrient-planner/pipeline/blend/blend_all.py
 python3 -I tools/nutrient-planner/pipeline/tables/build_index.py
 ```
 
+**Independent review (19 Nov 2026, `reviews/2026-11-19-independent-review.md`):** 406 of 556 groups read by a
+separate agent: 13 wrong, 18 doubtful, 20 of 20 medians correct, 63 copies counted twice. Cause: groups built by
+chaining. Now every two records of a group must pass `identity_ok` (complete linkage), salt is read as none, reduced
+or salted, fortification is also judged from the values for foods that get fortified, flour types and two-step
+cooking count, and copies are judged on the values borrowing tables keep unchanged. Result: all wrong groups and 15
+doubtful ones separated, no copies counted twice; 508 blended foods.
+
 `blend.py` (the USDA and CoFID preview with its audit to published cells) is kept as the record of the first
 blend; the Planner no longer uses its output.
 

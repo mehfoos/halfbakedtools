@@ -19,8 +19,9 @@ preparation (raw, dried, boiled, roasted, ...) and skin on or off, and compares 
   as taken from another table: CNF values unchanged from, adjusted from or imputed from USDA count as USDA; KFCDb's
   borrowed foods count as the table their source column names; borrowed foods whose source isn't named (AFCD
   "borrowed", BLS "another database", CNF "another country's table", KFCDb from other tables) count as unknown and
-  can't confirm a food on their own. Two records whose values are nearly identical (at least 8 shared values, 90% of
-  them within 1%) are treated as copies of the same data, whatever their tables say.
+  can't confirm a food on their own. Two records whose values are nearly identical (at least 8 shared non-zero values
+  other than energy, carbohydrate and definition-dependent vitamins, 70% of them within 2%) are treated as copies of
+  the same data, whatever their tables say.
 
 A record is **common** when it and the records it matches include two of different known families that are not copies,
 and it is not a raw food people don't normally eat raw (the shared raw rule) or a US-fortified product. Every table's file gets `common: true`
@@ -53,7 +54,8 @@ IX = {k: i for i, k in enumerate(KEYS)}
 # ---- reading a name -------------------------------------------------------------------------------------------------
 SKIN_NO = re.compile(r"\b(without skin|skinless|skin removed|no skin|peeled|flesh only|meat only|lean only|lean flesh|without peel)\b|\bflesh\b(?! and skin)(?!,? skin)")
 SALT_NO = re.compile(r"\b(unsalted|no added salt|without added salt|without salt|no salt added|salt[- ]free|low sodium|no sodium added|in unsalted water)\b")
-SALT_YES = re.compile(r"\b(salted|salt added|with salt|with added salt|added salt|in salted water|lightly salted)\b")
+SALT_YES = re.compile(r"\b(salted|salt added|with salt|with added salt|added salt|in salted water)\b")
+SALT_REDUCED = re.compile(r"\b(reduced salt|reduced sodium|low salt|lightly salted)\b")
 SKIN_YES = re.compile(r"\b(with skin|unpeeled|flesh and skin|meat and skin|skin (?:&|and) fat|with peel)\b")
 STATES = [  # (state, pattern); a cooking method beats "dried", which beats "raw"
     ("moist", r"\b(boiled|boil|simmered|poached|steamed|blanched|cooked in (?:unsalted |salted )?water)\b"),
@@ -66,7 +68,7 @@ STATES = [  # (state, pattern); a cooking method beats "dried", which beats "raw
     ("canned", r"\b(canned|tinned)\b"),
 ]
 # Phrases that describe something other than the preparation of the food itself
-NOT_STATE = re.compile(r"\b(?:prepared|made) (?:with|from) [^,]*|\bin (?:water|brine|oil|own juice|tomato juice|syrup|juice)\b|\b(?:dry|moist) heat\b|\bmay contain [^,]*|\bin dry matter\b|\bdry matter\b|\bfidm\b|\buncooked weight\b")
+NOT_STATE = re.compile(r"\b(?:boiled |cooked )?in (?:unsalted |salted |boiling )?water\b|\b(?:prepared|made) (?:with|from) [^,]*|\bin (?:water|brine|oil|own juice|tomato juice|syrup|juice)\b|\b(?:dry|moist) heat\b|\bmay contain [^,]*|\bin dry matter\b|\bdry matter\b|\bfidm\b|\buncooked weight\b")
 DRY = re.compile(r"\b(dried|dry|dehydrated|mature seeds?|mature|uncooked weight)\b")
 RAW = re.compile(r"\b(raw|uncooked|unprepared|unheated|unroasted)\b")
 COOKED_ANY = {"moist", "stewed", "roast", "grill", "micro", "fried", "cooked"}
@@ -77,11 +79,11 @@ salted unsweetened in of and or the a an from drained solids undrained cow fluid
 domestic imported prepacked commercial commercially mixed species purchased home homemade store type ns nfs regular
 standard sliced diced chopped piece pieces spear spears floret florets flower head heads cluster clusters whole-
 retail cut cuts trimmed untrimmed fat lean meat flesh skin boneless bone bones only ready eat usa us uk canada canadian
-australia australian india indian japan japanese korea korean denmark danish finland finnish france french germany german
-domestic market supermarket bought frozen-thawed thawed water unsalted including includes include also enriched
+australia australian india indian japan korea denmark danish finland finnish france french germany german
+domestic market supermarket bought frozen-thawed thawed unsalted including includes include also enriched
 unenriched fortified unfortified vitamin vitamins added ascorbic acid unheated large small medium mini cereal cereals
-grain grains breakfast hot lowfat low reduced milkfat nonfat fat-free light lite matter min creamed full part skim skimmed
-semi-skim semi-skimmed extra virgin value values as purchased product type fish crustacean mollusk mollusc
+grain grains breakfast hot lowfat low reduced milkfat nonfat fat-free lite matter min creamed full part skim skimmed
+semi-skim semi-skimmed extra virgin value values as purchased type fish crustacean mollusk mollusc
 shellfish finfish kernel cob off heat include""".split())
 FAT_MILK = re.compile(r"\b(?:made with |with )?(?:whole|skim|skimmed|semi-skimmed|part[- ]skim|low[- ]fat|reduced[- ]fat|full[- ]fat|fat-free|nonfat|lowfat) milk\b")
 DISTINCT = set("""juice nectar dried frozen powder flour oil sauce seed leaf sprout sprouted puree paste milk butter cream
@@ -107,7 +109,7 @@ def singular(w: str) -> str:
 def synonyms() -> list[tuple[re.Pattern, str]]:
     out = []
     for path in (common.PIPELINE / "blend/synonyms.csv", common.PIPELINE / "blend/synonyms_common.csv"):
-        for r in csv.DictReader(path.open(encoding="utf-8")):
+        for r in csv.DictReader(path.read_text(encoding="utf-8").splitlines()):
             out.append((re.compile(rf"\b{re.escape(r['phrase'].lower())}\b"), r["canonical"].lower()))
     out.sort(key=lambda x: -len(x[0].pattern))  # longer phrases first
     return out
@@ -125,10 +127,12 @@ def read_name(name: str, process: str | None = None) -> tuple[frozenset, str, st
         t = FAT_MILK.sub(" ", t)  # "Cheese, mozzarella, whole milk": the fat level, left to the composition check
     skin = "no" if SKIN_NO.search(t) else "yes" if SKIN_YES.search(t) else ""
     t = SKIN_YES.sub(" ", SKIN_NO.sub(" ", t))
-    salt = "no" if SALT_NO.search(t) else "yes" if SALT_YES.search(t) else ""
-    state = ""
+    salt = ("no" if SALT_NO.search(t) else "reduced" if SALT_REDUCED.search(t)
+            else "yes" if SALT_YES.search(t) or re.search(r"\bsalt\b", t) else "")
+    methods = [s for s, p in STATES if s not in ("cooked", "canned") and re.search(p, t)]
+    state = "+".join(sorted(set(methods))) if len(set(methods)) > 1 else ""   # "boiled, fried": two steps
     for s, p in STATES:
-        if re.search(p, t):
+        if not state and re.search(p, t):
             state = s
             break
     if not state and DRY.search(t):
@@ -152,8 +156,8 @@ def read_name(name: str, process: str | None = None) -> tuple[frozenset, str, st
 
 
 def facet_ok(a: str, b: str) -> bool:
-    """skin/salt: each the same or unknown on one side."""
-    return all(x == y or not x or not y for x, y in zip(a.split("/"), b.split("/")))
+    """skin/salt: each the same or unknown on one side; "reduced" salt only matches "reduced"."""
+    return all(x == y or (not x or not y) and "reduced" not in (x, y) for x, y in zip(a.split("/"), b.split("/")))
 
 
 DRY_IS_RAW = {"pulses", "grains", "cereals", "nuts", "herbs"}
@@ -191,15 +195,18 @@ def composition_ok(u: list, v: list) -> bool:
     return off < 2
 
 
-BASE_KEYS = [k for k in KEYS if k not in common.DERIVED]
+# Tables that borrow values recalculate energy and carbohydrate and may restate definition-dependent vitamins, so a
+# copy is judged on the values they take over unchanged: at least 8 shared non-zero values, 70% within 2%.
+COPY_KEYS = [k for k in KEYS if k not in common.DERIVED and k not in
+             ("energy", "carbohydrate", "sugars", "fibre", "vitaminA", "folate", "vitaminD", "vitaminE", "vitaminK", "niacinNE")]
 
 
 def copies(u: list, v: list) -> bool:
-    shared = [(u[IX[k]], v[IX[k]]) for k in BASE_KEYS if u[IX[k]] is not None and v[IX[k]] is not None]
+    shared = [(u[IX[k]], v[IX[k]]) for k in COPY_KEYS if u[IX[k]] and v[IX[k]]]
     if len(shared) < 8:
         return False
-    same = sum(1 for a, b in shared if near(a, b, 0.01, 0.01))
-    return same >= 0.9 * len(shared)
+    same = sum(1 for a, b in shared if abs(a - b) <= 0.02 * max(abs(a), abs(b)))
+    return same >= 0.7 * len(shared)
 
 
 # ---- source families ------------------------------------------------------------------------------------------------
@@ -266,9 +273,9 @@ def reviewed_cofid() -> tuple[set, set]:
     """USDA-CoFID decisions already reviewed (pipeline/blend/matches/cofid.csv): (USDA fdcId, CoFID code) pairs decided
     same or equivalent, and USDA fdcIds decided similar or none (no CoFID record is the same food)."""
     blend = common.PIPELINE / "blend"
-    anchor = {r["concept"]: r["anchor"] for r in csv.DictReader((blend / "concepts.csv").open(encoding="utf-8"))}
+    anchor = {r["concept"]: r["anchor"] for r in csv.DictReader((blend / "concepts.csv").read_text(encoding="utf-8").splitlines())}
     same, apart = set(), set()
-    for r in csv.DictReader((blend / "matches/cofid.csv").open(encoding="utf-8")):
+    for r in csv.DictReader((blend / "matches/cofid.csv").read_text(encoding="utf-8").splitlines()):
         fdc = anchor.get(r["concept"]) or r["concept"].removeprefix("c:u")
         code = r["id"].removeprefix("cofid:").split("~")[0].upper() if r["id"] else ""
         if r["grade"] in ("same", "equivalent") and code:
