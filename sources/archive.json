@@ -802,7 +802,7 @@
     {
       "file": "pdftools_OFL-1.1.txt",
       "table": "SIL Open Font License, version 1.1 (licence text)",
-      "publisher": "SIL International",
+      "publisher": "SIL Global (formerly SIL International)",
       "licence": "The licence text itself; may be copied verbatim",
       "origin": "https://openfontlicense.org/documents/OFL.txt",
       "originalName": "OFL.txt",
@@ -813,8 +813,8 @@
     {
       "file": "pdftools_OFL-FAQ-1.1-update8.txt",
       "table": "OFL FAQ, version 1.1-update8 (November 2026): embedding in documents (1.11-1.13), hosting fonts (1.8)",
-      "publisher": "SIL International",
-      "licence": "Copyright SIL International; verbatim copies may be distributed (stated in the FAQ)",
+      "publisher": "SIL Global (formerly SIL International)",
+      "licence": "Copyright SIL Global 2005-2026; verbatim copies may be distributed (stated in the FAQ)",
       "origin": "https://openfontlicense.org/documents/OFL-FAQ.txt",
       "originalName": "OFL-FAQ.txt",
       "sha256": "03fad2710643a9a866337e10c7e51e961c3f71935801001b1bd9d435139a48f4",

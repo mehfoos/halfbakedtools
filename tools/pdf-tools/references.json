@@ -1,0 +1,110 @@
+{
+  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Each needs an archived copy in the source-archive release, given as {\"asset\": \"<file>\"} and listed in sources/archive.json; never commit the file itself (see sources/README.md). Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
+  "sources": [
+    {
+      "id": "ofl-1.1",
+      "pre": "SIL International,",
+      "title": "SIL Open Font License, Version 1.1",
+      "style": "quoted",
+      "post": "Feb. 26, 2007.",
+      "url": "https://openfontlicense.org/documents/OFL.txt",
+      "licence": "Licence text; may be copied verbatim",
+      "usedFor": "The licence of the Noto fonts shipped with this site",
+      "archive": [
+        {
+          "asset": "pdftools_OFL-1.1.txt"
+        }
+      ]
+    },
+    {
+      "id": "ofl-faq",
+      "pre": "SIL Global,",
+      "title": "OFL FAQ — Frequently asked questions about the SIL Open Font License (OFL)",
+      "style": "quoted",
+      "post": "version 1.1-update8, Nov. 2026, questions 1.8 and 1.11–1.13.",
+      "url": "https://openfontlicense.org/documents/OFL-FAQ.txt",
+      "licence": "Copyright SIL Global; verbatim copies may be distributed",
+      "usedFor": "That the fonts may be embedded, in full or cut down, in saved PDFs, and served from this site with their licence",
+      "archive": [
+        {
+          "asset": "pdftools_OFL-FAQ-1.1-update8.txt"
+        }
+      ]
+    },
+    {
+      "id": "opentype-os2",
+      "pre": "Microsoft,",
+      "title": "OS/2 — OS/2 and Windows metrics table",
+      "style": "quoted",
+      "post": "in <i>OpenType Specification</i>, version 1.9.1. Microsoft Learn, last updated May 31, 2024, sec. fsType.",
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/os2",
+      "licence": "Copyright Microsoft; Microsoft Learn terms of use",
+      "usedFor": "Reading a font's embedding permissions (restricted, preview and print, editable, no subsetting, bitmap only) before using it",
+      "archive": [
+        {
+          "label": "Archived copy (PDF print)",
+          "asset": "pdftools_opentype-spec_os2.pdf"
+        },
+        {
+          "label": "page as downloaded (HTML)",
+          "asset": "pdftools_opentype-spec_os2.html"
+        }
+      ]
+    },
+    {
+      "id": "naptha-tessdata",
+      "pre": "Project Naptha,",
+      "title": "tessdata — README",
+      "style": "quoted",
+      "post": "GitHub repository naptha/tessdata, gh-pages branch.",
+      "url": "https://github.com/naptha/tessdata/blob/gh-pages/README.md",
+      "licence": "Repository README, quoted as evidence of origin",
+      "usedFor": "That the language files used (“4.0.0_best_int”) are the integer version of Tesseract’s tessdata_best models",
+      "archive": [
+        {
+          "asset": "pdftools_naptha-tessdata_README.md"
+        }
+      ]
+    },
+    {
+      "id": "tessdata-best",
+      "pre": "Tesseract OCR project,",
+      "title": "tessdata_best: Best (most accurate) trained models",
+      "style": "quoted",
+      "post": "GitHub repository README and LICENSE (Apache License 2.0).",
+      "url": "https://github.com/tesseract-ocr/tessdata_best",
+      "licence": "Apache-2.0",
+      "usedFor": "The licence of the OCR language models",
+      "archive": [
+        {
+          "label": "Archived README",
+          "asset": "pdftools_tessdata_best_README.md"
+        },
+        {
+          "label": "LICENSE",
+          "asset": "pdftools_tessdata_best_LICENSE.txt"
+        }
+      ]
+    },
+    {
+      "id": "unicode-18-ch12",
+      "pre": "The Unicode Consortium,",
+      "title": "Chapter 12: South and Central Asia-I",
+      "style": "quoted",
+      "post": "in <i>The Unicode Standard, Version 18.0.0</i>. Unicode, Inc., 2026, sec. Malayalam, Table 12-43.",
+      "url": "https://www.unicode.org/versions/latest/core-spec/chapter-12/",
+      "licence": "Copyright Unicode, Inc.; Unicode Terms of Use",
+      "usedFor": "Which old-style Malayalam chillu sequences equal which single chillu letters, when changing OCR text to the modern encoding",
+      "archive": [
+        {
+          "label": "Archived copy (PDF print)",
+          "asset": "pdftools_unicode-18.0.0_core-spec_chapter-12.pdf"
+        },
+        {
+          "label": "page as downloaded (HTML)",
+          "asset": "pdftools_unicode-18.0.0_core-spec_chapter-12.html"
+        }
+      ]
+    }
+  ]
+}
