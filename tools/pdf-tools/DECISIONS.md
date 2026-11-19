@@ -82,3 +82,6 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 | 2026-11-19 | Repair keeps unreadable pages in the saved file and names them, rather than dropping them | Dropping a page silently or by default would destroy possibly-recoverable content; the visitor can remove pages afterwards |
 | 2026-11-19 | Compare PDF compares text only, page by position, and says so on the page | Matching pages by content or comparing pixels is a larger job; claiming more would mislead (scans and pictures show no differences) |
 | 2026-11-19 | Compare on very long pages reports the page as replaced rather than matching word by word | Keeps the browser responsive; the result states when this happened |
+| 2026-11-19 | Text to PDF is its own page, not the shared task page | There are no PDF pages to select or arrange; a text box and page options are all it needs |
+| 2026-11-19 | Text to PDF uses the built-in fonts and replaces characters they cannot draw with "?", telling the visitor how many | Embedding a font for other scripts needs a licensed, archived font file; silently dropping characters would be worse |
+| 2026-11-19 | Text to PDF starts at 210 × 297 mm typed as numbers, with no named paper size | Named sizes wait for an archived source (see ROADMAP "Sources to archive") |

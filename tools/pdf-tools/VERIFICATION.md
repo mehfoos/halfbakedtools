@@ -163,3 +163,10 @@ result said 3 of 4 pages differ, struck through "jumps" and "100", underlined "l
 the changed file, warned about the different page counts, drew both pages side by side on request and saved a text report
 with the same differences. No requests left the browser. Not checked: scanned PDFs, right-to-left or non-Latin text,
 documents of hundreds of pages.
+
+### Text to PDF (2026-11-19)
+
+Headless Chrome with a 160-line text file holding a tab, a 2000-character paragraph, "Café naïve — 日本": saved a 4-page
+PDF (poppler: 595.276 × 841.89 pt, Courier, WinAnsi); wrapped lines, the tab (as four spaces) and é, ï and the em dash came
+through; the two Japanese characters became "?" and the message said so. Changing the unit converted the typed sizes.
+No requests left the browser. Not checked: very large files (megabytes), right-to-left text, files not in UTF-8.

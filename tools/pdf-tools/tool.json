@@ -96,6 +96,11 @@
       "nav": false
     },
     {
+      "page": "text-to-pdf",
+      "label": "Text to PDF",
+      "nav": false
+    },
+    {
       "page": "compare",
       "label": "Compare PDF",
       "nav": false

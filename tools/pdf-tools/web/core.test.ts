@@ -213,7 +213,7 @@ test("tasks: each has a page, a tool.json entry, a sensible default, and nothing
   assert.equal(new Set(ALL_TASKS.map((t) => t.slug)).size, ALL_TASKS.length);
   for (const t of ALL_TASKS) {
     assert.ok(existsSync(new URL(`pages/${t.slug}.astro`, dir)), `missing page for ${t.slug}`);
-    assert.match(readFileSync(new URL(`pages/${t.slug}.astro`, dir), "utf8"), new RegExp(`<Task task="${t.slug}" />`));
+    assert.match(readFileSync(new URL(`pages/${t.slug}.astro`, dir), "utf8"), t.slug === "text-to-pdf" ? /<TextTask \/>/ : new RegExp(`<Task task="${t.slug}" />`));   // the text page has its own component (it has no PDF pages to arrange)
     assert.equal(meta.pages.find((p) => p.page === t.slug)?.nav, false, `${t.slug} must be listed in tool.json with nav: false`);
     assert.ok(t.formats.length && t.action && t.pick && t.blurb);
     if (t.split) assert.ok(t.parts.includes("split"));
@@ -761,4 +761,22 @@ test("compare: pages match by position; missing pages and long pages are reporte
   assert.equal(diffWords(big, other).coarse, true);
   const rep = diffReport("A.pdf", "B.pdf", d); assert.match(rep, /Page 2: 1 words removed, 1 added/); assert.match(rep, /Page 3 \(only in A.pdf\)/);
   assert.match(diffReport("A", "B", comparePages(["x"], ["x"])), /No differences in the text/);
+});
+
+// ---- text to PDF ----
+import { wrapText, paginate, linesPerPage, missingChars, replaceMissing, TEXT_DEFAULTS } from "./textpdf.ts";
+test("text to pdf: lines wrap at spaces, long words break, blank lines and indents stay", () => {
+  const m = (s: string) => s.length;   // one unit per character
+  assert.deepEqual(wrapText("aaa bbb ccc ddd", m, 8), ["aaa bbb", "ccc ddd"]);
+  assert.deepEqual(wrapText("abcdefghij", m, 4), ["abcd", "efgh", "ij"]);
+  assert.deepEqual(wrapText("a\r\n\r\n  b\n", m, 10), ["a", "", "  b"]);
+  assert.deepEqual(wrapText("x\ty", m, 20, 4), ["x    y"]);
+  assert.deepEqual(wrapText("", m, 10), [""]);
+});
+test("text to pdf: pages hold the right number of lines; unsupported characters are counted and replaced", () => {
+  const per = linesPerPage(TEXT_DEFAULTS); assert.ok(per > 40 && per < 60);
+  assert.deepEqual(paginate(["a", "b", "c"], 2), [["a", "b"], ["c"]]); assert.deepEqual(paginate([], 5), [[]]);
+  const has = new Set([..."abc"].map((c) => c.codePointAt(0)!));
+  assert.deepEqual(missingChars("abc\nそう€€", has), { chars: ["そ", "う", "€"], count: 4 });
+  assert.equal(replaceMissing("ab\nそc", has), "ab\n?c");
 });

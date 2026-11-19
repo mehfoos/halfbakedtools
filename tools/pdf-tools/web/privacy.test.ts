@@ -34,8 +34,11 @@ test("pdf-tools: the tool page sets a browser security policy that blocks connec
   assert.match(task, /const policy = import\.meta\.env\.PROD \? CSP : "";/);
   for (const f of read("pages")) {
     if (f.name === "pages/methods.astro") continue;
-    assert.ok(/http-equiv="Content-Security-Policy"/.test(f.text) || /<Task task="[a-z-]+" \/>/.test(f.text), `${f.name} must set the security policy`);
+    assert.ok(/http-equiv="Content-Security-Policy"/.test(f.text) || /<Task task="[a-z-]+" \/>/.test(f.text) || /<TextTask \/>/.test(f.text), `${f.name} must set the security policy`);
   }
+  const text = readFileSync(join(DIR, "components", "TextTask.astro"), "utf8");   // the text page's own component must set it too
+  assert.match(text, /<meta slot="head" http-equiv="Content-Security-Policy" content=\{policy\} \/>/);
+  assert.match(text, /const policy = import\.meta\.env\.PROD \? CSP : "";/);
   const csp = /export const CSP\s*=\s*\[([\s\S]*?)\]\.join/.exec(readFileSync(join(DIR, "web", "csp.ts"), "utf8"))?.[1] ?? "";
   for (const rule of ["default-src 'self'", "connect-src 'self'", "form-action 'none'", "object-src 'none'", "frame-src 'none'"]) assert.ok(csp.includes(rule), `policy is missing: ${rule}`);
   assert.doesNotMatch(csp, /https?:|\*/, "the policy must not allow any other site");

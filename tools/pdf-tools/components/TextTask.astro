@@ -1,0 +1,44 @@
+---
+// Text to PDF: its own small page, because there are no PDF pages to arrange. Type or paste text, or open a text
+// file, choose a page and a font, and save. Everything happens in this browser.
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import { CSP } from "../web/csp.ts";
+import { taskBySlug } from "../web/tasks.ts";
+const task = taskBySlug("text-to-pdf");
+const policy = import.meta.env.PROD ? CSP : "";
+---
+<ToolLayout slug="pdf-tools" page={task.slug} title={`${task.name} · PDF tools`} description={`${task.blurb} Done inside your browser: your text is never uploaded.`}>
+  {policy && <meta slot="head" http-equiv="Content-Security-Policy" content={policy} />}
+  <div id="pdftext" class="sans">
+    <h1>{task.name}</h1>
+    <p class="lede">{task.blurb}</p>
+    <noscript><p class="notice">This tool runs in your browser and needs JavaScript.</p></noscript>
+    <p><label class="button primary">Open a text file<input id="txFile" class="sr-only" type="file" accept=".txt,.md,.csv,.log,.json,text/plain" /></label>
+       <span class="small muted">or type or paste below. Files are read as UTF-8 text.</span></p>
+    <p><textarea id="txText" rows="14" spellcheck="false" aria-label="Text to put in the PDF"></textarea></p>
+    <details open>
+      <summary>Page and font</summary>
+      <p><label class="field">Font
+        <select id="txFont"><option value="mono">Courier (keeps columns lined up)</option><option value="sans">Helvetica</option><option value="serif">Times</option></select></label>
+        <label class="field">Size <input id="txSize" type="number" min="4" max="72" step="any" value="11" inputmode="decimal" /> points</label></p>
+      <p><label class="field">Unit <select id="txUnit"><option value="mm">millimetres</option><option value="in">inches</option><option value="pt">points</option></select></label>
+        <label class="field">Page width <input id="txW" type="number" min="1" step="any" inputmode="decimal" /></label>
+        <label class="field">height <input id="txH" type="number" min="1" step="any" inputmode="decimal" /></label>
+        <label class="field">Margin <input id="txMargin" type="number" min="0" step="any" inputmode="decimal" /></label></p>
+      <p class="small muted">Pages can be between half an inch and 200 inches on a side. The built-in fonts cover Western European characters; any other character is replaced by a question mark and the message says how many. Lines are wrapped at spaces. Formatting such as bold or headings is not applied.</p>
+    </details>
+    <p><label class="field">File name <input id="txName" type="text" value="text" /></label>.pdf</p>
+    <p id="txStatus" class="notice info small" role="status" aria-live="polite" hidden></p>
+    <div class="go"><button type="button" class="primary big" id="txSave">Save as PDF</button></div>
+  </div>
+  <script>
+    import { startText } from "../web/textui.ts";
+    startText();
+  </script>
+  <style is:global>
+    #pdftext textarea { width: 100%; box-sizing: border-box; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.9rem; }
+    #pdftext .field { margin-right: 12px; display: inline-block; }
+    #pdftext .field input[type="number"] { width: 6em; }
+    #pdftext .go { margin: 14px 0; position: sticky; bottom: 8px; }
+  </style>
+</ToolLayout>
