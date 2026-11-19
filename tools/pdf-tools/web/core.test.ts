@@ -712,3 +712,36 @@ test("extract: 1-bit gray and palette pictures are expanded; unsupported kinds a
   assert.deepEqual([...pal.out.subarray(0, 6)], [255, 0, 0, 0, 255, 0], "palette entries 0 and 1 became red and green");
   assert.deepEqual(out.skipped.map((s) => s.reason).sort(), ["pictures in CMYK colour", "pictures stored as CCITTFaxDecode"]);
 });
+
+// ---- repair ----
+import { endsProperly, hasHeader, looksLikePdfBody, withHeader, repairNote, listPages, rewrite } from "./repair.ts";
+test("repair: a missing start marker is found and put back; other files are untouched", async () => {
+  const doc = await PDFDocument.create(); doc.addPage([100, 100]); doc.addPage([100, 100]);
+  const good = await doc.save({ useObjectStreams: false });
+  assert.equal(hasHeader(good), true); assert.equal(withHeader(good).added, false); assert.equal(withHeader(good).bytes, good);
+  const headless = good.slice(8); assert.equal(hasHeader(headless), false); assert.equal(looksLikePdfBody(headless), true);
+  assert.equal(looksLikePdfBody(new TextEncoder().encode("just some text")), false);
+  const fixed = withHeader(headless); assert.equal(fixed.added, true);
+  assert.equal((await PDFDocument.load(fixed.bytes)).getPageCount(), 2, "the library opens it once the marker is back");
+});
+test("repair: damaged files that the library reads still save as a clean copy; the note says what was and wasn't found", async () => {
+  const doc = await PDFDocument.create(); for (let i = 0; i < 3; i++) doc.addPage([100, 100]);
+  const good = new TextDecoder("latin1").decode(await doc.save({ useObjectStreams: false }));
+  const bad = new TextEncoder().encode(good.replace(/startxref\n\d+/, "startxref\n99999"));   // the index points nowhere
+  const again = await (await PDFDocument.load(bad)).save();
+  assert.equal((await PDFDocument.load(again)).getPageCount(), 3);
+  assert.match(repairNote("a.pdf", 3, false, []), /no problems were detected \(3 pages, all readable\)/);
+  assert.match(repairNote("a.pdf", 5, true, [2, 3, 4, 9]), /start marker.*pages 2 to 4 and 9 could not be read.*cannot be recovered/);
+  assert.equal(listPages([1, 2, 3, 5]), "1 to 3 and 5"); assert.equal(listPages([4]), "4"); assert.equal(listPages([2, 3]), "2, 3");
+});
+test("repair: rewrite reports the page count the file claims against the pages it could find", async () => {
+  const doc = await PDFDocument.create(); for (let i = 0; i < 4; i++) doc.addPage([100, 100]).drawRectangle({ x: 5, y: 5, width: 50, height: 50 });
+  const good = await doc.save({ useObjectStreams: false });
+  const r = await rewrite(good); assert.deepEqual([r.found, r.declared, r.added], [4, 4, false]);
+  assert.deepEqual(r.lost, []); assert.equal(r.cutShort, false); assert.equal(endsProperly(good), true);
+  const cut = await rewrite(good.slice(0, Math.floor(good.length * 0.8)));
+  assert.equal(cut.cutShort, true); assert.ok(cut.lost.length > 0, "pages whose content was cut off are named");
+  assert.match(repairNote("a.pdf", 4, false, [3, 4], 4, true), /ends without the usual end marker.*pages 3, 4 could not be read/);
+  assert.match(repairNote("a.pdf", 3, false, [], 4), /says it has 4 pages but only 3 could be found, so 1 page is missing/);
+  await assert.rejects(rewrite(new TextEncoder().encode("not a pdf at all")));
+});

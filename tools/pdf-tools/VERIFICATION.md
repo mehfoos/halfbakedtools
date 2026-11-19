@@ -145,3 +145,13 @@ source PDF by pypdf; the PNG was pixel-identical to pypdf's own decoding of that
 that no pictures could be extracted, with no file. No requests left the browser. Unit tests cover gray 1-bit, palette,
 transparency (soft mask) and the skipped kinds (CMYK, CCITT). Not checked: JPEG 2000 files in other viewers; encrypted
 PDFs with a password; very large pictures on a phone.
+
+### Repair PDF (2026-11-19)
+
+Headless Chrome with seven files made from one 4-page PDF: intact, cut off at 80%, index pointing nowhere, junk before the
+header, header removed, a block of bytes zeroed, and trailer removed. All saved except none refused; qpdf --check passed
+on all but the cut-off copy (qpdf: "ignoring non-stream in an array of streams", a warning, still 4 pages). Messages: the
+intact, bad-index and junk files said no problems were detected; the headless file said the marker was put back; the
+cut-off file said it ends without an end marker and page 4 could not be read; the zeroed file said it declared 4 pages
+but only 1 was found; the trailer-less file said it ends without an end marker. A file with no PDF content at all is
+refused with a plain message. Not checked: files with object streams damaged, encrypted damaged files, very large files.

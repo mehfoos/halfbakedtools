@@ -96,6 +96,11 @@
       "nav": false
     },
     {
+      "page": "repair",
+      "label": "Repair PDF",
+      "nav": false
+    },
+    {
       "page": "extract-images",
       "label": "Extract pictures",
       "nav": false

@@ -72,6 +72,9 @@ export const TASKS: Task[] = [
     pick: "Select PDF files", hint: "Choose how hard to compress, then press Compress to see the new size and a before-and-after preview.",
     parts: ["compress"], formats: ["pdf"], which: "all", action: "Compress PDF", perFile: true, suffix: "compressed", tag: "↓" },
 
+  { slug: "repair", name: "Repair PDF", blurb: "Open a damaged PDF as far as possible and save a clean copy. It fixes damaged structure; it cannot bring back content that is missing.", group: "Optimise", accept: "pdf",
+    pick: "Select PDF files", hint: "Each file is opened leniently and every page is checked. The message says what was found and which pages could not be read. Content missing from the file, for example from a cut-off download, cannot be recovered.",
+    parts: [], formats: ["pdf"], which: "all", action: "Repair PDF", perFile: true, suffix: "repaired", tag: "✚" },
   { slug: "sign", name: "Sign PDF", blurb: "Draw your signature and place it on a page. It is a picture of your handwriting, not a digital signature.", group: "Security", accept: "pdf",
     pick: "Select PDF file", hint: "Press Draw signature, draw it, press Use, then drag it into place and resize it by its corner square. This adds a picture of your handwriting; it is not a cryptographic (digital) signature.",
     parts: ["marks", "sign"], formats: ["pdf"], which: "all", action: "Save signed PDF", suffix: "signed", tag: "✍" },
@@ -111,7 +114,6 @@ export const WORKSPACE: Task = {
 /** Planned and not built yet. Shown on the home grid, clearly marked, so nobody hunts for them. Each will only be
  *  added if it can be done entirely on the visitor's device. See ROADMAP.md for the order. */
 export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
-  { name: "Repair PDF", tag: "✚", group: "Optimise" },
   { name: "OCR PDF (make scans searchable)", tag: "OCR", group: "Optimise" },
   { name: "Word to PDF", tag: "DOC", group: "Convert to PDF" }, { name: "PowerPoint to PDF", tag: "PPT", group: "Convert to PDF" },
   { name: "Excel to PDF", tag: "XLS", group: "Convert to PDF" }, { name: "HTML file to PDF", tag: "WEB", group: "Convert to PDF" },

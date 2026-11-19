@@ -14,6 +14,7 @@ import {
 import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
 import { extractPictures } from "./extract.ts";
+import { looksLikePdfBody, rewrite, repairNote } from "./repair.ts";
 import { createEditor } from "./editor.ts";
 import { createSignPad } from "./signpad.ts";
 import type { Mark } from "./marks.ts";
@@ -129,7 +130,12 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       const notes: string[] = [];
       for (const f of files) {
         progress(`Reading ${f.name}…`);
-        const bytes = new Uint8Array(await f.arrayBuffer());
+        let bytes = new Uint8Array(await f.arrayBuffer()), headerAdded = false, declared: number | null = null, lost: number[] = [], cutShort = false;
+        if (task.slug === "repair" && (isPdf(bytes) || looksLikePdfBody(bytes))) {
+          progress(`Repairing ${f.name}…`);
+          try { const r = await rewrite(bytes); bytes = r.bytes; headerAdded = r.added; declared = r.declared; lost = r.lost; cutShort = r.cutShort; }
+          catch (e) { console.error(e); notes.push(`"${f.name}" could not be read at all${e instanceof Error && /encrypt/i.test(e.message) ? " because it is password-protected; use Unlock PDF first" : ", so there is nothing this tool can repair. Too little of the file's structure is left"}.`); continue; }
+        }
         const sha = await sha256(bytes);
         if (loaded.has(sha)) { notes.push(`"${f.name}" is already added (to repeat pages, use Duplicate).`); continue; }
         let item: Loaded, pages = 1;
@@ -141,6 +147,14 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
             const r = await loadPdf(f.name, bytes);
             if (!r) { notes.push(`"${f.name}" was skipped (no password given).`); continue; }
             item = r; pages = r.pages;
+            if (task.slug === "repair" && r.handle.kind === "pdf") {
+              const bad: number[] = [];
+              for (let i = 1; i <= r.pages; i++) {
+                progress(`Checking ${f.name}: page ${i} of ${r.pages}…`);
+                try { const pg = await r.handle.doc.getPage(i); await pg.getOperatorList(); pg.cleanup(); } catch { bad.push(i); }
+              }
+              notes.push(repairNote(f.name, r.pages, headerAdded, [...new Set([...bad, ...lost])].sort((a, b) => a - b), declared, cutShort));
+            }
             if (task.slug === "unlock" && !r.restricted && !r.usedPassword) notes.push(`"${f.name}" has no password or lock, so there is nothing to unlock.`);
             if (r.restricted) notes.push(`"${f.name}" is locked by its author against some changes, though it opens without a password. Files saved from it will not carry that lock.`);
             if (r.usedPassword) notes.push(`"${f.name}" was opened with its password. Files saved from it will not be password-protected.`);
@@ -150,6 +164,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
           }
         } catch (e) {
           console.error(e);
+          if (task.slug === "repair") { notes.push(`"${f.name}" could not be opened even with a lenient reader, so there is nothing this tool can repair. Too little of the file's structure is left.`); continue; }
           notes.push(`"${f.name}" couldn't be read. It may be damaged, or a kind of file this tool doesn't handle yet (it takes PDFs and images).`);
           continue;
         }
