@@ -53,12 +53,17 @@ IX = {k: i for i, k in enumerate(KEYS)}
 
 # ---- reading a name -------------------------------------------------------------------------------------------------
 SKIN_NO = re.compile(r"\b(without skin|skinless|skin removed|no skin|peeled|flesh only|meat only|lean only|lean flesh|without peel)\b|\bflesh\b(?! and skin)(?!,? skin)")
-SALT_NO = re.compile(r"\b(unsalted|no added salt|without added salt|without salt|no salt added|salt[- ]free|low sodium|no sodium added|in unsalted water)\b")
+SALT_NO = re.compile(r"\b(unsalted|no added (?:fat or |fat and )?salt|without added (?:fat or )?salt|without (?:fat or )?salt|no salt added|salt[- ]free|low sodium|no sodium added|in unsalted water)\b")
 SALT_YES = re.compile(r"\b(salted|salt added|with salt|with added salt|added salt|in salted water)\b")
 SALT_REDUCED = re.compile(r"\b(reduced salt|reduced sodium|low salt|lightly salted)\b")
 SKIN_YES = re.compile(r"\b(with skin|unpeeled|flesh and skin|meat and skin|skin (?:&|and) fat|with peel)\b")
 STATES = [  # (state, pattern); a cooking method beats "dried", which beats "raw"
-    ("moist", r"\b(boiled|boil|simmered|poached|steamed|blanched|cooked in (?:unsalted |salted )?water)\b"),
+    ("dryheat", r"\bdry heat\b"),          # USDA: roasted, baked, broiled or grilled
+    ("moistheat", r"\bmoist heat\b"),      # USDA: boiled, steamed, poached or braised
+    ("boiled", r"\b(boiled|boil|simmered|cooked in (?:unsalted |salted )?water)\b"),
+    ("steamed", r"\bsteamed\b"),
+    ("poached", r"\bpoached\b"),
+    ("blanched", r"\bblanched\b"),
     ("stewed", r"\b(stewed|braised|casseroled|stew)\b"),
     ("roast", r"\b(roasted|roast|baked|oven[- ]baked|oven)\b"),
     ("grill", r"\b(grilled|broiled|barbecued|bbq'?d|bbq|griddled|pan[- ]broiled|char[- ]grilled)\b"),
@@ -68,10 +73,13 @@ STATES = [  # (state, pattern); a cooking method beats "dried", which beats "raw
     ("canned", r"\b(canned|tinned)\b"),
 ]
 # Phrases that describe something other than the preparation of the food itself
-NOT_STATE = re.compile(r"\b(?:boiled |cooked )?in (?:unsalted |salted |boiling )?water\b|\b(?:prepared|made) (?:with|from) [^,]*|\bin (?:water|brine|oil|own juice|tomato juice|syrup|juice)\b|\b(?:dry|moist) heat\b|\bmay contain [^,]*|\bin dry matter\b|\bdry matter\b|\bfidm\b|\buncooked weight\b")
+NOT_STATE = re.compile(r"\b(?:boiled |cooked )?in (?:unsalted |salted |boiling )?water\b|\b(?:prepared|made) (?:with|from) [^,]*|\bin (?:water|brine|oil|own juice|tomato juice|syrup|juice)\b|\bmay contain [^,]*|\bin dry matter\b|\bdry matter\b|\bfidm\b|\buncooked weight\b")
 DRY = re.compile(r"\b(dried|dry|dehydrated|mature seeds?|mature|uncooked weight)\b")
 RAW = re.compile(r"\b(raw|uncooked|unprepared|unheated|unroasted)\b")
-COOKED_ANY = {"moist", "stewed", "roast", "grill", "micro", "fried", "cooked"}
+COOKED_ANY = {"boiled", "steamed", "poached", "blanched", "moistheat", "dryheat", "stewed", "roast", "grill", "micro", "fried", "cooked"}
+MOIST = {"boiled", "steamed", "poached", "blanched", "moistheat"}   # alike enough for the Common list, not for the blend
+DRY_HEAT = {"roast", "grill", "dryheat"}
+CANNED = re.compile(r"\b(canned|tinned)\b")
 # A food's fat level ("lowfat", "2% milkfat", "reduced fat", "extra virgin") is left to the composition check.
 FINELI_PROCESS = {"RAW": "raw", "DRIE": "dry", "BOIL": "moist", "BAK": "roast", "ROAS": "roast"}
 NOISE = set("""average all variety varieties var fresh plain edible portion part parts with without no added unsalted salt
@@ -129,8 +137,10 @@ def read_name(name: str, process: str | None = None) -> tuple[frozenset, str, st
     t = SKIN_YES.sub(" ", SKIN_NO.sub(" ", t))
     salt = ("no" if SALT_NO.search(t) else "reduced" if SALT_REDUCED.search(t)
             else "yes" if SALT_YES.search(t) or re.search(r"\bsalt\b", t) else "")
-    methods = [s for s, p in STATES if s not in ("cooked", "canned") and re.search(p, t)]
-    state = "+".join(sorted(set(methods))) if len(set(methods)) > 1 else ""   # "boiled, fried": two steps
+    methods = {s for s, p in STATES if s not in ("cooked", "canned", "dryheat", "moistheat") and re.search(p, t)}
+    state = "canned" if CANNED.search(t) else ""   # canned, even if re-heated: the canning decides the values
+    if not state and len(methods) > 1:
+        state = "+".join(sorted(methods))   # "boiled, fried": two steps
     for s, p in STATES:
         if not state and re.search(p, t):
             state = s
@@ -168,6 +178,8 @@ def states_ok(a: str, b: str, cat: str = "") -> bool:
         return True
     if {a, b} == {"raw", "dry"} and cat in DRY_IS_RAW:
         return True
+    if {a, b} <= MOIST or {a, b} <= DRY_HEAT:
+        return True
     return (a == "cooked" and b in COOKED_ANY) or (b == "cooked" and a in COOKED_ANY)
 
 
@@ -201,12 +213,21 @@ COPY_KEYS = [k for k in KEYS if k not in common.DERIVED and k not in
              ("energy", "carbohydrate", "sugars", "fibre", "vitaminA", "folate", "vitaminD", "vitaminE", "vitaminK", "niacinNE")]
 
 
+CORE_KEYS = ["protein", "fat", "sodium", "potassium", "calcium", "magnesium", "phosphorus", "iron", "zinc", "copper",
+             "manganese", "selenium", "vitaminC", "thiamin", "riboflavin", "niacinPreformed", "vitaminB6", "vitaminB12",
+             "pantothenic", "retinol"]
+
+
 def copies(u: list, v: list) -> bool:
+    """Copies of the same data: 70% of 8+ shared non-zero values within 2%, or core values (protein, fat, minerals,
+    water-soluble vitamins) identical within 1% (8 or more, or 6 or more and half of those shared), which borrowing
+    tables keep while recalculating fatty and amino acids."""
     shared = [(u[IX[k]], v[IX[k]]) for k in COPY_KEYS if u[IX[k]] and v[IX[k]]]
-    if len(shared) < 8:
-        return False
-    same = sum(1 for a, b in shared if abs(a - b) <= 0.02 * max(abs(a), abs(b)))
-    return same >= 0.7 * len(shared)
+    if len(shared) >= 8 and sum(1 for a, b in shared if abs(a - b) <= 0.02 * max(abs(a), abs(b))) >= 0.7 * len(shared):
+        return True
+    core = [(u[IX[k]], v[IX[k]]) for k in CORE_KEYS if u[IX[k]] and v[IX[k]]]
+    same = sum(1 for a, b in core if abs(a - b) <= 0.01 * max(abs(a), abs(b)))
+    return same >= 8 or (same >= 6 and same >= 0.5 * len(core))
 
 
 # ---- source families ------------------------------------------------------------------------------------------------

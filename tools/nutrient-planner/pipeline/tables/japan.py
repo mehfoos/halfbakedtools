@@ -95,6 +95,8 @@ def source_names() -> dict[str, str]:
 # Terms whose meaning depends on the food group (the code's first two digits; 07 is fruits): もも is "peach" among
 # fruits and "thigh/round" among meats.
 IN_GROUP = {("07", "もも"): "peach", ("07", "（もも類）"): "(peaches)"}
+# MEXT's English source list names both palm oil (14009) and palm kernel oil (14010) "Oil palm"; translated here.
+NAME_FIX = {"14010": "Palm kernel oil"}
 
 
 def term(gloss: dict, t: str, code: str) -> str:
@@ -132,7 +134,7 @@ def main() -> int:
         if eng.get(code):
             while toks and toks[0][0] in "＜（":
                 toks = toks[1:]
-            head, rest = eng[code], [term(gloss, t, code) for t in toks[1:]]
+            head, rest = NAME_FIX.get(code, eng[code]), [term(gloss, t, code) for t in toks[1:]]
         else:
             while len(toks) > 1 and toks[0][0] == "＜":   # a broad category marker, when a more specific term follows
                 toks = toks[1:]

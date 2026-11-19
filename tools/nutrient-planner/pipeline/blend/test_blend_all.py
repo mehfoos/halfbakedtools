@@ -27,7 +27,8 @@ class SameFood(unittest.TestCase):
     def test_colour_and_other_foods_are_not_qualifiers(self):
         self.assertFalse(b.words_same(cl.read_name("Tomatoes, green, raw")[0], cl.read_name("Tomato, raw")[0]))
         self.assertFalse(b.words_same(cl.read_name("Mustard spinach, raw")[0], cl.read_name("Spinach, raw")[0]))
-        self.assertTrue(b.words_same(cl.read_name("Salmon, Atlantic, farmed")[0], cl.read_name("Salmon, farmed")[0]))
+        self.assertTrue(b.words_same(cl.read_name("Salmon, Atlantic, farmed")[0], cl.read_name("Salmon, Atlantic")[0]))
+        self.assertFalse(b.words_same(cl.read_name("Cod, Pacific, cooked")[0], cl.read_name("Cod, cooked")[0]))   # species
 
     def test_packing_medium(self):
         self.assertEqual(b.packing("Peaches, canned, juice pack, solids and liquids"), "juice")
@@ -84,6 +85,33 @@ class GroupWide(unittest.TestCase):
         self.assertFalse(b.identity_ok(pita_us, pita_ca))   # Canadian flour is fortified without the name saying so
 
 
+class SecondReview(unittest.TestCase):
+    """Found by the second independent review (19 Nov 2026)."""
+
+    def test_cooking_methods(self):
+        st = lambda n: cl.read_name(n)[1]  # noqa: E731
+        self.assertEqual(st("Sweet potato, steamed"), "steamed")
+        self.assertEqual(st("Broccoli, Blanched"), "blanched")
+        self.assertEqual(st("Fish, salmon, pink, cooked, dry heat"), "dryheat")
+        self.assertEqual(st("Beans, butter, canned, re-heated, drained"), "canned")
+        boiled, steamed = rec("usda", "Cassava, boiled"), rec("cofid", "Cassava, steamed")
+        self.assertFalse(b.states_same(boiled, steamed))
+        self.assertFalse(b.states_same(rec("ciqual", "Celeriac, cooked"), rec("bls", "Celeriac baked")))
+        self.assertTrue(b.states_same(rec("usda", "Barley, pearled, cooked", "grains"), rec("bls", "Barley, pearl, boiled", "grains")))
+
+    def test_fortified_names_and_salt_phrases(self):
+        self.assertTrue(b.fortified("Soya drink, vitamins"))
+        self.assertEqual(cl.read_name("Millet, boiled, no added fat or salt")[2], "/no")
+
+    def test_core_copies(self):
+        core = {k: float(i + 1) for i, k in enumerate(cl.CORE_KEYS)}
+        u = rec("usda", "a", **core)["f"]["v"]
+        v = list(u)
+        for k in ("epa", "dha", "lysine", "leucine", "valine", "histidine"):
+            v[cl.IX[k]] = 5.0   # recalculated fatty and amino acids don't hide a copy
+        self.assertTrue(cl.copies(u, v))
+
+
 class Counting(unittest.TestCase):
     def setUp(self):
         b.TAG.update({t: t.upper() for t in b.ORDER})
@@ -119,7 +147,7 @@ class Output(unittest.TestCase):
         for fid, food in self.values["foods"].items():
             for k, std, want in (("vitaminA", "us", "vitaminA:rae"), ("vitaminA", "uk", "vitaminA:re"), ("folate", "uk", "folate:total")):
                 i = self.keys.index(k)
-                if want in food["s"] and "not used" not in food["s"][want].split(";")[0]:
+                if want in food["s"] and "not used" not in food["s"][want].split(";")[0] and food["v"][std][i] is not None:
                     self.assertEqual(food["d"][std][i], want, fid)
 
     def test_kept_apart_pairs_never_share_a_food(self):

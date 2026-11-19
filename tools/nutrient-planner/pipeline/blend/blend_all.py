@@ -18,7 +18,7 @@ the values are combined:
 - for canned and bottled foods, the same packing medium (syrup, juice, water, brine, oil), stated in both;
 - the same preparation (raw and dried count as one for pulses, grains and nuts; "cooked" fits any cooking method;
   a name with no preparation fits only raw), compatible skin and salt, and not a mixture ("mixed", "assorted");
-- composition that agrees: protein (rule v1: 1 g or 20%) and fat (0.5 g or 15%, tighter than rule v1, because 1%
+- composition that agrees: protein (rule v1: 1 g or 20%) and fat (0.4 g or 10%, tighter than rule v1, because 1%
   and skim milk would otherwise agree) known and within tolerance, energy within 30%, and
   at least 3 of sodium, calcium, potassium, iron and magnesium compared with at most one outside its tolerance;
 - USDA and CoFID: the reviewed decisions in matches/cofid.csv win. A food decided *same* or *equivalent* is linked to
@@ -40,7 +40,10 @@ definitions). For each standard, the definition its targets use (PREFER) is chos
 otherwise the definition most tables give, with an *Assumption* caveat. The value is the median of the tables that
 give it (two tables: their mean), with the range. A value only one table gives fills the gap, marked with its table.
 Missing stays missing. Salt, EPA + DHA, methionine + cysteine, phenylalanine + tyrosine and (if not given) niacin
-equivalents are worked out from the blended parts. Values more than two-fold apart are flagged, not dropped.
+equivalents are worked out from the blended parts. Values more than two-fold apart are flagged, not dropped; when
+only two tables give a value and they differ more than five-fold, no value is given. Plant foods never get EPA, DHA
+or retinol (a table's value for one is shown but not used). Totals of protein, fat, carbohydrate and fibre above
+100 g are flagged.
 """
 from __future__ import annotations
 
@@ -107,14 +110,14 @@ PREFER = {
 }
 CALC_KEYS = {"salt", "epaDha", "metCys", "pheTyr"}
 MINERALS = (("sodium", 50, 0.5), ("calcium", 30, 0.4), ("potassium", 100, 0.3), ("iron", 0.5, 0.4), ("magnesium", 10, 0.4))
-MIXTURE = re.compile(r"\b(mixed|assorted|mixture)\b", re.I)
+MIXTURE = re.compile(r"\b(mixed|assorted|mixture)\b|^(?:oil, vegetable|vegetable oil)\b", re.I)   # blends of unknown make-up
 # Stricter than the Common list's qualifiers: colour, ripeness and the like change the food (green tomatoes, green
 # soybeans), so only origin and farming may differ.
-BLEND_QUALIFIER = set("atlantic pacific farmed norwegian alaskan common standard".split())   # not "wild" (wild pear), not "american" (slip-skin grapes)
+BLEND_QUALIFIER = set("farmed norwegian alaskan common standard".split())   # not "wild" (wild pear), "american" (grapes), "atlantic"/"pacific" (cod species)
 PACKING = re.compile(r"\b(?:in|packed in|canned in|pack)\b[^,]*?\b(heavy syrup|light syrup|syrup|juice|water|brine|oil)\b|\b(juice|syrup|water|oil) pack\b", re.I)
 
 
-FORTIFIED = re.compile(r"\b(fortified|enriched|added vitamins?|vitamins? added|with added|added (?:iron|calcium|vitamins?|minerals?)|vitamins? (?:&|and) minerals|calcium[- ]enriched)\b", re.I)
+FORTIFIED = re.compile(r"\b(fortified|enriched|added vitamins?|vitamins? added|with added|added (?:iron|calcium|vitamins?|minerals?)|vitamins? (?:&|and) minerals|calcium[- ]enriched|with vitamins?|with calcium)\b|, ?(?:vitamins?|calcium|vitamin d)\b|\+ ?calcium", re.I)
 UNFORTIFIED = re.compile(r"\b(unfortified|not fortified|unenriched|not enriched|without added|no added vitamins?)\b", re.I)
 
 
@@ -149,7 +152,11 @@ def states_same(a: dict, b: dict) -> bool:
         return True
     if {sa, sb} == {"", "raw"}:
         return True
-    return (sa == "cooked" and sb in cl.COOKED_ANY) or (sb == "cooked" and sa in cl.COOKED_ANY)
+    # The same cooking method only: steamed is not boiled, and a bare "cooked" doesn't join a named method, except
+    # cooked rice, pasta and grains, which tables cook by boiling; USDA "dry heat" is roasting, baking or grilling.
+    if cat in ("grains", "cereals") and {sa, sb} == {"cooked", "boiled"}:
+        return True
+    return {sa, sb} <= cl.DRY_HEAT and "dryheat" in (sa, sb)
 
 
 def words_same(a: frozenset, b: frozenset) -> bool:
@@ -161,6 +168,7 @@ def words_same(a: frozenset, b: frozenset) -> bool:
 
 
 FLOUR_TYPE = re.compile(r"\b(?:type|typ|t)\s?(\d{2,4})\b", re.I)
+PREPARED = re.compile(r"\b(?:prepared|made) (?:with|from) ([^,(]*)")
 LATIN = re.compile(r"\(([A-Z][a-z]+ [a-z]+)")
 DRAINED = re.compile(r"\bdrained\b", re.I)
 # Nutrients added by fortification, with the absolute difference that, with a three-fold ratio, means one record is
@@ -170,7 +178,7 @@ FORTIFIABLE = {
     "grains": (("iron", 1.0), ("folate", 40), ("thiamin", 0.2), ("riboflavin", 0.2)),
     "cereals": (("iron", 1.0), ("folate", 40), ("thiamin", 0.2), ("riboflavin", 0.2), ("vitaminD", 0.5)),
     "dairy": (("vitaminD", 0.5), ("vitaminA", 60)),
-    "drinks": (("vitaminD", 0.5), ("calcium", 150), ("vitaminB12", 0.3)),
+    "drinks": (("vitaminD", 0.5), ("calcium", 50), ("vitaminB12", 0.1), ("riboflavin", 0.1)),
     "beverages": (("vitaminC", 15), ("calcium", 150)),
     "oils": (("vitaminD", 0.5), ("vitaminA", 100)),
 }
@@ -203,14 +211,21 @@ def identity_ok(a: dict, b: dict, reviewed: bool = False) -> bool:
         x, y = u[IX[k]], v[IX[k]]
         if x is not None and y is not None and abs(x - y) > gap and max(x, y) > 3 * max(min(x, y), 1e-9):
             return False
-    for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.5, 0.10)):
+    for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.4, 0.10), ("fibre", 4, 0.55)):   # fat: 1.5% and 2% milk differ
         if u[IX[k]] is not None and v[IX[k]] is not None and not cl.near(u[IX[k]], v[IX[k]], absol, rel):
+            return False
+    pa, pb = PREPARED.findall(a["name"].lower()), PREPARED.findall(b["name"].lower())
+    if pa != pb:
+        return False   # "mashed, prepared with whole milk and margarine" is not plain mashed potato
+    # A record a table took from another table must be a copy of that table's record in the group, not of another food
+    for x, y in ((a, b), (b, a)):
+        if x["family"] == y["table"] and x["table"] != y["table"] and not cl.copies(x["f"]["v"], y["f"]["v"]):
             return False
     return True
 
 
 def composition_same(u: list, v: list) -> bool:
-    for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.5, 0.10)):   # fat tighter than rule v1: 1% and skim milk differ
+    for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.4, 0.10)):   # fat tighter than rule v1: 1% and skim milk differ
         if u[IX[k]] is None or v[IX[k]] is None or not cl.near(u[IX[k]], v[IX[k]], absol, rel):
             return False
     e1, e2 = u[IX["energy"]], v[IX["energy"]]
@@ -349,7 +364,11 @@ def fmt(x: float) -> str:
     return f"{x:.4g}"
 
 
-def blend_food(recs: list[dict], members: list[int], labels: dict) -> dict:
+PLANT_NEVER = ("epa", "dha", "retinol")   # plants have none; a value for a plant food is a source or unit error
+SEAWEED = re.compile(r"\b(seaweed|algae|alga|nori|kelp|wakame|kombu|spirulina|chlorella|laver|hijiki)\b", re.I)
+
+
+def blend_food(recs: list[dict], members: list[int], labels: dict, plant: bool = False) -> dict:
     used, why = used_members(recs, members)
     out = {s: {"v": {}, "r": {}, "d": {}, "c": collections.defaultdict(list)} for s in STANDARDS}
     texts = {}
@@ -367,9 +386,13 @@ def blend_food(recs: list[dict], members: list[int], labels: dict) -> dict:
                 t = TAG[recs[i]["table"]]
                 lab = (recs[i]["f"].get("q") or {}).get(k)
                 lab_txt = f" ({labels[recs[i]['table']].get(lab, lab)})" if lab else ""
-                parts.append(f"{t} {fmt(x)}{lab_txt}" if i in used else f"{t} {fmt(x)} (not used: {why[i]})")
+                if i in used and plant and k in PLANT_NEVER and x > 0:
+                    parts.append(f"{t} {fmt(x)}{lab_txt} (not used: plants contain none, so this is taken as an error in the table)")
+                else:
+                    parts.append(f"{t} {fmt(x)}{lab_txt}" if i in used else f"{t} {fmt(x)} (not used: {why[i]})")
             texts[def_id(k, g)] = "; ".join(parts)
-        usable = {g: [x for i, x in vals if i in used] for g, vals in by_group.items()}
+        implausible = plant and k in PLANT_NEVER   # plant foods: such values are shown but not used
+        usable = {g: [x for i, x in vals if i in used and not (implausible and x > 0)] for g, vals in by_group.items()}
         usable = {g: xs for g, xs in usable.items() if xs}
         for s in STANDARDS:
             if not usable:
@@ -382,11 +405,14 @@ def blend_food(recs: list[dict], members: list[int], labels: dict) -> dict:
                 if k in PREFER:
                     out[s]["c"][k].append("other-definition")
             xs = usable[g]
+            if len(xs) == 2 and max(xs) > 0 and (min(xs) == 0 or max(xs) / min(xs) > 5):
+                out[s]["c"][k].append("tables-disagree")   # the mean of two values five-fold apart means nothing: NA
+                continue
             out[s]["v"][k] = statistics.median(xs)
             out[s]["d"][k] = def_id(k, g)
             if len(xs) >= 2:
                 out[s]["r"][k] = [min(xs), max(xs), len(xs)]
-                if min(xs) > 0 and max(xs) / min(xs) > 2:
+                if max(xs) > 0 and (min(xs) == 0 or max(xs) / min(xs) > 2):
                     out[s]["c"][k].append("two-fold")
             else:
                 out[s]["c"][k].append("one-table")
@@ -396,6 +422,8 @@ def blend_food(recs: list[dict], members: list[int], labels: dict) -> dict:
             out["us"]["c"]["fibre"].append("closest-definition")
     for s in STANDARDS:
         v = out[s]["v"]
+        if sum(v.get(k) or 0 for k in ("protein", "fat", "carbohydrate", "fibre")) > 100.5:
+            out[s]["c"]["carbohydrate"].append("over-100")   # medians from different tables can add up to more than the food
         calc = common.derive(v, table_gives_ne="niacinNE" in v)
         for k, x in calc.items():
             v[k] = x
@@ -426,7 +454,9 @@ CAVEATS = {
     "borrowed-record": {"kind": "borrowed", "text": "Some of these records take their values from another table, or have values nearly identical to another table's, so they count once: they are shown, but not used in the median."},
     "other-definition": {"kind": "assumption", "text": "No table in this blend gives this nutrient for this food under the definition your standard's target uses, so the value uses another definition (named with the value)."},
     "one-table": {"kind": "estimate", "text": "Only one table gives this value for this food, so it fills the gap unconfirmed."},
-    "two-fold": {"kind": "assumption", "text": "The tables' values differ more than two-fold. The median is shown with the range; check which table suits you."},
+    "two-fold": {"kind": "assumption", "text": "The tables' values differ more than two-fold (or one gives none). The median is shown with the range; check which table suits you."},
+    "tables-disagree": {"kind": "assumption", "text": "The two tables that give this value differ more than five-fold, so their mean would mean nothing: no value is given. Each table's value is shown."},
+    "over-100": {"kind": "assumption", "text": "Protein, fat, carbohydrate and fibre add up to more than 100 g, because each is the median of different tables. Read each one as an estimate."},
     "closest-definition": {"kind": "assumption", "text": "The US target is for total fibre (dietary plus functional fibre); food tables measure fibre by AOAC methods, which capture most of it but not all."},
     "salt-basis-thiamin": {"kind": "assumption", "text": "Combined, as in the earlier USDA and CoFID blend, where a data check showed no salt-basis factor. CoFID says it expresses thiamin as thiamine chloride hydrochloride; the other tables don't say. If they differed, CoFID's values would be about 27% higher (molar masses 337.3 and 265.4)."},
     "salt-basis-vitaminB6": {"kind": "assumption", "text": "Combined, as in the earlier USDA and CoFID blend, where a data check showed no salt-basis factor. CoFID says it expresses vitamin B6 as pyridoxine hydrochloride; the other tables don't say. If they differed, CoFID's values would be about 22% higher (molar masses 205.6 and 169.2)."},
@@ -453,7 +483,11 @@ def main() -> int:
     foods, values, seen = [], {}, set()
     diet_rank = {"vegan": 0, "vegetarian": 1, "meat": 2}
     for members in groups_:
-        b = blend_food(recs, members, labels)
+        diet = max((recs[i]["f"].get("diet", "vegan") for i in members), key=lambda d: diet_rank.get(d, 2))
+        if diet == "vegan" and any((recs[i]["f"]["v"][IX["retinol"]] or 0) > 1 for i in members):
+            diet = "vegetarian"   # retinol is only in animal foods (fortified ones aren't blended): not vegan
+        plant = diet == "vegan" and not any(SEAWEED.search(recs[i]["name"]) for i in members)
+        b = blend_food(recs, members, labels, plant)
         used = b.pop("_used")
         if len(used) < 2:
             continue
@@ -469,12 +503,22 @@ def main() -> int:
         seen.add(fid)
         f = {k: v for k, v in base.items() if k not in ("v", "q", "src", "srcName", "fdcId", "usdaName", "dataset", "fortified", "basic")}
         f |= {"id": fid, "common": True,
-              "diet": max((recs[i]["f"].get("diet", "vegan") for i in members), key=lambda d: diet_rank.get(d, 2)),
+              "diet": diet,
               "src": {"table": "blend", "code": fid, "name": base["name"],
                       "members": [f"{recs[i]['table']}:{code_of(recs[i]['f'])}" for i in members]},
-              "srcName": base["name"], "q": None, "v": b["v"]["uk"]}
+              "srcName": base["name"], "q": None, "v": b["v"]["uk"], "_pub": recs[rep]["name"], "_tag": TAG[recs[rep]["table"]]}
         foods.append(f)
         values[fid] = b
+    # One name per food: where two blended foods share a name, each takes its main record's published name, and if
+    # that is shared too, the table it comes from.
+    for _ in range(2):
+        counts = collections.Counter(f["name"] for f in foods)
+        for f in foods:
+            if counts[f["name"]] > 1:
+                f["name"] = f["_pub"] if f["name"] != f["_pub"] else f"{f['_pub']} ({f['_tag']})"
+                f["src"]["name"] = f["srcName"] = f["name"]
+    for f in foods:
+        del f["_pub"], f["_tag"]
     foods.sort(key=lambda f: f["name"].lower())
     defs_note = {k: "Combined only within one definition; the definition used depends on the target standard (see foods-blend-values.json)" for k in DEFINITIONS}
     common.write("blend", "Blended (beta): every table", {"tables": "the ten table files in data/foods"}, defs_note, foods, [],

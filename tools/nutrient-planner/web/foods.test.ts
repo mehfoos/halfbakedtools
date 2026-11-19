@@ -18,7 +18,8 @@ test("Blended table: values follow the standard's definitions, and the file's va
   applySource(data, blend, "blend", "uk");
   assert.equal(lentils.per100g.energy, 119);         // no UK-factor value in the group: EU factors (BLS), the UK's next choice
   assert.deepEqual(lentils.blend!.c.uk.energy, ["one-table"]);
-  assert.equal(lentils.per100g.vitaminA, 3.5);       // retinol equivalents
+  assert.equal(lentils.per100g.vitaminA, undefined); // retinol equivalents: AFCD and BLS differ five-fold, so no value
+  assert.ok(lentils.blend!.c.uk.vitaminA.includes("tables-disagree"));
   applySource(data, blend, "blend", "us");
   assert.equal(lentils.per100g.energy, 116);         // USDA's Atwater energy (CNF's copy of it counts once)
   assert.equal(lentils.per100g.vitaminA, 0);         // retinol activity equivalents
