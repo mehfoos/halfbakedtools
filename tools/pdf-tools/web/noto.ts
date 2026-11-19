@@ -10,8 +10,10 @@ import { fontkit } from "./ownfont.ts";
 import { harfBuzzShaper } from "./shaper.ts";
 import { woffToSfnt } from "./woff.ts";
 
-/** Gets the WOFF bytes of a shipped file by its id (family-subset). In the browser: loadNoto in notoload.ts. */
-export type NotoLoader = (id: string) => Promise<Uint8Array>;
+/** Gets the WOFF bytes of a shipped file by its id (family-subset) and weight (400 regular, 700 bold). In the browser:
+ *  loadNoto in notoload.ts. */
+export type NotoWeight = 400 | 700;
+export type NotoLoader = (id: string, weight: NotoWeight) => Promise<Uint8Array>;
 /** How Han characters (shared by Chinese, Japanese and Korean, but drawn differently in each) are drawn. "auto": in the
  *  Japanese style if the text has kana, the Korean style if it has Hangul, otherwise Simplified Chinese. */
 export type HanStyle = "auto" | CjkStyle;
@@ -61,18 +63,19 @@ type Ready = { id: string; bytes: Uint8Array; fk: FkFont; shape: FacePart["shape
 /** Loads, unpacks and readies shipped files once per page visit, whatever document they go into. */
 export function notoLibrary(load: NotoLoader) {
   const cache = new Map<string, Promise<Ready>>();
-  return (f: NotoFile): Promise<Ready> => {
-    const id = notoId(f); let r = cache.get(id);
-    if (!r) cache.set(id, (r = (async () => {
-      const bytes = woffToSfnt(await load(id)), fk = (await fontkit()).create(bytes) as FkFont;
+  return (f: NotoFile, weight: NotoWeight = 400): Promise<Ready> => {
+    const id = notoId(f), key = `${id}@${weight}`; let r = cache.get(key);
+    if (!r) cache.set(key, (r = (async () => {
+      const bytes = woffToSfnt(await load(id, weight)), fk = (await fontkit()).create(bytes) as FkFont;
       return { id, bytes, fk, shape: await harfBuzzShaper(bytes) };
     })()));
     return r;
   };
 }
 
-/** A face for `doc` using the shipped Noto files. Call prepare(text) before measuring or drawing `text`. */
-export function notoFace(doc: PDFDocument, library: ReturnType<typeof notoLibrary>, style: HanStyle = "auto"): Face {
+/** A face for `doc` using the shipped Noto files, regular or bold (the fonts' own bold design). Call prepare(text)
+ *  before measuring or drawing `text`. */
+export function notoFace(doc: PDFDocument, library: ReturnType<typeof notoLibrary>, style: HanStyle = "auto", bold = false): Face {
   const parts = new Map<string, FacePart>(), embedding = new Map<string, Promise<void>>();
   const ordered = (text: string) => notoOrder(text, style).map((f) => parts.get(notoId(f))).filter((p): p is FacePart => !!p);
   const face = multiFace(ordered);
@@ -83,7 +86,7 @@ export function notoFace(doc: PDFDocument, library: ReturnType<typeof notoLibrar
     await Promise.all([...files].map((f) => {
       const id = notoId(f); let e = embedding.get(id);
       if (!e) embedding.set(id, (e = (async () => {
-        const r = await library(f);
+        const r = await library(f, bold ? 700 : 400);
         doc.registerFontkit((await fontkit()) as never);
         parts.set(id, { fk: r.fk, shape: r.shape, font: await doc.embedFont(r.bytes, { subset: true }) });
       })()));

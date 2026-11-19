@@ -115,7 +115,7 @@ items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
       reserved names), loaded per alphabet, with per-character font fallback. OFL text and FAQ downloaded and handed to the
       owner for the release (verified in the release 2026-11-19, cited on the methods page). Chinese, Japanese and Korean
       added the same day (Fontsource's numbered files, only those a text needs; style chosen per line or by the visitor).
-      Next: Urdu in Nastaliq style; bold; form filling with these fonts.
+      Bold added the same day (Noto's bold files; own font: its bold file if added, else simulated). Next: Urdu in Nastaliq style; form filling with these fonts.
 - [ ] Pages with a `UserUnit` other than 1 (rare, very large pages) are untested.
 - [ ] Multi-image TIFF: use every image, not only the first (`loadImage` in `web/ui.ts`; a source would then have
       several pages and `SourceData` needs one image per page).

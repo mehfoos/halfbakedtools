@@ -151,6 +151,8 @@ const policy = import.meta.env.PROD ? CSP : "";
           <p class="small">For anything else, or to use a typeface of your own, use a font file from this device:</p>
           <p><button type="button" class="small" id="ownPick">Choose a font file…</button>
             <input id="ownFile" class="sr-only" type="file" accept={FONT_ACCEPT} /></p>
+          <p><button type="button" class="small" id="ownBoldPick">Add its bold version (optional)…</button>
+            <input id="ownBoldFile" class="sr-only" type="file" accept={FONT_ACCEPT} /><br /><span id="ownBoldNote" class="small muted">Without it, bold text in your font is simulated by outlining each letter, which thickens it.</span></p>
           <p id="ownFaceRow" hidden><label class="field">Style <select id="ownFace"></select></label></p>
           <p id="ownNote" class="small" role="status" aria-live="polite"></p>
           <p class="small muted">TrueType (.ttf), OpenType (.otf), collections (.ttc) and WOFF (.woff) files work. The file is read inside this browser and never uploaded. Only the letters you use go into the saved PDF. It is not kept: after reloading the page, or in a settings file, choose it again. Fonts whose maker forbids embedding are refused; a font's licence may still limit how you can use it, so use fonts you have the right to use (for example ones under the SIL Open Font License, such as Google's Noto fonts).</p>

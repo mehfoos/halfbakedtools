@@ -23,7 +23,7 @@ Licence files that come with the packages are copied to `vendor/licenses/` on th
 ## Fonts shipped with the site: Noto Sans
 
 The font choice "Noto Sans (many alphabets)" uses these files, all version 5.3.0 of the Fontsource npm packages
-`@fontsource/<family>` (Fontsource redistributes Google Fonts), weight 400, WOFF format, one file per alphabet:
+`@fontsource/<family>` (Fontsource redistributes Google Fonts), weights 400 (regular) and 700 (bold), WOFF format, one file per alphabet and weight:
 noto-sans (latin, latin-ext, cyrillic, cyrillic-ext, greek, greek-ext, vietnamese), noto-sans-malayalam (malayalam),
 noto-sans-arabic (arabic), noto-sans-hebrew (hebrew), noto-sans-devanagari (devanagari), noto-sans-bengali (bengali),
 noto-sans-gurmukhi (gurmukhi), noto-sans-tamil (tamil), noto-sans-telugu (telugu), noto-sans-kannada (kannada),
@@ -40,7 +40,7 @@ each file covers, are `web/notofiles.ts` and `web/cjkfiles.ts` (tests check them
   make the full font package available"; archived as `pdftools_OFL-FAQ-1.1-update8.txt`).
 - **In saved PDFs:** only the letters used are embedded. OFL FAQ 1.12: embedding in documents is allowed, "either in
   full or a subset", and 1.13: it does not change the document's licence. Fonts are not sold, by themselves or at all.
-- **Not shipped (yet):** bold; Urdu in the Nastaliq style (Urdu uses Noto Sans Arabic, Naskh style).
+- **Not shipped (yet):** Urdu in the Nastaliq style (Urdu uses Noto Sans Arabic, Naskh style).
 
 ## OCR language models
 

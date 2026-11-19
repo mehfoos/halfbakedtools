@@ -967,7 +967,7 @@ test("own font: a WOFF file is unpacked to the plain font; WOFF 2 is refused wit
 import { NOTO_FILES, notoId } from "./notofiles.ts";
 import { notoFilesFor, notoMissing, notoFace, notoLibrary, loadCjkIndex, hanStyleFor, notoOrder } from "./noto.ts";
 import { CJK_FILES } from "./cjkfiles.ts";
-const fsNoto = async (id: string) => { const fam = id.match(/^(noto-sans(?:-(?:sc|tc|jp|kr|malayalam|arabic|hebrew|devanagari|bengali|gurmukhi|tamil|telugu|kannada|thai))?)-/)![1]; return new Uint8Array(readFileSync(new URL(`../../../node_modules/@fontsource/${fam}/files/${id}-400-normal.woff`, import.meta.url))); };
+const fsNoto = async (id: string, weight: 400 | 700 = 400) => { const fam = id.match(/^(noto-sans(?:-(?:sc|tc|jp|kr|malayalam|arabic|hebrew|devanagari|bengali|gurmukhi|tamil|telugu|kannada|thai))?)-/)![1]; return new Uint8Array(readFileSync(new URL(`../../../node_modules/@fontsource/${fam}/files/${id}-${weight}-normal.woff`, import.meta.url))); };
 test("noto: the list of shipped files matches the installed packages' coverage", () => {
   for (const f of NOTO_FILES) {
     const u = JSON.parse(readFileSync(new URL(`../../../node_modules/@fontsource/${f.family}/unicode.json`, import.meta.url), "utf8")) as Record<string, string>;
@@ -1046,4 +1046,22 @@ test("noto: a line in one alphabet stays one piece, spaces included, so readers 
   const fonts = back.context.enumerateIndirectObjects().map(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("BaseFont"))?.toString() ?? "").filter((n) => /Noto/.test(n));
   assert.ok(fonts.length > 0 && fonts.every((n) => /Hebrew/.test(n)), `only the Hebrew font: ${fonts.join(" ")}`);
   const blank = notoFace(await PDFDocument.create(), lib); await blank.prepare!("   "); assert.ok(blank.widthOfTextAtSize("   ", 10) > 0, "a line of spaces still has a width");
+});
+test("bold: Noto uses its own bold files; the visitor's font uses their bold file, or a simulated bold that outlines the letters", async () => {
+  const src = await PDFDocument.create(); src.addPage([300, 300]); const data = new Map([["a", { kind: "pdf" as const, bytes: await src.save() }]]);
+  const T = { type: "text" as const, x: 20, y: 20, rotate: 0, text: "മലയാളം Bold", size: 20, color: "#000000", font: "noto" as const, bold: true };
+  const pdfFonts = async (b: Uint8Array) => { const d = await PDFDocument.load(b); return d.context.enumerateIndirectObjects().map(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("BaseFont"))?.toString() ?? "").filter((n) => n && !/^\/[A-Z]{6}\+/.test(n) || /Noto|Liberation/.test(n)); };
+  const noto = await pdfFonts(await makeBuilder(data, { imageDpi: 96, noto: fsNoto })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [T] }]));
+  assert.ok(noto.some((n) => /NotoSansMalayalam-Bold/.test(n)) && noto.some((n) => /NotoSans-Bold/.test(n)) && !noto.some((n) => /Regular/.test(n)), noto.join(" "));
+  const reg = new Uint8Array(readFileSync(new URL("../../../node_modules/pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf", import.meta.url)));
+  const boldFile = new Uint8Array(readFileSync(new URL("../../../node_modules/pdfjs-dist/standard_fonts/LiberationSans-Bold.ttf", import.meta.url)));
+  const own = { bytes: reg, subset: true, name: "Liberation Sans" }, ownBold = { bytes: boldFile, subset: true, name: "Liberation Sans Bold" };
+  const O = { ...T, text: "Bold text", font: "own" as const };
+  const ops = async (b: Uint8Array) => { const d = await PDFDocument.load(b), c = d.getPage(0).node.Contents()!; const dec = (x: unknown) => { const st = d.context.lookup(x as never) as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown } }; const raw = st.getContents(); return new TextDecoder("latin1").decode(st.dict.get(PDFName.of("Filter")) ? unzlibSync(raw) : raw); }; return ("asArray" in c ? (c as unknown as { asArray(): unknown[] }).asArray() : [c]).map(dec).join("\n"); };
+  const simulated = await makeBuilder(data, { imageDpi: 96, ownFont: own })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [O] }]);
+  assert.match(await ops(simulated), /2 Tr/); assert.match(await ops(simulated), /0\.6 w/, "outline 3% of the 20-point size");
+  const withFile = await makeBuilder(data, { imageDpi: 96, ownFont: own, ownBold })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [O] }]);
+  assert.doesNotMatch(await ops(withFile), /2 Tr/); assert.ok((await pdfFonts(withFile)).some((n) => /LiberationSans-Bold/.test(n)));
+  const regular = await makeBuilder(data, { imageDpi: 96, ownFont: own })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [{ ...O, bold: false }] }]);
+  assert.doesNotMatch(await ops(regular), /2 Tr/);
 });

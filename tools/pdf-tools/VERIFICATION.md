@@ -287,3 +287,12 @@ poppler extracted every line exactly; PDF.js exactly for Hebrew, Punjabi, Telugu
 display order for Bengali and Tamil (as for such PDFs from other software). Found and fixed: PDF.js gave the Hebrew words in
 reverse order, because each space came from the Latin font and split the line into pieces; spaces now stay in the font of
 the text around them (every shipped file has a space glyph, checked), and the Latin file is no longer loaded for them.
+
+### Bold (2026-11-19)
+
+Unit tests: bold Noto text embeds NotoSans-Bold and NotoSansMalayalam-Bold and no regular font; bold in the visitor's font
+without a bold file draws in fill-and-outline mode with a 0.6-point outline at 20 points; with a bold file, that file is
+embedded and no outline is drawn; regular text has no outline. Headless Chrome, Edit PDF: bold Malayalam and English in Noto
+(NotoSansMalayalam-Bold, NotoSans-Bold embedded), FreeSerif bold simulated (FreeSerif embedded, visibly heavier), and
+FreeSerif with FreeSerifBold added as its bold version (FreeSerifBold embedded); all rendered by poppler as expected and
+extracted exactly.

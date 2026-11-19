@@ -537,7 +537,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   // ---------- pages with additions, and the editor ----------
   const dataMap = () => new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
-  const buildOne = (p: PageItem) => makeBuilder(dataMap(), { imageDpi: session.output.imageDpi, images: session.output.images, ...(ownFont ? { ownFont } : {}), noto: loadNoto, han: han() })([{ ...p, scale: 1 }]);
+  const buildOne = (p: PageItem) => makeBuilder(dataMap(), { imageDpi: session.output.imageDpi, images: session.output.images, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han() })([{ ...p, scale: 1 }]);
   /** What to draw or read for a page. A page with additions is first built as it will be saved, so pictures and
    *  text made from it include them. Call `done` afterwards. */
   async function drawable(p: PageItem): Promise<{ handle: Handle; page: number; rotate: Rotation; done: () => void }> {
@@ -550,24 +550,26 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   // ---------- your own font (a font file from this device; kept only while the page is open) ----------
   let ownFont: OwnFont | null = null, ownMeasure: Face | null = null, ownBytes: Uint8Array | null = null;
+  let ownBold: OwnFont | null = null, ownBoldMeasure: Face | null = null;   // bold: the bold file added, or else a simulated bold
   const ownBox = root.querySelector<HTMLDetailsElement>("#ownFontBox");
   // Noto: a scratch copy for measuring on screen; the alphabets a text needs are loaded on first use, then the editor redraws.
-  const notoLib = notoLibrary(loadNoto); let notoMeasure: Face | null = null; const notoAsked = new Set<string>();
+  const notoLib = notoLibrary(loadNoto); let notoMeasure: Face | null = null, notoBoldMeasure: Face | null = null; const notoAsked = new Set<string>();
   const hanSel = root.querySelector<HTMLSelectElement>("#hanStyle"), han = (): HanStyle => (hanSel?.value as HanStyle) || "auto";
-  const newMeasure = () => PDFDocument.create().then((d) => { notoMeasure = notoFace(d, notoLib, han()); notoAsked.clear(); editor?.refresh(); render(); });
+  const newMeasure = () => PDFDocument.create().then((d) => { notoMeasure = notoFace(d, notoLib, han()); notoBoldMeasure = notoFace(d, notoLib, han(), true); notoAsked.clear(); editor?.refresh(); render(); });
   void newMeasure();
   hanSel?.addEventListener("change", () => { void newMeasure(); });
   let cjkAsked = false;
-  function notoReady(text: string) {
+  function notoReady(text: string, bold: boolean) {
     if (needsCjk(text) && !cjkAsked) { cjkAsked = true; loadCjkIndex().then(() => { editor?.refresh(); render(); }, (e) => console.error(e)); }
-    const need = notoFilesFor(text, han()).map((f) => `${f.family}-${f.subset}`).filter((id) => !notoAsked.has(id));
-    if (!need.length || !notoMeasure) return;
+    const face = bold ? notoBoldMeasure : notoMeasure;
+    const need = notoFilesFor(text, han()).map((f) => `${f.family}-${f.subset}@${bold}`).filter((id) => !notoAsked.has(id));
+    if (!need.length || !face) return;
     need.forEach((id) => notoAsked.add(id));
-    notoMeasure.prepare!(text).then(() => { editor?.refresh(); render(); }, (e) => { console.error(e); say("Couldn't load a Noto font file.", "bad"); });
+    face.prepare!(text).then(() => { editor?.refresh(); render(); }, (e) => { console.error(e); say("Couldn't load a Noto font file.", "bad"); });
   }
   const faceFor = (m: { font: FontKey; bold: boolean; text?: string }): Face => {
-    if (m.font === "own" && ownMeasure) return ownMeasure;
-    if (m.font === "noto" && notoMeasure) { notoReady(m.text ?? ""); return notoMeasure; }
+    if (m.font === "own" && ownMeasure) return m.bold && ownBoldMeasure ? ownBoldMeasure : ownMeasure;
+    if (m.font === "noto" && notoMeasure && notoBoldMeasure) { notoReady(m.text ?? "", m.bold); return m.bold ? notoBoldMeasure : notoMeasure; }
     return standardFace(fonts!(m.font, m.bold));
   };
   function ownSay(text: string, kind: "info" | "bad" | "warn" = "info") { const n = root.querySelector<HTMLElement>("#ownNote"); if (n) { n.textContent = text; n.className = `small notice ${kind}`; } }
@@ -579,6 +581,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const r = await prepareOwnFont(ownBytes, postscriptName);
     if ("reason" in r) { ownFont = null; ownMeasure = null; ownLabels(); ownSay(`This font can't be used: ${r.reason}.`, "bad"); render(); return; }
     ownFont = r; ownMeasure = await embedOwnFont(await PDFDocument.create(), r);   // a scratch copy, for measuring text on screen
+    ownBoldMeasure = await embedOwnFont(await PDFDocument.create(), ownBold ?? r, !ownBold);
     ownLabels(); ownSay(`Using “${r.name}”.${r.note ? ` Note: ${r.note}.` : ""} Choose “Your font” in a Font or Typeface list to use it.`, r.note ? "warn" : "info");
     editor?.refresh(); render();
   }
@@ -595,6 +598,21 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     } catch (err) { console.error(err); ownSay(err instanceof Error ? err.message : "Couldn't read this font file.", "bad"); }
   });
   root.querySelector("#ownFace")?.addEventListener("change", (e) => { void useFace((e.target as HTMLSelectElement).value); });
+  // an optional bold version of the same font; without it, bold is simulated
+  root.querySelector("#ownBoldPick")?.addEventListener("click", () => root.querySelector<HTMLInputElement>("#ownBoldFile")?.click());
+  root.querySelector("#ownBoldFile")?.addEventListener("change", async (e) => {
+    const f = (e.target as HTMLInputElement).files?.[0]; (e.target as HTMLInputElement).value = ""; if (!f) return;
+    const note = root.querySelector<HTMLElement>("#ownBoldNote");
+    try {
+      const bytes = new Uint8Array(await f.arrayBuffer()), faces = await fontFaces(bytes);
+      const pick = faces.length > 1 ? (faces.find((x) => /bold/i.test(x.name)) ?? faces[0]).postscriptName : undefined;
+      const r = await prepareOwnFont(bytes, pick);
+      if ("reason" in r) throw new Error(`This font can't be used: ${r.reason}.`);
+      ownBold = r; if (ownFont) ownBoldMeasure = await embedOwnFont(await PDFDocument.create(), r);
+      if (note) { note.textContent = `Bold: “${r.name}”.${r.note ? ` Note: ${r.note}.` : ""}`; note.className = "small"; }
+      editor?.refresh(); render();
+    } catch (err) { if (note) { note.textContent = err instanceof Error ? err.message : "Couldn't read this font file."; note.className = "small notice bad"; } }
+  });
   for (const id of ["mFont", "nFont", "wFont"]) root.querySelector(`#${id}`)?.addEventListener("change", (e) => {
     if ((e.target as HTMLSelectElement).value === "own" && !ownFont) { if (ownBox) ownBox.open = true; root.querySelector<HTMLInputElement>("#ownFile")?.click(); }
   });
@@ -734,7 +752,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const pp = task.perFile ? session.pages.filter((p) => p.src === first.id) : session.pages.filter(has);
     const index = Math.min(pp.length - 1, Math.max(0, o.numbers.on ? o.numbers.from - 1 : 0));
     try {
-      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, images: o.images, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), noto: loadNoto, han: han() })([pp[index]], { index, total: pp.length });
+      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, images: o.images, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han() })([pp[index]], { index, total: pp.length });
       const doc = await openPdf(bytes, vendor);
       let canvas: HTMLCanvasElement;
       try {
@@ -956,7 +974,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (o.format === "pdf") {
         const data = new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
         if (o.watermark.on && !o.watermark.text.trim()) throw new Error("Type the words for the watermark first.");
-        const build = makeBuilder(data, { imageDpi: o.imageDpi, images: o.images, crop: o.crop, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), noto: loadNoto, han: han() });
+        const build = makeBuilder(data, { imageDpi: o.imageDpi, images: o.images, crop: o.crop, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han() });
         const c = o.compress;
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };

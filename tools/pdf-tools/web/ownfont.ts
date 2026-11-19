@@ -48,9 +48,9 @@ export async function prepareOwnFont(bytes: Uint8Array, postscriptName?: string)
 }
 
 /** Embeds the font in `doc` (only the letters drawn, unless its maker forbids cutting it down) and returns a face to draw with. */
-export async function embedOwnFont(doc: PDFDocument, own: OwnFont): Promise<Face> {
+export async function embedOwnFont(doc: PDFDocument, own: OwnFont, simulatedBold = false): Promise<Face> {
   const fk = await fontkit();
   doc.registerFontkit(fk as never);
   const font = await doc.embedFont(own.bytes, { subset: own.subset, ...(own.postscriptName ? { postscriptName: own.postscriptName } : {}) } as never);
-  return ownFace(fk.create(own.bytes, own.postscriptName) as FkFont, font, await harfBuzzShaper(own.bytes, own.index ?? 0));
+  return ownFace(fk.create(own.bytes, own.postscriptName) as FkFont, font, await harfBuzzShaper(own.bytes, own.index ?? 0), simulatedBold);
 }

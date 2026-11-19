@@ -12,7 +12,7 @@
  * string is tagged with the text it stands for (PDF "ActualText"), so copying and searching give the words as typed.
  */
 import bidiFactory from "bidi-js";
-import { PDFFont, PDFHexString, PDFName, PDFOperator, PDFPage, rgb, degrees, beginText, endText, setFontAndSize, setTextMatrix, showText, setFillingColor, pushGraphicsState, popGraphicsState, setGraphicsState } from "@cantoo/pdf-lib";
+import { PDFFont, PDFHexString, PDFName, PDFOperator, PDFPage, rgb, degrees, setTextRenderingMode, TextRenderingMode, setStrokingColor, setLineWidth, setLineJoin, LineJoinStyle, beginText, endText, setFontAndSize, setTextMatrix, showText, setFillingColor, pushGraphicsState, popGraphicsState, setGraphicsState } from "@cantoo/pdf-lib";
 import { unsupported } from "./marks.ts";
 
 export type Rgb = { r: number; g: number; b: number };
@@ -144,13 +144,15 @@ export type FacePart = { fk: FkFont; font: PDFFont; shape: Shaper };
 
 /** A face for a font file embedded in `font` (embedded with the PDF library from the same bytes as `fk`); `shape`
  *  shapes text with the same font. */
-export const ownFace = (fk: FkFont, font: PDFFont, shape: Shaper): Face => multiFace(() => [{ fk, font, shape }]);
+export const ownFace = (fk: FkFont, font: PDFFont, shape: Shaper, simulatedBold = false): Face => multiFace(() => [{ fk, font, shape }], simulatedBold);
+/** Simulated bold: the letters are filled and also outlined with a line this share of the text size wide. */
+export const SIMULATED_BOLD = 0.03;
 
 /**
  * A face made of several fonts, tried in order for each character (see shapeRuns). `parts(text)` gives the fonts in
  * the order to try for that text; it is read each time, so fonts added later (loaded on demand) are used from then on.
  */
-export function multiFace(parts: (text: string) => FacePart[]): Face {
+export function multiFace(parts: (text: string) => FacePart[], simulatedBold = false): Face {
   const encoders = new WeakMap<PDFFont, (g: FkGlyph) => number>();
   const fontsOf = (ps: FacePart[]): ShapeFont[] => ps.map((p) => ({ shape: p.shape, has: (cp) => p.fk.hasGlyphForCodePoint(cp), upem: p.fk.unitsPerEm }));
   return {
@@ -176,6 +178,8 @@ export function multiFace(parts: (text: string) => FacePart[]): Face {
       const tag = !RTL.test(text);
       if (tag) ops.push(PDFOperator.of("BDC" as never, [PDFName.of("Span"), page.doc.context.obj({ ActualText: utf16Hex(text) }) as never]));
       ops.push(beginText(), setFillingColor(rgb(o.color.r, o.color.g, o.color.b)));
+      // simulated bold: fill each letter and draw its outline in the same colour, which thickens it evenly
+      if (simulatedBold) ops.push(setTextRenderingMode(TextRenderingMode.FillAndOutline), setStrokingColor(rgb(o.color.r, o.color.g, o.color.b)), setLineWidth(o.size * SIMULATED_BOLD), setLineJoin(LineJoinStyle.Round));
       let current = -1;
       for (const g of glyphs) {
         if (g.font !== current) { ops.push(setFontAndSize(keyOf(g.font), o.size)); current = g.font; }
