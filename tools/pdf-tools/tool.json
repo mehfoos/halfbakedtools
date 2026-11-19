@@ -96,6 +96,11 @@
       "nav": false
     },
     {
+      "page": "fill-forms",
+      "label": "Fill in PDF forms",
+      "nav": false
+    },
+    {
       "page": "pdf-to-markdown",
       "label": "PDF to Markdown",
       "nav": false

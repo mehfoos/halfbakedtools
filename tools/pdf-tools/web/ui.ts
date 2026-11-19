@@ -14,6 +14,7 @@ import {
 import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
 import { extractPictures } from "./extract.ts";
+import { listFields, fillForm, type FieldInfo, type Values } from "./forms.ts";
 import { toLines, toBlocks, toMarkdown, toHtml, type Line } from "./structure.ts";
 import { comparePages, diffReport, type PageDiff } from "./diff.ts";
 import { looksLikePdfBody, rewrite, repairNote } from "./repair.ts";
@@ -324,7 +325,53 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   let sizing = 0;
   window.addEventListener("resize", () => { clearTimeout(sizing); sizing = window.setTimeout(() => { if (pageTask && session.pages.length) { const first = screen * per(); measure(); drawGrid(); showPage(first); } }, 200); });
 
+  // ---------- Fill in PDF forms ----------
+  const formState = { sha: "", info: [] as FieldInfo[], values: {} as Values, token: 0 };
+  async function renderFields() {
+    const box = root.querySelector<HTMLElement>("#formFields"); if (!box) return;
+    const first = session.sources.find((s) => loaded.get(s.sha256)?.data.kind === "pdf");
+    if (!first) { formState.sha = ""; box.replaceChildren(); return; }
+    if (formState.sha === first.sha256) return;
+    formState.sha = first.sha256; const mine = ++formState.token; box.replaceChildren(el("p", { className: "small muted" }, "Reading the form…"));
+    const d = loaded.get(first.sha256)!.data; if (d.kind !== "pdf") return;
+    let info: FieldInfo[]; try { info = await listFields(d.bytes, d.password); } catch { if (mine === formState.token) box.replaceChildren(el("p", { className: "small" }, "Couldn't read this file's form fields.")); return; }
+    if (mine !== formState.token) return;
+    formState.info = info; formState.values = Object.fromEntries(info.map((f) => [f.name, f.value]));
+    if (!info.length) { box.replaceChildren(el("p", { className: "notice warn small" }, "This PDF has no fillable fields. If it only looks like a form (lines or boxes on the page, or a scan), there is nothing here to fill in; the Edit PDF page can add text on top of it instead.")); return; }
+    box.replaceChildren(el("p", { className: "small muted" }, `${info.length} ${info.length === 1 ? "field" : "fields"} found in ${first.name}.`), ...info.map((f) => {
+      let input: HTMLElement;
+      if (f.kind === "text") {
+        input = f.multiline ? el("textarea", { rows: 3 }) : el("input", { type: "text" }); (input as HTMLInputElement).value = String(f.value); if (f.maxLength) (input as HTMLInputElement).maxLength = f.maxLength;
+        input.addEventListener("input", () => { formState.values[f.name] = (input as HTMLInputElement).value; });
+      } else if (f.kind === "check") {
+        input = el("input", { type: "checkbox" }); (input as HTMLInputElement).checked = f.value === true; input.addEventListener("change", () => { formState.values[f.name] = (input as HTMLInputElement).checked; });
+      } else if (f.kind === "radio" || f.kind === "choice" || f.kind === "list") {
+        const sel1 = el("select", {}, ...(f.kind === "list" ? [] : [el("option", { value: "" }, "(none chosen)")]), ...f.options.map((o) => el("option", { value: o }, o))) as HTMLSelectElement;
+        if (f.kind === "list") { sel1.multiple = true; [...sel1.options].forEach((o) => { o.selected = (f.value as string[]).includes(o.value); }); sel1.addEventListener("change", () => { formState.values[f.name] = [...sel1.selectedOptions].map((o) => o.value); }); }
+        else { sel1.value = String(f.value); sel1.addEventListener("change", () => { formState.values[f.name] = sel1.value; }); }
+        input = sel1;
+      } else return el("p", { className: "small muted" }, el("strong", {}, f.name), ` — ${f.note ?? ""}`);
+      if (f.readOnly) (input as HTMLInputElement).disabled = true;
+      const label = el("label", { className: "ff" }, el("span", {}, `${f.name}${f.readOnly ? " (read only)" : ""}${f.kind === "radio" ? " (choose one)" : ""}`), input);
+      return label;
+    }));
+  }
+  async function saveForms() {
+    if (busy || !ask.hidden) return;
+    const s = session.sources.find((x) => loaded.get(x.sha256)?.data.kind === "pdf"); if (!s) return say("Add a PDF form first.", "bad");
+    await renderFields(); if (!formState.info.length) return say("This PDF has no fillable fields to save.", "bad");
+    const d = loaded.get(s.sha256)!.data; if (d.kind !== "pdf") return;
+    await work("Filling the form…", async () => {
+      const r = await fillForm(d.bytes, d.password, formState.values, $<HTMLInputElement>("formFlatten").checked), name = perFileName(s);
+      if (!r.changed && !$<HTMLInputElement>("formFlatten").checked) throw new Error(`You haven't changed any field yet.${r.problems.length ? ` ${r.problems.join("; ")}.` : ""}`);
+      if (!(await consent([name]))) return say("Nothing was saved. Change the file name and try again.");
+      download(name, new Blob([r.bytes as BlobPart], { type: "application/pdf" }));
+      say(`Saved ${name}: ${r.changed} ${r.changed === 1 ? "field" : "fields"} changed${$<HTMLInputElement>("formFlatten").checked ? ", then made permanent" : ""}.${r.problems.length ? ` Not set: ${r.problems.join("; ")}.` : ""}${session.sources.length > 1 ? " Only the first PDF was used." : ""}`, r.problems.length ? "warn" : "info");
+    });
+  }
+
   function render() {
+    void renderFields();
     sel = new Set([...sel].filter((i) => i < session.pages.length));
     // files
     const files = $("files");
@@ -791,6 +838,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   async function save(which: "all" | "selected") {
     readOptions(); clearResult(); if (task.slug === "extract-images") return saveExtracted();
     if (task.slug === "compare") return saveCompare();
+    if (task.slug === "fill-forms") return saveForms();
     if (busy || !ask.hidden) return;
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);

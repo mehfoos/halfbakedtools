@@ -800,3 +800,21 @@ test("structure: text that looks like markdown or html is escaped; items on one 
   const [b] = toBlocks([lines]); assert.match(toHtml([b], "t"), /<p>a &lt;b&gt; &amp; \*c\* tail<\/p>/); assert.match(toMarkdown([b]), /a \\<b\\> & \\\*c\\\* tail/);
   assert.deepEqual(toBlocks([[]]), [[]]); assert.equal(toMarkdown([[]]).trim(), "<!-- page 1 -->");
 });
+
+// ---- forms ----
+import { listFields, fillForm } from "./forms.ts";
+test("forms: fields are listed with their kinds and filled values come out; flattening removes the fields", async () => {
+  const doc = await PDFDocument.create(), page = doc.addPage([300, 300]), form = doc.getForm();
+  form.createTextField("name").addToPage(page, { x: 10, y: 250, width: 150, height: 20 });
+  form.createCheckBox("agree").addToPage(page, { x: 10, y: 220, width: 15, height: 15 });
+  const dd = form.createDropdown("size"); dd.addOptions(["S", "M", "L"]); dd.addToPage(page, { x: 10, y: 190, width: 80, height: 20 });
+  const rg = form.createRadioGroup("mode"); rg.addOptionToPage("a", page, { x: 10, y: 160, width: 15, height: 15 }); rg.addOptionToPage("b", page, { x: 40, y: 160, width: 15, height: 15 });
+  const bytes = await doc.save();
+  const f = await listFields(bytes); assert.deepEqual(f.map((x) => `${x.name}:${x.kind}`).sort(), ["agree:check", "mode:radio", "name:text", "size:choice"]);
+  const r = await fillForm(bytes, undefined, { name: "Ada", agree: true, size: "M", mode: "b" }, false);
+  assert.equal(r.changed, 4); assert.deepEqual(r.problems, []);
+  const back = Object.fromEntries((await listFields(r.bytes)).map((x) => [x.name, x.value])); assert.deepEqual(back, { name: "Ada", agree: true, size: "M", mode: "b" });
+  const flat = await fillForm(bytes, undefined, { name: "Ada" }, true); assert.equal((await listFields(flat.bytes)).length, 0);
+  const bad = await fillForm(bytes, undefined, { name: "日本" }, false); assert.equal(bad.changed, 0); assert.match(bad.problems[0], /"name".*character/);
+  assert.equal((await fillForm(bytes, undefined, { name: "" }, false)).changed, 0, "an unchanged field is not counted");
+});

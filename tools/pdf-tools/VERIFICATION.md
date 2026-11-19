@@ -178,3 +178,13 @@ lines, text containing `<angle> & *x*`): both outputs had the 24 pt line as the 
 the paragraph's two lines joined, bullets as a list, page markers, and the special characters escaped (`\<angle\>` in
 Markdown, `&lt;angle&gt;` in HTML). No requests left the browser. Not checked: real-world documents with columns, tables or
 footnotes (these are expected to come out wrong; the pages say so), Markdown rendered by another program, non-Latin text.
+
+### Fill in PDF forms (2026-11-19)
+
+Headless Chrome with a form made by the library (text box, tick box, drop-down with 3 choices, two radio buttons): the page
+listed the four fields; pressing save with nothing changed said so; after typing a name, ticking, choosing "Medium" and
+the second radio button the saved file's values read back with pypdf as the name, "/Yes", "Medium" and "/1" (the second
+radio button), and qpdf found no errors. With "make permanent" ticked the saved file had no fields left and poppler drew the
+name, the ticked box, "Medium" and the chosen radio button. A Japanese name was left unset and the message named the field.
+A PDF with no fields got the explanation. No requests left the browser. Not checked: forms from other software (XFA forms,
+JavaScript-driven fields, forms with a custom font), encrypted forms, fields spread over many pages.

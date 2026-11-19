@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "preview";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "forms" | "preview";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -80,6 +80,9 @@ export const TASKS: Task[] = [
     parts: ["compare"], formats: ["pdf"], which: "all", action: "Compare", suffix: "comparison", tag: "⇆" },
   { slug: "text-to-pdf", name: "Text to PDF", blurb: "Turn plain text into a PDF: type or paste it, or open a text file. No formatting, just the words laid out on pages.", group: "Convert to PDF", accept: "pdf",
     pick: "Open a text file", hint: "", parts: [], formats: ["pdf"], which: "all", action: "Save as PDF", suffix: "text", tag: "TXT" },
+  { slug: "fill-forms", name: "Fill in PDF forms", blurb: "Type into the fillable fields of a PDF form, tick its boxes, choose from its lists, and save the filled copy.", group: "Edit", accept: "pdf",
+    pick: "Select a PDF form", hint: "Works on forms with fillable fields. A form that is only a picture or lines on a page (a scan, for example) has no fields to fill, and the page will say so.",
+    parts: ["forms"], formats: ["pdf"], which: "all", action: "Save filled form", suffix: "filled", tag: "☑" },
   { slug: "sign", name: "Sign PDF", blurb: "Draw your signature and place it on a page. It is a picture of your handwriting, not a digital signature.", group: "Security", accept: "pdf",
     pick: "Select PDF file", hint: "Press Draw signature, draw it, press Use, then drag it into place and resize it by its corner square. This adds a picture of your handwriting; it is not a cryptographic (digital) signature.",
     parts: ["marks", "sign"], formats: ["pdf"], which: "all", action: "Save signed PDF", suffix: "signed", tag: "✍" },
@@ -130,7 +133,6 @@ export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "Excel to PDF", tag: "XLS", group: "Convert to PDF" }, { name: "HTML file to PDF", tag: "WEB", group: "Convert to PDF" },
   { name: "PDF to Word", tag: "DOC", group: "Convert from PDF" }, { name: "PDF to PowerPoint", tag: "PPT", group: "Convert from PDF" },
   { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
-  { name: "Fill in PDF forms", tag: "☑", group: "Edit" },
   { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
 ];
 

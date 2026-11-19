@@ -88,3 +88,6 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 | 2026-11-19 | PDF to Markdown/HTML guesses structure from text size and line spacing and says so on the page and in the saved-file message | A PDF has no stored headings or paragraphs; presenting guesses as structure would mislead |
 | 2026-11-19 | Text is read in the file's own order, not re-sorted into columns | Re-sorting by position misreads more files than it fixes; multi-column pages are listed as a limitation |
 | 2026-11-19 | HTML file to PDF is not built | Faithful rendering needs a layout engine; a text-only conversion would not be what the name promises |
+| 2026-11-19 | Fill in PDF forms edits the original file's own form (not the page-copy pipeline) | Copying pages into a new file drops the form; editing in place keeps the fields, so the saved file is still a form unless the visitor flattens it |
+| 2026-11-19 | Fields with characters the form's font cannot show are left unchanged and named in the message | The library would otherwise fail or draw nothing; saying which field was skipped is honest |
+| 2026-11-19 | A PDF with no fillable fields gets a plain explanation and a pointer to Edit PDF, not a guess at where fields might go | Detecting fields drawn as lines is unreliable |
