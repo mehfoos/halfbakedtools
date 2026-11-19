@@ -133,8 +133,8 @@
    "standards": [],
    "translated": true,
    "foods": 2538,
-   "basicFoods": 1393,
-   "generated": "2026-11-18"
+   "basicFoods": 1360,
+   "generated": "2026-11-19"
   },
   {
    "id": "cnf",
@@ -162,11 +162,13 @@
    "refs": [
     "afcd-3"
    ],
-   "licence": "Food Standards Australia New Zealand (licence to be confirmed)",
+   "licence": "FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia)",
    "standards": [],
+   "notice": "Based on Australian data (AFCD, © FSANZ), which may not be appropriate for use in other countries. Food composition can vary substantially between batches and brands, with season, processing, ingredient source and methods of calculation. Licence: FSANZ Data User Licence Agreement",
+   "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
    "foods": 1588,
    "basicFoods": 829,
-   "generated": "2026-11-18"
+   "generated": "2026-11-19"
   },
   {
    "id": "blend",
@@ -188,10 +190,12 @@
     "cnf-2026",
     "afcd-3"
    ],
-   "licence": "each source table's own licence (see each table)",
+   "licence": "each source table's own licence; the AFCD values under the FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia)",
    "standards": [],
-   "foods": 556,
-   "basicFoods": 556,
+   "notice": "Includes Australian data (AFCD, © FSANZ), which may not be appropriate for use in other countries; food composition can vary substantially between batches and brands. AFCD licence: FSANZ Data User Licence Agreement",
+   "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
+   "foods": 559,
+   "basicFoods": 559,
    "generated": "2026-11-19"
   }
  ]

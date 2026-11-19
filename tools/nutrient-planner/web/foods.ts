@@ -17,6 +17,7 @@ export type FoodsData = {
   generated?: string; missing?: boolean;
   table?: string;
   definitions?: Record<string, string>;   // how the table defines nutrients, where that differs from USDA
+  labels?: Record<string, string>;        // what each value label (a food's `q`) means, in the table's words
   nutrients: NutrientDef[];
   categories: { id: string; name: string }[];
   foods: PlannerFood[];
@@ -25,7 +26,7 @@ export type FoodsData = {
 type RawFood = Omit<PlannerFood, "per100g" | "table" | "srcName"> & { v: (number | null)[]; srcName?: string; usdaName?: string };
 export type RawFoods = {
   keys: string[]; foods: RawFood[]; nutrients?: NutrientDef[]; categories: FoodsData["categories"];
-  generated?: string; missing?: boolean; table?: string; definitions?: Record<string, string>;
+  generated?: string; missing?: boolean; table?: string; definitions?: Record<string, string>; labels?: Record<string, string>;
 };
 
 /** Unpack a table's food file. `more` (Food Finder) adds the table's other foods, with the same nutrient keys. */
@@ -40,15 +41,38 @@ export function unpack(raw: RawFoods, more?: RawFoods): FoodsData {
   const foods = [...conv(raw, true), ...(more ? conv(more, false) : [])];
   // The categories of the "more" file include those that only hold foods outside the basic foods.
   const categories = more?.categories ?? raw.categories ?? [];
-  return { generated: raw.generated, missing: raw.missing, table, definitions: raw.definitions, nutrients: raw.nutrients ?? [], categories, foods };
+  return { generated: raw.generated, missing: raw.missing, table, definitions: raw.definitions, labels: raw.labels ?? {}, nutrients: raw.nutrients ?? [], categories, foods };
 }
+
+/** The table used until one is picked: the table whose registry entry names this standard (UK CoFID, US USDA, EU BLS). */
+export const defaultTable = (tables: { id: string; standards: string[] }[], standard: string) =>
+  tables.find((t) => t.standards.includes(standard))?.id ?? "usda";
 
 /** One food table, as listed in data/foods/tables.json (built from pipeline/tables/tables.json). */
 export type TableInfo = {
   id: string; tag: string; title: string; country: string; basic: string; more: string;
   refs: string[]; licence: string; standards: string[]; foods: number; basicFoods: number; generated?: string;
   translated?: boolean;   // food names translated by this site (shown with a Translated caveat)
+  notice?: string; noticeUrl?: string;   // a notice the table's licence requires wherever its data are shown
 };
+
+/**
+ * The values a table labels (estimated, from a recipe, borrowed, a trace, below a limit), for the given foods and
+ * nutrients: per food, the nutrients that share each label, with the label in the table's own words.
+ */
+export function valueLabels(foods: PlannerFood[], legend: Record<string, string>, keep: (key: string) => boolean, label: (key: string) => string) {
+  const out: { food: string; groups: { text: string; nutrients: string[] }[] }[] = [];
+  for (const f of foods) {
+    const byText = new Map<string, string[]>();
+    for (const [k, code] of Object.entries(f.q ?? {})) {
+      if (!keep(k)) continue;
+      const text = legend[code] ?? code;
+      byText.set(text, [...(byText.get(text) ?? []), label(k)]);
+    }
+    if (byText.size) out.push({ food: f.name, groups: [...byText].map(([text, nutrients]) => ({ text, nutrients })) });
+  }
+  return out;
+}
 
 /** Food Finder's list of every food in every table, before any table's values are loaded (data/foods/index.json). */
 export type FoodIndex = {

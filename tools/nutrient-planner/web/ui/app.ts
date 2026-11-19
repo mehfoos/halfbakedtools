@@ -3,7 +3,7 @@
 // each section (see main.ts).
 import { splitAssessable, type ResolvedTarget } from "../solver.ts";
 import type { Standard } from "../profiles.ts";
-import { applySource, dietOk, foodRange, isOn, type Base, type BlendData, type FoodsData, type PlannerFood, type TableInfo } from "../foods.ts";
+import { applySource, dietOk, foodRange, isOn, type Base, type BlendData, type FoodsData, type PlannerFood, type TableInfo, defaultTable } from "../foods.ts";
 import { ORDER, analyse, dayBounds, gapsOf, totals, useRangeEnergy, type Report } from "../analysis.ts";
 import { personFrom, targetsFor, type Person } from "../person.ts";
 import { decode, encode, fresh, loadRemembered, remember, type PageKind, type Settings } from "../state.ts";
@@ -109,7 +109,7 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
       return rep;
     },
 
-    tableId: () => app.s.source,
+    tableId: () => app.s.source || defaultTable(app.tables, app.person().standard.id),
     table: () => app.tables.find((t) => t.id === app.tableId()),
     setData(next) {
       // Nutrient definitions and categories are the same in every table file; only the foods change.

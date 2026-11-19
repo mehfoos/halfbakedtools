@@ -58,10 +58,10 @@ export async function startFinder(root: HTMLElement) {
 
   // A link may carry a Planner day: Food Finder shows its first food only. A table that isn't offered falls back to USDA.
   if (!app.tables.some((t) => t.id === app.tableId())) app.s.source = "usda";
-  if (app.s.builder.length && !(await useTable(app.s.source))) app.s.source = "usda";
+  if (app.s.builder.length && !(await useTable(app.tableId()))) app.s.source = "usda";
   app.s.builder = app.s.builder.filter((b) => app.foodById.has(b.id)).slice(0, 1);
 
-  const picked = (): Pick | null => (app.s.builder[0] ? { id: app.s.builder[0].id, source: app.s.source } : null);
+  const picked = (): Pick | null => (app.s.builder[0] ? { id: app.s.builder[0].id, source: app.tableId() } : null);
   const item = () => app.items(app.s.builder)[0];
 
   /** The amount box, then the Planner's results for this one food. */
@@ -86,7 +86,7 @@ export async function startFinder(root: HTMLElement) {
     const f = it.food;
     const n = unitAmount(f, it.grams);
     const amount = f.unit === "g" ? `${fmt(n)} g` : `${fmt(n)} ${esc(n === 1 ? f.unit : unitLabel(f))} (${fmt(it.grams)} g)`;
-    $(root, "#finderReport").innerHTML = `${dataCaveat(app)}<article class="result"><h3><span>${esc(f.name)} (${esc(sourceLabel(app, app.s.source))}), ${amount}</span></h3>${reportHtml(app, charts, app.report([it]), [it])}${foodNotes(app, [it])}</article>`;
+    $(root, "#finderReport").innerHTML = `${dataCaveat(app)}<article class="result"><h3><span>${esc(f.name)} (${esc(sourceLabel(app, app.tableId()))}), ${amount}</span></h3>${reportHtml(app, charts, app.report([it]), [it])}${foodNotes(app, [it])}</article>`;
   }
 
   // Typing an amount redraws the results, not the box (which would lose the cursor).

@@ -165,7 +165,8 @@ def main() -> int:
                  ["Vitamin K and choline are NA: the AFCD does not give them.",
                   "Cystine is cystine plus cysteine (the AFCD does not separate them).",
                   "Only the \"All solids & liquids per 100 g\" sheet is used; the AFCD's 100 mL sheet for liquids repeats those foods per 100 mL.",
-                  "A food's overall derivation (recipe, borrowed, imputed, label data, estimated) is kept as a label on each of its values."], LABELS)
+                  "A food's overall derivation (recipe, borrowed, imputed, label data, estimated) is kept as a label on each of its values.",
+                  "Licence and required notices: data/foods/LICENCE-AFCD.md."], LABELS, notice=common.AFCD_NOTICE)
     return 0
 
 

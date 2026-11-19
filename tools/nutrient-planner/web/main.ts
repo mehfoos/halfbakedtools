@@ -35,14 +35,14 @@ export async function start(root: HTMLElement) {
   // Food data: a table (the Blended table also needs its values per standard). Each is loaded the first time it's chosen.
   const sourceStatus = $(root, "#sourceStatus");
   async function ensureSource() {
-    if (!app.tables.some((t) => t.id === app.tableId())) app.s.source = "usda";   // a link to a table not offered
+    if (!app.tables.some((t) => t.id === app.tableId())) app.s.source = "";   // a link to a table not offered: the default
     const t = app.table()!;
     try {
       if (app.data.table !== t.id) {
         sourceStatus.textContent = `Loading ${t.tag}…`;
         app.setData(await loadTable(root, t, false));
       }
-      if (app.s.source === "blend" && !app.blend) {
+      if (app.tableId() === "blend" && !app.blend) {
         sourceStatus.textContent = "Loading the blended values…";
         app.blend = await loadBlend(root);
       }
@@ -54,10 +54,11 @@ export async function start(root: HTMLElement) {
     }
   }
   function renderSource() {
-    $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => (r.checked = r.value === app.s.source));
-    $(root, "#blendNote").hidden = app.s.source !== "blend";
+    $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => (r.checked = r.value === app.tableId()));
+    $(root, "#blendNote").hidden = app.tableId() !== "blend";
     const t = app.table()!;
-    $(root, "#tableNote").textContent = `${t.title}, ${t.country}: ${t.basicFoods.toLocaleString("en-GB")} foods here (${t.foods.toLocaleString("en-GB")} in Food Finder). Licence: ${t.licence}.`;
+    $(root, "#tableNote").textContent = `${t.title}, ${t.country}: ${t.basicFoods.toLocaleString("en-GB")} foods here (${t.foods.toLocaleString("en-GB")} in Food Finder). Licence: ${t.licence}.`
+      + (app.s.source ? "" : ` This is the default table for the ${app.person().standard.name} recommendations; pick another table to use it instead.`);
     app.applySource();
   }
   $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => r.addEventListener("change", async () => {
@@ -74,6 +75,8 @@ export async function start(root: HTMLElement) {
   }
   // Any other setting changed: redraw what depends on it. Suggestions are flagged, not recalculated.
   function changed(opts: { foods?: boolean } = {}) {
+    // With no table picked, the table follows the standard: a new standard may need another table loaded first.
+    if (app.data.table !== app.tableId()) { void ensureSource().then(() => changed({ foods: true })); return; }
     renderSource();   // the standard may have changed, and the blend's values depend on it
     app.save();
     you.render();

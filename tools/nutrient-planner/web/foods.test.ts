@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { applySource, blendValues, dietOk, unpack, type BlendData } from "./foods.ts";
+import { applySource, blendValues, dietOk, unpack, valueLabels, type BlendData } from "./foods.ts";
 
 const dir = new URL("../data/foods/", import.meta.url);
 const load = () => unpack(JSON.parse(readFileSync(new URL("foods.json", dir), "utf8")));
@@ -142,4 +142,15 @@ test("codes are labels, never numbers: trace and below-limit values are missing"
       }
     }
   }
+});
+
+test("value labels: each table's labelled values are listed in its own words, grouped by label", () => {
+  const raw = JSON.parse(readFileSync(new URL("foods-bls.json", dir), "utf8"));
+  const data = unpack(raw);
+  assert.ok(data.labels && data.labels.r, "the legend is kept");
+  const f = data.foods.find((x) => x.q && Object.values(x.q).includes("r"))!;
+  const rows = valueLabels([f], data.labels!, () => true, (k) => k);
+  const recipe = rows[0].groups.find((g) => g.text === data.labels!.r)!;
+  assert.deepEqual(recipe.nutrients.sort(), Object.entries(f.q!).filter(([, c]) => c === "r").map(([k]) => k).sort());
+  assert.deepEqual(valueLabels([f], data.labels!, () => false, (k) => k), []);
 });

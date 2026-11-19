@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { pickProfile, groupRange, energyFor, type Standard } from "./profiles.ts";
 import { resolveTargets } from "./solver.ts";
-import { avoidReason, portionFactor, scaledMax } from "./foods.ts";
+import { avoidReason, portionFactor, scaledMax, defaultTable } from "./foods.ts";
 import { decode, encode, fresh, MAX_OPTIONS } from "./state.ts";
 import { isOn, setOn, unpack, familiarityPenalty, FAMILIARITY_BUDGET, type PlannerFood } from "./foods.ts";
 import { analyse } from "./analysis.ts";
@@ -326,7 +326,15 @@ test("links keep the food table and table food ids", () => {
   assert.equal(back.source, "cofid");
   assert.deepEqual(back.builder, s.builder);
   assert.deepEqual(back.toggled, s.toggled);
-  assert.equal(decode(encode(fresh())).source, "usda");
+  assert.equal(decode(encode(fresh())).source, "", "no table picked: the default for the standard");
   assert.equal(decode("src=blend").source, "blend");
-  assert.equal(decode("src=%3Cscript%3E").source, "usda", "a damaged table name is ignored");
+  assert.equal(decode("src=%3Cscript%3E").source, "", "a damaged table name is ignored");
+});
+
+test("with no table picked, the table follows the standard (UK CoFID, US USDA, EU BLS)", () => {
+  const tables = JSON.parse(readFileSync(new URL("../data/foods/tables.json", import.meta.url), "utf8")).tables;
+  assert.equal(defaultTable(tables, "uk"), "cofid");
+  assert.equal(defaultTable(tables, "us"), "usda");
+  assert.equal(defaultTable(tables, "eu"), "bls");
+  assert.equal(defaultTable(tables, "xx"), "usda");
 });

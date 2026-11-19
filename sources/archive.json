@@ -757,7 +757,7 @@
       "file": "afcd3_AFCD_Release_3_December_2025.zip",
       "table": "Australian Food Composition Database (AFCD), Release 3",
       "publisher": "Food Standards Australia New Zealand (FSANZ)",
-      "licence": "To be confirmed: Creative Commons Attribution 4.0 Australia on the FSANZ website copyright page; the older AFCD data user licence page names CC BY-SA 3.0 Australia. The Release 3 files state no licence.",
+      "licence": "FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia): https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement (the AFCD licence page, last updated 25 Feb 2025). Derived works may only be distributed under it, with the licence link, its Limitation of Data Statement and a statement that the data are Australian; see tools/nutrient-planner/data/foods/LICENCE-AFCD.md",
       "origin": "https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/australian-food-composition-database-download-excel-files",
       "originalName": "the six Release 3 Excel files (food details, nutrient profiles, recipes, nutrient details, food group information, reference list) and the 'About the Australian Food Composition Database - Release 3' PDF, as published (page last updated 23 Dec 2025), zipped here",
       "zip": [

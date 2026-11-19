@@ -414,12 +414,13 @@ def main() -> int:
     foods.sort(key=lambda f: f["name"].lower())
     defs_note = {k: "Combined only within one definition; the definition used depends on the target standard (see foods-blend-values.json)" for k in DEFINITIONS}
     common.write("blend", "Blended (beta): every table", {"tables": "the ten table files in data/foods"}, defs_note, foods, [],
-                 [], {})
+                 [], {}, notice=common.AFCD_NOTICE)
     (DATA / "foods-blend-values.json").write_text(json.dumps({
         "_comment": "Beta values for the Blended table (foods-blend.json), built by pipeline/blend/blend_all.py. Per standard: v = values in "
                     "`keys` order (null = missing), r = [min, max, number of tables] where two or more tables gave the value, d = the "
                     "definition used, c = caveat ids per nutrient key; s = each definition's values per table, in words.",
         "generated": dt.date.today().isoformat(), "status": "beta: automated, without manual human verification",
+        "notice": common.AFCD_NOTICE,
         "pointValue": "median of the independent tables that publish the value under the same definition",
         "tables": [TITLE[t["id"]] for t in tables], "keys": KEYS, "usdaOnly": [], "definitions": definitions,
         "caveats": CAVEATS, "foods": values}, ensure_ascii=False, separators=(",", ":")))

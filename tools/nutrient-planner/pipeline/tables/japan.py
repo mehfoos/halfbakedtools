@@ -92,6 +92,15 @@ def source_names() -> dict[str, str]:
     return out
 
 
+# Terms whose meaning depends on the food group (the code's first two digits; 07 is fruits): もも is "peach" among
+# fruits and "thigh/round" among meats.
+IN_GROUP = {("07", "もも"): "peach", ("07", "（もも類）"): "(peaches)"}
+
+
+def term(gloss: dict, t: str, code: str) -> str:
+    return IN_GROUP.get((code[:2], t)) or gloss.get(t, t)
+
+
 def main() -> int:
     gloss = json.loads((HERE / "japan_glossary.json").read_text())["terms"]
     files = {MAIN: table(MAIN), AMINO: table(AMINO), FATTY: table(FATTY)}
@@ -123,11 +132,11 @@ def main() -> int:
         if eng.get(code):
             while toks and toks[0][0] in "＜（":
                 toks = toks[1:]
-            head, rest = eng[code], [gloss.get(t, t) for t in toks[1:]]
+            head, rest = eng[code], [term(gloss, t, code) for t in toks[1:]]
         else:
             while len(toks) > 1 and toks[0][0] == "＜":   # a broad category marker, when a more specific term follows
                 toks = toks[1:]
-            head, rest = gloss.get(toks[0], toks[0]), [gloss.get(t, t) for t in toks[1:]]
+            head, rest = term(gloss, toks[0], code), [term(gloss, t, code) for t in toks[1:]]
         untranslated += sum(1 for t in [head, *rest] if re.search(r"[぀-ヿ一-鿿]", t))
         name = ", ".join([head, *rest])
         cat = GROUP.get(row["group"], "other")

@@ -145,10 +145,23 @@ def basic_category(cat: str | None, name: str) -> str | None:
     return cat
 
 
+AFCD_NOTICE = {
+    "licence": "Derived from the Australian Food Composition Database (© FSANZ) and distributed under the FSANZ Data User "
+               "Licence Agreement, based on CC BY-SA 3.0 Australia: https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
+    "limitationOfData": "There are limitations associated with food composition databases. Food composition data used in the database "
+                        "or databases may represent an average of the nutrient content of a particular sample of foods and ingredients, "
+                        "determined at a particular time. The nutrient composition of foods and ingredients can vary substantially "
+                        "between batches and brands because of a number of factors, including changes in season, processing practices "
+                        "and ingredient source, and methods of calculation.",
+    "australianData": "This Work is based on Australian data, and Australian data may not be appropriate for use in other countries.",
+    "details": "data/foods/LICENCE-AFCD.md",
+}
+
+
 def write(table: str, title: str, files: dict, definitions: dict, basic: list, more: list, report: list[str],
-          labels_text: dict | None = None) -> None:
+          labels_text: dict | None = None, notice: dict | None = None) -> None:
     today = dt.date.today().isoformat()
-    head = {"generated": today, "table": table, "source": title, "files": files, "keys": KEYS}
+    head = {"generated": today, "table": table, "source": title, "files": files} | ({"notice": notice} if notice else {}) | {"keys": KEYS}
     out = TOOL / "data/foods"
     (out / f"foods-{table}.json").write_text(json.dumps(head | {
         "definitions": definitions, "labels": labels_text or {}, "nutrients": NUTRIENTS, "categories": CATEGORIES,

@@ -472,7 +472,7 @@
       "style": "italic",
       "post": "Canberra, ACT, Australia, Dec. 2025.",
       "url": "https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/australian-food-composition-database-download-excel-files",
-      "licence": "FSANZ; Creative Commons Attribution 4.0 Australia on its website, the dataset's own licence to be confirmed",
+      "licence": "FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia); derived files: data/foods/LICENCE-AFCD.md",
       "usedFor": "Australian food composition (the AFCD food table)",
       "archive": [
         {

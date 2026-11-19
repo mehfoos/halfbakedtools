@@ -1,6 +1,6 @@
 // The advice and caveats shown with a day's results. Each statement of fact carries its reference.
 import type { Report } from "../analysis.ts";
-import { avoidReasons, blendValues, type PlannerFood } from "../foods.ts";
+import { avoidReasons, blendValues, valueLabels, type PlannerFood } from "../foods.ts";
 import type { App, Item } from "./app.ts";
 import { cite } from "./app.ts";
 import { esc, fmt } from "./dom.ts";
@@ -10,17 +10,18 @@ import { caveat, KINDS, type CaveatKind } from "../../../../site/src/lib/caveats
 export function dataCaveat(app: App) {
   const t = app.table();
   const from = !t ? "food composition tables"
-    : app.s.source === "blend" ? `the beta blend of the food tables (${app.tables.filter((x) => x.id !== "blend").map((x) => `${esc(x.tag)} ${x.refs[0] ? cite(x.refs[0]) : ""}`).join(", ")})`
+    : app.tableId() === "blend" ? `the beta blend of the food tables (${app.tables.filter((x) => x.id !== "blend").map((x) => `${esc(x.tag)} ${x.refs[0] ? cite(x.refs[0]) : ""}`).join(", ")})`
     : `${esc(t.title)} ${t.refs[0] ? cite(t.refs[0]) : ""}`;
   const est = caveat("estimate", `Results use average food composition from ${from}, so real foods vary with brand, variety and cooking. Nutrients the table doesn't give are shown as not available, never as zero. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).`);
   // A table other than USDA: say where its definitions differ, because the targets may define a nutrient another way.
   const defs = app.data.definitions ?? {};
-  const keys = app.s.source === "blend" || app.data.table === "usda" ? [] : Object.keys(defs).filter((k) => app.nutrientMeta.has(k));
-  const tr = t?.translated && app.s.source !== "blend"
+  const keys = app.tableId() === "blend" || app.data.table === "usda" ? [] : Object.keys(defs).filter((k) => app.nutrientMeta.has(k));
+  const tr = t?.translated && app.tableId() !== "blend"
     ? caveat("translated", `The English food names in ${esc(t.tag)} were translated by this site from the Japanese names (MEXT's English name of the food source, then a glossary for the other terms); any term not yet in the glossary is left in Japanese.`)
     : "";
-  if (!keys.length) return est + tr;
-  return est + tr + caveat("assumption", `${esc(t?.tag ?? "This table")}'s values are shown as the table publishes them, and compared with the targets without conversion. Where the table defines a nutrient differently from the target's definition, the comparison is approximate. The table's definitions: ${keys.map((k) => `${esc(app.nutrientMeta.get(k)!.label)}: ${esc(defs[k])}`).join("; ")}.`);
+  const lic = t?.notice ? `<p class="small muted sans">${esc(t.notice)}${t.noticeUrl ? ` (<a href="${esc(t.noticeUrl)}" rel="noopener">licence</a>)` : ""}.</p>` : "";
+  if (!keys.length) return est + tr + lic;
+  return est + tr + lic + caveat("assumption", `${esc(t?.tag ?? "This table")}'s values are shown as the table publishes them, and compared with the targets without conversion. Where the table defines a nutrient differently from the target's definition, the comparison is approximate. The table's definitions: ${keys.map((k) => `${esc(app.nutrientMeta.get(k)!.label)}: ${esc(defs[k])}`).join("; ")}.`);
 }
 
 /** Notices about nutrients that food data or food alone handles poorly: vitamin D, B12, EPA/DHA, iodine. */
@@ -47,7 +48,18 @@ export function foodNotes(app: App, items: Item[]) {
   // Suggestions leave such foods out, so these warnings matter in the builder.
   const warnings = avoidReasons(items.map((i) => i.food), { age: app.s.age, life: app.person().life })
     .map((r) => `<p class="notice bad small"><b>Advised to avoid:</b> ${esc(r.text)} ${cite(r.ref)}</p>`).join("");
-  return warnings + (notes.length ? `<p class="small muted sans">${notes.join(" ")}</p>` : "") + blendNotes(app, items);
+  return warnings + (notes.length ? `<p class="small muted sans">${notes.join(" ")}</p>` : "") + labelNotes(app, items) + blendNotes(app, items);
+}
+
+/** The values the food table labels for the foods in a day (estimated, recipe, borrowed, trace, below a limit). */
+export function labelNotes(app: App, items: Item[]) {
+  const foods = [...new Map(items.filter((i) => i.food.q).map((i) => [i.food.id, i.food])).values()];
+  const rows = valueLabels(foods, app.data.labels ?? {}, (k) => app.nutrientMeta.has(k), (k) => app.nutrientMeta.get(k)!.label);
+  if (!rows.length) return "";
+  const n = rows.reduce((a, r) => a + r.groups.reduce((b, g) => b + g.nutrients.length, 0), 0);
+  return `<details class="value-labels small sans"><summary>${n} value${n === 1 ? "" : "s"} labelled by the food table</summary><div class="details-body">${
+    caveat("estimate", "The food table marks these values as estimated, calculated, borrowed from another food or table, a trace or below a limit. They are used as published; a trace or a value below a limit is shown as not available.")
+  }${rows.map((r) => `<p><b>${esc(r.food)}:</b> ${r.groups.map((g) => `${esc(g.nutrients.join(", "))}: ${esc(g.text)}`).join("; ")}.</p>`).join("")}</div></details>`;
 }
 
 /**
