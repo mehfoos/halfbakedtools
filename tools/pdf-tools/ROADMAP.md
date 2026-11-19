@@ -49,7 +49,7 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | Images to PDF page size, direction and margin | **Done 2026-11-19** (chunk 6a) | `web/layout.ts`; size is "same as the picture" or a size the visitor types. **Named sizes (A4, Letter) are NOT offered yet: they need an archived source (see "Sources to archive"); then add them as presets in `Task.astro` (#imSize) and `web/layout.ts`** |
 | Extract stored pictures from a PDF | **Done (chunk 6b)** | Raw JPEGs can be copied out unchanged; other picture types need decoding; say which could not be extracted |
 | Repair PDF | **Done 2026-11-19** (chunk 7; `web/repair.ts`) | Reads leniently, rewrites with a fresh index, names pages whose content is missing and notes a missing end marker. Follow-ups: rebuild from object scanning when too little structure is left; drop or blank unreadable pages by choice |
-| Compare PDF | Chunk 8 | Side-by-side pages plus a text difference |
+| Compare PDF | **Done 2026-11-19** (chunk 8; `web/diff.ts`) | Text difference by word, page by position, pages side by side on demand, report as .txt. Follow-ups: match pages by content; picture (pixel) comparison |
 | PDF to Markdown, PDF to HTML, Text/HTML file to PDF | Chunk 9 | Rough by nature; label as such. HTML to PDF from a web address is not possible locally |
 | PDF Forms (fill in) | Chunk 10 | The PDF library has a form API; creating forms is a later question |
 | OCR PDF | Chunk 11 | Needs a text-recognition engine that runs in the browser (for example Tesseract compiled to WebAssembly), served from this site with its language data; check licence and size first |

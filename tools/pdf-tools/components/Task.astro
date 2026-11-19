@@ -262,6 +262,9 @@ const policy = import.meta.env.PROD ? CSP : "";
               <p class="small muted">PDF pages can be between half an inch and 200 inches on a side.</p>
             </div>
           </details>
+          <div id="optCompare" data-part="compare">
+            <p class="small muted">The first file you added is the original and the second is the changed version. The result lists, page by page, the words only in the original (struck through) and the words only in the changed version (underlined), and can show the two pages next to each other. It reads text, so scanned pages and pictures show no differences, and a page that has been re-laid-out shows many.</p>
+          </div>
           <div id="optExtract" data-part="extractPics">
             <p><label class="field">Skip pictures smaller than <input id="exMin" type="number" min="1" max="2000" step="1" value="32" inputmode="numeric" /> pixels</label><br /><span class="small muted">On either side. Small ones are usually bullets, icons and lines. Skipped ones are counted in the message.</span></p>
             <p class="small muted">JPEG pictures are copied out exactly as stored, with no change in quality. Other pictures are saved as PNG, which keeps every pixel. Pictures with unusual colour setups (such as CMYK), scanned-fax kinds and black-and-white stencil masks are not extracted yet; the message says how many were left out. Clipping, scaling and colour effects the PDF applies when it draws a picture are not applied: you get the stored picture.</p>
@@ -392,6 +395,9 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .result { border: 2px solid var(--good); border-radius: 6px; padding: 10px; margin: 10px 0; background: var(--good-soft); }
     #pdftools .result.same { border-color: var(--warn); background: var(--warn-soft); }
     #pdftools .result table { font-size: 0.85rem; background: #fff; }
+    #pdftools .result del { background: #fdd; color: #900; }
+    #pdftools .result ins { background: #dfd; color: #060; text-decoration: underline; }
+    #pdftools .result .cmp { margin: 6px 0; padding: 6px; background: #fff; border-radius: 4px; max-height: 14em; overflow: auto; font-size: 0.9rem; line-height: 1.5; }
     #pdftools .result .big-number { font-size: 1.5rem; font-weight: 700; margin: 0; }
     #pdftools .result .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; }
     #pdftools .result .pair figure { margin: 0; }

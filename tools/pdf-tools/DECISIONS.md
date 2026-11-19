@@ -80,3 +80,5 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 | 2026-11-19 | Pictures under 32 pixels on a side are skipped by default (adjustable) and counted | Bullets, icons and rules are not what people want; the count keeps it transparent |
 | 2026-11-19 | Repair rewrites the file with the lenient library and says what it found; it never claims to recover content | Only structure (index, header) can be fixed; missing data stays missing, so the message names pages that lost content and files that end early |
 | 2026-11-19 | Repair keeps unreadable pages in the saved file and names them, rather than dropping them | Dropping a page silently or by default would destroy possibly-recoverable content; the visitor can remove pages afterwards |
+| 2026-11-19 | Compare PDF compares text only, page by position, and says so on the page | Matching pages by content or comparing pixels is a larger job; claiming more would mislead (scans and pictures show no differences) |
+| 2026-11-19 | Compare on very long pages reports the page as replaced rather than matching word by word | Keeps the browser responsive; the result states when this happened |

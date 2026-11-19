@@ -155,3 +155,11 @@ intact, bad-index and junk files said no problems were detected; the headless fi
 cut-off file said it ends without an end marker and page 4 could not be read; the zeroed file said it declared 4 pages
 but only 1 was found; the trailer-less file said it ends without an end marker. A file with no PDF content at all is
 refused with a plain message. Not checked: files with object streams damaged, encrypted damaged files, very large files.
+
+### Compare PDF (2026-11-19)
+
+Headless Chrome with a 3-page and a 4-page PDF (one word changed on page 1, one number on page 2, a new page 4): the
+result said 3 of 4 pages differ, struck through "jumps" and "100", underlined "leaps" and "250", marked page 4 as only in
+the changed file, warned about the different page counts, drew both pages side by side on request and saved a text report
+with the same differences. No requests left the browser. Not checked: scanned PDFs, right-to-left or non-Latin text,
+documents of hundreds of pages.

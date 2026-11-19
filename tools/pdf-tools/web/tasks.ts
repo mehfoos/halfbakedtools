@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "preview";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "preview";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -75,6 +75,9 @@ export const TASKS: Task[] = [
   { slug: "repair", name: "Repair PDF", blurb: "Open a damaged PDF as far as possible and save a clean copy. It fixes damaged structure; it cannot bring back content that is missing.", group: "Optimise", accept: "pdf",
     pick: "Select PDF files", hint: "Each file is opened leniently and every page is checked. The message says what was found and which pages could not be read. Content missing from the file, for example from a cut-off download, cannot be recovered.",
     parts: [], formats: ["pdf"], which: "all", action: "Repair PDF", perFile: true, suffix: "repaired", tag: "✚" },
+  { slug: "compare", name: "Compare PDF", blurb: "Put two PDFs side by side and see which words were added or removed, page by page. Text only.", group: "Security", accept: "pdf",
+    pick: "Select two PDF files", hint: "Add the original first, then the changed version. Pages are matched by position (page 1 with page 1), and only text is compared, not pictures or drawings.",
+    parts: ["compare"], formats: ["pdf"], which: "all", action: "Compare", suffix: "comparison", tag: "⇆" },
   { slug: "sign", name: "Sign PDF", blurb: "Draw your signature and place it on a page. It is a picture of your handwriting, not a digital signature.", group: "Security", accept: "pdf",
     pick: "Select PDF file", hint: "Press Draw signature, draw it, press Use, then drag it into place and resize it by its corner square. This adds a picture of your handwriting; it is not a cryptographic (digital) signature.",
     parts: ["marks", "sign"], formats: ["pdf"], which: "all", action: "Save signed PDF", suffix: "signed", tag: "✍" },
@@ -123,7 +126,6 @@ export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "PDF to Markdown", tag: "MD", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
   { name: "Fill in PDF forms", tag: "☑", group: "Edit" },
   { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
-  { name: "Compare PDF", tag: "⇆", group: "Security" },
 ];
 
 /** Things other PDF sites offer that can't be done without sending files to a server, so this tool won't offer them. */

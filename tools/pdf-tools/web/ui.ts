@@ -14,6 +14,7 @@ import {
 import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
 import { extractPictures } from "./extract.ts";
+import { comparePages, diffReport, type PageDiff } from "./diff.ts";
 import { looksLikePdfBody, rewrite, repairNote } from "./repair.ts";
 import { createEditor } from "./editor.ts";
 import { createSignPad } from "./signpad.ts";
@@ -724,6 +725,39 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     } catch { return []; }   // a bad split range etc.: the save itself reports it
   }
 
+  /** Compare PDF: the text of the first two files, page against page, shown on the page. */
+  async function saveCompare() {
+    if (busy || !ask.hidden) return;
+    const [A, B] = session.sources.filter((s) => loaded.get(s.sha256)?.data.kind === "pdf");
+    if (!A || !B) return say("Add two PDF files first: the original, then the changed version.", "bad");
+    await work("Reading text…", async (progress) => {
+      const texts = async (s: SourceRef) => { const h = loaded.get(s.sha256)!.handle, out: string[] = []; for (let i = 0; i < s.pages; i++) { progress(`Reading ${s.name}: page ${i + 1} of ${s.pages}…`); out.push(await pageText(h, i)); } return out; };
+      const ta = await texts(A), tb = await texts(B), diffs = comparePages(ta, tb);
+      const changed = diffs.filter((d) => d.state !== "same"), empty = diffs.filter((d) => !ta[d.page - 1]?.trim() && !tb[d.page - 1]?.trim()).length;
+      result.replaceChildren(); result.className = `result sans${changed.length ? "" : " same"}`; result.hidden = false;
+      result.append(el("p", { className: "big-number" }, changed.length ? `${changed.length} of ${diffs.length} pages differ` : "No differences found in the text"),
+        el("p", {}, `${A.name} (${A.pages} pages) against ${B.name} (${B.pages} pages).`));
+      if (empty) result.append(el("p", { className: "small" }, `${empty} ${empty === 1 ? "page has" : "pages have"} no text in either file (scans or pictures), so ${empty === 1 ? "it" : "they"} can't be compared this way.`));
+      if (A.pages !== B.pages) result.append(el("p", { className: "small" }, "The files have different page counts. Pages are matched by position, so an inserted or removed page makes every later page differ."));
+      const side = async (d: PageDiff, holder: HTMLElement) => {
+        for (const [s, k] of [[A, d.state === "onlyB"], [B, d.state === "onlyA"]] as [SourceRef, boolean][]) {
+          if (k) { holder.append(el("p", { className: "small muted" }, "No such page here.")); continue; }
+          const c = await drawPage(loaded.get(s.sha256)!.handle, d.page - 1, 0, { pxPerPoint: 0.7, pxPerImagePx: 1 }); c.style.cssText = "max-width:100%;border:1px solid #ccc;background:#fff"; holder.append(c);
+        }
+      };
+      for (const d of changed) {
+        const text = el("div", { className: "cmp" }), pair = el("div", { className: "pair" }), det = el("details", {}, el("summary", {}, `Show page ${d.page} side by side`), pair);
+        text.append(...d.ops.map((o) => o.t === "same" ? document.createTextNode(`${o.text} `) : o.t === "del" ? el("del", {}, `${o.text} `) : el("ins", {}, `${o.text} `)));
+        let drawn = false; det.addEventListener("toggle", () => { if (det.open && !drawn) { drawn = true; side(d, pair).catch(() => pair.append(el("p", { className: "small" }, "Couldn't draw this page."))); } });
+        result.append(el("h3", {}, `Page ${d.page}: ${d.removed} removed, ${d.added} added${d.state === "onlyA" ? " (only in the original)" : d.state === "onlyB" ? " (only in the changed file)" : ""}`), d.coarse ? el("p", { className: "small" }, "This page is too long to match word by word, so it is shown as replaced.") : document.createTextNode(""), text, det);
+      }
+      const dl = el("button", { type: "button", className: "small" }, "Save the differences as a text file");
+      dl.addEventListener("click", () => download(`${safeName(session.output.name)}.txt`, new Blob([diffReport(A.name, B.name, diffs)], { type: "text/plain;charset=utf-8" })));
+      result.append(el("p", {}, dl)); result.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      say(session.sources.length > 2 ? "Only the first two files were compared." : "", session.sources.length > 2 ? "warn" : "info");
+    });
+  }
+
   /** Extract pictures: every picture stored in every added PDF, as files. */
   async function saveExtracted() {
     if (busy || !ask.hidden) return;
@@ -755,6 +789,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   async function save(which: "all" | "selected") {
     readOptions(); clearResult(); if (task.slug === "extract-images") return saveExtracted();
+    if (task.slug === "compare") return saveCompare();
     if (busy || !ask.hidden) return;
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);

@@ -745,3 +745,20 @@ test("repair: rewrite reports the page count the file claims against the pages i
   assert.match(repairNote("a.pdf", 3, false, [], 4), /says it has 4 pages but only 3 could be found, so 1 page is missing/);
   await assert.rejects(rewrite(new TextEncoder().encode("not a pdf at all")));
 });
+
+// ---- compare ----
+import { diffWords, comparePages, diffReport, words } from "./diff.ts";
+test("compare: word differences are found and located", () => {
+  const r = diffWords(words("the quick brown fox jumps"), words("the slow brown fox leaps high"));
+  assert.deepEqual(r.ops.map((o) => `${o.t}:${o.text}`), ["same:the", "del:quick", "add:slow", "same:brown fox", "del:jumps", "add:leaps high"]);
+  assert.equal(diffWords([], ["a"]).ops[0].t, "add"); assert.deepEqual(diffWords(["a"], ["a"]).ops, [{ t: "same", text: "a" }]);
+});
+test("compare: pages match by position; missing pages and long pages are reported honestly", () => {
+  const d = comparePages(["same  text", "one two three", "extra page"], ["same text", "one 2 three"]);
+  assert.deepEqual(d.map((x) => x.state), ["same", "changed", "onlyA"]);
+  assert.deepEqual([d[1].removed, d[1].added, d[2].removed], [1, 1, 2]);
+  const big = Array.from({ length: 2500 }, (_, i) => "a" + i), other = Array.from({ length: 2500 }, (_, i) => "b" + i);
+  assert.equal(diffWords(big, other).coarse, true);
+  const rep = diffReport("A.pdf", "B.pdf", d); assert.match(rep, /Page 2: 1 words removed, 1 added/); assert.match(rep, /Page 3 \(only in A.pdf\)/);
+  assert.match(diffReport("A", "B", comparePages(["x"], ["x"])), /No differences in the text/);
+});

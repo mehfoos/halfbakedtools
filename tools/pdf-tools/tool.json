@@ -96,6 +96,11 @@
       "nav": false
     },
     {
+      "page": "compare",
+      "label": "Compare PDF",
+      "nav": false
+    },
+    {
       "page": "repair",
       "label": "Repair PDF",
       "nav": false
