@@ -27,7 +27,7 @@ The font choice "Noto Sans (many alphabets)" uses these files, all version 5.3.0
 noto-sans (latin, latin-ext, cyrillic, cyrillic-ext, greek, greek-ext, vietnamese), noto-sans-malayalam (malayalam),
 noto-sans-arabic (arabic), noto-sans-hebrew (hebrew), noto-sans-devanagari (devanagari), noto-sans-bengali (bengali),
 noto-sans-gurmukhi (gurmukhi), noto-sans-tamil (tamil), noto-sans-telugu (telugu), noto-sans-kannada (kannada),
-noto-sans-thai (thai); and for Chinese, Japanese and Korean, version 5.3.1 of noto-sans-sc, noto-sans-tc, noto-sans-jp
+noto-sans-thai (thai), noto-nastaliq-urdu (arabic; Noto Nastaliq Urdu, font version 3.007); and for Chinese, Japanese and Korean, version 5.3.1 of noto-sans-sc, noto-sans-tc, noto-sans-jp
 and noto-sans-kr, each split by Google Fonts into 97 to 120 numbered files (only those). The lists, with the characters
 each file covers, are `web/notofiles.ts` and `web/cjkfiles.ts` (tests check them against each package's `unicode.json`).
 
@@ -40,7 +40,9 @@ each file covers, are `web/notofiles.ts` and `web/cjkfiles.ts` (tests check them
   make the full font package available"; archived as `pdftools_OFL-FAQ-1.1-update8.txt`).
 - **In saved PDFs:** only the letters used are embedded. OFL FAQ 1.12: embedding in documents is allowed, "either in
   full or a subset", and 1.13: it does not change the document's licence. Fonts are not sold, by themselves or at all.
-- **Not shipped (yet):** Urdu in the Nastaliq style (Urdu uses Noto Sans Arabic, Naskh style).
+- **Nastaliq:** Noto Nastaliq Urdu's licence is the same ("Copyright 2022 The Noto Project Authors
+  (https://github.com/notofonts/nastaliq)", OFL 1.1, no Reserved Font Name; embedding setting 0, i.e. no restriction;
+  checked 2026-11-19).
 
 ## OCR language models
 

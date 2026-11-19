@@ -21,6 +21,7 @@ const files = import.meta.glob([
     "../../../node_modules/@fontsource/noto-sans-kannada/files/noto-sans-kannada-kannada-{400,700}-normal.woff",
     "../../../node_modules/@fontsource/noto-sans-thai/files/noto-sans-thai-thai-{400,700}-normal.woff"
 ,
+    "../../../node_modules/@fontsource/noto-nastaliq-urdu/files/noto-nastaliq-urdu-arabic-{400,700}-normal.woff",
     "../../../node_modules/@fontsource/noto-sans-sc/files/noto-sans-sc-[0-9]*-{400,700}-normal.woff",
     "../../../node_modules/@fontsource/noto-sans-tc/files/noto-sans-tc-[0-9]*-{400,700}-normal.woff",
     "../../../node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-[0-9]*-{400,700}-normal.woff",

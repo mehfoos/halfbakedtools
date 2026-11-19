@@ -4,7 +4,7 @@
 // see THIRD-PARTY.md).
 import type { PDFDocument } from "@cantoo/pdf-lib";
 import { multiFace, type Face, type FacePart, type FkFont } from "./face.ts";
-import { NOTO_FILES, notoId, type NotoFile } from "./notofiles.ts";
+import { NOTO_FILES, NASTALIQ_FILE, notoId, type NotoFile } from "./notofiles.ts";
 import type { CjkStyle } from "./cjkfiles.ts";
 import { fontkit } from "./ownfont.ts";
 import { harfBuzzShaper } from "./shaper.ts";
@@ -39,18 +39,28 @@ export function hanStyleFor(text: string, style: HanStyle): CjkStyle {
   if (style !== "auto") return style;
   return /[\p{Script=Hiragana}\p{Script=Katakana}]/u.test(text) ? "jp" : /\p{Script=Hangul}/u.test(text) ? "kr" : "sc";
 }
-/** All shipped files in the order they are tried for `text`: the alphabets, then the chosen CJK style, then the others. */
-export function notoOrder(text: string, style: HanStyle): NotoFile[] {
-  if (!cjk) return NOTO_FILES;
+/** How Arabic-script text is drawn: Naskh (Noto Sans Arabic, usual for Arabic and Persian) or Nastaliq (Noto Nastaliq
+ *  Urdu, usual for Urdu). "auto": Nastaliq for a line with letters used in Urdu but not in Arabic or Persian. */
+export type ArabicStyle = "auto" | "naskh" | "nastaliq";
+export const ARABIC_STYLES: ArabicStyle[] = ["auto", "naskh", "nastaliq"];
+/** ٹ ڈ ڑ ں ہ ھ ۂ ے ۓ: letters of the Urdu alphabet not used in Arabic or Persian. */
+const URDU_ONLY = /[\u0679\u0688\u0691\u06BA\u06C1\u06BE\u06C2\u06D2\u06D3]/u;
+export const arabicStyleFor = (text: string, style: ArabicStyle): "naskh" | "nastaliq" => (style === "auto" ? (URDU_ONLY.test(text) ? "nastaliq" : "naskh") : style);
+
+/** All shipped files in the order they are tried for `text`: the alphabets (with Nastaliq ahead of Naskh when chosen),
+ *  then the chosen CJK style, then the others. */
+export function notoOrder(text: string, style: HanStyle, arabic: ArabicStyle = "auto"): NotoFile[] {
+  const base = arabicStyleFor(text, arabic) === "nastaliq" ? NOTO_FILES.flatMap((f) => (f.family === "noto-sans-arabic" ? [NASTALIQ_FILE, f] : [f])) : NOTO_FILES;
+  if (!cjk) return base;
   const first = hanStyleFor(text, style);
-  return [...NOTO_FILES, ...cjk[first], ...(["sc", "tc", "jp", "kr"] as CjkStyle[]).filter((s) => s !== first).flatMap((s) => cjk![s])];
+  return [...base, ...cjk[first], ...(["sc", "tc", "jp", "kr"] as CjkStyle[]).filter((s) => s !== first).flatMap((s) => cjk![s])];
 }
 
 const covers = (f: NotoFile, cp: number) => f.ranges.some(([lo, hi]) => cp >= lo && cp <= hi);
 const ignorable = (c: string) => /[\p{Cc}\p{Zs}]/u.test(c);
 /** The files needed for `text`: for each character, the first file in order that covers it. */
-export function notoFilesFor(text: string, style: HanStyle = "auto"): NotoFile[] {
-  const order = notoOrder(text, style), need = new Set<NotoFile>();
+export function notoFilesFor(text: string, style: HanStyle = "auto", arabic: ArabicStyle = "auto"): NotoFile[] {
+  const order = notoOrder(text, style, arabic), need = new Set<NotoFile>();
   // spaces are drawn in the font of the text around them (every shipped file has a space), so they need no file of their own
   for (const c of text) { if (ignorable(c)) continue; const f = order.find((x) => covers(x, c.codePointAt(0)!)); if (f) need.add(f); }
   return order.filter((f) => need.has(f));   // keep the order
@@ -75,14 +85,14 @@ export function notoLibrary(load: NotoLoader) {
 
 /** A face for `doc` using the shipped Noto files, regular or bold (the fonts' own bold design). Call prepare(text)
  *  before measuring or drawing `text`. */
-export function notoFace(doc: PDFDocument, library: ReturnType<typeof notoLibrary>, style: HanStyle = "auto", bold = false): Face {
+export function notoFace(doc: PDFDocument, library: ReturnType<typeof notoLibrary>, style: HanStyle = "auto", bold = false, arabic: ArabicStyle = "auto"): Face {
   const parts = new Map<string, FacePart>(), embedding = new Map<string, Promise<void>>();
-  const ordered = (text: string) => notoOrder(text, style).map((f) => parts.get(notoId(f))).filter((p): p is FacePart => !!p);
+  const ordered = (text: string) => notoOrder(text, style, arabic).map((f) => parts.get(notoId(f))).filter((p): p is FacePart => !!p);
   const face = multiFace(ordered);
   face.prepare = async (text: string) => {
     if (needsCjk(text)) await loadCjkIndex();
     // each line separately: the automatic Chinese/Japanese/Korean style is chosen per line, as when it is drawn
-    const files = new Set(text.split("\n").flatMap((line) => notoFilesFor(line, style)));
+    const files = new Set(text.split("\n").flatMap((line) => notoFilesFor(line, style, arabic)));
     await Promise.all([...files].map((f) => {
       const id = notoId(f); let e = embedding.get(id);
       if (!e) embedding.set(id, (e = (async () => {
@@ -95,8 +105,14 @@ export function notoFace(doc: PDFDocument, library: ReturnType<typeof notoLibrar
     // a line of nothing but spaces still needs a font with a space in it
     if (/\p{Zs}/u.test(text) && ![...parts.values()].some((p) => p.fk.hasGlyphForCodePoint(32))) await face.prepare!("a");
   };
+  // Height: of every font loaded so far (a taller one, such as Nastaliq, needs more room between lines)
+  face.heightAtSize = (size, o) => {
+    const ps = [...parts.values()]; if (!ps.length) return size;
+    const up = Math.max(...ps.map((p) => p.fk.ascent / p.fk.unitsPerEm)), down = Math.max(...ps.map((p) => -p.fk.descent / p.fk.unitsPerEm));
+    return (up + (o?.descender === false ? 0 : down)) * size;
+  };
   // Missing: characters no shipped file covers, and characters a loaded file was expected to have but doesn't.
   const missing = face.missing;
-  face.missing = (t) => [...new Set([...notoMissing(t), ...missing(t).filter((c) => { const fs = notoFilesFor(c, style); return fs.length > 0 && fs.every((f) => parts.has(notoId(f))); })])];
+  face.missing = (t) => [...new Set([...notoMissing(t), ...missing(t).filter((c) => { const fs = notoFilesFor(c, style, arabic); return fs.length > 0 && fs.every((f) => parts.has(notoId(f))); })])];
   return face;
 }

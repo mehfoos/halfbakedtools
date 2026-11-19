@@ -15,7 +15,7 @@ import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, type SourceData } from "./build.ts";
 import { standardFace, type Face } from "./face.ts";
 import { fontFaces, prepareOwnFont, embedOwnFont, type OwnFont } from "./ownfont.ts";
-import { notoFace, notoLibrary, notoMissing, notoFilesFor, needsCjk, loadCjkIndex, type HanStyle } from "./noto.ts";
+import { notoFace, notoLibrary, notoMissing, notoFilesFor, needsCjk, loadCjkIndex, type HanStyle, type ArabicStyle } from "./noto.ts";
 import { loadNoto } from "./notoload.ts";
 import { extractPictures } from "./extract.ts";
 import { addGlyphlessFont } from "./glyphless.ts";
@@ -537,7 +537,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   // ---------- pages with additions, and the editor ----------
   const dataMap = () => new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
-  const buildOne = (p: PageItem) => makeBuilder(dataMap(), { imageDpi: session.output.imageDpi, images: session.output.images, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han() })([{ ...p, scale: 1 }]);
+  const buildOne = (p: PageItem) => makeBuilder(dataMap(), { imageDpi: session.output.imageDpi, images: session.output.images, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han(), arabic: arabic() })([{ ...p, scale: 1 }]);
   /** What to draw or read for a page. A page with additions is first built as it will be saved, so pictures and
    *  text made from it include them. Call `done` afterwards. */
   async function drawable(p: PageItem): Promise<{ handle: Handle; page: number; rotate: Rotation; done: () => void }> {
@@ -555,14 +555,16 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   // Noto: a scratch copy for measuring on screen; the alphabets a text needs are loaded on first use, then the editor redraws.
   const notoLib = notoLibrary(loadNoto); let notoMeasure: Face | null = null, notoBoldMeasure: Face | null = null; const notoAsked = new Set<string>();
   const hanSel = root.querySelector<HTMLSelectElement>("#hanStyle"), han = (): HanStyle => (hanSel?.value as HanStyle) || "auto";
-  const newMeasure = () => PDFDocument.create().then((d) => { notoMeasure = notoFace(d, notoLib, han()); notoBoldMeasure = notoFace(d, notoLib, han(), true); notoAsked.clear(); editor?.refresh(); render(); });
+  const arabSel = root.querySelector<HTMLSelectElement>("#arabicStyle"), arabic = (): ArabicStyle => (arabSel?.value as ArabicStyle) || "auto";
+  const newMeasure = () => PDFDocument.create().then((d) => { notoMeasure = notoFace(d, notoLib, han(), false, arabic()); notoBoldMeasure = notoFace(d, notoLib, han(), true, arabic()); notoAsked.clear(); editor?.refresh(); render(); });
   void newMeasure();
   hanSel?.addEventListener("change", () => { void newMeasure(); });
+  arabSel?.addEventListener("change", () => { void newMeasure(); });
   let cjkAsked = false;
   function notoReady(text: string, bold: boolean) {
     if (needsCjk(text) && !cjkAsked) { cjkAsked = true; loadCjkIndex().then(() => { editor?.refresh(); render(); }, (e) => console.error(e)); }
     const face = bold ? notoBoldMeasure : notoMeasure;
-    const need = notoFilesFor(text, han()).map((f) => `${f.family}-${f.subset}@${bold}`).filter((id) => !notoAsked.has(id));
+    const need = notoFilesFor(text, han(), arabic()).map((f) => `${f.family}-${f.subset}@${bold}`).filter((id) => !notoAsked.has(id));
     if (!need.length || !face) return;
     need.forEach((id) => notoAsked.add(id));
     face.prepare!(text).then(() => { editor?.refresh(); render(); }, (e) => { console.error(e); say("Couldn't load a Noto font file.", "bad"); });
@@ -752,7 +754,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const pp = task.perFile ? session.pages.filter((p) => p.src === first.id) : session.pages.filter(has);
     const index = Math.min(pp.length - 1, Math.max(0, o.numbers.on ? o.numbers.from - 1 : 0));
     try {
-      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, images: o.images, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han() })([pp[index]], { index, total: pp.length });
+      const bytes = await makeBuilder(dataMap(), { imageDpi: o.imageDpi, images: o.images, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han(), arabic: arabic() })([pp[index]], { index, total: pp.length });
       const doc = await openPdf(bytes, vendor);
       let canvas: HTMLCanvasElement;
       try {
@@ -974,7 +976,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (o.format === "pdf") {
         const data = new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
         if (o.watermark.on && !o.watermark.text.trim()) throw new Error("Type the words for the watermark first.");
-        const build = makeBuilder(data, { imageDpi: o.imageDpi, images: o.images, crop: o.crop, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han() });
+        const build = makeBuilder(data, { imageDpi: o.imageDpi, images: o.images, crop: o.crop, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han(), arabic: arabic() });
         const c = o.compress;
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };

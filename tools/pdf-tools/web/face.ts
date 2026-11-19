@@ -12,7 +12,7 @@
  * string is tagged with the text it stands for (PDF "ActualText"), so copying and searching give the words as typed.
  */
 import bidiFactory from "bidi-js";
-import { PDFFont, PDFHexString, PDFName, PDFOperator, PDFPage, rgb, degrees, setTextRenderingMode, TextRenderingMode, setStrokingColor, setLineWidth, setLineJoin, LineJoinStyle, beginText, endText, setFontAndSize, setTextMatrix, showText, setFillingColor, pushGraphicsState, popGraphicsState, setGraphicsState } from "@cantoo/pdf-lib";
+import { PDFFont, PDFHexString, PDFName, PDFOperator, PDFPage, rgb, degrees, setTextRise, setTextRenderingMode, TextRenderingMode, setStrokingColor, setLineWidth, setLineJoin, LineJoinStyle, beginText, endText, setFontAndSize, setTextMatrix, showText, setFillingColor, pushGraphicsState, popGraphicsState, setGraphicsState } from "@cantoo/pdf-lib";
 import { unsupported } from "./marks.ts";
 
 export type Rgb = { r: number; g: number; b: number };
@@ -111,7 +111,9 @@ export function shapeRuns(text: string, fonts: ShapeFont[]): { glyphs: PlacedIn[
     // The shaper mirrors brackets in right-to-left runs itself (HarfBuzz does), so ( still opens towards the text.
     for (const p of pieces) {
       const f = fonts[p.font];
-      for (const g of f.shape(p.text, rtl)) { glyphs.push({ ...g, ax: g.ax / f.upem, dx: g.dx / f.upem, dy: g.dy / f.upem, x: pen, font: p.font }); pen += g.ax / f.upem; }
+      for (const g of f.shape(p.text, rtl)) {
+        glyphs.push({ ...g, ax: g.ax / f.upem, dx: g.dx / f.upem, dy: g.dy / f.upem, x: pen, font: p.font }); pen += g.ax / f.upem;
+      }
     }
   }
   return { glyphs, width: pen };
@@ -123,21 +125,63 @@ export function shapeLine(shape: Shaper, text: string): { glyphs: Placed[]; widt
   return { glyphs: r.glyphs, width: r.width };
 }
 
-/** The glyph-id encoder of a font embedded by the PDF library with subsetting: adds a glyph to the subset and
- *  returns its id in the subset. Uses the library's own subset object, so the saved font's widths and its
- *  character map (ToUnicode) include every glyph drawn. Checked by the tests against the library version in use. */
-type SubsetEmbedder = { subset: { includeGlyph(g: FkGlyph): number }; glyphs: FkGlyph[]; glyphIdMap: Map<number, number>; glyphCache: { invalidate(): void } };
-function glyphEncoder(font: PDFFont): (g: FkGlyph) => number {
+/**
+ * The glyph encoder of a font embedded by the PDF library with subsetting: adds a glyph to the subset and returns its
+ * id there. The saved font's widths and its character map (ToUnicode, which copying and searching use) are built
+ * from records kept here: the subset id, the glyph's width, and the characters it was drawn for.
+ *
+ * One glyph of a font can be drawn for different characters: Arabic-script fonts draw the bases of ب and ت (or of
+ * ح and خ) with one dotless glyph and add the dots as separate glyphs, so the first glyph of each letter is shared.
+ * A character map can give only one text per glyph id, so when a glyph is drawn again for different characters it
+ * is added to the subset a second time (a copy of the same outline, under a new id) and that copy carries the second
+ * text. (The font library caches one glyph object per glyph, holding the characters of its first use; it is not
+ * used for this.) Glyphs that carry no characters (the second and later glyphs of a cluster, such as the dots of an
+ * Arabic letter) are given LETTERLESS (they get their own copy if the same glyph also carries characters).
+ * Uses the library's own subset objects; checked by the tests against the library version in use.
+ */
+/**
+ * What a glyph that stands for no characters gives in the character map: U+2060 WORD JOINER, an invisible format
+ * character. Leaving such glyphs out of the map, or mapping them to nothing, made PDF.js, PDFium and MuPDF give back
+ * control characters for them (they fall back to the glyph's number); PDF.js skips format characters, and in pasted
+ * Arabic-script text a word joiner does not break the joining of letters (format characters are transparent to
+ * joining). Readers that use the lines' real text (ActualText, below) do not see it at all.
+ */
+const LETTERLESS = 0x2060;
+type GlyphRecord = { id: number; codePoints: number[]; advanceWidth: number };
+type SubsetEmbedder = {
+  subset: { includeGlyph(g: number): number; glyphs: number[]; mapping: Record<number, number> };
+  glyphs: (GlyphRecord | FkGlyph)[]; glyphIdMap: Map<number, number>; glyphCache: { invalidate(): void };
+  glyphId(g?: GlyphRecord | FkGlyph): number; embedUnicodeCmap(context: unknown): unknown;
+};
+function glyphEncoder(font: PDFFont): (g: FkGlyph, chars: string) => number {
   const e = (font as unknown as { embedder: Partial<SubsetEmbedder> }).embedder;
-  if (!e?.subset || typeof e.subset.includeGlyph !== "function" || !Array.isArray(e.glyphs) || !(e.glyphIdMap instanceof Map) || !e.glyphCache) {
+  if (!e?.subset || typeof e.subset.includeGlyph !== "function" || !Array.isArray(e.subset.glyphs) || !e.subset.mapping || !Array.isArray(e.glyphs) || !(e.glyphIdMap instanceof Map) || !e.glyphCache || typeof e.glyphId !== "function" || typeof e.embedUnicodeCmap !== "function") {
     return (g) => g.id;   // embedded whole (the font forbids subsetting): glyph ids are the font's own
   }
-  const s = e as SubsetEmbedder;
-  return (g) => { const id = s.subset.includeGlyph(g); s.glyphs[id - 1] = g; s.glyphIdMap.set(g.id, id); s.glyphCache.invalidate(); return id; };
+  const s = e as SubsetEmbedder, mine = new WeakSet<object>(), byText = new Map<string, number>(), used = new Set<number>();
+  const libraryId = s.glyphId.bind(s), libraryCmap = s.embedUnicodeCmap.bind(s);
+  s.glyphId = (g) => (g && (mine.has(g) || (g as { copy?: boolean }).copy) ? g.id : libraryId(g));
+  // glyphs that stand for no characters are given WORD JOINER in the character map (see LETTERLESS)
+  s.embedUnicodeCmap = (context) => {
+    const all = s.glyphs;
+    s.glyphs = all.map((g) => (g && !g.codePoints.length ? { ...g, codePoints: [LETTERLESS], copy: true } : g)); s.glyphCache.invalidate();
+    try { return libraryCmap(context); } finally { s.glyphs = all; s.glyphCache.invalidate(); }
+  };
+  const record = (sid: number, g: FkGlyph, chars: string) => {
+    const r: GlyphRecord = { id: sid, codePoints: [...chars].map((c) => c.codePointAt(0)!), advanceWidth: g.advanceWidth };
+    mine.add(r); s.glyphs[sid - 1] = r; s.glyphCache.invalidate();
+  };
+  return (g, chars) => {
+    const key = g.id + "|" + chars, known = byText.get(key); if (known !== undefined) return known;
+    let sid: number;
+    if (!used.has(g.id)) { sid = s.subset.includeGlyph(g.id); used.add(g.id); }
+    else { s.subset.glyphs.push(g.id); sid = s.subset.glyphs.length - 1; }   // already drawn for other characters: a copy
+    if (sid > 0) record(sid, g, chars);   // 0 is the font's "missing letter" glyph, never drawn here
+    byText.set(g.id + "|" + chars, sid); return sid;
+  };
 }
 
 const utf16Hex = (t: string) => PDFHexString.fromText(t);
-const RTL = /[\p{Script=Arabic}\p{Script=Hebrew}\p{Script=Syriac}\p{Script=Thaana}\p{Script=Nko}]/u;
 
 /** One font of a face: the font file read by fontkit, the same file embedded by the PDF library, and its shaper. */
 export type FacePart = { fk: FkFont; font: PDFFont; shape: Shaper };
@@ -153,7 +197,7 @@ export const SIMULATED_BOLD = 0.03;
  * the order to try for that text; it is read each time, so fonts added later (loaded on demand) are used from then on.
  */
 export function multiFace(parts: (text: string) => FacePart[], simulatedBold = false): Face {
-  const encoders = new WeakMap<PDFFont, (g: FkGlyph) => number>();
+  const encoders = new WeakMap<PDFFont, (g: FkGlyph, chars: string) => number>();
   const fontsOf = (ps: FacePart[]): ShapeFont[] => ps.map((p) => ({ shape: p.shape, has: (cp) => p.fk.hasGlyphForCodePoint(cp), upem: p.fk.unitsPerEm }));
   return {
     widthOfTextAtSize: (t, s) => shapeRuns(t, fontsOf(parts(t))).width * s,
@@ -171,23 +215,34 @@ export function multiFace(parts: (text: string) => FacePart[], simulatedBold = f
       const a = (o.rotate * Math.PI) / 180, cos = Math.cos(a), sin = Math.sin(a), k = o.size;
       const ops: PDFOperator[] = [pushGraphicsState()];
       if (o.opacity < 1) ops.push(setGraphicsState(page.node.newExtGState("GS", page.doc.context.obj({ Type: "ExtGState", ca: o.opacity, CA: o.opacity }))));
-      // The real text goes with the glyphs ("ActualText"), so readers that use it (Acrobat, Chrome, poppler) give back
-      // the words as typed even where shaping reordered letters (Hindi, Bengali, Tamil, ...). Not for lines with
-      // right-to-left text: readers put those in reading order from the glyphs themselves, and would reverse the
-      // ActualText again (seen with poppler).
-      const tag = !RTL.test(text);
-      if (tag) ops.push(PDFOperator.of("BDC" as never, [PDFName.of("Span"), page.doc.context.obj({ ActualText: utf16Hex(text) }) as never]));
+      // The line's real text goes with its glyphs ("ActualText", PDF 1.5 marked content), so readers that use it give
+      // back the words as typed even where shaping reordered or split letters (Hindi, Bengali, Tamil, Arabic dots, ...).
+      // ActualText is the text in reading order (logical order), also for right-to-left lines. Tested readers differ
+      // (methods page): PDFium (Chrome, Edge) uses it correctly; poppler and MuPDF reverse it on right-to-left lines;
+      // PDF.js ignores it and reads the glyphs' own character map.
+      ops.push(PDFOperator.of("BDC" as never, [PDFName.of("Span"), page.doc.context.obj({ ActualText: utf16Hex(text) }) as never]));
       ops.push(beginText(), setFillingColor(rgb(o.color.r, o.color.g, o.color.b)));
       // simulated bold: fill each letter and draw its outline in the same colour, which thickens it evenly
       if (simulatedBold) ops.push(setTextRenderingMode(TextRenderingMode.FillAndOutline), setStrokingColor(rgb(o.color.r, o.color.g, o.color.b)), setLineWidth(o.size * SIMULATED_BOLD), setLineJoin(LineJoinStyle.Round));
-      let current = -1;
+      // The line is written as runs of glyphs with small spacing adjustments (the TJ operator), the way PDF writers
+      // usually do it, rather than placing each glyph on its own: readers then see continuous words. Each adjustment
+      // moves the pen from where the font's own width of the previous glyph leaves it to where shaping put the next
+      // glyph; a glyph raised or lowered by shaping (a mark) uses the text rise.
+      ops.push(setTextMatrix(cos, sin, -sin, cos, o.x, o.y));
+      let current = -1, pen = 0, rise = 0, run: (PDFHexString | number)[] = [];
+      const flush = () => { if (run.length) ops.push(PDFOperator.of("TJ" as never, [page.doc.context.obj(run as never) as never])); run = []; };
       for (const g of glyphs) {
-        if (g.font !== current) { ops.push(setFontAndSize(keyOf(g.font), o.size)); current = g.font; }
-        const p = ps[g.font], u = (g.x + g.dx) * k, v = g.dy * k;
-        const id = encoderFor(p)(p.fk.getGlyph(g.id, [...g.chars].map((c) => c.codePointAt(0)!)));   // the characters go into the font's character map, for search
-        ops.push(setTextMatrix(cos, sin, -sin, cos, o.x + u * cos - v * sin, o.y + u * sin + v * cos), showText(PDFHexString.of(id.toString(16).padStart(4, "0"))));
+        if (g.font !== current) { flush(); ops.push(setFontAndSize(keyOf(g.font), o.size)); current = g.font; }
+        if (Math.abs(g.dy - rise) > 1e-9) { flush(); rise = g.dy; ops.push(setTextRise(rise * k)); }
+        const p = ps[g.font], glyph = p.fk.getGlyph(g.id, [...g.chars].map((c) => c.codePointAt(0)!));
+        const id = encoderFor(p)(glyph, g.chars);   // the characters go into the font's character map, for search
+        const shift = g.x + g.dx - pen;
+        if (Math.abs(shift) > 1e-6) run.push(Math.round(-shift * 1000 * 1000) / 1000);
+        run.push(PDFHexString.of(id.toString(16).padStart(4, "0")));
+        pen = g.x + g.dx + glyph.advanceWidth / p.fk.unitsPerEm;   // where the font's own width leaves the pen
       }
-      ops.push(endText()); if (tag) ops.push(PDFOperator.of("EMC" as never)); ops.push(popGraphicsState());
+      flush();
+      ops.push(endText(), PDFOperator.of("EMC" as never)); ops.push(popGraphicsState());
       page.pushOperators(...ops);
     },
   };

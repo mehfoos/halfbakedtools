@@ -296,3 +296,34 @@ embedded and no outline is drawn; regular text has no outline. Headless Chrome, 
 (NotoSansMalayalam-Bold, NotoSans-Bold embedded), FreeSerif bold simulated (FreeSerif embedded, visibly heavier), and
 FreeSerif with FreeSerifBold added as its bold version (FreeSerifBold embedded); all rendered by poppler as expected and
 extracted exactly.
+
+### Urdu in Nastaliq, and copied text in four readers (2026-11-19)
+
+Unit tests: Urdu picks Nastaliq and Arabic and Persian pick Naskh, and the choice can be fixed; Nastaliq's height is over
+1.5 times the text size; a page with Urdu and Arabic embeds both fonts; in "بيت ثابت", "شکریہ اور خدا حافظ" and
+"किताब और पुस्तक" the character map of every drawn glyph, put together, gives back exactly the letters typed (ب/ت/ث/ي
+and ح/خ share base glyphs), the dot glyphs give U+2060, and every line, right-to-left included, carries its text as
+ActualText. A stand-in shaper drawing "ABC" with the glyph of "A" three times, in a CFF font (InterDisplay-Black.otf) and
+a TrueType font (Liberation Sans): both PDFs pass `qpdf --check`, show "AAA" and copy as "ABC" in poppler and PDFium.
+
+Headless Chrome, Text to PDF in Noto Sans: three Urdu lines (پاکستان ایک خوبصورت ملک ہے / میں اردو پڑھتا ہوں /
+شکریہ اور خدا حافظ) render with the same glyphs and joins as Chrome's own rendering of the Fontsource file, and the lines
+no longer overlap (they did when line spacing came from the Latin font). Earlier test files (mixed alphabets, Chinese,
+Japanese, Korean, Malayalam) rendered pixel for pixel the same glyphs after glyphs were written as runs; only the line
+spacing changed.
+
+Copied text, 15 lines in 12 scripts (Hebrew twice, Bengali, Punjabi, Telugu, Kannada, Thai, Tamil, Arabic twice, Hindi,
+Malayalam, Urdu three times), compared line by line ignoring spaces and invisible format characters:
+
+| Reader | Exact lines | What goes wrong |
+|---|---|---|
+| PDFium 153 (pypdfium2; the engine of Chrome and Edge) | 15/15 | — |
+| PDF.js 6.5 (Firefox's reader; pdfjs-dist) | 10/15 | ignores ActualText: Bengali and Tamil vowel signs in display order; Urdu Nastaliq out of order |
+| poppler 24.02 (pdftotext) | 6/15 | reverses tagged right-to-left lines letter by letter; on a mostly right-to-left page also moved a Hindi and a Malayalam vowel sign to the line start (it did this before these changes too) |
+| MuPDF 1.28 (PyMuPDF) | 6/15 | reverses tagged right-to-left lines; repeats the end of some Indian-script lines (its ActualText matching subtracts a byte count from a character count; it did this before these changes too) |
+
+Before these changes, on 6 of those lines (Arabic twice, Hebrew, Hindi, Urdu twice), PDFium gave 1, PDF.js 1, MuPDF 1
+and poppler 4, with control characters in all but poppler. For comparison, the same Arabic and Urdu lines printed to PDF
+by Chrome from the same fonts: poppler split words with spaces, PDFium gave Arabic in reverse order and broke the Urdu
+into fragments, and PDF.js gave mostly null characters. No reader showed control characters after these changes.
+Not tested: Adobe Acrobat, Apple Preview.

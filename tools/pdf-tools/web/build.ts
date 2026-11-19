@@ -6,7 +6,7 @@ import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
 import { standardFace, type Face } from "./face.ts";
 import { embedOwnFont, type OwnFont } from "./ownfont.ts";
-import { notoFace, notoLibrary, type NotoLoader, type HanStyle } from "./noto.ts";
+import { notoFace, notoLibrary, type NotoLoader, type HanStyle, type ArabicStyle } from "./noto.ts";
 import { placeText, placeImage, placeBox, shapePath, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
 import { numberMark, watermarkMarks, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import type { PageItem, Rotation } from "./session.ts";
@@ -16,7 +16,7 @@ export type SourceData =
   /** `turn`: degrees clockwise the stored pixels must be turned to look right (a photo's orientation note). */
   | { kind: "image"; bytes: Uint8Array; type: "png" | "jpeg"; turn?: Rotation };
 
-export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions; ownFont?: OwnFont; ownBold?: OwnFont; noto?: NotoLoader; han?: HanStyle };   // ownBold: an optional bold file for the own font
+export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions; ownFont?: OwnFont; ownBold?: OwnFont; noto?: NotoLoader; han?: HanStyle; arabic?: ArabicStyle };   // ownBold: an optional bold file for the own font
 /** For building one page out of a longer document (a preview): its position, and the document's length. */
 export type Place = { index: number; total: number };
 
@@ -43,13 +43,13 @@ const libraries = new WeakMap<NotoLoader, ReturnType<typeof notoLibrary>>();
 /** Faces for added text in `doc`: built-in fonts, the shipped Noto fonts (regular or bold), or the visitor's own font
  *  (embedded on first use, so a file that doesn't use it doesn't carry it). Bold in the visitor's own font uses the bold
  *  file they added, or else a simulated bold (the letters outlined to thicken them). */
-export function faceSet(doc: PDFDocument, own?: OwnFont, noto?: NotoLoader, han: HanStyle = "auto", ownBold?: OwnFont) {
+export function faceSet(doc: PDFDocument, own?: OwnFont, noto?: NotoLoader, han: HanStyle = "auto", ownBold?: OwnFont, arabic: ArabicStyle = "auto") {
   const fonts = fontSet(doc), made = new Map<string, Promise<Face> | Face>();
   return async (font: FontKey, bold: boolean): Promise<Face> => {
     if (font === "noto") {
       if (!noto) throw new Error("The shipped Noto fonts aren't available here.");
       let lib = libraries.get(noto); if (!lib) libraries.set(noto, (lib = notoLibrary(noto)));
-      const key = `noto${bold}`; let f = made.get(key); if (!f) made.set(key, (f = notoFace(doc, lib, han, bold))); return f;
+      const key = `noto${bold}`; let f = made.get(key); if (!f) made.set(key, (f = notoFace(doc, lib, han, bold, arabic))); return f;
     }
     if (font !== "own") return standardFace(fonts(font, bold));
     if (!own) throw new Error(OWN_FONT_MISSING);
@@ -120,7 +120,7 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       if (!img) embedded.set(id, (img = d.type === "png" ? await out.embedPng(d.bytes) : await out.embedJpg(d.bytes)));
       return img;
     };
-    const faces = faceSet(out, opts.ownFont, opts.noto, opts.han, opts.ownBold);
+    const faces = faceSet(out, opts.ownFont, opts.noto, opts.han, opts.ownBold, opts.arabic);
     const prepared = async (font: FontKey, bold: boolean, text: string) => { const f = await faces(font, bold); await f.prepare?.(text); return f; };
     async function drawMarks(page: PDFPage, marks: Mark[]) {
       const box = page.getCropBox(), rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);

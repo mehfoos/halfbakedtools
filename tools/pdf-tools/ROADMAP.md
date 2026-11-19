@@ -109,13 +109,13 @@ items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
       integerised tessdata_best). Read through mirrors on 2026-11-19; see `THIRD-PARTY.md`.
 - [x] **Your own font** (owner's option 1, 2026-11-19): a font file from the visitor's device for Edit PDF text,
       Text to PDF, page numbers and watermarks; HarfBuzz shaping and bidi (owner's option 3, needed: fontkit misplaced
-      accents). Not yet: form filling; bold for own fonts; a font kept between visits.
+      accents). Bold added 2026-11-19. Not yet: form filling; a font kept between visits.
 - [x] **Shipped fonts (owner's option 2): "Noto Sans (many alphabets)"** (2026-11-19): Latin, Greek, Cyrillic, Vietnamese,
       Malayalam, Arabic, Hebrew, Devanagari, Bengali, Gurmukhi, Tamil, Telugu, Kannada, Thai, from Fontsource (OFL 1.1, no
       reserved names), loaded per alphabet, with per-character font fallback. OFL text and FAQ downloaded and handed to the
       owner for the release (verified in the release 2026-11-19, cited on the methods page). Chinese, Japanese and Korean
       added the same day (Fontsource's numbered files, only those a text needs; style chosen per line or by the visitor).
-      Bold added the same day (Noto's bold files; own font: its bold file if added, else simulated). Next: Urdu in Nastaliq style; form filling with these fonts.
+      Bold added the same day (Noto's bold files; own font: its bold file if added, else simulated). Urdu in Nastaliq (Noto Nastaliq Urdu) added the same day, with copied text fixed for letters that share a glyph and every line tagged (see DECISIONS.md). Next: form filling with these fonts.
 - [ ] Pages with a `UserUnit` other than 1 (rare, very large pages) are untested.
 - [ ] Multi-image TIFF: use every image, not only the first (`loadImage` in `web/ui.ts`; a source would then have
       several pages and `SourceData` needs one image per page).

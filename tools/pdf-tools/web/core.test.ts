@@ -913,7 +913,8 @@ test("own font: text is embedded as a subset, tagged with its real text, and mea
   const decode = (x: unknown) => { const st = back.context.lookup(x as never) as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown } }; const raw = st.getContents(); return new TextDecoder("latin1").decode(st.dict.get(PDFName.of("Filter")) ? unzlibSync(raw) : raw); };
   const ops = ("asArray" in stream ? (stream as unknown as { asArray(): unknown[] }).asArray() : [stream]).map(decode).join("\n");
   assert.match(ops, /\/Span <<\s*\/ActualText <FEFF00480065006C006C006F0020041603B1>\s*>> BDC/); assert.match(ops, /EMC/); assert.match(ops, /\/GS-\d+ gs/);
-  assert.equal((ops.match(/> Tj/g) ?? []).length, 8, "one glyph per character, space included");
+  assert.equal((ops.match(/<[0-9A-F]{4}>/g) ?? []).length, 8, "one glyph per character, space included");
+  assert.match(ops, /\] TJ/, "written as a run with adjustments, not glyph by glyph");
   assert.ok(saved.length < bytes.length / 4, "only the letters used are embedded");
 });
 test("build: text in the visitor's own font is embedded once, only when used; a missing font file is reported", async () => {
@@ -965,9 +966,9 @@ test("own font: a WOFF file is unpacked to the plain font; WOFF 2 is refused wit
 
 // ---- shipped Noto fonts ----
 import { NOTO_FILES, notoId } from "./notofiles.ts";
-import { notoFilesFor, notoMissing, notoFace, notoLibrary, loadCjkIndex, hanStyleFor, notoOrder } from "./noto.ts";
+import { notoFilesFor, notoMissing, notoFace, notoLibrary, loadCjkIndex, hanStyleFor, notoOrder, arabicStyleFor } from "./noto.ts";
 import { CJK_FILES } from "./cjkfiles.ts";
-const fsNoto = async (id: string, weight: 400 | 700 = 400) => { const fam = id.match(/^(noto-sans(?:-(?:sc|tc|jp|kr|malayalam|arabic|hebrew|devanagari|bengali|gurmukhi|tamil|telugu|kannada|thai))?)-/)![1]; return new Uint8Array(readFileSync(new URL(`../../../node_modules/@fontsource/${fam}/files/${id}-${weight}-normal.woff`, import.meta.url))); };
+const fsNoto = async (id: string, weight: 400 | 700 = 400) => { const fam = id.match(/^(noto-nastaliq-urdu|noto-sans(?:-(?:sc|tc|jp|kr|malayalam|arabic|hebrew|devanagari|bengali|gurmukhi|tamil|telugu|kannada|thai))?)-/)![1]; return new Uint8Array(readFileSync(new URL(`../../../node_modules/@fontsource/${fam}/files/${id}-${weight}-normal.woff`, import.meta.url))); };
 test("noto: the list of shipped files matches the installed packages' coverage", () => {
   for (const f of NOTO_FILES) {
     const u = JSON.parse(readFileSync(new URL(`../../../node_modules/@fontsource/${f.family}/unicode.json`, import.meta.url), "utf8")) as Record<string, string>;
@@ -1064,4 +1065,60 @@ test("bold: Noto uses its own bold files; the visitor's font uses their bold fil
   assert.doesNotMatch(await ops(withFile), /2 Tr/); assert.ok((await pdfFonts(withFile)).some((n) => /LiberationSans-Bold/.test(n)));
   const regular = await makeBuilder(data, { imageDpi: 96, ownFont: own })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [{ ...O, bold: false }] }]);
   assert.doesNotMatch(await ops(regular), /2 Tr/);
+});
+test("noto: Urdu is drawn in Nastaliq by default, Arabic and Persian in Naskh; the choice can be fixed", async () => {
+  const urdu = "پاکستان ایک خوبصورت ملک ہے", arabic = "مرحبا بكم في المكتبة", persian = "کتاب‌خانه بزرگ است";
+  assert.equal(arabicStyleFor(urdu, "auto"), "nastaliq"); assert.equal(arabicStyleFor(arabic, "auto"), "naskh"); assert.equal(arabicStyleFor(persian, "auto"), "naskh");
+  assert.equal(arabicStyleFor(arabic, "nastaliq"), "nastaliq"); assert.equal(arabicStyleFor(urdu, "naskh"), "naskh");
+  assert.deepEqual(notoFilesFor(urdu).map((f) => f.family), ["noto-nastaliq-urdu"]);
+  assert.deepEqual(notoFilesFor(arabic).map((f) => f.family), ["noto-sans-arabic"]);
+  assert.deepEqual(notoFilesFor(urdu, "auto", "naskh").map((f) => f.family), ["noto-sans-arabic"]);
+  const meta = JSON.parse(readFileSync(new URL("../tool.json", import.meta.url), "utf8")) as { vendor: Record<string, string> };
+  assert.equal(meta.vendor["licenses/noto-nastaliq-urdu-LICENSE.txt"], "@fontsource/noto-nastaliq-urdu/LICENSE");
+  const doc = await PDFDocument.create(), face = notoFace(doc, notoLibrary(fsNoto)), page = doc.addPage([400, 200]);
+  await face.prepare!(`${urdu}\n${arabic}`);
+  for (const [i, t] of [urdu, arabic].entries()) { assert.deepEqual(face.missing(t), []); face.draw(page, t, { x: 10, y: 150 - i * 60, size: 20, color: { r: 0, g: 0, b: 0 }, rotate: 0, opacity: 1 }); }
+  assert.ok(face.heightAtSize(20) > 30, "Nastaliq is taller than 1.5 times its size, so its lines need more room");
+  const fonts = (await PDFDocument.load(await doc.save())).context.enumerateIndirectObjects().map(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("BaseFont"))?.toString() ?? "").filter((n) => /Noto/.test(n));
+  assert.ok(fonts.some((n) => /NastaliqUrdu/.test(n)) && fonts.some((n) => /NotoSansArabic/.test(n)), fonts.join(" "));
+});
+test("noto: letters that share a glyph keep their own text; glyphs standing for no letter give WORD JOINER; every line carries its real text", async () => {
+  // Arabic-script fonts draw ب ت ث (and ح خ) on one dotless base glyph and add the dots as separate glyphs.
+  const lines = ["بيت ثابت", "شکریہ اور خدا حافظ", "किताब और पुस्तक"];
+  const doc = await PDFDocument.create(), face = notoFace(doc, notoLibrary(fsNoto)), page = doc.addPage([400, 300]);
+  for (const [i, t] of lines.entries()) { await face.prepare!(t); face.draw(page, t, { x: 10, y: 250 - i * 80, size: 20, color: { r: 0, g: 0, b: 0 }, rotate: 0, opacity: 1 }); }
+  const back = await PDFDocument.load(await doc.save()), pg = back.getPage(0);
+  const dec = (ref: unknown) => { const st = back.context.lookup(ref as never) as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown } }; const raw = st.getContents(); return new TextDecoder("latin1").decode(st.dict.get(PDFName.of("Filter")) ? unzlibSync(raw) : raw); };
+  const c = pg.node.Contents()!, ops = ("asArray" in c ? (c as unknown as { asArray(): unknown[] }).asArray() : [c]).map(dec).join("\n");
+  const fontDict = pg.node.Resources()!.lookup(PDFName.of("Font")) as unknown as { get(n: PDFName): unknown };
+  const maps = new Map<string, Map<number, string>>();
+  const mapOf = (name: string) => {
+    let m = maps.get(name); if (m) return m; m = new Map();
+    const f = back.context.lookup(fontDict.get(PDFName.of(name)) as never) as unknown as { get(n: PDFName): unknown };
+    for (const [, cid, u] of dec(f.get(PDFName.of("ToUnicode"))).matchAll(/^<([0-9a-fA-F]{4})> <([0-9a-fA-F]*)>$/gm)) m.set(parseInt(cid, 16), String.fromCodePoint(...(u.match(/.{4}/g) ?? []).map((h) => parseInt(h, 16))));
+    maps.set(name, m); return m;
+  };
+  // the text each line's glyphs give through the character maps, in drawing order
+  const drawn: string[] = [];
+  for (const block of ops.split(/BDC/).slice(1)) {
+    let font = "", text = "";
+    for (const m of block.matchAll(/\/(\S+) [\d.]+ Tf|\[((?:.|\n)*?)\] TJ/g)) {
+      if (m[1]) { font = m[1]; continue; }
+      for (const [, h] of m[2].matchAll(/<([0-9A-Fa-f]{4})>/g)) { const u = mapOf(font).get(parseInt(h, 16)); assert.ok(u !== undefined, `glyph ${h} of ${font} has a character-map entry`); text += u; }
+    }
+    drawn.push(text);
+  }
+  assert.equal(drawn.length, lines.length);
+  const letters = (s: string) => [...s.replace(/[\s⁠]/g, "")].sort().join("");
+  for (const [i, t] of lines.entries()) assert.equal(letters(drawn[i]), letters(t), `every letter of “${t}” comes back from its own glyph`);
+  assert.ok(drawn.slice(0, 2).every((d) => d.includes("⁠")), "the dot glyphs give WORD JOINER");
+  for (const t of lines) assert.ok(ops.includes(`/ActualText <${[...PDFHexString.fromText(t).asBytes()].map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase()}>`), `“${t}” is tagged with its real text`);
+});
+test("build: the Arabic-script style chosen for Noto reaches added text (Urdu in Nastaliq by default, Naskh when chosen)", async () => {
+  const src = await PDFDocument.create(); src.addPage([300, 300]); const data = new Map([["a", { kind: "pdf" as const, bytes: await src.save() }]]);
+  const T = { type: "text" as const, x: 20, y: 20, rotate: 0, text: "میں اردو پڑھتا ہوں", size: 20, color: "#000000", font: "noto" as const, bold: false };
+  const fontsOf = async (arabic?: "naskh") => { const d = await PDFDocument.load(await makeBuilder(data, { imageDpi: 96, noto: fsNoto, ...(arabic ? { arabic } : {}) })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [T] }])); return d.context.enumerateIndirectObjects().map(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("BaseFont"))?.toString() ?? "").filter((n) => /Noto/.test(n)); };
+  const auto = await fontsOf(), naskh = await fontsOf("naskh");
+  assert.ok(auto.length > 0 && auto.every((n) => /NastaliqUrdu/.test(n)), auto.join(" "));
+  assert.ok(naskh.length > 0 && naskh.every((n) => /NotoSansArabic/.test(n)), naskh.join(" "));
 });

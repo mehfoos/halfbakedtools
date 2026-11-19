@@ -3,11 +3,11 @@ import { PDFDocument } from "@cantoo/pdf-lib";
 import { fontSet } from "./build.ts";
 import { standardFace } from "./face.ts";
 import { fontFaces, prepareOwnFont, embedOwnFont, type OwnFont } from "./ownfont.ts";
-import { notoFace, notoLibrary, type HanStyle } from "./noto.ts";
+import { notoFace, notoLibrary, type HanStyle, type ArabicStyle } from "./noto.ts";
 import { loadNoto } from "./notoload.ts";
 import { POINTS_PER, type CropUnit } from "./crop.ts";
 import { PAGE_MIN, PAGE_MAX } from "./layout.ts";
-import { TEXT_DEFAULTS, FONT_SIZE_MIN, FONT_SIZE_MAX, wrapText, linesPerPage, paginate } from "./textpdf.ts";
+import { TEXT_DEFAULTS, FONT_SIZE_MIN, FONT_SIZE_MAX, wrapText, paginate } from "./textpdf.ts";
 import { safeName } from "./session.ts";
 
 export function startText() {
@@ -66,12 +66,13 @@ export function startText() {
       const layout = { ...TEXT_DEFAULTS, width, height, margin, fontSize: size };
       const doc = await PDFDocument.create(), choice = $<HTMLSelectElement>("txFont").value;
       if (choice === "own" && !own) return say("Choose a font file first (Font: “Your own font…”).", "bad");
-      const face = choice === "own" ? await embedOwnFont(doc, own!) : choice === "noto" ? notoFace(doc, notoLib, ($<HTMLSelectElement>("txHan").value as HanStyle) || "auto") : standardFace(fontSet(doc)(choice as "mono" | "sans" | "serif", false));
+      const face = choice === "own" ? await embedOwnFont(doc, own!) : choice === "noto" ? notoFace(doc, notoLib, ($<HTMLSelectElement>("txHan").value as HanStyle) || "auto", false, ($<HTMLSelectElement>("txArabic").value as ArabicStyle) || "auto") : standardFace(fontSet(doc)(choice as "mono" | "sans" | "serif", false));
       if (face.prepare) { say("Loading the fonts this text needs…"); await face.prepare(raw); }
       const gaps = new Set(face.missing(raw.replace(/[\t\r\n]/g, ""))), miss = { chars: [...gaps], count: [...raw].filter((c) => gaps.has(c)).length };
       const text = miss.count ? [...raw].map((c) => (gaps.has(c) ? "?" : c)).join("") : raw;
       const lines = wrapText(text, (s) => face.widthOfTextAtSize(s, size), width - 2 * margin, TEXT_DEFAULTS.tab);
-      const pages = paginate(lines, linesPerPage(layout)), step = size * layout.lineGap;
+      // line spacing: the usual 1.3 times the size, or more for a font that is taller than that (Nastaliq is)
+      const step = Math.max(size * layout.lineGap, face.heightAtSize(size) * 1.05), pages = paginate(lines, Math.max(1, Math.floor((height - 2 * margin) / step)));
       for (const pl of pages) {
         const page = doc.addPage([width, height]);
         pl.forEach((l, i) => {
