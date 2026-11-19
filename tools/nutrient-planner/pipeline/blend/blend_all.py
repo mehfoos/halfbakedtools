@@ -23,6 +23,7 @@ the values are combined:
   at least 3 of sodium, calcium, potassium, iron and magnesium compared with at most one outside its tolerance;
 - USDA and CoFID: the reviewed decisions in matches/cofid.csv win. A food decided *same* or *equivalent* is linked to
   that CoFID record; one decided *similar* or *none* is never linked to any CoFID record.
+- Pairs listed in matches/blend-apart.csv (decided not the same food, with the reason) are never grouped.
 Linked records form a group only if every two of them pass `identity_ok` (complete linkage, not chaining): same
 words, preparation, salt (none, reduced, salted), skin, packing, drained or not, flour type, Latin species name and
 fortification, and no sign in the values that one is salted (sodium, any food) or fortified (for flour and cereals:
@@ -224,6 +225,12 @@ def composition_same(u: list, v: list) -> bool:
     return compared >= 3 and off <= 1
 
 
+def kept_apart() -> set[frozenset]:
+    """Pairs of records decided not to be the same food (matches/blend-apart.csv), as "table:code"."""
+    rows = csv.DictReader((HERE / "matches/blend-apart.csv").read_text(encoding="utf-8").splitlines())
+    return {frozenset((r["record_a"], r["record_b"])) for r in rows}
+
+
 def groups(recs: list[dict]) -> list[list[int]]:
     same_rev, apart_rev = cl.reviewed_cofid()
     by_key = collections.defaultdict(list)
@@ -248,9 +255,12 @@ def groups(recs: list[dict]) -> list[list[int]]:
         links[j] += 1
         edges.add(frozenset((i, j)))
 
+    apart = kept_apart()
+    key_of = lambda r: f"{r['table']}:{code_of(r['f'])}"  # noqa: E731
+
     def ok(i, j) -> bool:
         a, b = recs[i], recs[j]
-        if a["table"] == b["table"]:
+        if a["table"] == b["table"] or frozenset((key_of(a), key_of(b))) in apart:
             return False
         if {a["table"], b["table"]} == {"usda", "cofid"}:
             u, c = (a, b) if a["table"] == "usda" else (b, a)
@@ -300,7 +310,8 @@ def groups(recs: list[dict]) -> list[list[int]]:
             for c in clusters:
                 if any(recs[j]["table"] == recs[i]["table"] for j in c):
                     continue
-                if all(identity_ok(recs[i], recs[j], reviewed_pair(i, j)) for j in c) and any(frozenset((i, j)) in edges for j in c):
+                if all(identity_ok(recs[i], recs[j], reviewed_pair(i, j)) and frozenset((key_of(recs[i]), key_of(recs[j]))) not in apart
+                       for j in c) and any(frozenset((i, j)) in edges for j in c):
                     c.append(i)
                     break
             else:

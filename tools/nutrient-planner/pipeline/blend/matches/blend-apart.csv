@@ -1,0 +1,4 @@
+record_a,record_b,reason,decided
+afcd:F002884,frida:544,"Chicory: AFCD's values (vitamin A 42, iron 1.7) suggest a leafy chicory, Frida's (vitamin A 2.5) witloof; the names can't settle it","owner, 19 Nov 2026: drop the doubtful groups from the independent review"
+bls:F110700,kfcdb:H0510000009a,"Apple nectar: KFCDb's vitamin C 25 mg (BLS 0) suggests added vitamin C","owner, 19 Nov 2026: drop the doubtful groups from the independent review"
+bls:G492100,kfcdb:F0390000000a,"Wild garlic: KFCDb gives Allium monanthum; BLS wild garlic is presumably ramsons (Allium ursinum)","owner, 19 Nov 2026: drop the doubtful groups from the independent review"

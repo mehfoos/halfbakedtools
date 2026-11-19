@@ -122,6 +122,11 @@ class Output(unittest.TestCase):
                 if want in food["s"] and "not used" not in food["s"][want].split(";")[0]:
                     self.assertEqual(food["d"][std][i], want, fid)
 
+    def test_kept_apart_pairs_never_share_a_food(self):
+        foods = json.loads((DATA / "foods-blend.json").read_text())["foods"]
+        for pair in b.kept_apart():
+            self.assertFalse(any(pair <= set(f["src"]["members"]) for f in foods), pair)
+
     def test_each_food_has_two_independent_tables(self):
         for fid, food in self.values["foods"].items():
             self.assertGreaterEqual(sum("notUsed" not in r for r in food["records"]), 2, fid)
