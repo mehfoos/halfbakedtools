@@ -170,3 +170,11 @@ Headless Chrome with a 160-line text file holding a tab, a 2000-character paragr
 PDF (poppler: 595.276 × 841.89 pt, Courier, WinAnsi); wrapped lines, the tab (as four spaces) and é, ï and the em dash came
 through; the two Japanese characters became "?" and the message said so. Changing the unit converted the typed sizes.
 No requests left the browser. Not checked: very large files (megabytes), right-to-left text, files not in UTF-8.
+
+### PDF to Markdown and HTML (2026-11-19)
+
+Headless Chrome with a 2-page PDF made with reportlab (24 pt, 16 pt and 11 pt text, a two-line paragraph, a gap, two bullet
+lines, text containing `<angle> & *x*`): both outputs had the 24 pt line as the top heading, 16 pt as the second level,
+the paragraph's two lines joined, bullets as a list, page markers, and the special characters escaped (`\<angle\>` in
+Markdown, `&lt;angle&gt;` in HTML). No requests left the browser. Not checked: real-world documents with columns, tables or
+footnotes (these are expected to come out wrong; the pages say so), Markdown rendered by another program, non-Latin text.

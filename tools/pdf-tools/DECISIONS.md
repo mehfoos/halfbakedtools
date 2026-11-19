@@ -85,3 +85,6 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 | 2026-11-19 | Text to PDF is its own page, not the shared task page | There are no PDF pages to select or arrange; a text box and page options are all it needs |
 | 2026-11-19 | Text to PDF uses the built-in fonts and replaces characters they cannot draw with "?", telling the visitor how many | Embedding a font for other scripts needs a licensed, archived font file; silently dropping characters would be worse |
 | 2026-11-19 | Text to PDF starts at 210 × 297 mm typed as numbers, with no named paper size | Named sizes wait for an archived source (see ROADMAP "Sources to archive") |
+| 2026-11-19 | PDF to Markdown/HTML guesses structure from text size and line spacing and says so on the page and in the saved-file message | A PDF has no stored headings or paragraphs; presenting guesses as structure would mislead |
+| 2026-11-19 | Text is read in the file's own order, not re-sorted into columns | Re-sorting by position misreads more files than it fixes; multi-column pages are listed as a limitation |
+| 2026-11-19 | HTML file to PDF is not built | Faithful rendering needs a layout engine; a text-only conversion would not be what the name promises |

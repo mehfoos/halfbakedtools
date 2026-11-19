@@ -1,5 +1,6 @@
 // Browser-only: opens PDFs and images for display, and draws pages onto a canvas.
 // Uses PDF.js (Mozilla's PDF reader, the one built into Firefox), bundled with this site.
+import type { Item } from "./structure.ts";
 import * as pdfjs from "pdfjs-dist";
 import workerSource from "pdfjs-dist/build/pdf.worker.min.mjs?raw";
 import type { Rotation } from "./session.ts";
@@ -84,6 +85,13 @@ export async function pageText(h: Handle, page: number): Promise<string> {
   if (h.kind === "image") return "";
   const content = await (await h.doc.getPage(page + 1)).getTextContent();
   return piecesToText(content.items.filter((i): i is typeof i & TextPiece => "str" in i));
+}
+
+/** Text pieces with where they sit and how big they are (for guessing headings and paragraphs). */
+export async function pageItems(h: Handle, page: number): Promise<Item[]> {
+  if (h.kind === "image") return [];
+  const content = await (await h.doc.getPage(page + 1)).getTextContent();
+  return content.items.flatMap((i) => "str" in i && "transform" in i ? [{ str: i.str, x: i.transform[4], y: i.transform[5], size: i.height || Math.hypot(i.transform[2], i.transform[3]), eol: i.hasEOL }] : []);
 }
 
 /** Opens an image file the browser can decode itself (PNG, JPEG, WebP, GIF, BMP, SVG...). */

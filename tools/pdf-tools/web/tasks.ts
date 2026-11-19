@@ -103,6 +103,12 @@ export const TASKS: Task[] = [
     pick: "Select PDF files", hint: "Saves the words only, with no layout. Scanned pages are pictures and have no text to save.",
     parts: [], formats: ["txt"], which: "all", action: "Convert to text", suffix: "text", tag: "TXT" , selectAll: true },
 
+  { slug: "pdf-to-markdown", name: "PDF to Markdown", blurb: "Turn a PDF's text into a Markdown file, with headings, paragraphs and bullet lists guessed from text size and spacing.", group: "Convert from PDF", accept: "pdf",
+    pick: "Select PDF files", hint: "A rough conversion: a PDF stores positioned text, not structure. Tables, columns, pictures, links, bold and italic are not recovered. Scanned pages have no text.",
+    parts: [], formats: ["md"], which: "all", action: "Convert to Markdown", suffix: "markdown", tag: "MD", selectAll: true },
+  { slug: "pdf-to-html", name: "PDF to HTML", blurb: "Turn a PDF's text into a simple web page, with headings, paragraphs and bullet lists guessed from text size and spacing.", group: "Convert from PDF", accept: "pdf",
+    pick: "Select PDF files", hint: "A rough conversion: a PDF stores positioned text, not structure. Tables, columns, pictures, links, bold and italic are not recovered. Scanned pages have no text.",
+    parts: [], formats: ["html"], which: "all", action: "Convert to HTML", suffix: "html", tag: "WEB", selectAll: true },
   { slug: "image-to-pdf", name: "Images to PDF", blurb: "Turn JPG, PNG, TIFF, BMP, WebP, GIF or SVG pictures into a PDF, one picture per page.", group: "Convert to PDF", accept: "image",
     pick: "Select images", hint: "Drag the pictures into order and turn any that are sideways. Under Page, choose a page size and margin.",
     parts: ["select", "move", "turn", "remove", "imageDpi", "imagePage"], formats: ["pdf"], which: "all", action: "Convert to PDF", suffix: "images", tag: "IMG" },
@@ -123,8 +129,7 @@ export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "Word to PDF", tag: "DOC", group: "Convert to PDF" }, { name: "PowerPoint to PDF", tag: "PPT", group: "Convert to PDF" },
   { name: "Excel to PDF", tag: "XLS", group: "Convert to PDF" }, { name: "HTML file to PDF", tag: "WEB", group: "Convert to PDF" },
   { name: "PDF to Word", tag: "DOC", group: "Convert from PDF" }, { name: "PDF to PowerPoint", tag: "PPT", group: "Convert from PDF" },
-  { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" }, { name: "PDF to HTML", tag: "WEB", group: "Convert from PDF" },
-  { name: "PDF to Markdown", tag: "MD", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
+  { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
   { name: "Fill in PDF forms", tag: "☑", group: "Edit" },
   { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
 ];

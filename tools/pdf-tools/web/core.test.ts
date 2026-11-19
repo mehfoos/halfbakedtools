@@ -780,3 +780,23 @@ test("text to pdf: pages hold the right number of lines; unsupported characters 
   assert.deepEqual(missingChars("abc\nそう€€", has), { chars: ["そ", "う", "€"], count: 4 });
   assert.equal(replaceMissing("ab\nそc", has), "ab\n?c");
 });
+
+// ---- PDF to Markdown / HTML ----
+import { toLines, toBlocks, toMarkdown, toHtml, bodySize } from "./structure.ts";
+const it = (str: string, y: number, size: number, eol = true) => ({ str, x: 72, y, size, eol });
+test("structure: headings by size, paragraphs by line gaps, bullets as lists", () => {
+  const page = toLines([it("Annual Report", 780, 24), it("Overview", 740, 16), it("This is the first line of a paragraph", 710, 11), it("and it carries on here.", 696, 11),
+    it("A new paragraph after a gap.", 650, 11), it("• first point", 620, 11), it("• second point", 606, 11), it("Closing words.", 560, 11)]);
+  assert.equal(bodySize([page]), 11);
+  const [b] = toBlocks([page]);
+  assert.deepEqual(b.map((x) => x.kind + ("level" in x ? x.level : "")), ["h1", "h2", "p", "p", "li", "li", "p"]);
+  assert.equal((b[2] as { text: string }).text, "This is the first line of a paragraph and it carries on here.");
+  const md = toMarkdown([b]); assert.match(md, /^<!-- page 1 -->\n\n# Annual Report\n\n## Overview\n\nThis is the first/); assert.match(md, /\n- first point\n- second point\n/);
+  const html = toHtml([b], "Report <1>"); assert.match(html, /<title>Report &lt;1&gt;<\/title>/); assert.match(html, /<ul>\n<li>first point<\/li>\n<li>second point<\/li>\n<\/ul>/); assert.match(html, /<h1>Annual Report<\/h1>/);
+});
+test("structure: text that looks like markdown or html is escaped; items on one baseline join into one line", () => {
+  const lines = toLines([it("a <b> & *c*", 700, 11, false), { str: " tail", x: 200, y: 700.5, size: 11, eol: true }]);
+  assert.equal(lines.length, 1); assert.equal(lines[0].text, "a <b> & *c* tail");
+  const [b] = toBlocks([lines]); assert.match(toHtml([b], "t"), /<p>a &lt;b&gt; &amp; \*c\* tail<\/p>/); assert.match(toMarkdown([b]), /a \\<b\\> & \\\*c\\\* tail/);
+  assert.deepEqual(toBlocks([[]]), [[]]); assert.equal(toMarkdown([[]]).trim(), "<!-- page 1 -->");
+});

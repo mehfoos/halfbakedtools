@@ -96,6 +96,16 @@
       "nav": false
     },
     {
+      "page": "pdf-to-markdown",
+      "label": "PDF to Markdown",
+      "nav": false
+    },
+    {
+      "page": "pdf-to-html",
+      "label": "PDF to HTML",
+      "nav": false
+    },
+    {
       "page": "text-to-pdf",
       "label": "Text to PDF",
       "nav": false
