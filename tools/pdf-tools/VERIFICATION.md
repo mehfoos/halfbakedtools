@@ -19,6 +19,7 @@ What the tool relies on, what it was checked against, and when.
 | Add/remove source; move, duplicate, remove, rotate, resize pages | `core.test.ts` "session: …" |
 | Split plans (one file, every N, chosen ranges, one per page) and file names | `core.test.ts` "session: planFiles…" |
 | Crop: unit conversion, crop box on upright and turned pages, minimum visible area, chosen pages, settings; resizing keeps an already-cropped page's area | `core.test.ts` "crop: …", "build: crop …", "build: resizing keeps …" |
+| Signature pad ink bounds | `core.test.ts` "signature: …" |
 | Paging of long page lists: whole rows that fit the screen, screen counts and ranges, short pager row | `core.test.ts` "perScreen…", "screen arithmetic", "pagerItems…" |
 | Settings file round trip; rejection of foreign, damaged and newer files; no content keys | `core.test.ts` "settings: …" |
 | Written PDFs: merge order, repeated pages independent, rotation adds to existing, resize, image pages, several files from one builder, fonts kept | `core.test.ts` "build: …" |
@@ -110,3 +111,10 @@ the other stopped at the quarter-inch minimum. "Only the pages I choose" cropped
 the file gave the library's clear message; saving with no margins was refused with a message. Settings file
 included the crop margins. No requests left the browser. Earlier suites were re-run and pass; Resize (50%) still
 gives the right sizes after the page-box fix. Not checked: real phones (touch dragging), Firefox, Safari.
+
+### Sign PDF (2026-11-19)
+
+Headless Chrome: opened a PDF on the Sign page (editor opens on page 1), pressed Draw signature, an empty pad was refused
+with a message, a two-stroke signature was drawn with the mouse (including Undo stroke), Use placed it as a movable,
+resizable picture; the saved PDF was read with pypdf (one transparent RGBA picture on page 1, none on the others) and
+rendered with poppler (dark-blue ink visible). No requests left the browser. Not checked: touch or pen input on real devices.

@@ -14,6 +14,7 @@ import {
 import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
 import { createEditor } from "./editor.ts";
+import { createSignPad } from "./signpad.ts";
 import type { Mark } from "./marks.ts";
 import { NO_NUMBERS, NO_WATERMARK, OPACITY_MIN, MARGIN_MAX, COUNT_MAX, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import { SIZE_MIN, SIZE_MAX } from "./marks.ts";
@@ -164,7 +165,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       }
       render();
       say(notes.join(" "), notes.length ? "warn" : "info");
-      if (task.slug === "edit" && editor && !editor.isOpen() && session.pages.length && has(session.pages[0])) editor.open(0);
+      if ((task.slug === "edit" || task.slug === "sign") && editor && !editor.isOpen() && session.pages.length && has(session.pages[0])) editor.open(0);
     });
   }
 
@@ -461,6 +462,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     },
     onClose: () => render(),
   }) : null;
+
+  const pad = can("sign") && editor ? createSignPad(root, (png) => { void editor.placePicture(new File([png], "signature.png", { type: "image/png" }), 1 / 4); }, say) : null;
+  root.querySelector("#edSign")?.addEventListener("click", () => pad?.open());
 
   // ---------- output options ----------
   function readOptions() {

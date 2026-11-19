@@ -61,6 +61,11 @@
       "nav": false
     },
     {
+      "page": "sign",
+      "label": "Sign PDF",
+      "nav": false
+    },
+    {
       "page": "watermark",
       "label": "Watermark",
       "nav": false

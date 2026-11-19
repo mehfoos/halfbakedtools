@@ -578,3 +578,11 @@ test("build: resizing keeps an already-cropped page's visible area (the library'
   assert.deepEqual([m.x, m.y, m.width, m.height], [0, 0, 200, 300]);
   assert.equal(out.node.TrimBox(), undefined, "boxes the page never had are not invented");
 });
+
+// ---- signature pad geometry ----
+import { inkBounds } from "./signpad.ts";
+test("signature: ink bounds include pen thickness, padding, and nothing drawn gives null", () => {
+  assert.equal(inkBounds([]), null); assert.equal(inkBounds([{ pts: [], width: 4 }]), null);
+  assert.deepEqual(inkBounds([{ pts: [{ x: 10, y: 20 }, { x: 50, y: 30 }], width: 4 }, { pts: [{ x: 5, y: 60 }], width: 2 }]), { x: 4, y: 18, w: 48, h: 43 });
+  assert.deepEqual(inkBounds([{ pts: [{ x: 10, y: 10 }], width: 2 }], 5), { x: 4, y: 4, w: 12, h: 12 });
+});

@@ -42,7 +42,23 @@ const policy = import.meta.env.PROD ? CSP : "";
             <button type="button" class="small" id="edNext" aria-label="Next page">›</button>
             <button type="button" class="small add" id="edText">＋ Text</button>
             <label class="button small add" for="stampPicker">＋ Picture</label>
+            <button type="button" class="small add" id="edSign" data-part="sign">✍ Draw signature</button>
             <button type="button" class="small" data-act="undo" id="edUndo">Undo</button>
+          </div>
+          <div id="sigPad" class="sigpad sans" data-part="sign" hidden>
+            <p class="small"><strong>Draw your signature</strong> with your mouse, finger or pen.</p>
+            <canvas id="sigCanvas" aria-label="Signature drawing area"></canvas>
+            <p class="row small">
+              <label class="field">Ink <select id="sigInk"><option value="#10157a">Dark blue</option><option value="#000000">Black</option></select></label>
+              <label class="field">Pen <select id="sigWidth"><option value="2">Thin</option><option value="3" selected>Medium</option><option value="5">Thick</option></select></label>
+            </p>
+            <p class="row">
+              <button type="button" class="small" id="sigUndo">Undo stroke</button>
+              <button type="button" class="small" id="sigClear">Clear</button>
+              <button type="button" class="small" id="sigCancel">Cancel</button>
+              <button type="button" class="small add" id="sigUse">Use this signature</button>
+            </p>
+            <p class="small muted">Your drawing stays in this page. It is not sent anywhere and is not remembered when you leave.</p>
           </div>
           <div id="edStage" class="stage"><canvas></canvas><div id="edLayer" class="layer"></div></div>
           <p class="small muted sans">Drag an addition to move it; drag a picture's corner square to resize it. With one selected, the arrow keys nudge it and Delete removes it. What you see is the page exactly as it will be saved.</p>
@@ -360,6 +376,8 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .props { border: 1px solid var(--navy); border-radius: 6px; padding: 10px; margin-bottom: 12px; background: #f6f7fd; }
     #pdftools .props textarea { width: 100%; font: inherit; padding: 4px; box-sizing: border-box; }
     #pdftools .tile .edit { margin-top: 2px; }
+    #pdftools .sigpad { border: 2px solid var(--navy); border-radius: 6px; padding: 10px; margin: 0 0 10px; background: #fff; }
+    #pdftools .sigpad canvas { width: 100%; display: block; background: repeating-linear-gradient(#fff, #fff 38px, #e6e6dc 39px); box-shadow: 0 0 0 1px #999; touch-action: none; cursor: crosshair; }
     #pdftools .cropper { max-width: 520px; margin: 0 auto 14px; }
     #pdftools .cropnav { justify-content: center; align-items: center; margin-bottom: 6px; }
     #pdftools .crbox { position: absolute; box-sizing: border-box; border: 2px solid var(--navy); box-shadow: 0 0 0 9999px rgba(0, 0, 40, 0.45); cursor: move; touch-action: none; }

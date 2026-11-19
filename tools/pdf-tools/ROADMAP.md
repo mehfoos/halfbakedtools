@@ -45,7 +45,7 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | Watermark | **Done 2026-11-17** (chunk 2b), text only | `watermarkMarks` in `web/stamps.ts`. Follow-ups: a picture (logo) watermark, as a fingerprinted source like placed pictures; a choice of pages; drawing behind the page's content |
 | Crop PDF | **Done 2026-11-19** (chunk 3) | `web/crop.ts`, cropper in `ui.ts`. Sets the crop box; hidden, not removed (stated on the page). Same margins on every chosen page. Follow-ups: margins as a percentage of each page; auto-detect white borders; crop in the all-in-one workspace; keyboard handles on the box (the number boxes work without a mouse) |
 | Sign PDF | Chunk 4 (next) | Draw a signature (canvas), place it as a picture mark. Not a cryptographic signature: say so. "Request signatures from others" is not possible locally |
-| Edit PDF: shapes, freehand | Chunk 5 | New mark types |
+| Edit PDF: shapes, freehand | **Chunk 5 (next)** | New mark types |
 | Images to PDF margins/orientation; extract stored pictures | Chunk 6 | Named paper sizes still need an archived source |
 | Repair PDF | Chunk 7 | Re-read leniently and re-save; report honestly what could not be recovered |
 | Compare PDF | Chunk 8 | Side-by-side pages plus a text difference |

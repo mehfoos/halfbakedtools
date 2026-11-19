@@ -140,12 +140,13 @@ export function createEditor(host: EditorHost) {
     requestAnimationFrame(() => { const t = $<HTMLTextAreaElement>("mText"); t.focus(); t.select(); });
   });
   const picker = $<HTMLInputElement>("stampPicker");
-  picker.addEventListener("change", async () => {
-    const f = picker.files?.[0]; picker.value = ""; if (!f) return;
+  /** Adds a picture to the page being edited, near its top-left, `share` of the page's width wide. */
+  async function placePicture(f: File, share = 1 / 3) {
     const pic = await host.addPicture(f); if (!pic) return;
-    const v = view(), w = v.w / 3, h = (w * pic.height) / pic.width, at = viewToBase(v.w * 0.12, v.h * 0.12, base.w, base.h, turned());
+    const v = view(), w = v.w * share, h = (w * pic.height) / pic.width, at = viewToBase(v.w * 0.12, v.h * 0.12, base.w, base.h, turned());
     chosen = marks().length; change([...marks(), { type: "image", x: at.x, y: at.y, rotate: upright(), w, h, src: pic.id }]);
-  });
+  }
+  picker.addEventListener("change", () => { const f = picker.files?.[0]; picker.value = ""; if (f) placePicture(f); });
 
   // ----- the properties panel -----
   const num = (id: string, lo: number, hi: number) => { const v = Number($<HTMLInputElement>(id).value); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : null; };
@@ -172,5 +173,5 @@ export function createEditor(host: EditorHost) {
   let resizeTimer = 0;
   window.addEventListener("resize", () => { if (index < 0) return; clearTimeout(resizeTimer); resizeTimer = window.setTimeout(refresh, 200); });
 
-  return { open, close, refresh, isOpen: () => index >= 0, current: () => index, select: (k: number) => { chosen = k; } };
+  return { open, close, refresh, placePicture, isOpen: () => index >= 0, current: () => index, select: (k: number) => { chosen = k; } };
 }

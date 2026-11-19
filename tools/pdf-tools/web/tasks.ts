@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "preview";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "preview";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -72,6 +72,9 @@ export const TASKS: Task[] = [
     pick: "Select PDF files", hint: "Choose how hard to compress, then press Compress to see the new size and a before-and-after preview.",
     parts: ["compress"], formats: ["pdf"], which: "all", action: "Compress PDF", perFile: true, suffix: "compressed", tag: "↓" },
 
+  { slug: "sign", name: "Sign PDF", blurb: "Draw your signature and place it on a page. It is a picture of your handwriting, not a digital signature.", group: "Security", accept: "pdf",
+    pick: "Select PDF file", hint: "Press Draw signature, draw it, press Use, then drag it into place and resize it by its corner square. This adds a picture of your handwriting; it is not a cryptographic (digital) signature.",
+    parts: ["marks", "sign"], formats: ["pdf"], which: "all", action: "Save signed PDF", suffix: "signed", tag: "✍" },
   { slug: "unlock", name: "Unlock PDF", blurb: "Save a copy of a password-protected PDF that opens without the password. You need to know the password.", group: "Security", accept: "pdf",
     pick: "Select PDF files", hint: "You'll be asked for each file's password when you add it. Only unlock files you have the right to change.",
     parts: [], formats: ["pdf"], which: "all", action: "Unlock PDF", perFile: true, suffix: "unlocked", tag: "🔓" },
@@ -114,7 +117,7 @@ export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" }, { name: "PDF to HTML", tag: "WEB", group: "Convert from PDF" },
   { name: "PDF to Markdown", tag: "MD", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
   { name: "Fill in PDF forms", tag: "☑", group: "Edit" },
-  { name: "Sign PDF (draw your signature)", tag: "✍", group: "Security" }, { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
+  { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
   { name: "Compare PDF", tag: "⇆", group: "Security" },
 ];
 
