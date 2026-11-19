@@ -62,6 +62,22 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 Interface: the home page now has their category buttons (All, Organise, Optimise, Convert to PDF, Convert from
 PDF, Edit, Security) over the grid, and unbuilt tools are shown greyed in their category.
 
+## Interface pass 1: page lists (owner, 2026-11-19) — done
+
+The owner found it poor that every tool listed every page (hundreds, for a long file), even tools such as Compress
+that act on whole files, with the buttons far below. Done: (1) tasks that act on whole files (those with no
+page-level part: Split, Compress, Unlock, Protect, Page numbers, Watermark, PDF to text; see `showsPages` in
+`web/tasks.ts`) show a plain file list (name, pages, size) instead of page thumbnails; (2) tasks that do need pages
+show them **one screenful at a time** (`web/paging.ts`: whole rows that fit the screen, Previous/Next and a short
+row of screen numbers, "Pages per screen" override), with "Select all (N)" and "Select none" acting on the whole
+document, not only the screen in view; (3) selection starts as "all" where it only says which pages to use (Rotate,
+Resize, PDF to JPG, PDF to image/PNG/TIFF/BMP/WebP; the two PDF-to-picture tasks now save the ticked pages), and
+as "none" where ticking means act on or keep these (Remove, Extract, Merge, Organise), because selecting all by
+default there would make Remove delete everything; flip with `selectAll` in `web/tasks.ts`; (4) the main button
+stays in view (sticky at the bottom of the options panel on wide screens; pinned to the screen bottom on phones).
+Follow-ups: dragging a page to another screen isn't possible (use Move earlier/later or Move to position, which
+follow the pages); check on real phones, Firefox and Safari; keyboard-only paging check.
+
 ## Where things stand
 
 | Phase | Scope | Status |

@@ -18,6 +18,7 @@ What the tool relies on, what it was checked against, and when.
 | Page-range text: pages, ranges, open and reverse ranges, rejection of bad input | `core.test.ts` "ranges: …" |
 | Add/remove source; move, duplicate, remove, rotate, resize pages | `core.test.ts` "session: …" |
 | Split plans (one file, every N, chosen ranges, one per page) and file names | `core.test.ts` "session: planFiles…" |
+| Paging of long page lists: whole rows that fit the screen, screen counts and ranges, short pager row | `core.test.ts` "perScreen…", "screen arithmetic", "pagerItems…" |
 | Settings file round trip; rejection of foreign, damaged and newer files; no content keys | `core.test.ts` "settings: …" |
 | Written PDFs: merge order, repeated pages independent, rotation adds to existing, resize, image pages, several files from one builder, fonts kept | `core.test.ts` "build: …" |
 | Page numbers: text for every style, first number, first numbered page; placement by corner and margin; settings checks and older files; written by the builder only on the right pages, including a one-page preview | `core.test.ts` "numbers: …", "build: numbers…" |
@@ -85,3 +86,13 @@ small generated PDFs and images. **Not yet run:** Firefox, Safari, phones, large
 | Page numbers: default, each corner tried in the preview, "Page n of total", start on page 2, first number 10, size and margin; positions read back from the saved PDFs with pypdf match the settings, on plain, sideways, cropped and tool-turned pages; two files numbered separately; off by default in the workspace; kept in the settings file | Pass |
 | Watermark: default, repeated, full strength, level and smaller, shown in the preview; saved PDFs contain the words once per page (or several times when repeated) and keep the page's own text; sideways pages; two files; empty words and unsupported characters refused with a reason; off by default in the workspace; with page numbers together; kept in the settings file | Pass |
 | Phone-width layout | Looked at in screenshots only; **not checked on a real phone** |
+
+### Page lists and layout (2026-11-19)
+
+Run in headless Chrome on a 300-page PDF, at 1280×800 and at 390×780 (phone size): whole-file tasks show no page
+grid and a file list; page tasks show one screenful ("Pages 1–8 of 300"); the screen count stays the same from one
+screen to the next; Select all (300) and Select none cover every screen; Move later follows the moved page to its
+screen; "Pages per screen" changes the count; the main button was inside the screen (above its bottom edge) on
+every task; no script errors and no requests to any other site. The earlier end-to-end suites (every task, compress,
+edit, names, security, page numbers, watermark, extended compression levels) were re-run unchanged and pass.
+Not checked: real phones, Firefox, Safari.

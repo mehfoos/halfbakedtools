@@ -63,3 +63,6 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 | 2026-11-16 | Named paper sizes (A4, Letter) are not offered yet; resizing is by percentage | Their dimensions need a cited, archived source, which couldn't be downloaded from the build environment |
 | 2026-11-16 | SVG output is not offered | PDF.js no longer draws to SVG; wrapping a bitmap in an SVG file would mislead |
 | 2026-11-16 | Saved PDFs are not password-protected even if the source was; the tool says so | Writing encrypted PDFs isn't built; silence would mislead |
+| 2026-11-19 | Whole-file tasks (Split, Compress, Unlock, Protect, Page numbers, Watermark, PDF to text) show a file list, not page thumbnails | The pages can't be acted on separately there, and hundreds of thumbnails buried the options and the button |
+| 2026-11-19 | Page lists are shown a screenful at a time, sized to the screen, rather than as one long scrolling list | Long files stayed usable; fewer thumbnails drawn at once; selection still covers every page |
+| 2026-11-19 | Selection starts as "all" for Rotate, Resize and PDF to picture tasks, but "none" for Remove, Extract, Merge and Organise | "All" there only means "use these pages"; for Remove it would delete the lot |

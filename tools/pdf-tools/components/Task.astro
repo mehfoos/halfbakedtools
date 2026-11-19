@@ -63,8 +63,17 @@ const policy = import.meta.env.PROD ? CSP : "";
           <button type="button" class="small" data-part="duplicate" data-act="duplicate" data-needs-sel>Duplicate</button>
           <button type="button" class="small" data-part="remove" data-act="remove" data-needs-sel>Remove</button>
           <button type="button" class="small" id="undo" data-act="undo">Undo</button>
+        <div id="pagerHead" class="pagerrow sans small">
+          <span id="showing" class="showing" aria-live="polite"></span>
+          <span id="pagerTop" class="pager" role="navigation" aria-label="Pages: choose which pages to show" hidden></span>
+          <label id="perRow" class="field" hidden>Pages per screen
+            <select id="perScreen"><option value="0">Fit my screen</option><option value="12">12</option><option value="24">24</option><option value="48">48</option></select></label>
         </div>
-        <ul id="grid" class="grid"></ul>
+        </div>
+        <div id="gridPart">
+          <ul id="grid" class="grid"></ul>
+          <div id="pagerBottom" class="pager pagerrow sans small" role="navigation" aria-label="Pages: choose which pages to show" hidden></div>
+        </div>
         </div>
         <p id="waiting" class="notice small" hidden></p>
         <details id="filesBox" hidden>
@@ -272,6 +281,16 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .bar .add { background: var(--navy); color: #fff; }
     #pdftools .bar .add:hover { background: var(--link-hover); }
     #pdftools .grid { list-style: none; padding: 0; margin: 10px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
+    #pdftools .bar .pagerrow { flex-basis: 100%; margin: 0; }
+    #pdftools .pagerrow { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: space-between; margin: 4px 0; }
+    #pdftools .pager { display: flex; justify-content: center; }
+    #pdftools .pagebtns { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: center; }
+    #pdftools .pagebtns .gap { padding: 0 2px; }
+    #pdftools .pagebtns button.here { background: var(--navy); color: #fff; opacity: 1; cursor: default; }
+    #pdftools .showing { font-weight: 700; }
+    #pdftools .main-list { border: 0; }
+    #pdftools .main-list > summary { display: none; }
+    #pdftools .main-list .files li { font-size: 1.05rem; padding: 10px 0; }
     #pdftools .tile { border: 2px solid var(--line-soft); border-radius: 4px; background: #fff; }
     #pdftools .tile.on { border-color: var(--navy); background: #eef0fb; }
     #pdftools .tile.drop-before { box-shadow: -4px 0 0 var(--link-hover); }
@@ -284,12 +303,12 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .files li { padding: 4px 0; border-bottom: 1px solid var(--line-soft); overflow-wrap: anywhere; }
     #pdftools .files li.missing { background: var(--warn-soft); padding-left: 6px; }
 
-    #pdftools .side { border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; background: #fff; position: sticky; top: 8px; }
+    #pdftools .side { border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; background: #fff; }
     #pdftools .side-title { font-size: 1.5rem; margin: 0 0 0.4em; text-align: center; border-bottom: 1px solid var(--line-soft); padding-bottom: 0.4em; }
     #pdftools .opts p { margin: 0 0 0.7em; }
     #pdftools .field input, #pdftools .field select { margin: 2px 4px; font: inherit; padding: 3px 5px; max-width: 100%; }
     #pdftools .field input[type="number"] { width: 5em; }
-    #pdftools .go { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    #pdftools .go { display: flex; flex-direction: column; gap: 8px; margin: 12px -14px 0; padding: 10px 14px; position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--line-soft); z-index: 3; }
     #pdftools .go .big { width: 100%; }
     #pdftools .result { border: 2px solid var(--good); border-radius: 6px; padding: 10px; margin: 10px 0; background: var(--good-soft); }
     #pdftools .result.same { border-color: var(--warn); background: var(--warn-soft); }
@@ -319,7 +338,6 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .row { display: flex; flex-wrap: wrap; gap: 8px; }
     @media (max-width: 760px) {
       #pdftools .work { grid-template-columns: 1fr; }
-      #pdftools .side { position: static; }
       /* On a phone the action button stays at the bottom of the screen, whatever is scrolled. */
       #pdftools .go { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; padding: 8px 16px; background: #fff; border-top: 1px solid var(--line); z-index: 5; }
       #pdftools .work { padding-bottom: 130px; }

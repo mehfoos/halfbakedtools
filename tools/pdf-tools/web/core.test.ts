@@ -499,3 +499,26 @@ test("build: the watermark is written on every page, see-through, under the page
   assert.equal(((await PDFDocument.load(none)).getPage(0).node.Resources()!.lookup(PDFName.of("Font")) as any).keys().length, 1);
   await assert.rejects(makeBuilder(data, { imageDpi: 96, watermark: { ...WM, text: "機密" } })([P("a", 0)]), /can't write yet/);
 });
+
+// ---- paging: showing a long page list a screenful at a time ----
+import { perScreen, screenCount, clampScreen, screenRange, screenOf, pagerItems, MIN_PER_SCREEN, MAX_PER_SCREEN } from "./paging.ts";
+test("perScreen fits whole rows and stays within limits", () => {
+  assert.equal(perScreen(1000, 900) % Math.floor(1000 / 140), 0);
+  assert.ok(perScreen(300, 400) >= MIN_PER_SCREEN);
+  assert.ok(perScreen(5000, 5000) <= MAX_PER_SCREEN);
+  assert.ok(perScreen(1200, 1000) > perScreen(400, 1000), "wider screens show more");
+});
+test("screen arithmetic", () => {
+  assert.equal(screenCount(0, 20), 1); assert.equal(screenCount(20, 20), 1); assert.equal(screenCount(21, 20), 2); assert.equal(screenCount(340, 20), 17);
+  assert.deepEqual(screenRange(16, 340, 20), { start: 320, end: 340 });
+  assert.deepEqual(screenRange(99, 45, 20), { start: 40, end: 45 }, "out-of-range screens are clamped");
+  assert.equal(clampScreen(-3, 45, 20), 0); assert.equal(screenOf(39, 20), 1); assert.equal(screenOf(40, 20), 2);
+});
+test("pagerItems: short row for long files, never skips by one", () => {
+  assert.deepEqual(pagerItems(0, 1), [0]);
+  assert.deepEqual(pagerItems(0, 4), [0, 1, 2, 3]);
+  assert.deepEqual(pagerItems(8, 17), [0, "gap", 7, 8, 9, "gap", 16]);
+  assert.deepEqual(pagerItems(2, 17), [0, 1, 2, 3, "gap", 16]);
+  assert.deepEqual(pagerItems(16, 17), [0, "gap", 15, 16]);
+  assert.ok(pagerItems(250, 500).length <= 9);
+});

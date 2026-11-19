@@ -26,7 +26,12 @@ export type Task = {
   perFile?: boolean;            // each added file is saved as its own PDF (Compress also shows the result before download)
   suffix: string;               // added to the default output name so it differs from the original's ("report-merged")
   tag: string;                  // short label drawn on the task's icon
+  selectAll?: boolean;          // pages start out all selected (when the selection only says "which pages this applies to")
 };
+
+/** Whether a task needs the page-by-page view. Tasks that act on whole files (Compress, Split, Protect, ...) show a
+ *  simple list of files instead, so nobody scrolls past hundreds of pages they have no reason to look at. */
+export const showsPages = (t: Task): boolean => t.parts.some((p) => p === "select" || p === "move" || p === "turn" || p === "duplicate" || p === "remove" || p === "marks");
 
 export const TASKS: Task[] = [
   { slug: "merge", name: "Merge PDF", blurb: "Join several PDFs, or PDFs and images, into one file, in the order you choose.", group: "Organise", accept: "both",
@@ -46,10 +51,10 @@ export const TASKS: Task[] = [
     parts: ["select", "move", "turn", "duplicate", "remove", "selectText", "moveTo"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "organised", tag: "⇄" },
   { slug: "rotate", name: "Rotate PDF", blurb: "Turn pages the right way up: all of them, or just the ones you tick.", group: "Edit", accept: "pdf",
     pick: "Select PDF files", hint: "Press a turn button to turn every page, or tick pages first to turn only those.",
-    parts: ["select", "turn"], formats: ["pdf"], which: "all", action: "Save PDF", turnAllIfNoneSelected: true, suffix: "rotated", tag: "⟳" },
+    parts: ["select", "turn"], formats: ["pdf"], which: "all", action: "Save PDF", turnAllIfNoneSelected: true, suffix: "rotated", tag: "⟳" , selectAll: true },
   { slug: "resize", name: "Resize pages", blurb: "Make pages larger or smaller, scaling everything on them to match.", group: "Edit", accept: "pdf",
     pick: "Select PDF files", hint: "Type a percentage and press Resize. Tick pages first to resize only those.",
-    parts: ["select", "scale"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "resized", tag: "⤢" },
+    parts: ["select", "scale"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "resized", tag: "⤢" , selectAll: true },
 
   { slug: "edit", name: "Edit PDF", blurb: "Add text and pictures to pages: fill in a form, add a note, a date, a signature picture or a logo.", group: "Edit", accept: "both",
     pick: "Select PDF file", hint: "Press ＋ Text or ＋ Picture, then drag it into place. This adds to pages; it can't yet change or remove what is already on them.",
@@ -72,14 +77,14 @@ export const TASKS: Task[] = [
     parts: ["protect"], formats: ["pdf"], which: "all", action: "Protect PDF", perFile: true, suffix: "protected", tag: "🔒" },
 
   { slug: "pdf-to-jpg", name: "PDF to JPG", blurb: "Save each page of a PDF as a JPEG picture.", group: "Convert from PDF", accept: "pdf",
-    pick: "Select PDF files", hint: "Choose the detail and quality. More than one picture is saved as a .zip file.",
-    parts: ["select"], formats: ["jpeg"], which: "all", action: "Convert to JPG", suffix: "pages", tag: "JPG" },
+    pick: "Select PDF files", hint: "Every page is ticked: untick any you don't want. Choose the detail and quality. More than one picture is saved as a .zip file.",
+    parts: ["select"], formats: ["jpeg"], which: "selected", action: "Convert to JPG", suffix: "pages", tag: "JPG" , selectAll: true },
   { slug: "pdf-to-image", name: "PDF to PNG, TIFF, BMP or WebP", blurb: "Save each page of a PDF as a picture in the format you choose.", group: "Convert from PDF", accept: "pdf",
-    pick: "Select PDF files", hint: "Choose the picture format and detail. More than one picture is saved as a .zip file.",
-    parts: ["select"], formats: ["png", "tiff", "bmp", "webp", "jpeg"], which: "all", action: "Convert to images", suffix: "pages", tag: "PNG" },
+    pick: "Select PDF files", hint: "Every page is ticked: untick any you don't want. Choose the picture format and detail. More than one picture is saved as a .zip file.",
+    parts: ["select"], formats: ["png", "tiff", "bmp", "webp", "jpeg"], which: "selected", action: "Convert to images", suffix: "pages", tag: "PNG" , selectAll: true },
   { slug: "pdf-to-text", name: "PDF to text", blurb: "Pull the words out of a PDF into a plain text file.", group: "Convert from PDF", accept: "pdf",
     pick: "Select PDF files", hint: "Saves the words only, with no layout. Scanned pages are pictures and have no text to save.",
-    parts: ["select"], formats: ["txt"], which: "all", action: "Convert to text", suffix: "text", tag: "TXT" },
+    parts: [], formats: ["txt"], which: "all", action: "Convert to text", suffix: "text", tag: "TXT" , selectAll: true },
 
   { slug: "image-to-pdf", name: "Images to PDF", blurb: "Turn JPG, PNG, TIFF, BMP, WebP, GIF or SVG pictures into a PDF, one picture per page.", group: "Convert to PDF", accept: "image",
     pick: "Select images", hint: "Drag the pictures into order and turn any that are sideways.",

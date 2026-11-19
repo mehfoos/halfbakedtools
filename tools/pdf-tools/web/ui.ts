@@ -1,6 +1,7 @@
 // The tool's browser interface. Calculations and file handling live in the other modules; this file wires
 // them to the page. Nothing here sends data anywhere: files are read with the browser's File API, kept in
 // memory, and results are handed back as downloads created inside the page.
+import { perScreen, screenCount, clampScreen, screenRange, screenOf, pagerItems, MIN_PER_SCREEN } from "./paging.ts";
 import { zipSync } from "fflate";
 import { PDFDocument } from "@cantoo/pdf-lib";
 import { NO_COMPRESSION, PRESETS, saving, greyInPlace, type CompressOptions, type CompressStats } from "./compress-core.ts";
@@ -19,7 +20,7 @@ import { SIZE_MIN, SIZE_MAX } from "./marks.ts";
 import { encodeBmp } from "./bmp.ts";
 import { pagesToText } from "./text.ts";
 import { jpegOrientation, orientationToRotation } from "./exif.ts";
-import { taskBySlug, type Part } from "./tasks.ts";
+import { taskBySlug, showsPages, type Part } from "./tasks.ts";
 import { openPdf, closePdf, drawPage, pageText, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle } from "./render.ts";
 
 // The TIFF library is only fetched (from this site) when a TIFF is read or written.
@@ -154,9 +155,11 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
           if (stale) notes.push(`"${f.name}" has the same name as a file the settings need, but its contents differ, so it was added as a new file.`);
         }
         loaded.set(sha, item);
+        const before = session.pages.length;
         const r = addSource(session, { name: f.name, size: bytes.length, sha256: sha, pages, kind: item.data.kind });
         if (!r.matched) { remember(); if (!session.pages.length && session.output.name === "document") r.session.output.name = defaultName(f.name, task.suffix); }
         session = r.session;
+        if (task.selectAll && showsPages(task) && !r.matched) for (let i = before; i < session.pages.length; i++) sel.add(i);
       }
       render();
       say(notes.join(" "), notes.length ? "warn" : "info");
@@ -175,8 +178,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     sel = new Set(keep); render();
   }
   const act: Record<string, () => void> = {
-    earlier: () => apply(nudge(session.pages, chosen(), -1)),
-    later: () => apply(nudge(session.pages, chosen(), 1)),
+    earlier: () => { apply(nudge(session.pages, chosen(), -1)); if (sel.size) showPage(chosen()[0]); },
+    later: () => { apply(nudge(session.pages, chosen(), 1)); if (sel.size) showPage(chosen()[0]); },
     left: () => turn(-90),
     right: () => turn(90),
     duplicate: () => apply(duplicate(session.pages, chosen())),
@@ -187,7 +190,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     moveTo: () => {
       const n = Number($<HTMLInputElement>("movePos").value);
       if (!Number.isInteger(n) || n < 1 || n > session.pages.length + 1) return say(`Type a position from 1 to ${session.pages.length + 1}.`, "bad");
-      apply(moveTo(session.pages, chosen(), n - 1));
+      apply(moveTo(session.pages, chosen(), n - 1)); if (sel.size) showPage(chosen()[0]);
     },
     selectRange: () => {
       const r = parsePageList($<HTMLInputElement>("selText").value, session.pages.length);
@@ -236,22 +239,19 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     pumping = false;
   }
 
-  function render() {
+  // ---------- one screenful of pages at a time ----------
+  const pageTask = showsPages(task);
+  let screen = 0, perChoice = 0;                  // perChoice 0 = as many as fit the screen
+  let fit = MIN_PER_SCREEN;                       // measured while the page list is on screen (see measure)
+  const measure = () => { const w = grid.clientWidth; if (w) fit = perScreen(w, window.innerHeight); };
+  const per = () => perChoice || fit;
+  function drawGrid() {
     watcher.disconnect(); queue.length = 0;
-    sel = new Set([...sel].filter((i) => i < session.pages.length));
-    // files
-    const files = $("files");
-    files.replaceChildren(...session.sources.map((s) => {
-      const ok = loaded.has(s.sha256);
-      const n = usage(session, s.id);
-      return el("li", { className: ok ? "" : "missing" },
-        el("span", {}, `${s.name} `, el("span", { className: "muted small" }, `${s.kind === "pdf" ? `${s.pages} page${s.pages === 1 ? "" : "s"}` : "image"}, ${fmtSize(s.size)}; ${n} in use${ok ? "" : ""}`)),
-        ok ? "" : el("strong", { className: "badge-missing" }, " Not added yet: add this file to carry on"),
-        " ", Object.assign(el("button", { type: "button", className: "link small" }, "Remove"), { onclick: () => { if (busy) return; remember(); session = removeSource(session, s.id); render(); } }));
-    }));
-    $("filesBox").hidden = !session.sources.length;
-    // tiles
-    grid.replaceChildren(...session.pages.map((p, i) => {
+    measure();
+    screen = clampScreen(screen, session.pages.length, per());
+    const { start, end } = screenRange(screen, session.pages.length, per());
+    grid.replaceChildren(...session.pages.slice(start, end).map((p, k) => {
+      const i = start + k;
       const s = src(p.src), ok = loaded.has(s.sha256);
       const box = el("input", { type: "checkbox", checked: sel.has(i) });
       box.setAttribute("aria-label", `Page ${i + 1}`);
@@ -272,6 +272,55 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (ok && !thumbs.has(key)) watcher.observe(tile);
       return tile;
     }));
+    drawPagers();
+  }
+  /** Show the screen that holds page `index` (0-based), e.g. after moving it. */
+  function showPage(index: number) { const s = screenOf(index, per()); if (s !== screen) { screen = s; drawGrid(); } }
+  function drawPagers() {
+    const total = session.pages.length, count = screenCount(total, per());
+    const { start, end } = screenRange(screen, total, per());
+    const make = () => {
+      const box = el("span", { className: "pagebtns" });
+      const go = (label: string, to: number, off: boolean, current = false) => {
+        const b = el("button", { type: "button", className: `small${current ? " here" : ""}` }, label);
+        b.disabled = off || current; if (current) b.setAttribute("aria-current", "page");
+        b.onclick = () => { screen = to; drawGrid(); };
+        return b;
+      };
+      box.append(go("‹ Previous", screen - 1, screen === 0));
+      for (const it of pagerItems(screen, count)) {
+        if (it === "gap") box.append(el("span", { className: "gap" }, "…"));
+        else { const b = go(String(it + 1), it, false, it === screen); b.title = `Pages ${it * per() + 1} to ${Math.min(total, (it + 1) * per())}`; box.append(b); }
+      }
+      box.append(go("Next ›", screen + 1, screen >= count - 1));
+      return box;
+    };
+    $("showing").textContent = total ? (count > 1 ? `Pages ${start + 1}–${end} of ${total}` : `${total} page${total === 1 ? "" : "s"}`) : "";
+    for (const id of ["pagerTop", "pagerBottom"]) { const p = $(id); p.hidden = count <= 1; p.replaceChildren(...(count > 1 ? [make()] : [])); }
+    $("perRow").hidden = total <= MIN_PER_SCREEN;
+  }
+  $("perScreen").addEventListener("change", () => { perChoice = Number($<HTMLSelectElement>("perScreen").value) || 0; screen = 0; drawGrid(); });
+  let sizing = 0;
+  window.addEventListener("resize", () => { clearTimeout(sizing); sizing = window.setTimeout(() => { if (pageTask && session.pages.length) { const first = screen * per(); measure(); drawGrid(); showPage(first); } }, 200); });
+
+  function render() {
+    sel = new Set([...sel].filter((i) => i < session.pages.length));
+    // files
+    const files = $("files");
+    files.replaceChildren(...session.sources.map((s) => {
+      const ok = loaded.has(s.sha256);
+      const n = usage(session, s.id);
+      return el("li", { className: ok ? "" : "missing" },
+        el("span", {}, `${s.name} `, el("span", { className: "muted small" }, `${s.kind === "pdf" ? `${s.pages} page${s.pages === 1 ? "" : "s"}` : "image"}, ${fmtSize(s.size)}; ${n} in use${ok ? "" : ""}`)),
+        ok ? "" : el("strong", { className: "badge-missing" }, " Not added yet: add this file to carry on"),
+        " ", Object.assign(el("button", { type: "button", className: "link small" }, "Remove"), { onclick: () => { if (busy) return; remember(); session = removeSource(session, s.id); render(); } }));
+    }));
+    $("filesBox").hidden = !session.sources.length;
+    $("hero").hidden = !!session.sources.length; $("work").hidden = !session.sources.length;
+    drawGrid();
+    $("gridPart").hidden = !pageTask;
+    $("undo").hidden = !pageTask; $("pagerHead").hidden = !pageTask;
+    const fb = $<HTMLDetailsElement>("filesBox"); if (!pageTask) { fb.open = true; fb.classList.add("main-list"); }
     $("hero").hidden = !!session.sources.length; $("work").hidden = !session.sources.length;
     // outputs
     const o = session.output;
@@ -298,8 +347,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   function refreshButtons() {
     const n = sel.size, total = session.pages.length;
-    $("selNote").textContent = total ? (n ? `${n} of ${total} selected (${formatRanges(chosen())})` : `${total} page${total === 1 ? "" : "s"}; none selected`) : "";
+    $("selNote").textContent = !pageTask ? (total ? `${session.sources.length} file${session.sources.length === 1 ? "" : "s"}, ${total} page${total === 1 ? "" : "s"}` : "") : total ? (n ? `${n} of ${total} selected (${formatRanges(chosen())})` : `${total} page${total === 1 ? "" : "s"}; none selected`) : "";
     root.querySelectorAll<HTMLButtonElement>("[data-needs-sel]").forEach((b) => (b.disabled = busy || (!n && !(task.turnAllIfNoneSelected && (b.dataset.act === "left" || b.dataset.act === "right")))));
+    const allBtn = root.querySelector<HTMLElement>('[data-act="all"]'); if (allBtn) allBtn.textContent = `Select all (${total})`;
     if (task.which === "selected") $<HTMLButtonElement>("saveAll").disabled = busy || !n;
     $<HTMLButtonElement>("undo").disabled = busy || !undo.length;
     const saveSel = root.querySelector<HTMLButtonElement>("#saveSel"); if (saveSel) saveSel.textContent = `Save the ${n || ""} selected page${n === 1 ? "" : "s"}`;
