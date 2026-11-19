@@ -660,7 +660,7 @@ test("build: pictures follow the page size and margin chosen", async () => {
 
 // ---- extracting stored pictures ----
 import { extractPictures, encodePng } from "./extract.ts";
-import { unzlibSync } from "fflate";
+import { unzlibSync, zlibSync } from "fflate";
 import { PDFName as N, PDFHexString } from "@cantoo/pdf-lib";
 const rawPicture = (doc: PDFDocument, dict: Record<string, unknown>, data: Uint8Array) => doc.context.register(doc.context.stream(data, doc.context.obj({ Type: "XObject", Subtype: "Image", ...dict }) as never));
 const withPictures = async (pics: Record<string, ReturnType<typeof rawPicture>>) => {
@@ -820,7 +820,7 @@ test("forms: fields are listed with their kinds and filled values come out; flat
 });
 
 // ---- OCR text layer ----
-import { wordMatrix, isRtl, arrangeLine, ocrScale, addTextLayer, meanConfidence, OCR_MAX_PIXELS } from "./ocr.ts";
+import { wordMatrix, isRtl, arrangeLine, modernMalayalam, ocrScale, addTextLayer, meanConfidence, OCR_MAX_PIXELS } from "./ocr.ts";
 import { addGlyphlessFont, glyphlessTtf, identityToUnicode, encodeWord } from "./glyphless.ts";
 test("ocr: a word's matrix spans its box exactly, on upright and turned pages", () => {
   // upright: 2 px per point, page 300 pt tall; pixel (x, y) -> point (x/2, 300 - y/2)
@@ -878,6 +878,7 @@ test("ocr languages: each one is served by the site from an installed package; c
 // ---- your own font: shaping order, embedding permission, drawing ----
 import { shapeLine, checkEmbedding, fsTypeOf, ownFace, type FkFont } from "./face.ts";
 import { harfBuzzShaper } from "./shaper.ts";
+import { plainFont } from "./ownfont.ts";
 import fontkit from "@cantoo/fontkit";
 // a stand-in shaper: one glyph per character (id = its code point), reversed for right-to-left runs, as HarfBuzz returns them
 const fakeShaper = (t: string, rtl: boolean) => { const g = [...t].map((c) => ({ id: c.codePointAt(0)!, chars: c, ax: 500, dx: 0, dy: 0 })); return rtl ? g.reverse() : g; };
@@ -894,7 +895,7 @@ test("own font: the maker's embedding permission is respected", () => {
   assert.deepEqual(checkEmbedding(0), { ok: true, subset: true });
   assert.equal(checkEmbedding(0x2).ok, false);
   assert.equal(checkEmbedding(0x200).ok, false);
-  assert.equal(checkEmbedding(0x2 | 0x8).ok, true, "older fonts with several bits: the least restrictive applies");
+  assert.equal(checkEmbedding(0x2 | 0x8).ok, false, "several permission bits (not allowed by the spec): the most restrictive applies");
   const v = checkEmbedding(0x4); assert.ok(v.ok && /viewed and printed/.test(v.note ?? ""));
   const n = checkEmbedding(0x100); assert.ok(n.ok && !n.subset);
   assert.equal(fsTypeOf({ "OS/2": { fsType: { noEmbedding: true, noSubsetting: true } } }), 0x102);
@@ -937,4 +938,27 @@ test("own font: HarfBuzz places accents where the font says (fontkit put the acc
   const comb = shapeLine(shape, "u\u0308o\u0301");   // u + combining diaeresis, o + combining acute
   const acute = comb.glyphs[comb.glyphs.length - 1], o = comb.glyphs[comb.glyphs.length - 2];
   assert.ok(acute.x + acute.dx >= o.x - 1, "the acute sits on the o, not back over the u");
+});
+test("ocr: old-style Malayalam chillu sequences at the end of a word become the modern letters (Unicode 18, Table 12-43)", () => {
+  assert.equal(modernMalayalam("അവന\u0D4D\u200D"), "അവൻ");
+  assert.equal(modernMalayalam("രാമന\u0D4D\u200D,"), "രാമൻ,");
+  assert.equal(modernMalayalam("ണ\u0D4D\u200D ര\u0D4D\u200D ല\u0D4D\u200D ള\u0D4D\u200D"), "ൺ ർ ൽ ൾ");
+  assert.equal(modernMalayalam("ന\u0D4D\u200Dറ"), "ന\u0D4D\u200Dറ", "before another letter it is ambiguous, so left alone");
+  assert.equal(modernMalayalam("ക\u0D4D\u200D"), "ക\u0D4D\u200D", "only the five chillus the standard lists");
+  assert.equal(modernMalayalam("ഭാഷയാണ\u0D4D\u200C"), "ഭാഷയാണ\u0D4D", "a non-joiner after a final virama is dropped");
+  assert.equal(modernMalayalam("hello"), "hello");
+  assert.deepEqual(arrangeLine([{ text: "അവന\u0D4D\u200D", box: { x0: 0, x1: 50, y0: 0, y1: 20 } }]).map((w) => w.text), ["അവൻ"]);
+});
+test("own font: a WOFF file is unpacked to the plain font; WOFF 2 is refused with a reason", async () => {
+  const ttf = new Uint8Array(readFileSync(new URL("../../../node_modules/pdfjs-dist/standard_fonts/LiberationSans-Regular.ttf", import.meta.url)));
+  // build a WOFF from the TrueType file: same tables, each zlib-compressed
+  const dv = new DataView(ttf.buffer, ttf.byteOffset), n = dv.getUint16(4), recs = [...Array(n)].map((_, i) => ({ tag: dv.getUint32(12 + 16 * i), sum: dv.getUint32(16 + 16 * i), data: ttf.subarray(dv.getUint32(20 + 16 * i), dv.getUint32(20 + 16 * i) + dv.getUint32(24 + 16 * i)) }));
+  const comp = recs.map((r) => { const z = zlibSync(r.data); return z.length < r.data.length ? z : r.data; }), size = 44 + 20 * n + comp.reduce((s, c) => s + ((c.length + 3) & ~3), 0), woff = new Uint8Array(size), w = new DataView(woff.buffer);
+  w.setUint32(0, 0x774f4646); w.setUint32(4, dv.getUint32(0)); w.setUint32(8, size); w.setUint16(12, n); w.setUint32(16, ttf.length);
+  let at = 44 + 20 * n; recs.forEach((r, i) => { const e = 44 + 20 * i; w.setUint32(e, r.tag); w.setUint32(e + 4, at); w.setUint32(e + 8, comp[i].length); w.setUint32(e + 12, r.data.length); w.setUint32(e + 16, r.sum); woff.set(comp[i], at); at += (comp[i].length + 3) & ~3; });
+  const back = plainFont(woff), shape = await harfBuzzShaper(back);
+  assert.equal(shapeLine(shape, "Hello").width, shapeLine(await harfBuzzShaper(ttf), "Hello").width);
+  assert.equal((fontkit.create(back) as unknown as FkFont).postscriptName, "LiberationSans");
+  assert.throws(() => plainFont(Uint8Array.from([0x77, 0x4f, 0x46, 0x32, ...new Array(60).fill(0)])), /WOFF 2/);
+  assert.equal(plainFont(ttf), ttf);
 });

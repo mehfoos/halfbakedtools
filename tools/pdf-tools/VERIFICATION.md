@@ -244,3 +244,13 @@ extracted the watermark exactly. In Edit PDF, Hindi text gave the warning with a
 the font file; the saved page rendered correctly and poppler extracted it exactly. No requests left the browser; the
 HarfBuzz WebAssembly file came from this site. Not checked: Firefox and Safari themselves, phones, variable fonts,
 colour fonts, vertical text, fonts with unusual tables; Acrobat and Chrome's PDF viewer (expected to use ActualText).
+
+### Malayalam (2026-11-19)
+
+Four Malayalam lines (including the chillu ൻ, conjuncts ന്ത്യ, ക്ക, റ്റ, ന്റ, സ്സ and a number) drawn by Chrome with the official
+Noto Sans Malayalam (notofonts.github.io, hinted TTF) as a 300 dpi picture-only page. OCR with Malayalam chosen: before
+the encoding fix, poppler 0.94 / PDF.js 0.97 similar (the engine wrote old-style chillu sequences and non-joiners); after,
+1.00 in both. Text to PDF with that font: rendering matches Chrome's own rendering of the same lines glyph for glyph;
+poppler extracts the text exactly; PDF.js gives vowel signs in display order (as for any Malayalam PDF it reads without
+ActualText). Fontsource's WOFF copy of the font, unpacked by this tool, shapes the sentence to the same glyph ids and
+widths as the official file.

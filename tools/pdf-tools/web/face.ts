@@ -141,18 +141,20 @@ export function fsTypeOf(fk: Pick<FkFont, "OS/2">): number {
 export type FontCheck = { ok: true; subset: boolean; note?: string } | { ok: false; reason: string };
 /**
  * Reads the font's own embedding permission (the "fsType" field of its OS/2 table, set by the font's maker):
- *  - bit 1 alone ("restricted licence"): may not be embedded, so the font is refused;
+ *  - bit 1 ("restricted licence"): may not be embedded, so the font is refused, even if another permission bit is
+ *    also set (the specification says these bits should never be combined, and that some programs then assume the
+ *    least restrictive; this tool assumes the most restrictive);
  *  - bit 9 ("bitmap embedding only"): refused, because only outlines are embedded here;
  *  - bit 8 ("no subsetting"): allowed, but the whole font is embedded;
  *  - bit 2 ("preview and print"): allowed, and the visitor is told what that means.
- * Following the OpenType specification's OS/2 table description. This is the maker's technical flag, not the
+ * Following the OpenType specification's OS/2 table description (archived: pdftools_opentype-spec_os2.pdf). This is the maker's technical flag, not the
  * licence itself, and the page says so.
  */
 export function checkEmbedding(fsType: number | undefined): FontCheck {
   const t = fsType ?? 0, kind = t & 0x000f;
   if (t & 0x0200) return { ok: false, reason: "its maker allows only bitmap copies of it to be embedded, which this tool does not make" };
-  if (kind === 0x0002) return { ok: false, reason: "its maker does not allow it to be embedded in documents (it is marked “restricted licence”)" };
+  if (kind & 0x0002) return { ok: false, reason: "its maker does not allow it to be embedded in documents (it is marked “restricted licence”)" };
   const subset = !(t & 0x0100);
-  const notes = [kind === 0x0004 ? "its maker allows documents using it to be viewed and printed, not edited" : "", subset ? "" : "its maker does not allow cutting it down, so the whole font goes into the saved file"].filter(Boolean);
+  const notes = [kind & 0x0004 ? "its maker allows documents using it to be viewed and printed, not edited" : "", subset ? "" : "its maker does not allow cutting it down, so the whole font goes into the saved file"].filter(Boolean);
   return { ok: true, subset, ...(notes.length ? { note: notes.join("; ") } : {}) };
 }

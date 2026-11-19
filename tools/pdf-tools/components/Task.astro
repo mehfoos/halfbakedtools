@@ -151,7 +151,7 @@ const policy = import.meta.env.PROD ? CSP : "";
             <input id="ownFile" class="sr-only" type="file" accept={FONT_ACCEPT} /></p>
           <p id="ownFaceRow" hidden><label class="field">Style <select id="ownFace"></select></label></p>
           <p id="ownNote" class="small" role="status" aria-live="polite"></p>
-          <p class="small muted">The file is read inside this browser and never uploaded. Only the letters you use go into the saved PDF. It is not kept: after reloading the page, or in a settings file, choose it again. Fonts whose maker forbids embedding are refused; a font's licence may still limit how you can use it, so use fonts you have the right to use (for example ones under the SIL Open Font License, such as Google's Noto fonts).</p>
+          <p class="small muted">TrueType (.ttf), OpenType (.otf), collections (.ttc) and WOFF (.woff) files work. The file is read inside this browser and never uploaded. Only the letters you use go into the saved PDF. It is not kept: after reloading the page, or in a settings file, choose it again. Fonts whose maker forbids embedding are refused; a font's licence may still limit how you can use it, so use fonts you have the right to use (for example ones under the SIL Open Font License, such as Google's Noto fonts).</p>
         </details>
         <div id="more" class="sans opts">
           <p data-part="selectText"><label class="field">Select pages <input id="selText" type="text" placeholder="1-3, 5, 8-" size="10" /></label>

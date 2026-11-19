@@ -798,6 +798,105 @@
         }
       ],
       "checked": "2026-11-18"
+    },
+    {
+      "file": "pdftools_OFL-1.1.txt",
+      "table": "SIL Open Font License, version 1.1 (licence text)",
+      "publisher": "SIL International",
+      "licence": "The licence text itself; may be copied verbatim",
+      "origin": "https://openfontlicense.org/documents/OFL.txt",
+      "originalName": "OFL.txt",
+      "sha256": "1d361a8f8e8ce6e68457dcd93fb56e162e6baa3bbb7e7573a290d44399f6b57e",
+      "manual": "Downloaded by the editor on 2026-11-19 from the address in 'origin' and read; attach by hand.",
+      "checked": "2026-11-19"
+    },
+    {
+      "file": "pdftools_OFL-FAQ-1.1-update8.txt",
+      "table": "OFL FAQ, version 1.1-update8 (November 2026): embedding in documents (1.11-1.13), hosting fonts (1.8)",
+      "publisher": "SIL International",
+      "licence": "Copyright SIL International; verbatim copies may be distributed (stated in the FAQ)",
+      "origin": "https://openfontlicense.org/documents/OFL-FAQ.txt",
+      "originalName": "OFL-FAQ.txt",
+      "sha256": "03fad2710643a9a866337e10c7e51e961c3f71935801001b1bd9d435139a48f4",
+      "manual": "Downloaded by the editor on 2026-11-19 from the address in 'origin' and read; attach by hand.",
+      "checked": "2026-11-19"
+    },
+    {
+      "file": "pdftools_tessdata_best_LICENSE.txt",
+      "table": "tessdata_best repository licence (Apache License 2.0), for the OCR language models",
+      "publisher": "Tesseract OCR project",
+      "licence": "Apache-2.0 licence text",
+      "origin": "https://github.com/tesseract-ocr/tessdata_best/blob/main/LICENSE",
+      "originalName": "LICENSE",
+      "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+      "manual": "Downloaded by the editor on 2026-11-19 from the address in 'origin' and read; attach by hand. Downloaded from raw.githubusercontent.com.",
+      "checked": "2026-11-19"
+    },
+    {
+      "file": "pdftools_tessdata_best_README.md",
+      "table": "tessdata_best README: 'All data in the repository are licensed under the Apache-2.0 License'",
+      "publisher": "Tesseract OCR project",
+      "licence": "Apache-2.0 (repository)",
+      "origin": "https://github.com/tesseract-ocr/tessdata_best/blob/main/README.md",
+      "originalName": "README.md",
+      "sha256": "08c87523fb799c5bae6380f6ffa1a823494ab78f63906d7255dddd7671f94a5f",
+      "manual": "Downloaded by the editor on 2026-11-19 from the address in 'origin' and read; attach by hand. Downloaded from raw.githubusercontent.com.",
+      "checked": "2026-11-19"
+    },
+    {
+      "file": "pdftools_naptha-tessdata_README.md",
+      "table": "naptha/tessdata README (gh-pages branch): '4.0.0_best_int - Integerized Version of Tessdata Best', published as @tesseract.js-data/{lang}",
+      "publisher": "Project Naptha (tesseract.js)",
+      "licence": "Repository README; quoted as evidence of origin",
+      "origin": "https://github.com/naptha/tessdata/blob/gh-pages/README.md",
+      "originalName": "README.md",
+      "sha256": "7e83e5899fd3883f10cc44c5b1b57550910b13ee759ed9a8ac57831e960cd7dd",
+      "manual": "Downloaded by the editor on 2026-11-19 from the address in 'origin' and read; attach by hand. Downloaded from raw.githubusercontent.com.",
+      "checked": "2026-11-19"
+    },
+    {
+      "file": "pdftools_unicode-18.0.0_core-spec_chapter-12.html",
+      "table": "The Unicode Standard, Version 18.0.0, Chapter 12 (South and Central Asia-I), Malayalam: 'Legacy Chillu Sequences' and Table 12-43 'Legacy Encoding of Malayalam Chillus' (raw HTML)",
+      "publisher": "Unicode, Inc.",
+      "licence": "Copyright Unicode, Inc.; Unicode Terms of Use (https://www.unicode.org/copyright.html); kept so the cited table can be traced",
+      "origin": "https://www.unicode.org/versions/latest/core-spec/chapter-12/",
+      "originalName": "index.html",
+      "sha256": "c09c329c27b209a57e9f70b48b7d0734d7421ace9b372fb2c9f0c59cf2855606",
+      "manual": "Downloaded by the editor on 2026-11-19 from the address in 'origin' with headless Chrome (raw HTML and a PDF print of the page) and read; attach by hand.",
+      "checked": "2026-11-19"
+    },
+    {
+      "file": "pdftools_unicode-18.0.0_core-spec_chapter-12.pdf",
+      "table": "As above: PDF print of the page (53 pages; Table 12-43 found in its text)",
+      "publisher": "Unicode, Inc.",
+      "licence": "Copyright Unicode, Inc.; Unicode Terms of Use (https://www.unicode.org/copyright.html)",
+      "origin": "https://www.unicode.org/versions/latest/core-spec/chapter-12/",
+      "originalName": "(print of the page)",
+      "sha256": "2050bfeebc3b7833ff9029e4200a55aa7299c70cde7eb01a8fafe70da2696edf",
+      "manual": "Downloaded by the editor on 2026-11-19 from the address in 'origin' with headless Chrome (raw HTML and a PDF print of the page) and read; attach by hand.",
+      "checked": "2026-11-19"
+    },
+    {
+      "file": "pdftools_opentype-spec_os2.html",
+      "table": "OpenType specification, OS/2 table: fsType embedding permissions (bits 1, 2, 3, 8, 9; bits 0-3 mutually exclusive) (raw HTML)",
+      "publisher": "Microsoft",
+      "licence": "Copyright Microsoft; Microsoft Learn terms of use; kept so the cited rules can be traced",
+      "origin": "https://learn.microsoft.com/en-us/typography/opentype/spec/os2",
+      "originalName": "os2",
+      "sha256": "28f041ad2e499fb57d5e626b4cd43886b77896ead5188773c5561a4c76c4c8d2",
+      "manual": "Downloaded by the editor on 2026-11-19 from the address in 'origin' with headless Chrome (raw HTML and a PDF print of the page) and read; attach by hand.",
+      "checked": "2026-11-19"
+    },
+    {
+      "file": "pdftools_opentype-spec_os2.pdf",
+      "table": "As above: PDF print of the page",
+      "publisher": "Microsoft",
+      "licence": "Copyright Microsoft; Microsoft Learn terms of use",
+      "origin": "https://learn.microsoft.com/en-us/typography/opentype/spec/os2",
+      "originalName": "(print of the page)",
+      "sha256": "359d25032359e7b0345ab84929b371657a756a4c28844e8ecfbee2738c0e570c",
+      "manual": "Downloaded by the editor on 2026-11-19 from the address in 'origin' with headless Chrome (raw HTML and a PDF print of the page) and read; attach by hand.",
+      "checked": "2026-11-19"
     }
   ]
 }

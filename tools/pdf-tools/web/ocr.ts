@@ -20,6 +20,19 @@ export function ocrScale(widthPt: number, heightPt: number, dpi: number): number
   return px > OCR_MAX_PIXELS ? s * Math.sqrt(OCR_MAX_PIXELS / px) : s;
 }
 
+/**
+ * Malayalam as the engine writes it uses the encoding from before Unicode 5.1 for the five old chillu letters
+ * (consonant, virama, zero-width joiner) and adds a zero-width non-joiner after a word-final virama. Both look the
+ * same as the modern encoding but don't match it in a search, so they are changed to what people type today:
+ *  - <NNA|NA|RA|LA|LLA, virama, ZWJ> at the end of a word becomes U+0D7A, 0D7B, 0D7C, 0D7D or 0D7E, as in The Unicode
+ *    Standard 18.0, chapter 12, Table 12-43 ("Legacy Encoding of Malayalam Chillus"). Not before another Malayalam
+ *    character: the standard notes <na, virama, ZWJ, rra> can mean two different things there;
+ *  - a zero-width non-joiner after a virama at the end of a word is dropped: there is no following letter for it to act on.
+ */
+const CHILLU: Record<string, string> = { "\u0D23": "\u0D7A", "\u0D28": "\u0D7B", "\u0D30": "\u0D7C", "\u0D32": "\u0D7D", "\u0D33": "\u0D7E" };
+export const modernMalayalam = (t: string): string =>
+  t.replace(/([\u0D23\u0D28\u0D30\u0D32\u0D33])\u0D4D\u200D(?![\u0D00-\u0D7F])/g, (_, c: string) => CHILLU[c]).replace(/\u0D4D\u200C(?![\u0D00-\u0D7F])/g, "\u0D4D");
+
 export const isRtl = (text: string): boolean => /[\p{Script=Arabic}\p{Script=Hebrew}\p{Script=Syriac}\p{Script=Thaana}\p{Script=Nko}]/u.test(text);
 /** Scripts written without spaces between words: the engine reports their characters as separate "words". */
 const NO_SPACES = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}ー々〆]/u;
@@ -35,7 +48,7 @@ const NO_SPACES = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Scrip
 export function arrangeLine(line: OcrWord[]): OcrWord[] {
   const out: OcrWord[] = [];
   for (const w of line) {
-    const prev = out[out.length - 1], t = w.text.trim(); if (!t) continue;
+    const prev = out[out.length - 1], t = modernMalayalam(w.text.trim()); if (!t) continue;
     const h = Math.max(1, w.box.y1 - w.box.y0);
     if (prev && NO_SPACES.test([...prev.text].pop()!) && NO_SPACES.test([...t][0]) && Math.abs(w.box.x0 - prev.box.x1) < h) {
       prev.text += t; prev.box = { x0: Math.min(prev.box.x0, w.box.x0), y0: Math.min(prev.box.y0, w.box.y0), x1: Math.max(prev.box.x1, w.box.x1), y1: Math.max(prev.box.y1, w.box.y1) };
