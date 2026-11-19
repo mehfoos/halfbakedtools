@@ -980,8 +980,9 @@ test("noto: the list of shipped files matches the installed packages' coverage",
 });
 test("noto: only the files a text needs are chosen; uncovered characters are reported", () => {
   assert.deepEqual(notoFilesFor("Hello").map(notoId), ["noto-sans-latin"]);
+  assert.deepEqual(notoFilesFor("שלום עולם").map(notoId), ["noto-sans-hebrew-hebrew"], "spaces need no file of their own");
   assert.deepEqual(notoFilesFor("അവൻ 25 വയസ്സ്").map(notoId), ["noto-sans-latin", "noto-sans-malayalam-malayalam"]);
-  assert.deepEqual(notoFilesFor("Привет मराठी").map(notoId), ["noto-sans-latin", "noto-sans-cyrillic", "noto-sans-devanagari-devanagari"]);
+  assert.deepEqual(notoFilesFor("Привет मराठी").map(notoId), ["noto-sans-cyrillic", "noto-sans-devanagari-devanagari"]);
   assert.deepEqual(notoMissing("abc 😀"), ["😀"]);
 });
 test("noto: mixed Malayalam, Hindi and English text is drawn with each script's font, embedded only as needed", async () => {
@@ -1036,4 +1037,13 @@ test("noto CJK: the index matches the packages; the style follows the text or th
   for (const ch of lines.join("").replace(/\s/g, "")) assert.ok(mapped.has(ch), `${ch} is not in any embedded font`);
   const fams = back.context.enumerateIndirectObjects().map(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("BaseFont"))?.toString() ?? "").filter((n) => /Noto/.test(n));
   assert.ok(fams.some((n) => /SC/.test(n)) && fams.some((n) => /JP/.test(n)) && fams.some((n) => /KR/.test(n)) && !fams.some((n) => /TC/.test(n)), fams.join(" "));
+});
+test("noto: a line in one alphabet stays one piece, spaces included, so readers keep right-to-left words in order", async () => {
+  const lib = notoLibrary(fsNoto), doc = await PDFDocument.create(), face = notoFace(doc, lib), page = doc.addPage([400, 100]);
+  await face.prepare!("שלום עולם וברוכים");
+  face.draw(page, "שלום עולם וברוכים", { x: 10, y: 50, size: 20, color: { r: 0, g: 0, b: 0 }, rotate: 0, opacity: 1 });
+  const back = await PDFDocument.load(await doc.save());
+  const fonts = back.context.enumerateIndirectObjects().map(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("BaseFont"))?.toString() ?? "").filter((n) => /Noto/.test(n));
+  assert.ok(fonts.length > 0 && fonts.every((n) => /Hebrew/.test(n)), `only the Hebrew font: ${fonts.join(" ")}`);
+  const blank = notoFace(await PDFDocument.create(), lib); await blank.prepare!("   "); assert.ok(blank.widthOfTextAtSize("   ", 10) > 0, "a line of spaces still has a width");
 });

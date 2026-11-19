@@ -278,3 +278,12 @@ PDF.js extracted all four lines exactly and PDF.js drew them correctly. Before t
 box in both readers (found by this check). Traditional Chinese chosen: only Noto Sans TC files were used and the line
 extracted exactly. Edit PDF with Japanese text: no warning, saved, extracted exactly. Not checked: vertical text, rare
 characters beyond the files' coverage, Firefox, Safari, phones.
+
+### Noto Sans: the remaining alphabets (2026-11-19)
+
+Headless Chrome, Text to PDF in Noto Sans with one line each of Hebrew, Bengali, Punjabi (Gurmukhi), Telugu, Kannada,
+Thai and Tamil, compared with Chrome's own rendering of the same Fontsource files: the same glyphs and joins in every line.
+poppler extracted every line exactly; PDF.js exactly for Hebrew, Punjabi, Telugu, Kannada and Thai, and with vowel signs in
+display order for Bengali and Tamil (as for such PDFs from other software). Found and fixed: PDF.js gave the Hebrew words in
+reverse order, because each space came from the Latin font and split the line into pieces; spaces now stay in the font of
+the text around them (every shipped file has a space glyph, checked), and the Latin file is no longer loaded for them.

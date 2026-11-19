@@ -93,14 +93,20 @@ export function shapeRuns(text: string, fonts: ShapeFont[]): { glyphs: PlacedIn[
   for (const r of runs) {
     const rtl = r.level % 2 === 1, part = text.slice(r.start, r.end);
     // pieces of one font, in reading order
-    const pieces: { font: number; text: string }[] = [];
+    const pieces: { font: number; text: string }[] = []; let spaces = "";
+    const add = (font: number, t: string) => { const last = pieces[pieces.length - 1]; if (last && last.font === font) last.text += t; else pieces.push({ font, text: t }); };
     for (const ch of part) {
       const cp = ch.codePointAt(0)!, last = pieces[pieces.length - 1];
-      // marks and joiners stay with their letter; any other character goes to the first font that has it, the same rule
-      // used to decide which fonts to load (noto.ts), so nothing is drawn from a font that was not loaded for it
+      // Spaces stay in the font of the text around them (the font before, or else the one after), so a line in one
+      // alphabet stays one piece: readers such as PDF.js put right-to-left words in order only within a piece.
+      if (/\p{Zs}/u.test(ch)) { if (last && fonts[last.font].has(cp)) last.text += ch; else spaces += ch; continue; }
+      // Marks and joiners stay with their letter; any other character goes to the first font that has it, the same rule
+      // used to decide which fonts to load (noto.ts), so nothing is drawn from a font that was not loaded for it.
       const font = last && CLINGS.test(ch) ? last.font : Math.max(0, fonts.findIndex((f) => f.has(cp)));
-      if (last && last.font === font) last.text += ch; else pieces.push({ font, text: ch });
+      if (spaces) { const sf = fonts[font].has(32) ? font : Math.max(0, fonts.findIndex((f) => f.has(32))); add(sf, spaces); spaces = ""; }
+      add(font, ch);
     }
+    if (spaces) add(pieces.length ? pieces[pieces.length - 1].font : Math.max(0, fonts.findIndex((f) => f.has(32))), spaces);
     if (rtl) pieces.reverse();   // right-to-left: the last piece in reading order is leftmost
     // The shaper mirrors brackets in right-to-left runs itself (HarfBuzz does), so ( still opens towards the text.
     for (const p of pieces) {

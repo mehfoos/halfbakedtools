@@ -49,7 +49,8 @@ const ignorable = (c: string) => /[\p{Cc}\p{Zs}]/u.test(c);
 /** The files needed for `text`: for each character, the first file in order that covers it. */
 export function notoFilesFor(text: string, style: HanStyle = "auto"): NotoFile[] {
   const order = notoOrder(text, style), need = new Set<NotoFile>();
-  for (const c of text) { if (ignorable(c) && c !== " ") continue; const f = order.find((x) => covers(x, c.codePointAt(0)!)); if (f) need.add(f); }
+  // spaces are drawn in the font of the text around them (every shipped file has a space), so they need no file of their own
+  for (const c of text) { if (ignorable(c)) continue; const f = order.find((x) => covers(x, c.codePointAt(0)!)); if (f) need.add(f); }
   return order.filter((f) => need.has(f));   // keep the order
 }
 /** Characters of `text` that no shipped Noto file covers. Before the CJK index is loaded, CJK-like characters are not reported. */
@@ -88,6 +89,8 @@ export function notoFace(doc: PDFDocument, library: ReturnType<typeof notoLibrar
       })()));
       return e;
     }));
+    // a line of nothing but spaces still needs a font with a space in it
+    if (/\p{Zs}/u.test(text) && ![...parts.values()].some((p) => p.fk.hasGlyphForCodePoint(32))) await face.prepare!("a");
   };
   // Missing: characters no shipped file covers, and characters a loaded file was expected to have but doesn't.
   const missing = face.missing;
