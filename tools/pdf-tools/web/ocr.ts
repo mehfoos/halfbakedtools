@@ -2,9 +2,11 @@
  * OCR PDF: adds an invisible text layer over each page so the words in a scan can be searched, selected and copied.
  * The page itself is not changed: its picture stays exactly as it was, and the recognised words are drawn on top
  * in "invisible" text (PDF text rendering mode 3), each word stretched to cover the box where the engine found it.
+ * The font is our own glyph-less one (glyphless.ts), so every script works and no typeface is copied.
  * The recognition itself (Tesseract, in ui.ts) can make mistakes; nothing here checks the words.
  */
-import { PDFPage, PDFFont, PDFName, beginText, endText, setFontAndSize, setTextRenderingMode, setTextMatrix, showText, TextRenderingMode, pushGraphicsState, popGraphicsState } from "@cantoo/pdf-lib";
+import { PDFHexString, PDFPage, PDFRef, beginText, endText, setFontAndSize, setTextRenderingMode, setTextMatrix, showText, TextRenderingMode, pushGraphicsState, popGraphicsState } from "@cantoo/pdf-lib";
+import { GLYPHLESS, encodeWord } from "./glyphless.ts";
 
 export type Box = { x0: number; y0: number; x1: number; y1: number };   // pixels on the drawn page, top-left origin
 export type OcrWord = { text: string; box: Box; confidence?: number };   // confidence: the engine's own 0-100 score
@@ -18,15 +20,30 @@ export function ocrScale(widthPt: number, heightPt: number, dpi: number): number
   return px > OCR_MAX_PIXELS ? s * Math.sqrt(OCR_MAX_PIXELS / px) : s;
 }
 
-/** Keeps the characters the font can draw; others are tried in their compatibility form (ﬁ → fi), else dropped. */
-export function drawableText(text: string, has: Set<number>): { text: string; dropped: number } {
-  let out = "", dropped = 0;
-  for (const ch of text) {
-    if (has.has(ch.codePointAt(0)!)) { out += ch; continue; }
-    const alt = ch.normalize("NFKC");
-    if (alt !== ch && [...alt].every((c) => has.has(c.codePointAt(0)!))) out += alt; else dropped++;
+export const isRtl = (text: string): boolean => /[\p{Script=Arabic}\p{Script=Hebrew}\p{Script=Syriac}\p{Script=Thaana}\p{Script=Nko}]/u.test(text);
+/** Scripts written without spaces between words: the engine reports their characters as separate "words". */
+const NO_SPACES = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}ー々〆]/u;
+
+/**
+ * Prepares one line of recognised words for the text layer, so PDF readers extract it as it reads:
+ *  - neighbouring words in scripts written without spaces (Chinese, Japanese, Thai, ...) are joined when the gap
+ *    between them is under a line's height, so copied text has no stray spaces and searches find whole phrases;
+ *  - a line containing right-to-left text (Arabic, Urdu, Persian, Hebrew) is stored in visual order, left to right,
+ *    with the characters of right-to-left words reversed. This is how word processors store such text, and what PDF
+ *    readers expect: they reverse it back into reading order when the text is extracted.
+ */
+export function arrangeLine(line: OcrWord[]): OcrWord[] {
+  const out: OcrWord[] = [];
+  for (const w of line) {
+    const prev = out[out.length - 1], t = w.text.trim(); if (!t) continue;
+    const h = Math.max(1, w.box.y1 - w.box.y0);
+    if (prev && NO_SPACES.test([...prev.text].pop()!) && NO_SPACES.test([...t][0]) && Math.abs(w.box.x0 - prev.box.x1) < h) {
+      prev.text += t; prev.box = { x0: Math.min(prev.box.x0, w.box.x0), y0: Math.min(prev.box.y0, w.box.y0), x1: Math.max(prev.box.x1, w.box.x1), y1: Math.max(prev.box.y1, w.box.y1) };
+      if (prev.confidence !== undefined && w.confidence !== undefined) prev.confidence = Math.min(prev.confidence, w.confidence);
+    } else out.push({ ...w, text: t, box: { ...w.box } });
   }
-  return { text: out, dropped };
+  if (!out.some((w) => isRtl(w.text))) return out;
+  return out.sort((a, b) => a.box.x0 - b.box.x0).map((w) => (isRtl(w.text) ? { ...w, text: [...w.text].reverse().join("") } : w));
 }
 
 /**
@@ -48,17 +65,17 @@ export const meanConfidence = (words: OcrWord[]): number | null => {
   const s = words.filter((w) => typeof w.confidence === "number"); return s.length ? s.reduce((n, w) => n + w.confidence!, 0) / s.length : null;
 };
 
-/** Draws the words invisibly on the page. Returns how many were drawn and how many characters were dropped. */
-export function addTextLayer(page: PDFPage, font: PDFFont, words: OcrWord[], toPdf: (x: number, y: number) => Pt): { words: number; dropped: number } {
-  const has = new Set(font.getCharacterSet()), key: PDFName = page.node.newFontDictionary(font.name, font.ref);
-  const ascent = font.heightAtSize(1, { descender: false }), descent = font.heightAtSize(1, { descender: true }) - ascent;
+/** Draws the recognised lines invisibly in the glyph-less font `font` (added once per document with addGlyphlessFont).
+ *  Returns how many words were drawn and how many characters had to be left out. */
+export function addTextLayer(page: PDFPage, font: PDFRef, lines: OcrWord[][], toPdf: (x: number, y: number) => Pt): { words: number; dropped: number } {
+  const words = lines.flatMap(arrangeLine);
+  const key = page.node.newFontDictionary("HBTOcr", font);
   const ops = [pushGraphicsState(), beginText(), setTextRenderingMode(TextRenderingMode.Invisible), setFontAndSize(key, 1)];
   let n = 0, dropped = 0;
   for (const w of words) {
-    const t = drawableText(w.text.trim(), has); dropped += t.dropped;
-    const width = t.text ? font.widthOfTextAtSize(t.text, 1) : 0;
-    if (!width || w.box.x1 <= w.box.x0 || w.box.y1 <= w.box.y0) continue;
-    ops.push(setTextMatrix(...wordMatrix(w.box, width, ascent, descent, toPdf)), showText(font.encodeText(t.text)));
+    const t = encodeWord(w.text.trim()); dropped += t.dropped;
+    if (!t.count || w.box.x1 <= w.box.x0 || w.box.y1 <= w.box.y0) continue;
+    ops.push(setTextMatrix(...wordMatrix(w.box, t.count * GLYPHLESS.advance, GLYPHLESS.ascent, GLYPHLESS.descent, toPdf)), showText(PDFHexString.of(t.hex)));
     n++;
   }
   ops.push(endText(), popGraphicsState());

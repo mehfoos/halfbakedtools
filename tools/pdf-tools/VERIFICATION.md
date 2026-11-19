@@ -200,3 +200,27 @@ Re-running on an OCR'd file skipped the page and, after the fix above, saves not
 4-5 s. Only this site's files were fetched (worker, engine, language data); nothing was stored in IndexedDB; no requests
 left the browser. Not checked: real scanner output (noise, skew), phones (memory), Firefox/Safari, documents of hundreds of
 pages, accuracy measured on a labelled set.
+
+### OCR in 40 languages and the glyph-less font (2026-11-19)
+
+The generated font passes fontTools (reads and re-saves) and the OpenType Sanitizer used by Chrome and Firefox (after
+giving the blank glyph a header: OTS rejects an empty glyph table); whole-font checksum 0xB1B0AFBA. pdffonts lists it as an
+embedded CID TrueType font with Identity-H encoding and a ToUnicode map; qpdf finds no errors.
+
+Headless Chrome drew one sentence twice per page in each of 16 languages (FreeSerif and Noto Sans CJK; shaped by Chrome),
+saved as 300 dpi picture-only PDFs; each was OCR'd in the browser with its language chosen. Text extracted by poppler and
+by PDF.js was compared with the sentence (similarity of characters, spaces ignored), poppler / PDF.js:
+Polish, German, French, Russian, Greek, Arabic, Hebrew, Urdu, Hindi, Bengali, Japanese 1.00 / 1.00; Tamil 0.97 / 1.00;
+Welsh 0.97 / 0.97 ("i" read as "1"); Chinese (simplified) 0.90 / 0.90 (馆 read as 饮); Korean 0.90 / 0.90 (한 read as 안, and
+words split into syllables); Thai 0.90 / 0.90 (stray marks). The remaining differences are the engine's reading, not
+the text layer. Before right-to-left lines were stored in visual order, PDF.js gave Arabic, Hebrew and Urdu reversed
+(0.20-0.25); after, 1.00 in both.
+
+Mixed page (Urdu, English, Urdu) read with Urdu + English: both of the first two lines exact in both readers; the third
+Urdu line was not found at all. That phrase alone gave no words, and a longer Urdu page came back garbled: the engine's
+Urdu model is unreliable on this (Naskh-style) font, and the page now says Urdu results vary. English scans from the
+previous check gave the same text and positions as before. Only the chosen languages' files were fetched, all from this
+site; nothing was stored in the browser. Not checked: Ukrainian, Bulgarian, Czech, Slovak, Hungarian, Romanian,
+Italian, Spanish, Portuguese, Dutch, Punjabi, Telugu, Malayalam, Kannada, Marathi, Nepali, Persian, Turkish, Kurdish,
+Chinese (traditional), Vietnamese, Latin and ancient Greek individually (same mechanism, untested text); real scans; viewers
+other than poppler and PDF.js (for example Chrome's own PDF viewer, Acrobat).

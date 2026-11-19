@@ -820,7 +820,8 @@ test("forms: fields are listed with their kinds and filled values come out; flat
 });
 
 // ---- OCR text layer ----
-import { wordMatrix, drawableText, ocrScale, addTextLayer, meanConfidence, OCR_MAX_PIXELS } from "./ocr.ts";
+import { wordMatrix, isRtl, arrangeLine, ocrScale, addTextLayer, meanConfidence, OCR_MAX_PIXELS } from "./ocr.ts";
+import { addGlyphlessFont, glyphlessTtf, identityToUnicode, encodeWord } from "./glyphless.ts";
 test("ocr: a word's matrix spans its box exactly, on upright and turned pages", () => {
   // upright: 2 px per point, page 300 pt tall; pixel (x, y) -> point (x/2, 300 - y/2)
   const up = (x: number, y: number): [number, number] => [x / 2, 300 - y / 2];
@@ -832,17 +833,44 @@ test("ocr: a word's matrix spans its box exactly, on upright and turned pages", 
   const m = wordMatrix({ x0: 0, y0: 0, x1: 200, y1: 40 }, 2, 0.75, 0.25, turned);
   assert.deepEqual([m[0] * 2, m[1] * 2], [0, 100]); assert.deepEqual([m[2], m[3]], [-20, 0]);
 });
-test("ocr: unusual characters are mapped or dropped; huge pages are drawn smaller", async () => {
-  const has = new Set([..."fiabc"].map((c) => c.codePointAt(0)!));
-  assert.deepEqual(drawableText("ﬁab☃c", has), { text: "fiabc", dropped: 1 });
-  const b = { x0: 0, y0: 0, x1: 1, y1: 1 }; assert.equal(meanConfidence([{ text: "a", box: b, confidence: 90 }, { text: "b", box: b, confidence: 30 }, { text: "c", box: b }]), 60); assert.equal(meanConfidence([]), null);
+test("ocr: huge pages are drawn smaller; words go in the glyph-less font, right-to-left words from the right", async () => {
   assert.equal(ocrScale(612, 792, 300), 300 / 72);
   const s = ocrScale(5000, 5000, 300); assert.ok(Math.abs(5000 * s * 5000 * s - OCR_MAX_PIXELS) < 1);
-  const doc = await PDFDocument.create(), page = doc.addPage([300, 300]), font = doc.embedStandardFont(StandardFonts.Helvetica);
-  const r = addTextLayer(page, font, [{ text: "Hello", box: { x0: 10, y0: 10, x1: 110, y1: 40 } }, { text: "☃", box: { x0: 0, y0: 0, x1: 5, y1: 5 } }], (x, y) => [x, 300 - y]);
-  assert.deepEqual(r, { words: 1, dropped: 1 });
+  const b = { x0: 0, y0: 0, x1: 1, y1: 1 }; assert.equal(meanConfidence([{ text: "a", box: b, confidence: 90 }, { text: "b", box: b, confidence: 30 }, { text: "c", box: b }]), 60); assert.equal(meanConfidence([]), null);
+  assert.equal(isRtl("مرحبا"), true); assert.equal(isRtl("שלום"), true); assert.equal(isRtl("hello"), false); assert.equal(isRtl("2024"), false);
+  const up = (x: number, y: number): [number, number] => [x, 300 - y];
+  const box = (x0: number, x1: number) => ({ x0, x1, y0: 10, y1: 40 });
+  assert.deepEqual(arrangeLine([{ text: "我", box: box(0, 30) }, { text: "们", box: box(35, 65) }, { text: "在", box: box(80, 110) }]).map((w) => w.text), ["我们在"], "no-space scripts are joined");
+  assert.deepEqual(arrangeLine([{ text: "图", box: box(0, 30) }, { text: "书", box: box(200, 230) }]).map((w) => w.text), ["图", "书"], "but not across a wide gap");
+  assert.deepEqual(arrangeLine([{ text: "one", box: box(0, 30) }, { text: "two", box: box(35, 65) }]).map((w) => w.text), ["one", "two"]);
+  // right-to-left: the engine gives reading order (rightmost word first); stored left to right, letters reversed
+  assert.deepEqual(arrangeLine([{ text: "مرحبا", box: box(200, 300) }, { text: "بكم", box: box(100, 180) }, { text: "2024", box: box(0, 80) }]).map((w) => w.text), ["2024", "مكب", "ابحرم"]);
+  const doc = await PDFDocument.create(), page = doc.addPage([300, 300]), font = addGlyphlessFont(doc);
+  const res = addTextLayer(page, font, [[{ text: "Привет", box: { x0: 10, y0: 10, x1: 110, y1: 40 } }], [{ text: "😀", box: { x0: 0, y0: 0, x1: 5, y1: 5 } }]], up);
+  assert.deepEqual(res, { words: 1, dropped: 1 });
   const out = await PDFDocument.load(await doc.save()); const stream = out.getPage(0).node.Contents()!;
   const decode = (x: unknown) => { const st = out.context.lookup(x as never) as unknown as { getContents(): Uint8Array; dict: { get(n: PDFName): unknown } }; const raw = st.getContents(); return st.dict.get(PDFName.of("Filter")) ? new TextDecoder("latin1").decode(unzlibSync(raw)) : new TextDecoder("latin1").decode(raw); };
   const all = ("asArray" in stream ? (stream as unknown as { asArray(): unknown[] }).asArray() : [stream]).map(decode).join("\n");
-  assert.match(all, /3 Tr/); assert.match(all, /BT[\s\S]*ET/);
+  assert.match(all, /3 Tr/); assert.match(all, /<041F04400438043204350442> Tj/);
+});
+test("glyph-less font: a valid font file, a full ToUnicode map, and 2-byte codes for every basic character", () => {
+  const ttf = glyphlessTtf(), dv = new DataView(ttf.buffer);
+  assert.equal(dv.getUint32(0), 0x00010000); assert.equal(dv.getUint16(4), 10);
+  let sum = 0; for (let i = 0; i < ttf.length; i += 4) sum = (sum + dv.getUint32(i)) >>> 0; assert.equal(sum, 0xb1b0afba, "whole-font checksum");
+  const cmap = identityToUnicode(); assert.equal((cmap.match(/<[0-9A-F]{2}00> <[0-9A-F]{2}FF> <[0-9A-F]{2}00>/g) ?? []).length, 248); assert.doesNotMatch(cmap, /<D800>/);
+  assert.deepEqual(encodeWord("Aé中"), { hex: "004100E94E2D", count: 3, dropped: 0 }); assert.deepEqual(encodeWord("a𠀀\u0001"), { hex: "0061", count: 1, dropped: 2 });
+});
+
+// ---- OCR languages ----
+import { OCR_LANGS, chosenLangs } from "./ocrlangs.ts";
+test("ocr languages: each one is served by the site from an installed package; choices are cleaned", () => {
+  const meta = JSON.parse(readFileSync(new URL("../tool.json", import.meta.url), "utf8")) as { vendor: Record<string, string> };
+  assert.equal(new Set(OCR_LANGS.map((l) => l.code)).size, OCR_LANGS.length);
+  for (const l of OCR_LANGS) {
+    const from = meta.vendor[`tesseract/lang/${l.code}.traineddata.gz`];
+    assert.equal(from, `@tesseract.js-data/${l.code}/4.0.0_best_int/${l.code}.traineddata.gz`, `${l.code} must be listed in tool.json vendor`);
+    assert.ok(existsSync(new URL(`../../../node_modules/${from}`, import.meta.url)), `${l.code}: package not installed`);
+  }
+  assert.deepEqual(chosenLangs("urd", "eng"), ["urd", "eng"]); assert.deepEqual(chosenLangs("fra", "fra"), ["fra"]);
+  assert.deepEqual(chosenLangs("xx", ""), ["eng"]); assert.deepEqual(chosenLangs("deu", "zzz"), ["deu"]);
 });

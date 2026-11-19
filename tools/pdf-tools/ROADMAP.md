@@ -54,7 +54,7 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | PDF to Markdown, PDF to HTML | **Done 2026-11-19** (chunk 9b; `web/structure.ts`) | Headings by size, paragraphs by line gaps, bullet lists; text is read in the file's own order. Not recovered: tables, columns, pictures, links, bold/italic. Follow-ups: tables, columns, bold/italic from font names, links, page images |
 | HTML file to PDF | Not planned yet | Needs a layout engine in the browser; converting only its text would misrepresent it. Revisit with a rendering approach that can be verified | Rough by nature; label as such. HTML to PDF from a web address is not possible locally |
 | PDF Forms (fill in) | **Done 2026-11-19** (chunk 10; `web/forms.ts`) | Fills existing fillable fields (text, tick boxes, radio, drop-down, list), optionally flattens. Follow-ups: a live preview of the page with its fields; creating forms; filling several files; a Western-only font limit (other scripts need an embedded font); signature fields |
-| OCR PDF | **Done 2026-11-19** (chunk 11; `web/ocr.ts`, `web/tess.ts`) | Tesseract (tesseract.js 7, Apache-2.0) served from `vendor/tesseract/` (about 6 MB, fetched on first use; no browser storage). English only; invisible text layer per word; pages with text skipped by default; low-confidence pages named. Follow-ups: more languages (each about 3 MB, @tesseract.js-data/<lang>); automatic page-orientation detection; a picture-only output ("flatten then OCR") |
+| OCR PDF | **Done 2026-11-19** (chunk 11; `web/ocr.ts`, `web/tess.ts`, `web/glyphless.ts`, `web/ocrlangs.ts`) | Tesseract (tesseract.js 7, Apache-2.0) served from `vendor/tesseract/`; 40 languages (each 0.4–3 MB, fetched only when chosen; about 67 MB on the site in all), up to two at once; our own glyph-less font for the invisible text, so every script works; right-to-left lines stored in visual order; no-space scripts joined; no browser storage. See `THIRD-PARTY.md`. Follow-ups: Sorani Kurdish (no LSTM model exists); vertical Chinese/Japanese; automatic page-orientation detection; Korean words are split where the engine splits them |
 | Redact PDF | Chunk 12 | Must truly remove content (see "Phase 3: what is left") |
 | PDF to PDF/A | Chunk 13 | Demanding standard; may only be partly achievable. Don't claim conformance without a validator |
 | Word/PowerPoint/Excel to PDF | On hold (owner) | Branch `office-to-pdf` |
@@ -104,6 +104,12 @@ items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
       source for ISO 216 (A-series) and US Letter/Legal dimensions (downloads are blocked from the build
       environment; ask the owner to upload). Then add `references.json`,
       cite them on the methods page, tick them off in `VERIFICATION.md`, and offer named paper sizes.
+- [ ] **OCR licence evidence to archive (owner).** The tessdata_best README and LICENSE
+      (github.com/tesseract-ocr/tessdata_best) and the naptha/tessdata README (which says `4.0.0_best_int` is the
+      integerised tessdata_best). Read through mirrors on 2026-11-19; see `THIRD-PARTY.md`.
+- [ ] **Fonts for visible text in other scripts** (Edit PDF text, Text to PDF, forms, page numbers, watermarks): needs
+      an owner decision on a font family and its licence before any font file is shipped. See the plan in the final
+      report of 2026-11-19 and `THIRD-PARTY.md`.
 - [ ] Pages with a `UserUnit` other than 1 (rare, very large pages) are untested.
 - [ ] Multi-image TIFF: use every image, not only the first (`loadImage` in `web/ui.ts`; a source would then have
       several pages and `SourceData` needs one image per page).

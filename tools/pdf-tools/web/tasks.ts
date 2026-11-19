@@ -73,7 +73,7 @@ export const TASKS: Task[] = [
     parts: ["compress"], formats: ["pdf"], which: "all", action: "Compress PDF", perFile: true, suffix: "compressed", tag: "↓" },
 
   { slug: "ocr", name: "OCR PDF", blurb: "Make scanned PDFs searchable: the words in the page pictures are recognised and added as invisible text you can search, select and copy.", group: "Optimise", accept: "pdf",
-    pick: "Select PDF files", hint: "English only for now. The pages look the same afterwards; recognised text is added on top, invisibly. Recognition takes a few seconds a page and can make mistakes.",
+    pick: "Select PDF files", hint: "Choose the language of the pages (40 are offered). The pages look the same afterwards; recognised text is added on top, invisibly. Recognition takes a few seconds a page and can make mistakes.",
     parts: ["ocr"], formats: ["pdf"], which: "all", action: "Make searchable", perFile: true, suffix: "ocr", tag: "OCR" },
   { slug: "repair", name: "Repair PDF", blurb: "Open a damaged PDF as far as possible and save a clean copy. It fixes damaged structure; it cannot bring back content that is missing.", group: "Optimise", accept: "pdf",
     pick: "Select PDF files", hint: "Each file is opened leniently and every page is checked. The message says what was found and which pages could not be read. Content missing from the file, for example from a cut-off download, cannot be recovered.",

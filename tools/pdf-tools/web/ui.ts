@@ -3,7 +3,7 @@
 // memory, and results are handed back as downloads created inside the page.
 import { perScreen, screenCount, clampScreen, screenRange, screenOf, pagerItems, MIN_PER_SCREEN } from "./paging.ts";
 import { zipSync } from "fflate";
-import { PDFDocument, StandardFonts } from "@cantoo/pdf-lib";
+import { PDFDocument } from "@cantoo/pdf-lib";
 import { NO_COMPRESSION, PRESETS, saving, greyInPlace, type CompressOptions, type CompressStats } from "./compress-core.ts";
 import { recompressImages } from "./compress.ts";
 import {
@@ -14,6 +14,8 @@ import {
 import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
 import { extractPictures } from "./extract.ts";
+import { addGlyphlessFont } from "./glyphless.ts";
+import { chosenLangs } from "./ocrlangs.ts";
 import { addTextLayer, ocrScale, meanConfidence, LOW_CONFIDENCE } from "./ocr.ts";
 import { listFields, fillForm, type FieldInfo, type Values } from "./forms.ts";
 import { toLines, toBlocks, toMarkdown, toHtml, type Line } from "./structure.ts";
@@ -360,18 +362,19 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   async function saveOcr() {
     if (busy || !ask.hidden) return;
     const pdfs = session.sources.filter((s) => loaded.get(s.sha256)?.data.kind === "pdf"); if (!pdfs.length) return say("Add a PDF first.", "bad");
-    const dpi = Number($<HTMLSelectElement>("ocrDpi").value) || 300, skip = $<HTMLInputElement>("ocrSkip").checked;
+    const dpi = Number($<HTMLSelectElement>("ocrDpi").value) || 300, skip = $<HTMLInputElement>("ocrSkip").checked, langs = chosenLangs($<HTMLSelectElement>("ocrLang").value, $<HTMLSelectElement>("ocrLang2").value);
     const names = pdfs.map(perFileName);
     if (!(await consent(names.length === 1 ? names : [`${safeName(session.output.name)}.zip`]))) return say("Nothing was saved. Change the file name and try again.");
     await work("Loading the text-recognition engine…", async (progress) => {
       const { startRecogniser } = await import("./tess.ts");
       let step = "";
-      const engine = await startRecogniser(new URL("../tesseract/", new URL(vendor, location.href)).href, (share) => progress(`${step} ${Math.round(share * 100)}%`));
+      const engine = await startRecogniser(new URL("../tesseract/", new URL(vendor, location.href)).href, langs, (share) => progress(`${step} ${Math.round(share * 100)}%`));
       const files: { name: string; bytes: Uint8Array }[] = [], lines: string[] = [];
+      let pagesRead = 0;
       try {
         for (const [k, s] of pdfs.entries()) {
           const L = loaded.get(s.sha256)!, d = L.data; if (d.kind !== "pdf" || L.handle.kind !== "pdf") continue;
-          const doc = await PDFDocument.load(d.bytes, d.password === undefined ? {} : { password: d.password }), font = doc.embedStandardFont(StandardFonts.Helvetica);
+          const doc = await PDFDocument.load(d.bytes, d.password === undefined ? {} : { password: d.password }); let font: ReturnType<typeof addGlyphlessFont> | null = null;
           let read = 0, skipped = 0, blank = 0, words = 0, dropped = 0; const doubtful: number[] = [];
           for (let i = 0; i < s.pages; i++) {
             step = `${s.name}: page ${i + 1} of ${s.pages}…`; progress(step);
@@ -379,14 +382,16 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
             const size = await pixelsToPoints(L.handle, i, 1), scale = ocrScale(size.width, size.height, dpi), map = await pixelsToPoints(L.handle, i, scale);
             const canvas = await drawPage(L.handle, i, 0, { pxPerPoint: scale, pxPerImagePx: scale });
             const found = await engine.read(canvas); canvas.width = canvas.height = 0;
-            const conf = meanConfidence(found); if (conf !== null && conf < LOW_CONFIDENCE) doubtful.push(i + 1);
-            const r = addTextLayer(doc.getPage(i), font, found, map.toPdf); read++; words += r.words; dropped += r.dropped; if (!r.words) blank++;
+            const conf = meanConfidence(found.flat()); if (conf !== null && conf < LOW_CONFIDENCE) doubtful.push(i + 1);
+            const r = addTextLayer(doc.getPage(i), (font ??= addGlyphlessFont(doc)), found, map.toPdf); read++; words += r.words; dropped += r.dropped; if (!r.words) blank++;
           }
-          if (read) files.push({ name: names[k], bytes: await doc.save() });
-          lines.push(`${s.name}: ${read} ${read === 1 ? "page" : "pages"} read, ${words} words added${skipped ? `, ${skipped} skipped (already had text)` : ""}${blank ? `, ${blank} with no words found` : ""}${dropped ? `, ${dropped} characters left out (not in the font)` : ""}.${doubtful.length ? ` The engine was unsure about ${doubtful.length === 1 ? "page" : "pages"} ${listPages(doubtful)}: ${doubtful.length === 1 ? "it" : "they"} may be sideways, handwritten or a poor scan (the text was still added).` : ""}`);
+          pagesRead += read; if (words) files.push({ name: names[k], bytes: await doc.save() });
+          lines.push(`${s.name}: ${read} ${read === 1 ? "page" : "pages"} read, ${words} words added${skipped ? `, ${skipped} skipped (already had text)` : ""}${blank ? `, ${blank} with no words found` : ""}${dropped ? `, ${dropped} rare characters left out` : ""}.${doubtful.length ? ` The engine was unsure about ${doubtful.length === 1 ? "page" : "pages"} ${listPages(doubtful)}: ${doubtful.length === 1 ? "it" : "they"} may be sideways, handwritten or a poor scan (the text was still added).` : ""}`);
         }
       } finally { await engine.stop(); }
-      if (!files.length) throw new Error(`Every page already has text, so nothing was added and no file was saved. To read them anyway, untick "Skip pages that already have text".`);
+      if (!files.length) throw new Error(!pagesRead
+        ? `Every page already has text, so nothing was added and no file was saved. To read them anyway, untick "Skip pages that already have text".`
+        : `No words were recognised, so no file was saved. ${lines.join(" ")} Check that the language is right and the pages are upright; a clearer scan or a higher detail setting can help.`);
       await deliver(files, safeName(session.output.name));
       say(`Saved ${files.length === 1 ? files[0].name : `${files.length} PDFs in ${safeName(session.output.name)}.zip`}. ${lines.join(" ")} Recognised text can contain mistakes: check anything that matters.`);
     });
