@@ -262,6 +262,10 @@ const policy = import.meta.env.PROD ? CSP : "";
               <p class="small muted">PDF pages can be between half an inch and 200 inches on a side.</p>
             </div>
           </details>
+          <div id="optExtract" data-part="extractPics">
+            <p><label class="field">Skip pictures smaller than <input id="exMin" type="number" min="1" max="2000" step="1" value="32" inputmode="numeric" /> pixels</label><br /><span class="small muted">On either side. Small ones are usually bullets, icons and lines. Skipped ones are counted in the message.</span></p>
+            <p class="small muted">JPEG pictures are copied out exactly as stored, with no change in quality. Other pictures are saved as PNG, which keeps every pixel. Pictures with unusual colour setups (such as CMYK), scanned-fax kinds and black-and-white stencil masks are not extracted yet; the message says how many were left out. Clipping, scaling and colour effects the PDF applies when it draws a picture are not applied: you get the stored picture.</p>
+          </div>
           <div id="optProtect" data-part="protect">
             <p><label class="field">Password <input id="pw1" type="password" autocomplete="off" size="16" /></label></p>
             <p><label class="field">Type it again <input id="pw2" type="password" autocomplete="off" size="16" /></label></p>

@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "preview";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "preview";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -88,6 +88,9 @@ export const TASKS: Task[] = [
   { slug: "pdf-to-image", name: "PDF to PNG, TIFF, BMP or WebP", blurb: "Save each page of a PDF as a picture in the format you choose.", group: "Convert from PDF", accept: "pdf",
     pick: "Select PDF files", hint: "Every page is ticked: untick any you don't want. Choose the picture format and detail. More than one picture is saved as a .zip file.",
     parts: ["select"], formats: ["png", "tiff", "bmp", "webp", "jpeg"], which: "selected", action: "Convert to images", suffix: "pages", tag: "PNG" , selectAll: true },
+  { slug: "extract-images", name: "Extract pictures", blurb: "Save the pictures stored inside a PDF as separate files: JPEGs exactly as stored, other pictures as PNG.", group: "Convert from PDF", accept: "pdf",
+    pick: "Select PDF files", hint: "This finds pictures stored in the PDF, not drawings made of lines or text. Several pictures are saved together as one .zip file.",
+    parts: ["extractPics"], formats: ["pdf"], which: "all", action: "Extract pictures", suffix: "pictures", tag: "▣" },
   { slug: "pdf-to-text", name: "PDF to text", blurb: "Pull the words out of a PDF into a plain text file.", group: "Convert from PDF", accept: "pdf",
     pick: "Select PDF files", hint: "Saves the words only, with no layout. Scanned pages are pictures and have no text to save.",
     parts: [], formats: ["txt"], which: "all", action: "Convert to text", suffix: "text", tag: "TXT" , selectAll: true },

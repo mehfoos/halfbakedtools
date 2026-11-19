@@ -657,3 +657,58 @@ test("build: pictures follow the page size and margin chosen", async () => {
   const pg = (await PDFDocument.load(out)).getPage(0);
   assert.deepEqual([pg.getWidth(), pg.getHeight()], [400, 600]);
 });
+
+// ---- extracting stored pictures ----
+import { extractPictures, encodePng } from "./extract.ts";
+import { unzlibSync } from "fflate";
+import { PDFName as N, PDFHexString } from "@cantoo/pdf-lib";
+const rawPicture = (doc: PDFDocument, dict: Record<string, unknown>, data: Uint8Array) => doc.context.register(doc.context.stream(data, doc.context.obj({ Type: "XObject", Subtype: "Image", ...dict }) as never));
+const withPictures = async (pics: Record<string, ReturnType<typeof rawPicture>>) => {
+  const doc = await PDFDocument.create(), page = doc.addPage([100, 100]);   // (callers build pictures first with their own doc, so this helper takes a ready doc below)
+  void pics; return { doc, page };
+};
+void withPictures;
+const savedWith = async (build: (doc: PDFDocument) => Record<string, ReturnType<typeof rawPicture>>) => {
+  const doc = await PDFDocument.create(), page = doc.addPage([100, 100]), pics = build(doc);
+  page.node.Resources()!.set(N.of("XObject"), doc.context.obj(pics as never)); return doc.save();
+};
+const pngPixels = (png: Uint8Array) => {   // [width, height, colour type, raw pixel rows without their filter bytes]
+  const dv = new DataView(png.buffer, png.byteOffset); let at = 8; const idat: Uint8Array[] = [];
+  while (at < png.length) { const len = dv.getUint32(at), t = String.fromCharCode(...png.subarray(at + 4, at + 8)); if (t === "IDAT") idat.push(png.subarray(at + 8, at + 8 + len)); at += 12 + len; }
+  const w = dv.getUint32(16), h = dv.getUint32(20), ct = png[25], ch = ({ 0: 1, 2: 3, 4: 2, 6: 4 } as Record<number, number>)[ct], raw = unzlibSync(idat[0]), out = new Uint8Array(w * h * ch);
+  for (let y = 0; y < h; y++) out.set(raw.subarray(y * (w * ch + 1) + 1, (y + 1) * (w * ch + 1)), y * w * ch);
+  return { w, h, ct, out };
+};
+test("extract: a PNG-style picture comes out with every pixel and its transparency, once even if used on two pages", async () => {
+  const doc = await PDFDocument.create();
+  const px = new Uint8Array(40 * 40 * 4); for (let i = 0; i < 1600; i++) px.set([i % 256, (i * 3) % 256, 200, i % 2 ? 255 : 128], i * 4);
+  const img = await doc.embedPng(encodePng(40, 40, 4, px));
+  doc.addPage([200, 200]).drawImage(img, { x: 0, y: 0, width: 50, height: 50 });
+  doc.addPage([200, 200]).drawImage(img, { x: 10, y: 10, width: 50, height: 50 });
+  const r = await extractPictures(await doc.save(), undefined, 32);
+  assert.equal(r.pictures.length, 1); assert.deepEqual(r.pictures[0].pages, [1, 2]);
+  const got = pngPixels(r.pictures[0].bytes);
+  assert.deepEqual([got.w, got.h, got.ct], [40, 40, 6]); assert.deepEqual([...got.out], [...px]);
+});
+test("extract: JPEGs are copied byte for byte; tiny pictures are counted, not saved", async () => {
+  const jpegBytes = Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4, 5, 0xff, 0xd9]);
+  const out = await extractPictures(await savedWith((d) => ({
+    J: rawPicture(d, { Width: 64, Height: 48, BitsPerComponent: 8, ColorSpace: N.of("DeviceRGB"), Filter: N.of("DCTDecode") }, jpegBytes),
+    T: rawPicture(d, { Width: 8, Height: 8, BitsPerComponent: 8, ColorSpace: N.of("DeviceGray") }, new Uint8Array(64)),
+  })), undefined, 32);
+  assert.equal(out.pictures.length, 1); assert.equal(out.pictures[0].kind, "jpeg"); assert.deepEqual([...out.pictures[0].bytes], [...jpegBytes]); assert.equal(out.tiny, 1);
+});
+test("extract: 1-bit gray and palette pictures are expanded; unsupported kinds are reported by name", async () => {
+  const out = await extractPictures(await savedWith((d) => ({
+    G: rawPicture(d, { Width: 40, Height: 40, BitsPerComponent: 1, ColorSpace: N.of("DeviceGray") }, new Uint8Array(200).fill(0b10100000)),   // the picture's first pixels: 1 0 1 0 0 0 ...
+    P: rawPicture(d, { Width: 40, Height: 40, BitsPerComponent: 8, ColorSpace: d.context.obj([N.of("Indexed"), N.of("DeviceRGB"), 1, PDFHexString.of("ff000000ff00")]) }, new Uint8Array(1600).map((_, i) => i % 2)),
+    C: rawPicture(d, { Width: 40, Height: 40, BitsPerComponent: 8, ColorSpace: N.of("DeviceCMYK") }, new Uint8Array(6400)),
+    F: rawPicture(d, { Width: 40, Height: 40, BitsPerComponent: 1, ColorSpace: N.of("DeviceGray"), Filter: N.of("CCITTFaxDecode") }, new Uint8Array(10)),
+  })), undefined, 32);
+  const png = out.pictures.map((p) => pngPixels(p.bytes));
+  assert.equal(png.length, 2);
+  const gray = png.find((p) => p.ct === 0)!, pal = png.find((p) => p.ct === 2)!;
+  assert.deepEqual([...gray.out.subarray(0, 6)], [255, 0, 255, 0, 0, 0]);
+  assert.deepEqual([...pal.out.subarray(0, 6)], [255, 0, 0, 0, 255, 0], "palette entries 0 and 1 became red and green");
+  assert.deepEqual(out.skipped.map((s) => s.reason).sort(), ["pictures in CMYK colour", "pictures stored as CCITTFaxDecode"]);
+});

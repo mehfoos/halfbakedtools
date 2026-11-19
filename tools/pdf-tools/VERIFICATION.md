@@ -136,3 +136,12 @@ Headless Chrome: two pictures converted with the default layout gave pages the s
 "follow each picture's shape" promises), the picture kept its natural size (never enlarged) and was centred in the
 render; switching the unit to inches kept the same size (7.874 × 11.811 in); "always sideways" gave the same sideways page.
 No requests left the browser.
+
+### Extract pictures (2026-11-19)
+
+Headless Chrome, two PDFs added together: a two-page scan holding a colour and a grey JPEG, and a PDF holding one PNG-style
+picture. Result: a .zip of three files. The two .jpg files were byte-for-byte identical to the picture streams read from the
+source PDF by pypdf; the PNG was pixel-identical to pypdf's own decoding of that picture. A text-only PDF gave the message
+that no pictures could be extracted, with no file. No requests left the browser. Unit tests cover gray 1-bit, palette,
+transparency (soft mask) and the skipped kinds (CMYK, CCITT). Not checked: JPEG 2000 files in other viewers; encrypted
+PDFs with a password; very large pictures on a phone.

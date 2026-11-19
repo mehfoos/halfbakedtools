@@ -96,6 +96,11 @@
       "nav": false
     },
     {
+      "page": "extract-images",
+      "label": "Extract pictures",
+      "nav": false
+    },
+    {
       "page": "pdf-to-text",
       "label": "PDF to text",
       "nav": false

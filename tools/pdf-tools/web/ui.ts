@@ -13,6 +13,7 @@ import {
 } from "./session.ts";
 import { parsePageList, formatRanges } from "./ranges.ts";
 import { makeBuilder, inspectPdf, protect, fontSet, cantDraw, type SourceData } from "./build.ts";
+import { extractPictures } from "./extract.ts";
 import { createEditor } from "./editor.ts";
 import { createSignPad } from "./signpad.ts";
 import type { Mark } from "./marks.ts";
@@ -708,8 +709,38 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     } catch { return []; }   // a bad split range etc.: the save itself reports it
   }
 
+  /** Extract pictures: every picture stored in every added PDF, as files. */
+  async function saveExtracted() {
+    if (busy || !ask.hidden) return;
+    const min = Math.min(2000, Math.max(1, Math.round(Number($<HTMLInputElement>("exMin").value) || 32)));
+    const pdfs = session.sources.filter((s) => loaded.get(s.sha256)?.data.kind === "pdf");
+    if (!pdfs.length) return say("Add a PDF first.", "bad");
+    await work("Looking for pictures…", async (progress) => {
+      const files: { name: string; bytes: Uint8Array }[] = [], left = new Map<string, number>(), counts = { jpeg: 0, png: 0, jp2: 0 }, notes = new Set<string>();
+      let tiny = 0;
+      for (const s of pdfs) {
+        progress(`Looking in ${s.name}…`);
+        const d = loaded.get(s.sha256)!.data; if (d.kind !== "pdf") continue;
+        const r = await extractPictures(d.bytes, d.password, min), base = s.name.replace(/\.pdf$/i, "") || "document";
+        tiny += r.tiny; for (const k of r.skipped) left.set(k.reason, (left.get(k.reason) ?? 0) + k.count);
+        r.pictures.forEach((p, i) => {
+          counts[p.kind]++; if (p.note) notes.add(p.note);
+          files.push({ name: `${session.sources.length > 1 ? `${safeName(base)}-` : ""}page${String(p.page).padStart(3, "0")}-${i + 1}.${p.kind === "jpeg" ? "jpg" : p.kind}`, bytes: p.bytes });
+        });
+      }
+      const why = [...left].map(([r, n]) => `${n} left out (${r})`).concat(tiny ? [`${tiny} skipped for being under ${min} pixels`] : []);
+      if (!files.length) throw new Error(`No pictures could be extracted.${why.length ? ` ${why.join("; ")}.` : " This PDF may hold only text and drawings, or pages that are scans stored in a way this tool doesn't read yet."}`);
+      const zipName = safeName(session.output.name);
+      if (!(await consent(files.length === 1 ? [files[0].name] : [`${zipName}.zip`]))) return say("Nothing was saved. Change the file name and try again.");
+      await deliver(files, zipName);
+      const kinds = [counts.jpeg ? `${counts.jpeg} JPEG as stored` : "", counts.png ? `${counts.png} PNG` : "", counts.jp2 ? `${counts.jp2} JPEG 2000` : ""].filter(Boolean).join(", ");
+      say(`Saved ${files.length === 1 ? files[0].name : `${files.length} pictures in ${zipName}.zip`} (${kinds}).${why.length ? ` ${why.join("; ")}.` : ""}${notes.size ? ` ${[...notes].join(". ")}.` : ""}`);
+    });
+  }
+
   async function save(which: "all" | "selected") {
-    readOptions(); clearResult(); if (busy || !ask.hidden) return;
+    readOptions(); clearResult(); if (task.slug === "extract-images") return saveExtracted();
+    if (busy || !ask.hidden) return;
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);
     if (can("crop") && !isCropped(o.crop)) return say("Set at least one margin first: drag the box on the page, or type how much to cut off.", "bad");

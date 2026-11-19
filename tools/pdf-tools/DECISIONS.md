@@ -74,3 +74,7 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 | 2026-11-19 | Freehand strokes are stored as shares (0 to 1) of their box | They resize with their box and stay small in the settings file |
 | 2026-11-19 | Pictures are never enlarged to fit a page, only shrunk and centred | Enlarging only blurs; the page says so |
 | 2026-11-19 | Images to PDF offers a size you type, not named sizes, for now | A4 and Letter dimensions need a cited, archived source first (owner action: see ROADMAP "Sources to archive") |
+| 2026-11-19 | Extract pictures copies stored JPEGs out unchanged and writes everything else as PNG | Copying is lossless and exact; PNG keeps every pixel of the decoded data |
+| 2026-11-19 | Pictures with CMYK colour, fax-style filters, stencil masks or damaged data are skipped and counted in the message | Converting them wrongly would give wrong colours; saying how many were left out is honest |
+| 2026-11-19 | Extract pictures gives the stored picture, without the clipping, scaling or effects the PDF applies when drawing it; the page says so | What is extracted must match what is stored, and the page must not imply it is what the page shows |
+| 2026-11-19 | Pictures under 32 pixels on a side are skipped by default (adjustable) and counted | Bullets, icons and rules are not what people want; the count keeps it transparent |
