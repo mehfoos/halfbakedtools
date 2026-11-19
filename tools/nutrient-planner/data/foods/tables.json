@@ -1,6 +1,35 @@
 {
  "tables": [
   {
+   "id": "blend",
+   "tag": "blended, beta",
+   "title": "Blended (beta)",
+   "country": "the same foods combined across the ten food tables",
+   "basic": "foods-blend.json",
+   "more": "foods-blend-more.json",
+   "refs": [
+    "usda-sr",
+    "usda-sr-doc",
+    "cofid-2021",
+    "bls-4",
+    "ciqual-2025",
+    "frida-55",
+    "fineli-20",
+    "kfcdb-93",
+    "mext-2023",
+    "cnf-2026",
+    "afcd-3"
+   ],
+   "licence": "each source table's own licence; the AFCD values under the FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia)",
+   "standards": [],
+   "notice": "Includes Australian data (AFCD, © FSANZ), which may not be appropriate for use in other countries; food composition can vary substantially between batches and brands. AFCD licence: FSANZ Data User Licence Agreement",
+   "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
+   "default": true,
+   "foods": 440,
+   "basicFoods": 440,
+   "generated": "2026-11-19"
+  },
+  {
    "id": "usda",
    "tag": "USDA",
    "title": "USDA FoodData Central, SR Legacy (2018)",
@@ -168,34 +197,6 @@
    "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
    "foods": 1588,
    "basicFoods": 829,
-   "generated": "2026-11-19"
-  },
-  {
-   "id": "blend",
-   "tag": "blended, beta",
-   "title": "Blended (beta): the same foods combined across every table",
-   "country": "every table",
-   "basic": "foods-blend.json",
-   "more": "foods-blend-more.json",
-   "refs": [
-    "usda-sr",
-    "usda-sr-doc",
-    "cofid-2021",
-    "bls-4",
-    "ciqual-2025",
-    "frida-55",
-    "fineli-20",
-    "kfcdb-93",
-    "mext-2023",
-    "cnf-2026",
-    "afcd-3"
-   ],
-   "licence": "each source table's own licence; the AFCD values under the FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia)",
-   "standards": [],
-   "notice": "Includes Australian data (AFCD, © FSANZ), which may not be appropriate for use in other countries; food composition can vary substantially between batches and brands. AFCD licence: FSANZ Data User Licence Agreement",
-   "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
-   "foods": 440,
-   "basicFoods": 440,
    "generated": "2026-11-19"
   }
  ]

@@ -2,6 +2,32 @@
  "_comment": "Every food table the tools offer, all on an equal footing. build_index.py reads this, checks each table's files and writes data/foods/tables.json (this list with counts) and data/foods/index.json (every food's name, for Food Finder's list). Adding a table: build its two food files, add an entry here, rerun build_index.py. 'basic' is the Planner's list (foods it can suggest); 'more' is every other food in the table, for Food Finder. 'standards' are the target standards for which the table is the default.",
  "tables": [
   {
+   "id": "blend",
+   "tag": "blended, beta",
+   "title": "Blended (beta)",
+   "country": "the same foods combined across the ten food tables",
+   "basic": "foods-blend.json",
+   "more": "foods-blend-more.json",
+   "refs": [
+    "usda-sr",
+    "usda-sr-doc",
+    "cofid-2021",
+    "bls-4",
+    "ciqual-2025",
+    "frida-55",
+    "fineli-20",
+    "kfcdb-93",
+    "mext-2023",
+    "cnf-2026",
+    "afcd-3"
+   ],
+   "licence": "each source table's own licence; the AFCD values under the FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia)",
+   "standards": [],
+   "notice": "Includes Australian data (AFCD, © FSANZ), which may not be appropriate for use in other countries; food composition can vary substantially between batches and brands. AFCD licence: FSANZ Data User Licence Agreement",
+   "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
+   "default": true
+  },
+  {
    "id": "usda",
    "tag": "USDA",
    "title": "USDA FoodData Central, SR Legacy (2018)",
@@ -139,31 +165,6 @@
    "licence": "FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia)",
    "standards": [],
    "notice": "Based on Australian data (AFCD, © FSANZ), which may not be appropriate for use in other countries. Food composition can vary substantially between batches and brands, with season, processing, ingredient source and methods of calculation. Licence: FSANZ Data User Licence Agreement",
-   "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement"
-  },
-  {
-   "id": "blend",
-   "tag": "blended, beta",
-   "title": "Blended (beta): the same foods combined across every table",
-   "country": "every table",
-   "basic": "foods-blend.json",
-   "more": "foods-blend-more.json",
-   "refs": [
-    "usda-sr",
-    "usda-sr-doc",
-    "cofid-2021",
-    "bls-4",
-    "ciqual-2025",
-    "frida-55",
-    "fineli-20",
-    "kfcdb-93",
-    "mext-2023",
-    "cnf-2026",
-    "afcd-3"
-   ],
-   "licence": "each source table's own licence; the AFCD values under the FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia)",
-   "standards": [],
-   "notice": "Includes Australian data (AFCD, © FSANZ), which may not be appropriate for use in other countries; food composition can vary substantially between batches and brands. AFCD licence: FSANZ Data User Licence Agreement",
    "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement"
   }
  ]

@@ -58,7 +58,7 @@ export async function start(root: HTMLElement) {
     $(root, "#blendNote").hidden = app.tableId() !== "blend";
     const t = app.table()!;
     $(root, "#tableNote").textContent = `${t.title}, ${t.country}: ${t.basicFoods.toLocaleString("en-GB")} foods here (${t.foods.toLocaleString("en-GB")} in Food Finder). Licence: ${t.licence}.`
-      + (app.s.source ? "" : ` This is the default table for the ${app.person().standard.name} recommendations; pick another table to use it instead.`);
+      + (app.s.source ? "" : ` This is the default table; pick another table to use it instead.`);
     app.applySource();
   }
   $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => r.addEventListener("change", async () => {

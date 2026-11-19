@@ -331,8 +331,11 @@ test("links keep the food table and table food ids", () => {
   assert.equal(decode("src=%3Cscript%3E").source, "", "a damaged table name is ignored");
 });
 
-test("with no table picked, the table follows the standard (UK CoFID, US USDA, EU BLS)", () => {
-  const tables = JSON.parse(readFileSync(new URL("../data/foods/tables.json", import.meta.url), "utf8")).tables;
+test("with no table picked: the Blended table, or else the table for the standard (UK CoFID, US USDA, EU BLS)", () => {
+  const all = JSON.parse(readFileSync(new URL("../data/foods/tables.json", import.meta.url), "utf8")).tables;
+  assert.equal(defaultTable(all, "uk"), "blend");
+  assert.equal(defaultTable(all, "us"), "blend");
+  const tables = all.map((t: { default?: boolean }) => ({ ...t, default: false }));
   assert.equal(defaultTable(tables, "uk"), "cofid");
   assert.equal(defaultTable(tables, "us"), "usda");
   assert.equal(defaultTable(tables, "eu"), "bls");

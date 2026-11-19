@@ -44,9 +44,12 @@ export function unpack(raw: RawFoods, more?: RawFoods): FoodsData {
   return { generated: raw.generated, missing: raw.missing, table, definitions: raw.definitions, labels: raw.labels ?? {}, nutrients: raw.nutrients ?? [], categories, foods };
 }
 
-/** The table used until one is picked: the table whose registry entry names this standard (UK CoFID, US USDA, EU BLS). */
-export const defaultTable = (tables: { id: string; standards: string[] }[], standard: string) =>
-  tables.find((t) => t.standards.includes(standard))?.id ?? "usda";
+/**
+ * The table used until one is picked: the registry's default table (the Blended table, owner, 19 Nov 2026), or else
+ * the table whose registry entry names this standard (UK CoFID, US USDA, EU BLS).
+ */
+export const defaultTable = (tables: { id: string; standards: string[]; default?: boolean }[], standard: string) =>
+  tables.find((t) => t.default)?.id ?? tables.find((t) => t.standards.includes(standard))?.id ?? "usda";
 
 /** One food table, as listed in data/foods/tables.json (built from pipeline/tables/tables.json). */
 export type TableInfo = {
@@ -54,6 +57,7 @@ export type TableInfo = {
   refs: string[]; licence: string; standards: string[]; foods: number; basicFoods: number; generated?: string;
   translated?: boolean;   // food names translated by this site (shown with a Translated caveat)
   notice?: string; noticeUrl?: string;   // a notice the table's licence requires wherever its data are shown
+  default?: boolean;                      // the table used until one is picked
 };
 
 /**
