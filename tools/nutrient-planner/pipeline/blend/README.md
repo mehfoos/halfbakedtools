@@ -151,21 +151,37 @@ The preview's **check of the definitions** compares the tables across the matche
 centre near 1 (protein 0.97, calcium and potassium 1.00); different definitions show the expected gap (UK-factor
 energy about 9% lower; vitamin E equivalents about 26% higher).
 
-## In the planner (step 6, beta)
+## In the planner: the Blended table (beta, all tables, 19 Nov 2026)
 
-`planner_pack.py` turns the blend into `data/foods/foods-blend.json`, an overlay on the USDA data that the planner
-loads when the visitor chooses "USDA + UK CoFID, blended". Only the 142 blended foods change; every other food keeps
-its USDA values. Per standard, each nutrient comes from the definition `standards.csv` chooses; salt and EPA + DHA
-are calculated from the blended parts; nutrients CoFID doesn't give (amino acids, vitamin D2 and D3) keep the USDA
-value, marked "USDA only". A missing value stays missing. For each blended food in a day, the page shows the median,
-the range, each table's published value (and why any was left out), the two-fold flags, and the caveats, in the
-site's caveat style. `test_planner_pack.py` checks the file is current and follows the blend; `web/foods.test.ts`
-checks that switching source and standard changes only the blended foods and restores USDA exactly.
+`blend_all.py` builds the **Blended table**, offered in the Planner and Food Finder like any other table
+(`data/foods/foods-blend.json`), with its values per standard in `data/foods/foods-blend-values.json` and a report
+in `data/foods/blend_report.md`. It replaces the USDA + CoFID overlay (`planner_pack.py`, removed): the owner asked
+for one blend that uses every table to fill missing values for foods found to be the same food. The script's notes
+give the rules; in short:
+
+- Only foods on the Common list (`../tables/common_list.py`). Same food under a stricter rule than the Common list:
+  same food words (only origin or farming may differ, never colour or another food), same preparation, packing
+  medium, skin and salt; no fortified products and no mixtures; protein, fat (0.5 g or 15%), energy and at least
+  three minerals agree. USDA and CoFID follow the reviewed decisions in `matches/cofid.csv`.
+- One record per source family (CNF values from USDA count as USDA; borrowed sources not named aren't used;
+  nearly identical values count once). Two independent records needed.
+- Values combined only within one definition (`DEFINITIONS` in the script, from each converter's recorded
+  definitions); per standard, the definition its targets use, otherwise the most common one with an *Assumption*
+  caveat. Median, range, each table's value in words, a *one table* mark for gap-filling values and a two-fold flag.
+
+Checks made (19 Nov 2026): random samples of the groups and every group whose core values differ two-fold were read
+against the published names. The wrong groups found were fixed by rules, now tested in `test_blend_all.py` and
+`test_common_list.py`: green tomatoes, green soybeans, colour and "wild"/"American" qualifiers, fortified cereals,
+1% against skim milk, added salt, packing medium, cooking apples and flesh-only potatoes.
 
 ```bash
-python3 -I tools/nutrient-planner/pipeline/blend/blend.py
-python3 -I tools/nutrient-planner/pipeline/blend/planner_pack.py
+python3 -I tools/nutrient-planner/pipeline/tables/common_list.py
+python3 -I tools/nutrient-planner/pipeline/blend/blend_all.py
+python3 -I tools/nutrient-planner/pipeline/tables/build_index.py
 ```
+
+`blend.py` (the USDA and CoFID preview with its audit to published cells) is kept as the record of the first
+blend; the Planner no longer uses its output.
 
 ## Definitions by standard
 

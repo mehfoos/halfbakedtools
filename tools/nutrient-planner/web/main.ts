@@ -32,7 +32,7 @@ export async function start(root: HTMLElement) {
     app.save();
   }
 
-  // Food data: a table, or the beta blend (an overlay on the USDA foods). Each is loaded the first time it's chosen.
+  // Food data: a table (the Blended table also needs its values per standard). Each is loaded the first time it's chosen.
   const sourceStatus = $(root, "#sourceStatus");
   async function ensureSource() {
     if (!app.tables.some((t) => t.id === app.tableId())) app.s.source = "usda";   // a link to a table not offered
@@ -43,7 +43,7 @@ export async function start(root: HTMLElement) {
         app.setData(await loadTable(root, t, false));
       }
       if (app.s.source === "blend" && !app.blend) {
-        sourceStatus.textContent = "Loading the blended data…";
+        sourceStatus.textContent = "Loading the blended values…";
         app.blend = await loadBlend(root);
       }
       sourceStatus.textContent = "";

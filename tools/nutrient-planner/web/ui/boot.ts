@@ -33,10 +33,10 @@ export function loadTable(root: HTMLElement, t: TableInfo, more: boolean): Promi
 /** Food Finder's list: the name of every food in every table. */
 export const loadIndex = (root: HTMLElement): Promise<FoodIndex> => getJson(root, "foods/index.json");
 
-/** The beta blended source (loaded only when it is first needed). */
+/** The Blended table's values per standard (loaded only when the Blended table is first used). */
 export async function loadBlend(root: HTMLElement): Promise<BlendData> {
-  const r = await fetch(`${dataUrl(root)}foods/foods-blend.json`);
-  if (!r.ok) throw new Error("foods-blend.json");
+  const r = await fetch(`${dataUrl(root)}foods/foods-blend-values.json`);
+  if (!r.ok) throw new Error("foods-blend-values.json");
   return r.json();
 }
 

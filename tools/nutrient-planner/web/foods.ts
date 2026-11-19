@@ -11,7 +11,7 @@ export type PlannerFood = Food & {
   noteRef?: string | null;   // the reference a food's note rests on
   fortified?: boolean | null; // a US product with nutrients added; not part of the "Everything" preset
   blend?: BlendFood | null;   // set while the beta blended source is in use and this food is blended
-  usdaPer100g?: Record<string, number>;   // the USDA values, kept while the blend is applied
+  basePer100g?: Record<string, number>;   // the file's own values, kept while the blend's values for a standard are applied
 };
 export type FoodsData = {
   generated?: string; missing?: boolean;
@@ -57,9 +57,9 @@ export type FoodIndex = {
   foods: Record<string, [string, string, string, string, string, string, number][]>;
 };
 
-// ---- The beta blended source: an overlay on the USDA data (built by pipeline/blend/planner_pack.py).
+// ---- The beta Blended table (pipeline/blend/blend_all.py): its foods' values differ per target standard.
 // Each overlaid food has values per target standard, because the standards define some nutrients differently.
-/** A table id (tables.json), or "blend": the beta overlay of USDA + CoFID on the USDA foods. */
+/** A table id (tables.json); "blend" is the beta Blended table. */
 export type Source = string;
 type StdRows<T> = Record<string, T>;
 export type BlendFood = {
@@ -83,17 +83,17 @@ export type BlendData = {
 export type BlendValue = { key: string; value: number | null; range: [number, number, number] | null; definition: string | null; caveats: string[] };
 
 /**
- * Switch the food values between the USDA data and the blend for one standard. The USDA values are kept on each
- * food the first time, so switching back restores them exactly. Foods the blend doesn't cover are never touched.
+ * Put the Blended table's values for one standard on its foods (the file holds the UK values). The file's values
+ * are kept on each food the first time, so switching back restores them exactly. Other tables are never touched.
  */
 export function applySource(data: FoodsData, blend: BlendData | null, source: Source, standard: string) {
   const std = blend && ["uk", "us", "eu"].includes(standard) ? standard : "uk";
   for (const f of data.foods) {
     const b = source === "blend" ? blend?.foods[f.id] : undefined;
-    if (!b && !f.usdaPer100g) continue;
-    f.usdaPer100g ??= f.per100g;
+    if (!b && !f.basePer100g) continue;
+    f.basePer100g ??= f.per100g;
     f.blend = b ?? null;
-    if (!b) { f.per100g = f.usdaPer100g; continue; }
+    if (!b) { f.per100g = f.basePer100g; continue; }
     const per100g: Record<string, number> = {};
     blend!.keys.forEach((k, i) => { const v = b.v[std][i]; if (v !== null && v !== undefined) per100g[k] = v; });
     f.per100g = per100g;

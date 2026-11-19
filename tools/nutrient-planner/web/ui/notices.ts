@@ -10,7 +10,7 @@ import { caveat, KINDS, type CaveatKind } from "../../../../site/src/lib/caveats
 export function dataCaveat(app: App) {
   const t = app.table();
   const from = !t ? "food composition tables"
-    : app.s.source === "blend" ? `the USDA table ${cite("usda-sr")}, with the beta blend of USDA and UK CoFID ${cite("cofid-2021")} for some foods`
+    : app.s.source === "blend" ? `the beta blend of the food tables (${app.tables.filter((x) => x.id !== "blend").map((x) => `${esc(x.tag)} ${x.refs[0] ? cite(x.refs[0]) : ""}`).join(", ")})`
     : `${esc(t.title)} ${t.refs[0] ? cite(t.refs[0]) : ""}`;
   const est = caveat("estimate", `Results use average food composition from ${from}, so real foods vary with brand, variety and cooking. Nutrients the table doesn't give are shown as not available, never as zero. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).`);
   // A table other than USDA: say where its definitions differ, because the targets may define a nutrient another way.
@@ -90,5 +90,5 @@ export function blendFoodHtml(app: App, f: PlannerFood, open = false) {
 export function blendNotes(app: App, items: Item[]) {
   const foods = [...new Map(items.filter((i) => i.food.blend).map((i) => [i.food.id, i.food])).values()];
   if (!app.blend || !foods.length) return "";
-  return `<div class="blend-notes sans">${caveat("beta", `${foods.length === 1 ? "One food in this day uses" : `${foods.length} foods in this day use`} blended values (the median of the USDA and UK CoFID tables), matched and combined by automated steps without manual human verification. Open a food to see each value's range, sources and caveats.`)}${foods.map((f) => blendFoodHtml(app, f)).join("")}</div>`;
+  return `<div class="blend-notes sans">${caveat("beta", `${foods.length === 1 ? "One food in this day uses" : `${foods.length} foods in this day use`} blended values (the median of the independent food tables that give it, under the definition your standard uses), matched and combined by automated steps without manual human verification. Open a food to see each value's range, sources and caveats.`)}${foods.map((f) => blendFoodHtml(app, f)).join("")}</div>`;
 }

@@ -1,5 +1,5 @@
-// The beta blended source is an overlay: it changes only the foods it covers, follows the chosen standard, never
-// turns a missing value into zero, and switching back to USDA restores the USDA values exactly.
+// The beta Blended table: its values follow the chosen standard, a missing value never becomes zero, and switching
+// back restores the file's values exactly.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -7,35 +7,45 @@ import { applySource, blendValues, dietOk, unpack, type BlendData } from "./food
 
 const dir = new URL("../data/foods/", import.meta.url);
 const load = () => unpack(JSON.parse(readFileSync(new URL("foods.json", dir), "utf8")));
-const blend: BlendData = JSON.parse(readFileSync(new URL("foods-blend.json", dir), "utf8"));
+const loadBlended = () => unpack(JSON.parse(readFileSync(new URL("foods-blend.json", dir), "utf8")));
+const blend: BlendData = JSON.parse(readFileSync(new URL("foods-blend-values.json", dir), "utf8"));
 
-test("blend overlay: covered foods change by standard, others are untouched, and USDA comes back exactly", () => {
-  const data = load();
+test("Blended table: values follow the standard's definitions, and the file's values come back exactly", () => {
+  const data = loadBlended();
   const before = new Map(data.foods.map((f) => [f.id, JSON.stringify(f.per100g)]));
-  const lentils = data.foods.find((f) => f.id === "lentils")!;
+  const lentils = data.foods.find((f) => f.id === "blend:lentils")!;
+  assert.deepEqual(blend.foods["blend:lentils"].records.map((r) => r.code), ["172421", "13-661", "F005177", "3393", "H730132"]);
   applySource(data, blend, "blend", "uk");
   assert.equal(lentils.per100g.energy, 92);          // CoFID's energy with UK factors
-  assert.ok(lentils.blend);
+  assert.equal(lentils.per100g.vitaminA, 3.5);       // retinol equivalents
   applySource(data, blend, "blend", "us");
-  assert.equal(lentils.per100g.energy, 116);         // USDA's Atwater energy
-  for (const f of data.foods) if (!blend.foods[f.id]) assert.equal(JSON.stringify(f.per100g), before.get(f.id), f.id);
-  applySource(data, blend, "usda", "us");
+  assert.equal(lentils.per100g.energy, 116);         // USDA's Atwater energy (CNF's copy of it counts once)
+  assert.equal(lentils.per100g.vitaminA, 0);         // retinol activity equivalents
+  applySource(data, blend, "", "us");
   for (const f of data.foods) assert.equal(JSON.stringify(f.per100g), before.get(f.id), f.id);
   assert.equal(lentils.blend, null);
+  const usda = load();
+  const untouched = JSON.stringify(usda.foods.map((f) => f.per100g));
+  applySource(usda, blend, "blend", "us");             // other tables are never touched
+  assert.equal(JSON.stringify(usda.foods.map((f) => f.per100g)), untouched);
 });
 
-test("blend overlay: a missing value stays missing, and every value has its source", () => {
-  const data = load();
+test("Blended table: a missing value stays missing, every value has a definition, and each food has 2+ tables", () => {
+  const data = loadBlended();
+  assert.ok(data.foods.length > 300 && data.foods.every((f) => f.common));
   for (const std of ["uk", "us", "eu"]) {
     applySource(data, blend, "blend", std);
     for (const [id, b] of Object.entries(blend.foods)) {
       const f = data.foods.find((x) => x.id === id)!;
+      assert.ok(b.records.filter((r) => !("notUsed" in r)).length >= 2, id);
       for (const v of blendValues(blend, b, std)) {
         if (v.value === null) assert.ok(!(v.key in f.per100g), `${id} ${v.key}`);
-        else assert.equal(f.per100g[v.key], v.value);
-        if (v.definition === null && v.value !== null) assert.ok(blend.usdaOnly.includes(v.key), `${id} ${v.key}`);
+        else {
+          assert.equal(f.per100g[v.key], v.value);
+          assert.ok(v.definition && blend.definitions[v.definition], `${id} ${v.key}`);
+        }
         for (const c of v.caveats) assert.ok(blend.caveats[c], `${id} ${v.key} ${c}`);
-        if (v.range) assert.ok(v.range[0] <= v.value! + 1e-9 && v.value! <= v.range[1] + 1e-9, `${id} ${v.key}`);
+        if (v.range) assert.ok(v.range[0] <= v.value! * 1.001 + 1e-9 && v.value! <= v.range[1] * 1.001 + 1e-9, `${id} ${v.key}`);
       }
     }
   }

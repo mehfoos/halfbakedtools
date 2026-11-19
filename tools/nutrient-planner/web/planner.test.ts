@@ -278,7 +278,7 @@ test("a target set aside (vitamin D) is reported separately and not counted as m
 
 test("every table has a Common list: in 2+ independent tables, none US-fortified, a subset of its basic foods", () => {
   const tables = JSON.parse(readFileSync(new URL("../data/foods/tables.json", import.meta.url), "utf8")).tables;
-  for (const t of tables) {
+  for (const t of tables.filter((x: { id: string }) => x.id !== "blend")) {   // the Blended table is all common foods
     const data = unpack(JSON.parse(readFileSync(new URL(`../data/foods/${t.basic}`, import.meta.url), "utf8")));
     const common = data.foods.filter((f) => isOn(f, "common", new Set()));
     assert.ok(common.length >= 150 && common.length <= 1200, `${t.id}: ${common.length} common foods`);

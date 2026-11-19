@@ -29,9 +29,9 @@ export type Item = { food: PlannerFood; grams: number };
 export type App = {
   root: HTMLElement;
   kind: PageKind;                   // "planner" (combinations of foods) or "finder" (one food at a time)
-  data: FoodsData;                  // the foods of the table in use (the blend: the USDA foods, overlaid)
+  data: FoodsData;                  // the foods of the table in use
   tables: TableInfo[];              // every food table on offer
-  blend: BlendData | null;          // the beta blended source, once loaded
+  blend: BlendData | null;          // the Blended table's values per standard, once loaded
   standards: Standard[];
   s: Settings;                      // the settings; the single source of truth for what the page shows
   toggled: Set<string>;             // food ids switched away from the preset (kept as a set for speed)
@@ -47,7 +47,7 @@ export type App = {
   items(list: { id: string; grams: number }[]): Item[];
   report(items: Item[], basis?: EnergyBasis): Report;  // a day's foods measured against the targets
 
-  /** The table whose foods are in use: the chosen table, or USDA for the blend. */
+  /** The table whose foods are in use. */
   tableId(): string;
   table(): TableInfo | undefined;
   /** Use another table's foods (already loaded; see boot.ts loadTable). */
@@ -109,7 +109,7 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
       return rep;
     },
 
-    tableId: () => (app.s.source === "blend" ? "usda" : app.s.source),
+    tableId: () => app.s.source,
     table: () => app.tables.find((t) => t.id === app.tableId()),
     setData(next) {
       // Nutrient definitions and categories are the same in every table file; only the foods change.
@@ -118,7 +118,7 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
       app.categoryName = new Map(app.data.categories.map((c) => [c.id, c.name]));
     },
     applySource() {
-      if (app.data.table === "usda") applySource(app.data, app.blend, app.blend ? app.s.source : "usda", app.person().standard.id);
+      if (app.data.table === "blend") applySource(app.data, app.blend, app.blend ? "blend" : "", app.person().standard.id);
     },
 
     save() {

@@ -25,30 +25,28 @@ export async function startFinder(root: HTMLElement) {
   const result = $(root, "#finderResult");
   const status = $(root, "#sourceStatus");
 
-  // The name index and the blend are needed up front: the blend's foods get a second entry in the list.
+  // The name index is needed up front; the Blended table's values per standard are loaded when it is first used.
   status.textContent = "Loading the food list…";
   let index: FoodIndex | null = null;
   const problems: string[] = [];
   try { index = await loadIndex(root); } catch { problems.push("only the USDA foods are listed"); }
-  try { app.blend = await loadBlend(root); } catch { problems.push("the blended entries are missing"); }
   status.textContent = problems.length ? `Sorry, some food data couldn't be loaded, so ${problems.join(" and ")}.` : "";
-  const blended = new Set(Object.keys(app.blend?.foods ?? {}));
   const entries: PlannerFood[] = index
     ? Object.entries(index.foods).flatMap(([table, rows]) => rows.map(([id, name, cat, group, label, diet, flags]) => ({
         id, name, cat, group, label, diet, table, srcName: name,
         common: !!(flags & index!.flags.common), fortified: !!(flags & index!.flags.fortified),
       }) as unknown as PlannerFood))
     : app.data.foods;
-  const sources = (f: PlannerFood): Source[] => [f.table, ...(f.table === "usda" && blended.has(f.id) ? ["blend"] : [])];
+  const sources = (f: PlannerFood): Source[] => [f.table];
 
   /** Load the picked food's table (with all its foods) and put it in use. */
   async function useTable(source: Source) {
-    const id = source === "blend" ? "usda" : source;
-    const t = app.tables.find((x) => x.id === id);
+    const t = app.tables.find((x) => x.id === source);
     if (!t) return false;
-    if (app.data.table === id && app.data.foods.some((f) => f.basic === false)) return true;
+    if (app.data.table === source && (source === "blend" || app.data.foods.some((f) => f.basic === false))) return true;
     status.textContent = `Loading ${t.tag}…`;
     try {
+      if (source === "blend" && !app.blend) app.blend = await loadBlend(root);
       app.setData(await loadTable(root, t, true));
       status.textContent = "";
       return true;
@@ -58,12 +56,10 @@ export async function startFinder(root: HTMLElement) {
     }
   }
 
-  // A link may carry a Planner day: Food Finder shows its first food only. A blended pick of a food the blend
-  // doesn't cover falls back to the USDA entry; a table that isn't offered, to USDA.
+  // A link may carry a Planner day: Food Finder shows its first food only. A table that isn't offered falls back to USDA.
   if (!app.tables.some((t) => t.id === app.tableId())) app.s.source = "usda";
   if (app.s.builder.length && !(await useTable(app.s.source))) app.s.source = "usda";
   app.s.builder = app.s.builder.filter((b) => app.foodById.has(b.id)).slice(0, 1);
-  if (app.s.source === "blend" && !blended.has(app.s.builder[0]?.id ?? "")) app.s.source = "usda";
 
   const picked = (): Pick | null => (app.s.builder[0] ? { id: app.s.builder[0].id, source: app.s.source } : null);
   const item = () => app.items(app.s.builder)[0];

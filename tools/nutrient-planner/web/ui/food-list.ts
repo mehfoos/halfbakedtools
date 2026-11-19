@@ -22,7 +22,7 @@ export type SingleMode = {
 };
 
 /** How each source is named after a food in Food Finder's list: the table's short tag, or "blended, beta". */
-export const sourceLabel = (app: App, src: Source) => (src === "blend" ? "blended, beta" : app.tables.find((t) => t.id === src)?.tag ?? src);
+export const sourceLabel = (app: App, src: Source) => app.tables.find((t) => t.id === src)?.tag ?? src;
 
 const PRESET_TEXT: Record<Base, string> = { common: "common foods", all: "all foods except US-fortified products", none: "nothing" };
 const commonFirst = (a: { common?: boolean }, b: { common?: boolean }) => Number(b.common) - Number(a.common);
@@ -157,7 +157,7 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
     if (!f?.blend) return;
     const box = document.createElement("div");
     box.className = "food-sources blend-notes sans";
-    box.innerHTML = caveat("beta", "Blended values: the median of the USDA and UK CoFID tables for the standard you chose, matched and combined by automated steps without manual human verification.") + blendFoodHtml(app, f, true);
+    box.innerHTML = caveat("beta", "Blended values: the median of the independent food tables that give it, under the definition your standard uses, matched and combined by automated steps without manual human verification.") + blendFoodHtml(app, f, true);
     if (holder.tagName === "LI") holder.append(box); else holder.after(box);
     t.setAttribute("aria-expanded", "true");
   });

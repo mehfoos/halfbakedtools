@@ -40,12 +40,11 @@ const tool = `${base}tools/nutrient-planner/`;
         <div class="food-head">
           <div class="segmented" role="radiogroup" aria-label="Food table">
             {tables.map((t) => <label><input type="radio" name="source" value={t.id} /><span title={t.title}>{t.tag}</span></label>)}
-            <label><input type="radio" name="source" value="blend" /><span>USDA + UK CoFID, blended</span></label>
           </div>
           <span class="small muted sans" id="sourceStatus" role="status" aria-live="polite"></span>
         </div>
         <p class="small muted sans" id="tableNote"></p>
-        <Caveat kind="beta" id="blendNote" hidden>For foods found to be the same food in the USDA and UK (CoFID) tables, each nutrient is the median of the tables, with the range shown; the foods are marked <span class="tag">blended</span>. Matches and values were made by automated steps without manual human verification. Some nutrients are defined differently by each target standard, so the values follow the standard you chose. All other foods use the USDA data unchanged. <a href="https://github.com/mehfoos/halfbakedtools/tree/main/tools/nutrient-planner/pipeline/blend">How the blend is made</a></Caveat>
+        <Caveat kind="beta" id="blendNote" hidden>The Blended table holds the foods found to be the same food in at least two independent food tables. Each nutrient is the median of the tables that give it under the same definition, with the range shown; a value only one table gives fills the gap and is marked. Some nutrients are defined differently by each target standard, so the values follow the standard you chose. Matches and values were made by automated steps without manual human verification. <a href="https://github.com/mehfoos/halfbakedtools/tree/main/tools/nutrient-planner/pipeline/blend">How the blend is made</a></Caveat>
         <FoodList />
       </section>
 

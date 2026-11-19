@@ -167,6 +167,32 @@
    "foods": 1588,
    "basicFoods": 829,
    "generated": "2026-11-18"
+  },
+  {
+   "id": "blend",
+   "tag": "blended, beta",
+   "title": "Blended (beta): the same foods combined across every table",
+   "country": "every table",
+   "basic": "foods-blend.json",
+   "more": "foods-blend-more.json",
+   "refs": [
+    "usda-sr",
+    "usda-sr-doc",
+    "cofid-2021",
+    "bls-4",
+    "ciqual-2025",
+    "frida-55",
+    "fineli-20",
+    "kfcdb-93",
+    "mext-2023",
+    "cnf-2026",
+    "afcd-3"
+   ],
+   "licence": "each source table's own licence (see each table)",
+   "standards": [],
+   "foods": 556,
+   "basicFoods": 556,
+   "generated": "2026-11-19"
   }
  ]
 }

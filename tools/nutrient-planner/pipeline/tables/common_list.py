@@ -13,6 +13,8 @@ preparation (raw, dried, boiled, roasted, ...) and skin on or off, and compares 
   two of them known, and not
   both sodium and calcium outside it). The tolerances are the blend's rule v1 (pipeline/blend/README.md), with energy
   widened to 30% or 30 kcal because the tables use different energy factors.
+- **USDA and CoFID**: the reviewed decisions in pipeline/blend/matches/cofid.csv win: a pair decided same or
+  equivalent is a match, and a USDA food decided similar or none matches no CoFID record.
 - **independent**: each record belongs to a *source family*, its own table, unless most of its values are labelled
   as taken from another table: CNF values unchanged from, adjusted from or imputed from USDA count as USDA; KFCDb's
   borrowed foods count as the table their source column names; borrowed foods whose source isn't named (AFCD
@@ -49,9 +51,9 @@ KEYS = common.KEYS
 IX = {k: i for i, k in enumerate(KEYS)}
 
 # ---- reading a name -------------------------------------------------------------------------------------------------
-SKIN_NO = re.compile(r"\b(without skin|skinless|skin removed|no skin|peeled|flesh only|meat only|lean only|lean flesh|without peel)\b")
-SALT_NO = re.compile(r"\b(unsalted|no added salt|without salt|no salt added|salt[- ]free|low sodium|no sodium added|in unsalted water)\b")
-SALT_YES = re.compile(r"\b(salted|salt added|with salt|in salted water|lightly salted)\b")
+SKIN_NO = re.compile(r"\b(without skin|skinless|skin removed|no skin|peeled|flesh only|meat only|lean only|lean flesh|without peel)\b|\bflesh\b(?! and skin)(?!,? skin)")
+SALT_NO = re.compile(r"\b(unsalted|no added salt|without added salt|without salt|no salt added|salt[- ]free|low sodium|no sodium added|in unsalted water)\b")
+SALT_YES = re.compile(r"\b(salted|salt added|with salt|with added salt|added salt|in salted water|lightly salted)\b")
 SKIN_YES = re.compile(r"\b(with skin|unpeeled|flesh and skin|meat and skin|skin (?:&|and) fat|with peel)\b")
 STATES = [  # (state, pattern); a cooking method beats "dried", which beats "raw"
     ("moist", r"\b(boiled|boil|simmered|poached|steamed|blanched|cooked in (?:unsalted |salted )?water)\b"),
@@ -79,7 +81,7 @@ australia australian india indian japan japanese korea korean denmark danish fin
 domestic market supermarket bought frozen-thawed thawed water unsalted including includes include also enriched
 unenriched fortified unfortified vitamin vitamins added ascorbic acid unheated large small medium mini cereal cereals
 grain grains breakfast hot lowfat low reduced milkfat nonfat fat-free light lite matter min creamed full part skim skimmed
-semi-skim semi-skimmed extra virgin cooking value values as purchased product type fish crustacean mollusk mollusc
+semi-skim semi-skimmed extra virgin value values as purchased product type fish crustacean mollusk mollusc
 shellfish finfish kernel cob off heat include""".split())
 FAT_MILK = re.compile(r"\b(?:made with |with )?(?:whole|skim|skimmed|semi-skimmed|part[- ]skim|low[- ]fat|reduced[- ]fat|full[- ]fat|fat-free|nonfat|lowfat) milk\b")
 DISTINCT = set("""juice nectar dried frozen powder flour oil sauce seed leaf sprout sprouted puree paste milk butter cream
@@ -244,7 +246,7 @@ def usda_raw_unusual(f: dict, src: str) -> bool:
 
 # ---- the list -------------------------------------------------------------------------------------------------------
 def load() -> tuple[list[dict], list[dict], dict]:
-    tables = json.loads((HERE / "tables.json").read_text())["tables"]
+    tables = [t for t in json.loads((HERE / "tables.json").read_text())["tables"] if t["id"] != "blend"]   # the blend is built from these
     recs, files = [], {}
     for t in tables:
         d = json.loads((DATA / t["basic"]).read_text())
@@ -258,6 +260,27 @@ def load() -> tuple[list[dict], list[dict], dict]:
             recs.append({"table": t["id"], "f": f, "name": src, "words": words, "state": state, "skin": skin,
                          "family": family(t["id"], f), "raw_bad": raw_bad})
     return tables, recs, files
+
+
+def reviewed_cofid() -> tuple[set, set]:
+    """USDA-CoFID decisions already reviewed (pipeline/blend/matches/cofid.csv): (USDA fdcId, CoFID code) pairs decided
+    same or equivalent, and USDA fdcIds decided similar or none (no CoFID record is the same food)."""
+    blend = common.PIPELINE / "blend"
+    anchor = {r["concept"]: r["anchor"] for r in csv.DictReader((blend / "concepts.csv").open(encoding="utf-8"))}
+    same, apart = set(), set()
+    for r in csv.DictReader((blend / "matches/cofid.csv").open(encoding="utf-8")):
+        fdc = anchor.get(r["concept"]) or r["concept"].removeprefix("c:u")
+        code = r["id"].removeprefix("cofid:").split("~")[0].upper() if r["id"] else ""
+        if r["grade"] in ("same", "equivalent") and code:
+            same.add((fdc, code))
+        else:
+            apart.add(fdc)
+    return same, apart
+
+
+def code_of(f: dict) -> str:
+    """The record's code in its table (USDA: the FDC id)."""
+    return str((f.get("src") or {}).get("code") or f.get("fdcId") or "")
 
 
 def cats_ok(a: str, b: str) -> bool:
@@ -294,6 +317,20 @@ def match_all(recs: list[dict]) -> dict[int, list[tuple[int, str]]]:
             for i in by_key.get(rest, []):
                 for j in ids:
                     try_pair(i, j, f"more words: {' '.join(sorted(drop))}")
+    # USDA and CoFID: the reviewed decisions win (same: linked; similar or none: never linked to CoFID)
+    same_rev, apart_rev = reviewed_cofid()
+    usda = {code_of(r["f"]): i for i, r in enumerate(recs) if r["table"] == "usda"}
+    cofid = {code_of(r["f"]).upper(): i for i, r in enumerate(recs) if r["table"] == "cofid"}
+    for i in list(links):
+        if recs[i]["table"] == "usda" and code_of(recs[i]["f"]) in apart_rev:
+            for j, _ in [x for x in links[i] if recs[x[0]]["table"] == "cofid"]:
+                links[i] = [x for x in links[i] if x[0] != j]
+                links[j] = [x for x in links[j] if x[0] != i]
+    for fdc, code in same_rev:
+        i, j = usda.get(fdc), cofid.get(code)
+        if i is not None and j is not None and all(x[0] != j for x in links.get(i, [])):
+            links[i].append((j, "reviewed: same"))
+            links[j].append((i, "reviewed: same"))
     return links
 
 
