@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { EXERCISES, EQUIPMENT, MUSCLES, PRESETS, type Equipment } from "./catalogue.ts";
+import { EXERCISES, EQUIPMENT, MUSCLES, PRESETS, assumedMuscles, type Equipment, type Muscle } from "./catalogue.ts";
+import { TABLE_1A, TABLE_1A_MUSCLES } from "./pelland-table-1a.ts";
 import { canDo, coverage, intensity, suggest, weights } from "./planner.ts";
 
 const preset = (id: string) => PRESETS.find((p) => p.id === id)!.equipment;
@@ -86,4 +87,41 @@ test("whole body with a full gym is fast enough", () => {
   const t = performance.now();
   suggest({ ...base, maxExercises: 10, count: 5, targets: [...muscles, "aerobic"] as never, equipment: preset("gym") });
   assert.ok(performance.now() - t < 2000, `${Math.round(performance.now() - t)} ms`);
+});
+
+test("every classification credited to Pelland et al. matches Table 1A exactly (muscle, column and name)", () => {
+  let n = 0;
+  for (const e of EXERCISES) {
+    for (const [m, name] of Object.entries(e.sources ?? {}) as [Muscle, string][]) {
+      const row = TABLE_1A[m];
+      assert.ok(row, `${e.id}: Table 1A has no row for ${m}`);
+      const column = e.direct.includes(m) ? "direct" : e.indirect.includes(m) ? "indirect" : undefined;
+      assert.ok(column, `${e.id}: ${m} is credited to the table but not counted`);
+      assert.ok(row[column].includes(name), `${e.id}: "${name}" is not in Table 1A's ${column} list for ${m}`);
+      n++;
+    }
+  }
+  assert.ok(n >= 20, `only ${n} sourced classifications`);
+});
+
+test("muscles the table doesn't classify are always marked as the planner's assumption", () => {
+  for (const e of EXERCISES) for (const m of Object.keys(e.sources ?? {}) as Muscle[]) assert.ok(TABLE_1A_MUSCLES.includes(m), `${e.id}: ${m}`);
+  const lats = EXERCISES.filter((e) => e.direct.includes("lats"));
+  assert.ok(lats.length && lats.every((e) => assumedMuscles(e).includes("lats")));
+});
+
+test("the planner doesn't contradict Table 1A for exercises it lists", () => {
+  // Every table name the planner cites for an exercise: wherever that name appears in another muscle's row of the
+  // same table, the planner must count that muscle in the same column.
+  for (const e of EXERCISES) {
+    const names = new Set(Object.values(e.sources ?? {}));
+    for (const [m, row] of Object.entries(TABLE_1A) as [Muscle, (typeof TABLE_1A)[Muscle]][]) {
+      for (const name of names) {
+        if (row!.direct.includes(name)) assert.ok(e.direct.includes(m), `${e.id}: table has "${name}" direct for ${m}`);
+        if (row!.indirect.includes(name)) assert.ok(e.indirect.includes(m), `${e.id}: table has "${name}" indirect for ${m}`);
+      }
+    }
+  }
+  // Squats, lunges and the leg press: "N/A" indirect for the hamstrings in the table.
+  for (const id of ["backSquat", "legPress", "lungeDb"]) assert.ok(!EXERCISES.find((e) => e.id === id)!.indirect.includes("hamstrings"));
 });

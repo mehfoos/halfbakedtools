@@ -1,6 +1,7 @@
 // Browser code for the exercise planner: reads the form, keeps settings in the page address, runs the
 // planner (pure code in planner.ts) and draws the results. Nothing leaves the browser.
-import { AEROBIC, AEROBIC_LABEL, EQUIPMENT, EXERCISES, MUSCLES, PRESETS, type Equipment, type Exercise, type Muscle, type Target } from "./catalogue.ts";
+import { AEROBIC, AEROBIC_LABEL, EQUIPMENT, EXERCISES, MUSCLES, PRESETS, assumedMuscles, isAssumed, type Equipment, type Exercise, type Muscle, type Target } from "./catalogue.ts";
+import { caveat } from "@site/lib/caveats.ts";
 import { canDo, intensity, suggest, type Suggestion } from "./planner.ts";
 import { chartSvg, fmt, type Axis } from "./chart.ts";
 
@@ -13,12 +14,14 @@ const GROUPS: { id: string; label: string; targets: Target[] }[] = [
   { id: "core", label: "Core", targets: ["abs", "lowerBack"] },
   { id: "aerobic", label: AEROBIC_LABEL, targets: [AEROBIC] },
 ];
+// Nothing is chosen at first: the visitor picks targets and equipment (owner's decision, 19 Nov 2026).
 const DEFAULTS: State = {
-  targets: GROUPS[0].targets, equipment: PRESETS[0].equipment, max: 10, count: 3, overlap: 0.5, depth: 1, excluded: [],
+  targets: [], equipment: [], max: 10, count: 3, overlap: 0.5, depth: 1, excluded: [],
 };
 const OVERLAPS = [{ v: 0, label: "All different" }, { v: 0.5, label: "Some shared" }, { v: 1, label: "Any" }];
 const MUSCLE_LABEL = Object.fromEntries(MUSCLES.map((m) => [m.id, m.label])) as Record<Muscle, string>;
 const label = (t: Target) => (t === AEROBIC ? AEROBIC_LABEL : MUSCLE_LABEL[t]);
+const METHODS = `${import.meta.env.BASE_URL}tools/exercise-planner/methods/`;
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 const list = (xs: string[]) => xs.length <= 1 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`;
 
@@ -119,13 +122,13 @@ export function start(root: HTMLElement) {
     }
     $("targetNote").textContent = state.targets.length ? `${state.targets.length} chosen` : "none chosen";
     const presetMatch = PRESETS.find((p) => p.equipment.length === state.equipment.length && p.equipment.every((e) => have.has(e)));
-    $("equipNote").textContent = presetMatch ? presetMatch.label : `${state.equipment.length} items`;
+    $("equipNote").textContent = presetMatch ? presetMatch.label : state.equipment.length ? `${state.equipment.length} items` : "none chosen";
     $("optionsNote").textContent = `up to ${state.max} exercises, ${state.count} suggestion${state.count > 1 ? "s" : ""}${state.excluded.length ? `, ${state.excluded.length} exercise${state.excluded.length > 1 ? "s" : ""} left out` : ""}`;
     $("depthCustom").hidden = state.depth === 1;
 
     const out = $("results");
     if (!state.targets.length) { out.innerHTML = `<p class="notice info">Choose at least one muscle group, or heart and lungs, to get suggestions.</p>`; return; }
-    if (!state.equipment.length) { out.innerHTML = `<p class="notice info">Tick the equipment you have. If you have none, choose <strong>No equipment</strong>.</p>`; return; }
+    if (!state.equipment.length) { out.innerHTML = `<p class="notice info">Choose the equipment you have (step 2). If you have none, choose <strong>No equipment</strong>.</p>`; return; }
     const r = suggest({ targets: state.targets, equipment: state.equipment, excluded: state.excluded, maxExercises: state.max, count: state.count, depth: state.depth, overlap: state.overlap });
     if (!r.suggestions.length) {
       out.innerHTML = `<p class="notice bad">None of the ${r.available} exercises possible with your equipment trains what you chose. Try ticking more equipment.</p>`;
@@ -147,6 +150,10 @@ export function start(root: HTMLElement) {
     const missing = s.missing.length
       ? `<p class="notice small">Not covered: ${esc(list(s.missing.map(label)))}. Allow more exercises, tick more equipment, or choose fewer targets.</p>` : "";
     const rows = s.exercises.map((e) => exerciseRow(e, targets)).join("");
+    const assumed = s.exercises.some((e) => assumedMuscles(e).length)
+      ? caveat("assumption", `Muscles marked <span class="assumed" aria-hidden="true">◇</span> are the planner's own classification, made from
+        anatomy (which muscle moves which joint), not taken from a study. The study behind the set counting classified only some
+        muscles and exercises. <a href="${METHODS}#which-muscles">How each was decided</a>.`) : "";
     const targetAxes: Axis[] = muscleTargets.map((m) => ({ label: MUSCLE_LABEL[m], value: s.coverage[m], target: state.depth, isTarget: true }));
     const allAxes: Axis[] = MUSCLES.map((m) => ({ label: m.label, value: s.coverage[m.id], target: state.depth, isTarget: muscleTargets.includes(m.id) }));
     const extra = MUSCLES.filter((m) => !muscleTargets.includes(m.id) && s.coverage[m.id] > 0).map((m) => `${m.label} ${fmt(s.coverage[m.id])}`);
@@ -156,11 +163,12 @@ export function start(root: HTMLElement) {
         <details><summary>Everything this option works <span class="summary-note">${extra.length ? `also ${esc(list(extra))}` : "nothing beyond your targets"}</span></summary>
           <div class="details-body"><figure class="chart">${chartSvg(allAxes, `Option ${i + 1}: fractional sets for all muscle groups`)}
           <figcaption class="small muted sans">All 13 muscle groups. Your targets are in bold; the others are grey.</figcaption></figure></div></details>` : "";
-    return `<section class="card option">${head}${missing}<ul class="ex-list">${rows}</ul>${charts}</section>`;
+    return `<section class="card option">${head}${missing}<ul class="ex-list">${rows}</ul>${assumed}${charts}</section>`;
   }
 
   function exerciseRow(e: Exercise, targets: Target[]) {
-    const tag = (m: Muscle) => `${targets.includes(m) ? `<strong>${esc(MUSCLE_LABEL[m])}</strong>` : esc(MUSCLE_LABEL[m])}`;
+    const tag = (m: Muscle) => `${targets.includes(m) ? `<strong>${esc(MUSCLE_LABEL[m])}</strong>` : esc(MUSCLE_LABEL[m])}`
+      + (isAssumed(e, m) ? ` <span class="assumed" title="Assumption: the planner's own classification">◇</span><span class="sr-only"> (assumption)</span>` : "");
     const parts: string[] = [];
     if (e.direct.length) parts.push(`directly: ${e.direct.map(tag).join(", ")}`);
     if (e.indirect.length) parts.push(`indirectly (½ set): ${e.indirect.map(tag).join(", ")}`);
@@ -172,7 +180,7 @@ export function start(root: HTMLElement) {
       const who = bands.map((b) => b === "vigorous" ? "75–150 minutes a week at vigorous intensity" : b === "moderate" ? "150–300 minutes a week at moderate intensity" : "").filter(Boolean);
       aero = `<div class="small sans">Effort: ${metText}. ${targets.includes(AEROBIC) && who.length ? `On its own, about ${esc(who.join(" or "))} meets the WHO aerobic recommendation for adults.` : ""}</div>`;
     }
-    return `<li><span class="ex-name">${esc(e.name)}</span>${e.listed || !e.direct.length ? "" : ` <span class="tag" title="Muscles assigned by the tool from anatomy, by analogy with similar exercises">by analogy</span>`}
+    return `<li><span class="ex-name">${esc(e.name)}</span>
       <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}</div>${aero}</li>`;
   }
 

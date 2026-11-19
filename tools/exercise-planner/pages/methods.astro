@@ -2,12 +2,15 @@
 import ToolLayout from "@site/layouts/ToolLayout.astro";
 import { referencesFor } from "@site/lib/references.ts";
 import references from "../references.json";
-import { EXERCISES, EQUIPMENT, MUSCLES } from "../web/catalogue.ts";
+import Caveat from "@site/components/Caveat.astro";
+import { EXERCISES, EQUIPMENT, MUSCLES, isAssumed, type Exercise, type Muscle } from "../web/catalogue.ts";
 const { cite } = referencesFor(references as Parameters<typeof referencesFor>[0]);
 const muscle = Object.fromEntries(MUSCLES.map((m) => [m.id, m.label]));
 const equip = Object.fromEntries(EQUIPMENT.map((e) => [e.id, e.label]));
 const needs = (n: string[][]) => n.length ? n.map((g) => g.map((e) => equip[e]).join(" or ")).join("; plus ") : "nothing";
 const strength = EXERCISES.filter((e) => e.direct.length);
+const cell = (e: Exercise, ms: Muscle[]) => ms.map((m) => muscle[m] + (isAssumed(e, m) ? " ◇" : "")).join(", ") || "–";
+const sourced = (e: Exercise) => Object.entries(e.sources ?? {}).map(([m, n]) => `${muscle[m]}: "${n}"`).join("; ");
 const aerobic = EXERCISES.filter((e) => e.met?.length);
 ---
 <ToolLayout slug="exercise-planner" page="methods">
@@ -41,8 +44,8 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
     <strong>½ set</strong> for a muscle it trains <em>indirectly</em>. This is the "fractional" method of Pelland and
     colleagues, whose meta-regressions of resistance-training studies classified each set as direct (the measured muscle
     was likely the primary force generator) or indirect (the muscle was likely meaningfully trained but as a helper, or
-    synergist), and found that counting indirect sets as half a set gave the strongest evidence for predicting muscle growth
-    <Fragment set:html={cite("pelland-2026")} />.
+    synergist), and found that the relative evidence for this "fractional" counting was the strongest of the methods they
+    compared, for both muscle growth and strength <Fragment set:html={cite("pelland-2026")} />.
   </p>
   <p>
     An earlier review by Schoenfeld and colleagues found that multi-joint exercises such as presses, rows and squats
@@ -52,43 +55,51 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
     The planner follows the later, larger analysis and counts half.
   </p>
 
-  <h2>Which muscles each exercise works</h2>
+  <h2 id="which-muscles">Which muscles each exercise works</h2>
   <p>
-    <strong>Exercises classified in the analysis.</strong> Pelland and colleagues list how they classified common exercises
-    for the quadriceps, hamstrings, chest, front of the shoulders, trapezius, triceps and biceps (Table 1 of the published
-    article; Table 1A of the archived preprint) <Fragment set:html={cite("pelland-2026")} />. Where an exercise appears there, the planner follows it: for
-    example the bench press trains the chest directly and the triceps and front shoulders indirectly; rows and pulldowns
-    train the biceps and trapezius indirectly; squats, lunges and the leg press don't count for the hamstrings.
+    <strong>From the study.</strong> Pelland and colleagues list how they classified the exercises in the studies they
+    analysed, for these muscles only: the quadriceps, the rectus femoris (one of the four quadriceps muscles), the
+    hamstrings, the chest, the front of the shoulders (anterior deltoid), the trapezius, the triceps and the biceps
+    (Table 1 of the published article; Table 1A of the archived preprint) <Fragment set:html={cite("pelland-2026")} />.
+    Where that table classifies an exercise for one of those muscles, the planner follows it exactly. For example, the
+    bench press trains the chest directly and the front shoulders and triceps indirectly; the lat pulldown and seated row
+    train the biceps and trapezius indirectly; squats, lunges and the leg press don't count for the hamstrings. The
+    authors note that their classification "was not wholly objective".
   </p>
   <p>
-    <strong>Everything else, by analogy.</strong> The other exercises, and the muscles that table doesn't cover (lats,
-    glutes, lower back, abs, calves, forearms), are classified by the planner from anatomy. Each exercise is described by
-    the joint movements it loads (for example, knee and hip extension in a squat), and the muscles that produce those
-    movements come from an open anatomy textbook <Fragment set:html={cite("openstax-ap2e")} />: for example the gluteus
-    maximus extends the hip, the hamstrings bend the knee and extend the hip, the erector spinae is the main extensor of
-    the spine, the latissimus dorsi pulls the upper arm down and back, and the gastrocnemius and soleus point the foot.
-    A muscle producing the exercise's main movement counts as direct; one producing a secondary movement counts as indirect.
-    These exercises are marked <span class="tag">by analogy</span> in the planner. This is a judgement, made openly, not a
-    measurement.
+    <strong>The planner's own classification.</strong> Every other assignment is the planner's own, made from anatomy.
+    That includes all of the lats, glutes, lower back, abs, calves and forearms, which the table doesn't cover, and the
+    covered muscles in exercises it doesn't list. Each exercise is described by the joint movements it loads (for
+    example, knee and hip extension in a squat), and the muscles that produce those movements come from an open anatomy
+    textbook <Fragment set:html={cite("openstax-ap2e")} />: for example the gluteus maximus extends the hip, the hamstrings
+    bend the knee and extend the hip, the erector spinae is the main extensor of the spine, the latissimus dorsi pulls the
+    upper arm down and back, and the gastrocnemius and soleus point the foot. A muscle producing the exercise's main
+    movement counts as direct; one producing a secondary movement counts as indirect.
   </p>
+  <Caveat kind="assumption">These assignments are marked ◇ in the planner and in the table below. They are a
+    judgement made openly, not a measurement, and the counting method itself was only tested on the muscles and the kind
+    of exercises in the study. Studies that measured muscle growth directly will replace them where they exist.</Caveat>
   <p>
     Muscles that only hold the body still (such as the trunk muscles in a squat) are listed as "steadied" and not counted,
-    except in exercises whose whole purpose is the hold, such as the plank or the farmer's carry.
+    except in exercises whose whole purpose is the hold, such as the plank or the farmer's carry. Counting those is also
+    the planner's assumption: the analysis only included exercises that move through a range (lifting and lowering).
   </p>
 
   <details>
     <summary>All {strength.length} exercises and their muscles</summary>
     <div class="details-body table-scroll">
+      <p class="small">◇ = the planner's own classification (an assumption). The last column gives the exercise name exactly as
+        printed in the study's table, for each muscle taken from it.</p>
       <table>
-        <thead><tr><th>Exercise</th><th>Needs</th><th>Direct (1 set)</th><th>Indirect (½ set)</th><th>Basis</th></tr></thead>
+        <thead><tr><th>Exercise</th><th>Needs</th><th>Direct (1 set)</th><th>Indirect (½ set)</th><th>From Pelland et al., Table 1A</th></tr></thead>
         <tbody>
           {strength.map((e) => (
             <tr>
               <td>{e.name}<br /><span class="muted small">{e.moves}</span></td>
               <td class="small">{needs(e.needs)}</td>
-              <td>{e.direct.map((m) => muscle[m]).join(", ")}</td>
-              <td>{e.indirect.map((m) => muscle[m]).join(", ") || "–"}</td>
-              <td class="small">{e.listed ? <>Pelland et al., Table 1 ("{e.listed}")</> : "By analogy (anatomy)"}</td>
+              <td>{cell(e, e.direct)}</td>
+              <td>{cell(e, e.indirect)}</td>
+              <td class="small">{sourced(e) || "None: all assumptions ◇"}</td>
             </tr>
           ))}
         </tbody>
@@ -128,27 +139,34 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
   </p>
 
   <h2>What has been checked</h2>
-  <ul class="prose">
-    <li><strong>Checked</strong> (15 Nov 2026) against the archived copies: every MET value, code and description; the
-      fractional counting method and Table 1A classifications; the WHO recommendations and intensity definitions; the
-      muscle actions used from the anatomy textbook. Details are in the repository's
-      <code>tools/exercise-planner/VERIFICATION.md</code>.</li>
-    <li><strong>Not yet checked</strong> against muscle-activity (EMG) studies: the exercises classified by analogy.
-      Systematic reviews of muscle activity exist for several of them (for example squats, deadlifts and core exercises)
-      and are the next thing to compare against.</li>
-  </ul>
+  <p>
+    Checked line by line against the archived copies: every MET value, code and description; the fractional counting
+    method and every classification taken from Table 1A; the WHO recommendations and intensity definitions; and the
+    muscle actions used from the anatomy textbook. Details, with dates, are in the repository's
+    <code>tools/exercise-planner/VERIFICATION.md</code>.
+  </p>
+  <Caveat kind="unverified">The planner's own classifications (◇) haven't yet been compared with studies of the
+    exercises themselves. Studies that measured muscle growth after training (not just muscle activity during it) are the
+    next thing to compare against.</Caveat>
 
   <h2>Limitations</h2>
   <ul class="prose">
     <li>The suggestions are lists of exercises, not a training programme: they don't say how heavy, how many repetitions,
       how many sets or how often. Do any new exercise with good technique, starting light.</li>
+    <li>"Quadriceps" combines four muscles. The study's table classifies squats, lunges and the leg press as direct for
+      three of them but only indirect for the rectus femoris <Fragment set:html={cite("pelland-2026")} />; the planner
+      counts them as direct for the group.</li>
     <li>Thirteen muscle groups is a simplification. Within a group, different exercises stress different parts (for
       example, the upper and lower chest).</li>
     <li>Direct and indirect are two broad categories. Real exercises sit on a continuum, and technique, grip and range of
       motion change which muscles work hardest.</li>
-    <li>The analysis behind the counting method pooled studies lasting about 10 weeks on average, in participants with an
-      average age of about 25 <Fragment set:html={cite("pelland-2026")} />. It may apply less well to older people or very
-      experienced lifters.</li>
+    <li>The analysis behind the counting method pooled studies lasting about 10 weeks on average, in healthy participants
+      with an average age of about 25 and none over 70, training with lifting and lowering movements
+      <Fragment set:html={cite("pelland-2026")} />. It may apply less well to older people, very experienced lifters, or
+      holds such as the plank.</li>
+    <li>The studies controlled how heavy each set was and how close to failure it went. A set of a bodyweight exercise,
+      such as a bodyweight squat, may be much easier than that for a trained person, so counting it as a full set can
+      overstate the work.</li>
     <li>MET values are averages for adults aged 19 to 59; your own effort depends on your fitness and pace
       <Fragment set:html={cite("compendium-2024")} />.</li>
     <li>Muscles that only hold the body still aren't counted, although they are under tension and some authors suggest

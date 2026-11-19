@@ -7,7 +7,7 @@ Every number or classification the tool relies on, what it was checked against (
 |---|---|---|---|
 | All 17 Compendium rows used (code, MET, description) in `web/catalogue.ts` | Checked | `compendium-2024-adult-activity-list.pdf` (text extracted and each code matched) | 15 Nov 2026 |
 | Fractional counting (indirect × 0.5 + direct) and the definitions of direct and indirect | Checked | `pelland-2024-dose-response-preprint-v2.pdf`, section 2.4 | 15 Nov 2026 |
-| Exercises marked `listed` follow Table 1A (quadriceps, hamstrings, chest, front deltoid, trapezius, triceps, biceps) | Checked | `pelland-2024-dose-response-preprint-v2.pdf`, Table 1A (PDF page 8) | 15 Nov 2026 |
+| Exercises marked `listed` follow Table 1A | Superseded 19 Nov 2026 | The per-exercise `listed` flag over-credited the table (see below) | 15 Nov 2026 |
 | Participants' average age (≈25) and intervention length (≈10 weeks) quoted as a limitation | Checked | `pelland-2024-dose-response-preprint-v2.pdf`, section 4.3 | 15 Nov 2026 |
 | Hamstrings much less active than quadriceps in squats and leg press; 1:1 can't be assumed; advice at the time to count 1:1 | Checked | `schoenfeld-2019-set-volume-multi-joint.pdf`, abstract and conclusions | 15 Nov 2026 |
 | WHO adult recommendations (150–300 min moderate or 75–150 min vigorous; muscle-strengthening, all major muscle groups, ≥2 days a week) | Checked | `bull-2020-who-physical-activity-guidelines.pdf`, recommendations for adults (journal p. 1456) | 15 Nov 2026 |
@@ -16,13 +16,30 @@ Every number or classification the tool relies on, what it was checked against (
 | Muscle actions: gluteus maximus, quadriceps, hamstrings, gastrocnemius, soleus | Checked | `openstax-ap2e-11-6-lower-limbs.pdf` (since replaced by `openstax-ap2e-11-6-owner-saved.pdf`), tables under Figures 11.30, 11.31, 11.33 | 15 Nov 2026 |
 | Muscle actions: pectoralis major, latissimus dorsi, deltoid, trapezius, rhomboids, biceps, brachialis, brachioradialis, triceps | Checked | `openstax-ap2e-11-5-upper-limbs.pdf` (since replaced by `openstax-ap2e-11-5-owner-saved.pdf`), Table 11.8 and tables under Figures 11.24, 11.26 | 15 Nov 2026 |
 | Muscle actions: rectus abdominis, obliques (Table 11.6); erector spinae (text) | Checked | `openstax-ap2e-11-4-abdomen-thorax.pdf`, `openstax-ap2e-11-3-head-neck-back.pdf` (since replaced by the owner-saved copies) | 15 Nov 2026 |
-| Fractional method, definitions, Table 1 classifications (all `listed` exercises), participants (67 studies, 2058 people, mean age 25.16) and mean intervention 10.42 weeks: same in the published version | Checked | Published article, *Sports Medicine* (owner-supplied; not stored, see notes): abstract, section 2, Table 1 | 16 Nov 2026 |
+| Fractional method, definitions, Table 1 classifications (the exercises then marked `listed`), participants (67 studies, 2058 people, mean age 25.16) and mean intervention 10.42 weeks: same in the published version | Checked | Published article, *Sports Medicine* (owner-supplied; not stored, see notes): abstract, section 2, Table 1 | 16 Nov 2026 |
 | WHO adult recommendations (150–300 min moderate or 75–150 min vigorous; muscle-strengthening, all major muscle groups, ≥2 days a week) | Checked | `who-2020-guidelines-physical-activity-sedentary-behaviour.pdf`, adults 18–64 (PDF page 12) | 16 Nov 2026 |
 | WHO intensity definitions (moderate: 3 to less than 6 times rest; vigorous: 6.0 or more METs; 1 MET = seated at rest) | Checked | `who-2020-guidelines-physical-activity-sedentary-behaviour.pdf`, glossary (PDF page 9) | 16 Nov 2026 |
 | Hamstring muscle actions (biceps femoris, semitendinosus, semimembranosus: knee flexion, hip extension), previously hidden by a cookie banner | Checked | `openstax-ap2e-11-6-owner-saved.mht`, description of the table under Figure 11.31 | 16 Nov 2026 |
-| Exercises classified by analogy (no `listed` name) | Not yet checked | Muscle-activity (EMG) systematic reviews still to be compared | – |
+| Table 1A transcribed into `web/pelland-table-1a.ts`: every muscle row the planner uses (quadriceps/vasti, hamstrings, pectoralis major, anterior deltoid, trapezius, triceps, biceps), both columns, exercise names exactly as printed | Checked | `pelland-2024-dose-response-preprint-v2.pdf`, Table 1A (PDF page 8), text extracted and compared name by name | 19 Nov 2026 |
+| Every classification credited to the table (`sources` in `web/catalogue.ts`): muscle, column and exact name; no planner classification contradicts the table for an exercise it cites | Checked automatically | `planner.test.ts` against `web/pelland-table-1a.ts` | 19 Nov 2026 |
+| Pelland et al. scope: dynamic ("eccentric and concentric") training, ≥4 weeks, healthy participants, none over 70; "This process was not wholly objective" | Checked | `pelland-2024-dose-response-preprint-v2.pdf`, sections 2.1 and 2.4 | 19 Nov 2026 |
+| Fractional counting "relative evidence … was strongest" (wording on both pages) | Checked | `pelland-2024-dose-response-preprint-v2.pdf`, abstract | 19 Nov 2026 |
+| Muscle actions re-checked line by line against the owner-saved copies: pectoralis major, latissimus dorsi, deltoid (Figure 11.24 table); trapezius, rhomboids (Table 11.8); biceps brachii, brachialis, brachioradialis, triceps brachii (Figure 11.26 table); flexor digitorum superficialis (text) | Checked | `openstax-ap2e-11-5-owner-saved.pdf`, PDF pages 2, 4, 7 | 19 Nov 2026 |
+| Muscle actions re-checked: psoas major and iliacus (hip and trunk flexion), gluteus maximus (hip extension) (Figure 11.30 table); rectus femoris, vasti, biceps femoris, semitendinosus, semimembranosus (Figure 11.31 table); gastrocnemius, soleus (Figure 11.33 table) | Checked | `openstax-ap2e-11-6-owner-saved.pdf`, PDF pages 3, 5, 7 | 19 Nov 2026 |
+| Muscle actions re-checked: rectus abdominis (flexion), external and internal obliques (rotation, lateral flexion) (Table 11.6); erector spinae "the primary extensor of the vertebral column" (text) | Checked | `openstax-ap2e-11-4-owner-saved.pdf` PDF page 3; `openstax-ap2e-11-3-owner-saved.pdf` | 19 Nov 2026 |
+| The planner's own classifications (every counted muscle without a `sources` entry, marked ◇ on the site) | Not yet checked | Studies measuring muscle growth after training (not only muscle activity) still to be compared | – |
 
 ## Notes
+
+- 19 Nov 2026: the 15 Nov OpenStax checks were made against the first automatic copies, which have since been
+  deleted and are not in the release, so every muscle action the planner uses was re-checked against the owner-saved
+  copies (rows above dated 19 Nov). Nothing changed.
+- 19 Nov 2026: the old per-exercise `listed` flag credited whole exercises to Table 1A, although the table only covers
+  some muscles (for example, the lat pulldown's lats are not in it) and three names ("Bench press (dumbbell variant)",
+  "Flat dumbbell fly (machine or cable variant)", "Machine press (shoulder variant)") were not in the table at all. It was
+  replaced by per-muscle `sources`, checked by tests. As a result, the machine/cable chest fly no longer counts the
+  shoulders (the table doesn't count the fly for the anterior deltoid), the lunge was split into a bodyweight and a
+  dumbbell version (only "Dumbbell Lunge" is in the table), and a flat dumbbell fly was added.
 
 - The first, automatic copies of the OpenStax pages had a cookie banner covering part of each page; they were
   replaced on 16 Nov 2026 by owner-saved copies (saved 16 Nov 2026 after scrolling so every image loaded; `.mht` web archive plus a PDF printed

@@ -1,15 +1,20 @@
 // The exercise catalogue: muscle groups, equipment and exercises.
 //
 // How muscles are assigned (see the methods page for the sources):
-// - Each exercise is described by the joint movements it loads ("moves": e.g. elbow extension).
-// - A muscle counts as DIRECT (1 set) when it is a prime mover of the movement the exercise is chosen for,
-//   and INDIRECT (0.5 set) when it is a prime mover of a secondary movement in the same exercise
-//   (e.g. the triceps straightening the elbow in a bench press). This is the "fractional" counting method of
-//   Pelland et al. (2026), and the direct/indirect split follows Schoenfeld et al. (2019).
+// - Counting: a set counts as 1 set for a muscle trained DIRECTLY and 0.5 for one trained INDIRECTLY: the
+//   "fractional" method of Pelland et al. (2026).
+// - Where Pelland et al. classified an exercise for a muscle (Table 1A of the archived preprint, transcribed in
+//   pelland-table-1a.ts), the planner follows it exactly, and `sources` names the table entry. That table covers only
+//   the quadriceps, rectus femoris, hamstrings, pectoralis major, anterior deltoid, trapezius, triceps and biceps,
+//   and only dynamic exercises; the authors call their classification "not wholly objective".
+// - Every other muscle assignment is the planner's own ASSUMPTION, made from anatomy: each exercise is described by
+//   the joint movements it loads ("moves"); a muscle producing the main movement counts as direct, one producing a
+//   secondary movement as indirect. Which muscle produces which movement is from OpenStax Anatomy and Physiology 2e,
+//   ch. 11. These are labelled "Assumption" on the site until outcome evidence replaces them.
 // - Muscles that only hold a position (e.g. the trunk muscles in a squat) are listed as "steadies" and not counted,
-//   except in exercises whose whole purpose is the hold (plank, farmer's carry), where the held muscles are direct.
-// - Which muscle produces which movement is from OpenStax Anatomy and Physiology 2e, ch. 11.
-//
+//   except in exercises whose whole purpose is the hold (plank, farmer's carry), where the held muscles are direct
+//   (also an assumption: holds were outside Pelland et al.'s analysis).
+
 // MET values (aerobic intensity) are copied unchanged from the 2024 Adult Compendium of Physical Activities,
 // with the Compendium's activity code, as its authors ask.
 
@@ -79,8 +84,13 @@ export type Exercise = {
   moves: string;
   direct: Muscle[];
   indirect: Muscle[];
-  /** Name as classified in Pelland et al. (2026) Table 1 (Table 1A in the preprint), where that table covers this exercise. */
-  listed?: string;
+  /**
+   * Where a muscle's classification here comes from Pelland et al. (2026), Table 1A of the archived preprint
+   * (Table 1 in the published article): the exercise name exactly as printed there, under the same muscle and in
+   * the same column (direct or indirect). Every other muscle in `direct` or `indirect` is the planner's own
+   * classification from anatomy (an assumption), and is labelled as such on the site. Checked by planner.test.ts.
+   */
+  sources?: Partial<Record<Muscle, string>>;
   /** Muscles that hold a position but don't move a joint through a range: shown, not counted. */
   steadies?: Muscle[];
   /** Compendium rows for aerobic activities, lightest effort first. */
@@ -103,8 +113,7 @@ export const EXERCISES: Exercise[] = [
   X({ id: "squatBw", name: "Bodyweight squat", kind: "strength", needs: [["body"]],
     moves: "knee extension; hip extension",
     direct: ["quads", "glutes"], indirect: [] }),
-  X({ id: "lunge", name: "Lunge (reverse or forward)", kind: "strength", needs: [["body", "dumbbells", "kettlebell"]],
-    listed: "Dumbbell lunge",
+  X({ id: "lunge", name: "Bodyweight lunge (reverse or forward)", kind: "strength", needs: [["body"]],
     moves: "knee extension; hip extension, one leg at a time",
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "gluteBridge", name: "Glute bridge", kind: "strength", needs: [["body"]],
@@ -119,18 +128,18 @@ export const EXERCISES: Exercise[] = [
   X({ id: "crunch", name: "Crunch", kind: "strength", needs: [["body"]],
     moves: "trunk flexion (curling the ribs towards the hips)",
     direct: ["abs"], indirect: [] }),
-  X({ id: "hangingKneeRaise", name: "Hanging knee raise", kind: "strength", needs: [["pullupBar"]],
-    moves: "hip flexion and trunk flexion while hanging",
+  X({ id: "hangingKneeRaise", name: "Hanging knee raise, curling the pelvis up", kind: "strength", needs: [["pullupBar"]],
+    moves: "hip flexion (by the iliopsoas) with trunk flexion (by the abs): curl the pelvis up towards the ribs as the knees rise",
     direct: ["abs"], indirect: [], steadies: ["forearms"] }),
   X({ id: "benchDip", name: "Bench dip", kind: "strength", needs: [["chair", "bench"]],
-    moves: "elbow extension; shoulder extension (hands on a bench behind you)",
+    moves: "elbow extension, and shoulder flexion as you push up (the shoulders extend as you lower; hands on a bench behind you)",
     direct: ["triceps"], indirect: ["chest", "shoulders"] }),
   X({ id: "calfRaise", name: "Standing calf raise", kind: "strength", needs: [["body", "stairs", "dumbbells", "machines"]],
     moves: "ankle plantar flexion (rising onto the toes)",
     direct: ["calves"], indirect: [] }),
   X({ id: "superman", name: "Back extension on the floor (superman)", kind: "strength", needs: [["body"]],
     moves: "spine extension; hip extension (lifting chest and legs from the floor, face down)",
-    direct: ["lowerBack"], indirect: ["glutes"] }),
+    direct: ["lowerBack"], indirect: ["glutes", "hamstrings"] }),
   X({ id: "pikePushUp", name: "Pike push-up", kind: "strength", needs: [["body"]],
     moves: "shoulder flexion (pressing overhead with hips raised); elbow extension",
     direct: ["shoulders"], indirect: ["triceps", "upperBack"] }),
@@ -147,26 +156,33 @@ export const EXERCISES: Exercise[] = [
   X({ id: "gobletSquat", name: "Goblet squat", kind: "strength", needs: [["dumbbells", "kettlebell"]],
     moves: "knee extension; hip extension, holding one weight at the chest",
     direct: ["quads", "glutes"], indirect: [], steadies: ["upperBack", "abs"] }),
+  X({ id: "lungeDb", name: "Dumbbell lunge", kind: "strength", needs: [["dumbbells"]],
+    sources: { quads: "Dumbbell Lunge" },
+    moves: "knee extension; hip extension, one leg at a time, holding dumbbells",
+    direct: ["quads", "glutes"], indirect: [] }),
+  X({ id: "dbFly", name: "Flat dumbbell fly", kind: "strength", needs: [["dumbbells"], ["bench"]],
+    sources: { chest: "Flat Dumbbell Fly" },
+    moves: "shoulder horizontal adduction with nearly straight elbows, lying on a bench",
+    direct: ["chest"], indirect: [] }),
   X({ id: "dbBench", name: "Dumbbell bench press", kind: "strength", needs: [["dumbbells"], ["bench"]],
-    listed: "Bench press (dumbbell variant)",
     moves: "shoulder horizontal adduction; elbow extension",
     direct: ["chest"], indirect: ["triceps", "shoulders"] }),
   X({ id: "dbRow", name: "One-arm dumbbell row", kind: "strength", needs: [["dumbbells", "kettlebell"]],
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps"], steadies: ["lowerBack"] }),
   X({ id: "dbPress", name: "Dumbbell shoulder press", kind: "strength", needs: [["dumbbells", "kettlebell"]],
-    listed: "Dumbbell shoulder press",
+    sources: { triceps: "Dumbbell Shoulder Press" },
     moves: "shoulder flexion and abduction (pressing overhead); elbow extension",
     direct: ["shoulders"], indirect: ["triceps", "upperBack"] }),
   X({ id: "lateralRaise", name: "Dumbbell lateral raise", kind: "strength", needs: [["dumbbells", "machines"]],
     moves: "shoulder abduction (arms out to the sides)",
     direct: ["shoulders"], indirect: [] }),
   X({ id: "curl", name: "Biceps curl", kind: "strength", needs: [["dumbbells", "barbell", "bands", "machines"]],
-    listed: "Biceps curl; dumbbell biceps curl; machine curl",
+    sources: { biceps: "Bicep Curl" },
     moves: "elbow flexion",
     direct: ["biceps"], indirect: [], steadies: ["forearms"] }),
   X({ id: "overheadExt", name: "Overhead triceps extension", kind: "strength", needs: [["dumbbells", "kettlebell", "bands", "machines"]],
-    listed: "Overhead dumbbell extensions; cable overhead extension",
+    sources: { triceps: "Overhead Dumbbell Extensions" },
     moves: "elbow extension with the arm overhead",
     direct: ["triceps"], indirect: [] }),
   X({ id: "rdl", name: "Romanian deadlift", kind: "strength", needs: [["dumbbells", "kettlebell", "barbell"]],
@@ -182,22 +198,22 @@ export const EXERCISES: Exercise[] = [
 
   // --- Barbell ---
   X({ id: "backSquat", name: "Barbell back squat", kind: "strength", needs: [["barbell"], ["rack"]],
-    listed: "Back squat",
+    sources: { quads: "Back Squat" },
     moves: "knee extension; hip extension",
     direct: ["quads", "glutes"], indirect: [], steadies: ["lowerBack", "abs"] }),
   X({ id: "deadlift", name: "Deadlift", kind: "strength", needs: [["barbell", "kettlebell", "dumbbells"]],
     moves: "hip extension; knee extension (lifting a weight from the floor)",
     direct: ["glutes", "hamstrings"], indirect: ["quads"], steadies: ["lowerBack", "forearms", "upperBack"] }),
   X({ id: "benchPress", name: "Barbell bench press", kind: "strength", needs: [["barbell"], ["bench"], ["rack"]],
-    listed: "Bench press",
+    sources: { chest: "Bench Press", shoulders: "Bench Press", triceps: "Flat Bench Press" },
     moves: "shoulder horizontal adduction; elbow extension",
     direct: ["chest"], indirect: ["triceps", "shoulders"] }),
   X({ id: "ohp", name: "Barbell overhead press", kind: "strength", needs: [["barbell"]],
-    listed: "Barbell shoulder press",
+    sources: { shoulders: "Barbell Shoulder Press", triceps: "Shoulder Press" },
     moves: "shoulder flexion (pressing overhead); elbow extension",
     direct: ["shoulders"], indirect: ["triceps", "upperBack"], steadies: ["abs"] }),
   X({ id: "bbRow", name: "Barbell bent-over row", kind: "strength", needs: [["barbell"]],
-    listed: "Bent-over barbell row",
+    sources: { biceps: "Bent-Over Barbell Row" },
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps"], steadies: ["lowerBack", "hamstrings"] }),
   X({ id: "hipThrust", name: "Hip thrust", kind: "strength", needs: [["barbell", "dumbbells"], ["bench", "chair"]],
@@ -206,46 +222,45 @@ export const EXERCISES: Exercise[] = [
 
   // --- Machines and cables ---
   X({ id: "legPress", name: "Leg press", kind: "strength", needs: [["machines"]],
-    listed: "Leg press",
+    sources: { quads: "Leg Press" },
     moves: "knee extension; hip extension",
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "legExtension", name: "Leg extension", kind: "strength", needs: [["machines"]],
-    listed: "Leg extension",
+    sources: { quads: "Leg Extension" },
     moves: "knee extension",
     direct: ["quads"], indirect: [] }),
   X({ id: "legCurl", name: "Leg curl", kind: "strength", needs: [["machines"]],
-    listed: "Leg curl",
+    sources: { hamstrings: "Leg Curl" },
     moves: "knee flexion",
     direct: ["hamstrings"], indirect: ["calves"] }),
   X({ id: "latPulldown", name: "Lat pulldown", kind: "strength", needs: [["machines"]],
-    listed: "Lat pulldown",
+    sources: { biceps: "Lat Pulldown", upperBack: "Lat Pulldown" },
     moves: "shoulder adduction and extension (elbows down); elbow flexion",
     direct: ["lats"], indirect: ["biceps", "upperBack"] }),
   X({ id: "cableRow", name: "Seated cable row", kind: "strength", needs: [["machines"]],
-    listed: "Seated row",
+    sources: { biceps: "Seated Row", upperBack: "Seated Row" },
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps"] }),
   X({ id: "chestPress", name: "Chest press machine", kind: "strength", needs: [["machines"]],
-    listed: "Chest press; machine press",
+    sources: { shoulders: "Chest Press", triceps: "Machine Press" },
     moves: "shoulder horizontal adduction; elbow extension",
     direct: ["chest"], indirect: ["triceps", "shoulders"] }),
   X({ id: "pecFly", name: "Chest fly (machine or cable)", kind: "strength", needs: [["machines"]],
-    listed: "Flat dumbbell fly (machine or cable variant)",
     moves: "shoulder horizontal adduction with nearly straight elbows",
-    direct: ["chest"], indirect: ["shoulders"] }),
+    direct: ["chest"], indirect: [] }),
   X({ id: "shoulderPressMachine", name: "Shoulder press machine", kind: "strength", needs: [["machines"]],
-    listed: "Machine press (shoulder variant)",
+    sources: { triceps: "Shoulder Press" },
     moves: "shoulder flexion and abduction (pressing overhead); elbow extension",
     direct: ["shoulders"], indirect: ["triceps", "upperBack"] }),
   X({ id: "pushdown", name: "Cable triceps pushdown", kind: "strength", needs: [["machines", "bands"]],
-    listed: "Triceps push-down",
+    sources: { triceps: "Tricep Push-Down" },
     moves: "elbow extension",
     direct: ["triceps"], indirect: [] }),
   X({ id: "facePull", name: "Face pull (cable or band)", kind: "strength", needs: [["machines", "bands"]],
     moves: "shoulder horizontal abduction and external rotation; shoulder-blade retraction",
     direct: ["upperBack", "shoulders"], indirect: [] }),
   X({ id: "shrug", name: "Shrug", kind: "strength", needs: [["dumbbells", "barbell", "machines"]],
-    moves: "shoulder-blade elevation (shoulders up towards the ears)",
+    moves: "shoulder-blade elevation (shoulders up towards the ears), done by the trapezius; the rhomboids retract the shoulder blades instead",
     direct: ["upperBack"], indirect: [], steadies: ["forearms"] }),
   X({ id: "backExtension", name: "Back extension (45° bench or machine)", kind: "strength", needs: [["machines"]],
     moves: "spine extension; hip extension",
@@ -290,3 +305,9 @@ export const EXERCISES: Exercise[] = [
     moves: "fast whole-body calisthenics", direct: [], indirect: [],
     met: [{ code: "02020", met: 7.5, label: "Calisthenics (e.g., pushups, sit ups, pull-ups, jumping jacks, burpees, battling ropes), vigorous effort" }] }),
 ];
+
+/** True when the planner's classification of muscle `m` in `e` is its own assumption, not from Pelland et al. */
+export const isAssumed = (e: Exercise, m: Muscle) => !e.sources?.[m];
+
+/** Counted muscles (direct and indirect) whose classification is the planner's own assumption. */
+export const assumedMuscles = (e: Exercise) => [...e.direct, ...e.indirect].filter((m) => isAssumed(e, m));
