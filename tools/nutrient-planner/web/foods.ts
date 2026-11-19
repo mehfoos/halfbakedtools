@@ -10,7 +10,6 @@ export type PlannerFood = Food & {
   q?: Record<string, string> | null;   // what the table gave where a value is missing or isn't a plain value ("trace")
   noteRef?: string | null;   // the reference a food's note rests on
   fortified?: boolean | null; // a US product with nutrients added; not part of the "Everything" preset
-  wider?: boolean | null;     // part of the "Wider selection" preset (rules in pipeline/wider_selection.json)
   blend?: BlendFood | null;   // set while the beta blended source is in use and this food is blended
   usdaPer100g?: Record<string, number>;   // the USDA values, kept while the blend is applied
 };
@@ -114,11 +113,11 @@ export function blendValues(blend: BlendData, b: BlendFood, standard: string): B
   return blend.keys.map((key, i) => ({ key, value: b.v[std][i], range: b.r[std][i], definition: b.d[std][i], caveats: b.c[std][key] ?? [] }));
 }
 
-export type Base = "common" | "wider" | "all" | "none";
+export type Base = "common" | "all" | "none";
 
-/** What a preset switches on. "Everything" leaves out US-fortified products (they can be switched on one by one). */
+/** What a preset switches on. "All foods" leaves out US-fortified products (they can be switched on one by one). */
 export const inPreset = (f: PlannerFood, base: Base) =>
-  base === "all" ? !f.fortified : base === "none" ? false : base === "wider" ? f.common || !!f.wider : f.common;
+  base === "all" ? !f.fortified : base === "none" ? false : f.common;
 
 /**
  * A mild preference for familiar foods in suggestions: each less familiar food in a plan costs a little, so that
@@ -127,7 +126,7 @@ export const inPreset = (f: PlannerFood, base: Base) =>
  */
 export const FAMILIARITY_BUDGET = 0.01;
 export const familiarityPenalty = (f: PlannerFood, maxIngredients: number) =>
-  ((f.common ? 0 : f.wider ? 0.4 : 1) * FAMILIARITY_BUDGET) / Math.max(1, maxIngredients);
+  ((f.common ? 0 : 1) * FAMILIARITY_BUDGET) / Math.max(1, maxIngredients);
 
 /** A food is on if the preset says so, unless the person has toggled it. */
 export function isOn(f: PlannerFood, base: Base, toggled: Set<string>) {

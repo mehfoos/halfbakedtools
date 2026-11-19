@@ -75,10 +75,7 @@ export function createApp(root: HTMLElement, data: FoodsData, standards: Standar
     person: () => personFrom(app.s, standards),
     targets: (withOverrides) => targetsFor(app.person(), app.s, app.data.nutrients, withOverrides),
     dietFoods: () => app.data.foods.filter((f) => dietOk(f, app.s.diet)),
-    // A table with no curated common list: the common and wider presets start from its basic foods without the raw
-    // foods people don't normally eat raw (the "wider" flag, pipeline/tables/common.py).
-    base: () => ((app.s.base === "common" || app.s.base === "wider") && !app.data.foods.some((f) => f.common)
-      ? (app.data.foods.some((f) => f.wider) ? "wider" : "all") : app.s.base),
+    base: () => app.s.base,
     selectedFoods: () => app.dietFoods().filter((f) => isOn(f, app.base(), app.toggled)),
     items: (list) => list.map((b) => ({ food: app.foodById.get(b.id), grams: b.grams })).filter((x): x is Item => !!x.food),
 

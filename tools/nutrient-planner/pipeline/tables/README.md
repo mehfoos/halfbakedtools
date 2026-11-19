@@ -22,7 +22,11 @@ two output files and the report); `fetch.py` downloads an archived file from the
 its checksum against `sources/archive.json` (or, for a zip built from parts, `sources/release-manifest.json`).
 Each value keeps what its table says about it in `q`: a code such as trace, a value below a limit, or the table's
 own word for an estimate, recipe calculation or borrowed value (each file's `labels` is the legend).
-Tables with no curated common list start the Planner from their basic foods minus raw foods not normally eaten raw.
+**Common list (owner, 19 Nov 2026).** `common_list.py` marks `common: true` on every basic food that is the same food
+in at least two independent tables (not a raw food people don't normally eat raw, not US-fortified). Its notes give the
+matching rules, how independence is judged (a table's own borrowed-value labels, and nearly identical values), and its
+outputs: `data/foods/common_report.md` and `pipeline/blend/matches/common-list-matches.csv`. The 116 hand-picked USDA
+foods it replaced are kept in `handpicked_usda.json`. The Planner's presets are Common foods and All foods.
 
 ## Every table on an equal footing (owner, 18 Nov 2026)
 
@@ -40,7 +44,7 @@ picked). Adding a table: build its two files, add it to `tables.json`, run `buil
 
 Ids: the planner's curated common foods keep the planner's id (`milk`) in every table, so presets and links carry
 across tables. Any other food is `<table>:<code>` (`cofid:13-661`; a reused code gets `:2`), the permanent id the
-blend also uses. The common list per table comes from the same-food links; the values are always the table's own.
+blend also uses. The common list comes from `common_list.py` (above); the values are always the table's own.
 
 The tables are not downloaded by the scripts. Their formats and addresses change between releases, so when a new
 release appears (raise a GitHub issue), download it by hand, check its documentation for changed definitions, and
@@ -67,6 +71,7 @@ manifest kept with the repository's sources.
 
 ```
 python3 -I tools/nutrient-planner/pipeline/tables/cofid.py --table McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021..xlsx
-for t in bls ciqual frida fineli kfcdb japan; do python3 -I tools/nutrient-planner/pipeline/tables/$t.py; done
+for t in bls ciqual frida fineli kfcdb japan cnf afcd; do python3 -I tools/nutrient-planner/pipeline/tables/$t.py; done
+python3 -I tools/nutrient-planner/pipeline/tables/common_list.py   # after every converter: sets the common flags
 python3 -I tools/nutrient-planner/pipeline/tables/build_index.py
 ```

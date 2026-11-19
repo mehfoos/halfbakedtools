@@ -12,16 +12,15 @@ const { single = false } = Astro.props;
       <div class="preset-row sans">
         <span>Start from:</span>
         <button type="button" class="small" data-base="common">Common foods</button>
-        <button type="button" class="small" data-base="wider">Wider selection</button>
-        <button type="button" class="small" data-base="all">Everything</button>
+        <button type="button" class="small" data-base="all">All foods</button>
         <button type="button" class="small" data-base="none">Nothing</button>
       </div>
     )}
     <label class="sr-only" for="foodSearch">Search foods</label>
     <input type="search" id="foodSearch" placeholder="Search all foods, e.g. lentils, salmon, cheddar" autocomplete="off" />
     {single
-      ? <p class="small muted sans">Search, or open a category, and pick one food. Every food of every food table is listed, with its table in brackets, for example “(USDA)” or “(CoFID)”; some foods also have a blend of USDA and UK CoFID values, marked “blended, beta”. Mixed foods, such as dishes and sweets, are only listed when no diet is chosen, because their ingredients aren't known. Common foods are marked <span class="tag">common</span>.</p>
-      : <p class="small muted sans">Tick a category to switch all of it on or off, or open it to choose individual foods. Common foods are marked <span class="tag">common</span>.</p>}
+      ? <p class="small muted sans">Search, or open a category, and pick one food. Every food of every food table is listed, with its table in brackets, for example “(USDA)” or “(CoFID)”; some foods also have a blend of USDA and UK CoFID values, marked “blended, beta”. Mixed foods, such as dishes and sweets, are only listed when no diet is chosen, because their ingredients aren't known. Common foods (found as the same food in at least two independent tables) are listed first and marked <span class="tag">common</span>.</p>
+      : <p class="small muted sans">Tick a category to switch all of it on or off, or open it to choose individual foods. Common foods (found as the same food in at least two independent tables) are marked <span class="tag">common</span>.</p>}
     <div id="foodTree"></div>
   </div>
 </details>

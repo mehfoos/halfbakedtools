@@ -95,12 +95,13 @@ test("diet filter: no restriction, vegetarian, vegan", async () => {
   assert.equal(decode("d=veg").diet, "vegetarian");
 });
 
-test("the default food preset is the wider selection, and links made before that still mean 'common'", () => {
-  assert.equal(fresh().base, "wider");
-  assert.equal(decode(encode(fresh())).base, "wider");
-  assert.equal(decode("sex=f&age=35").base, "common");            // an older link: it had no f, and the default then was common
+test("the default food preset is Common foods; the page address records any other", () => {
+  assert.equal(fresh().base, "common");
+  assert.equal(decode(encode(fresh())).base, "common");
+  assert.equal(decode("sex=f&age=35").base, "common");
   assert.equal(decode("sex=f&age=35&f=all").base, "all");
-  assert.equal(decode(encode({ ...fresh(), base: "common" })).base, "common");
+  assert.equal(decode(encode({ ...fresh(), base: "all" })).base, "all");
+  assert.equal(decode("f=wider").base, "common");                   // the old preset is gone
 });
 
 test("EU targets: per-MJ, per-kg and energy-percentage values convert correctly", async () => {
@@ -275,22 +276,23 @@ test("a target set aside (vitamin D) is reported separately and not counted as m
   assert.equal(aside.byKey.get("vitaminD")!.status, "low");   // still shown with its real status in tables and charts
 });
 
-test("the Wider selection preset: common foods plus a few hundred ordinary ones, none US-fortified", () => {
-  const data = unpack(JSON.parse(readFileSync(new URL("../data/foods/foods.json", import.meta.url), "utf8")));
-  const on = data.foods.filter((f) => isOn(f, "wider", new Set()));
-  const extra = on.filter((f) => !f.common);
-  assert.ok(extra.length >= 300 && extra.length <= 500, `${extra.length} extra foods`);
-  assert.ok(data.foods.filter((f) => f.common).every((f) => isOn(f, "wider", new Set())));
-  assert.ok(extra.every((f) => f.wider && !f.fortified));
-  assert.ok(!extra.some((f) => /liver|dehydrated|powder|isolate|concentrate/i.test(f.srcName)));
-  assert.equal(data.foods.find((f) => /with franks/.test(f.srcName)), undefined);   // contains meat; was listed as vegan
+test("every table has a Common list: in 2+ independent tables, none US-fortified, a subset of its basic foods", () => {
+  const tables = JSON.parse(readFileSync(new URL("../data/foods/tables.json", import.meta.url), "utf8")).tables;
+  for (const t of tables) {
+    const data = unpack(JSON.parse(readFileSync(new URL(`../data/foods/${t.basic}`, import.meta.url), "utf8")));
+    const common = data.foods.filter((f) => isOn(f, "common", new Set()));
+    assert.ok(common.length >= 150 && common.length <= 1200, `${t.id}: ${common.length} common foods`);
+    assert.ok(common.every((f) => !f.fortified || f.common), t.id);
+    assert.ok(!common.some((f) => /\bliver\b/i.test(f.srcName)), t.id);
+    assert.ok(data.foods.filter((f) => isOn(f, "all", new Set())).length > common.length, t.id);
+  }
 });
 
 test("the preference for familiar foods can cost at most 1% of one target per plan", () => {
   const f = (o: Partial<PlannerFood>) => ({ common: false, ...o }) as PlannerFood;
   for (const n of [1, 6, 15]) {
     assert.equal(familiarityPenalty(f({ common: true }), n), 0);
-    assert.ok(familiarityPenalty(f({ wider: true }), n) < familiarityPenalty(f({}), n));
+    assert.ok(familiarityPenalty(f({ common: true }), n) < familiarityPenalty(f({}), n));
     assert.ok(n * familiarityPenalty(f({}), n) <= FAMILIARITY_BUDGET + 1e-12);
   }
 });

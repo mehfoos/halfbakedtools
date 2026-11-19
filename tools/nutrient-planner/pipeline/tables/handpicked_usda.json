@@ -1,0 +1,817 @@
+{
+ "_comment": "The 116 hand-picked USDA common foods as they were before the Common list was derived from the tables (19 Nov 2026). Kept for reference; not used by the tools.",
+ "foods": [
+  {
+   "id": "lentils",
+   "name": "Lentils (cooked)",
+   "usdaName": "Lentils, mature seeds, cooked, boiled, without salt",
+   "fdcId": "172421",
+   "cat": "pulses"
+  },
+  {
+   "id": "chickpeas",
+   "name": "Chickpeas (cooked)",
+   "usdaName": "Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt",
+   "fdcId": "173757",
+   "cat": "pulses"
+  },
+  {
+   "id": "kidney-beans",
+   "name": "Red kidney beans (cooked)",
+   "usdaName": "Beans, kidney, red, mature seeds, cooked, boiled, without salt",
+   "fdcId": "175194",
+   "cat": "pulses"
+  },
+  {
+   "id": "black-beans",
+   "name": "Black beans (cooked)",
+   "usdaName": "Beans, black, mature seeds, cooked, boiled, without salt",
+   "fdcId": "173735",
+   "cat": "pulses"
+  },
+  {
+   "id": "baked-beans",
+   "name": "Baked beans (tinned)",
+   "usdaName": "Beans, baked, canned, plain or vegetarian",
+   "fdcId": "175182",
+   "cat": "pulses"
+  },
+  {
+   "id": "split-peas",
+   "name": "Split peas (cooked)",
+   "usdaName": "Peas, split, mature seeds, cooked, boiled, without salt",
+   "fdcId": "172429",
+   "cat": "pulses"
+  },
+  {
+   "id": "edamame",
+   "name": "Edamame beans (frozen, cooked)",
+   "usdaName": "Edamame, frozen, prepared",
+   "fdcId": "168411",
+   "cat": "pulses"
+  },
+  {
+   "id": "tofu",
+   "name": "Firm tofu (calcium-set)",
+   "usdaName": "Tofu, raw, firm, prepared with calcium sulfate",
+   "fdcId": "172475",
+   "cat": "pulses"
+  },
+  {
+   "id": "soy-milk",
+   "name": "Soya drink (calcium-fortified)",
+   "usdaName": "Soymilk, original and vanilla, with added calcium, vitamins A and D",
+   "fdcId": "172456",
+   "cat": "pulses"
+  },
+  {
+   "id": "oats",
+   "name": "Porridge oats (dry)",
+   "usdaName": "Cereals, oats, regular and quick, not fortified, dry",
+   "fdcId": "173904",
+   "cat": "grains"
+  },
+  {
+   "id": "brown-rice",
+   "name": "Brown rice (cooked)",
+   "usdaName": "Rice, brown, long-grain, cooked (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "169704",
+   "cat": "grains"
+  },
+  {
+   "id": "white-rice",
+   "name": "White rice (cooked)",
+   "usdaName": "Rice, white, long-grain, regular, unenriched, cooked without salt",
+   "fdcId": "169757",
+   "cat": "grains"
+  },
+  {
+   "id": "wholemeal-bread",
+   "name": "Wholemeal bread",
+   "usdaName": "Bread, whole-wheat, commercially prepared",
+   "fdcId": "172688",
+   "cat": "grains"
+  },
+  {
+   "id": "wholewheat-pasta",
+   "name": "Wholewheat pasta (cooked)",
+   "usdaName": "Pasta, whole-wheat, cooked (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "168910",
+   "cat": "grains"
+  },
+  {
+   "id": "quinoa",
+   "name": "Quinoa (cooked)",
+   "usdaName": "Quinoa, cooked",
+   "fdcId": "168917",
+   "cat": "grains"
+  },
+  {
+   "id": "barley",
+   "name": "Pearl barley (cooked)",
+   "usdaName": "Barley, pearled, cooked",
+   "fdcId": "170285",
+   "cat": "grains"
+  },
+  {
+   "id": "potato",
+   "name": "Potato (baked, with skin)",
+   "usdaName": "Potatoes, baked, flesh and skin, without salt",
+   "fdcId": "170093",
+   "cat": "veg"
+  },
+  {
+   "id": "sweet-potato",
+   "name": "Sweet potato (baked)",
+   "usdaName": "Sweet potato, cooked, baked in skin, flesh, without salt",
+   "fdcId": "168483",
+   "cat": "veg"
+  },
+  {
+   "id": "egg",
+   "name": "Eggs (hard-boiled)",
+   "usdaName": "Egg, whole, cooked, hard-boiled",
+   "fdcId": "173424",
+   "cat": "dairy"
+  },
+  {
+   "id": "milk",
+   "name": "Semi-skimmed milk",
+   "usdaName": "Milk, reduced fat, fluid, 2% milkfat, without added vitamin A and vitamin D",
+   "fdcId": "172205",
+   "cat": "dairy"
+  },
+  {
+   "id": "yogurt",
+   "name": "Plain yoghurt (whole milk)",
+   "usdaName": "Yogurt, plain, whole milk",
+   "fdcId": "171284",
+   "cat": "dairy"
+  },
+  {
+   "id": "greek-yogurt",
+   "name": "Greek yoghurt (plain, fat-free)",
+   "usdaName": "Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "170894",
+   "cat": "dairy"
+  },
+  {
+   "id": "cheddar",
+   "name": "Cheddar cheese",
+   "usdaName": "Cheese, cheddar (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "173414",
+   "cat": "dairy"
+  },
+  {
+   "id": "cottage-cheese",
+   "name": "Cottage cheese (low fat)",
+   "usdaName": "Cheese, cottage, lowfat, 2% milkfat",
+   "fdcId": "172182",
+   "cat": "dairy"
+  },
+  {
+   "id": "spinach",
+   "name": "Spinach (frozen, cooked)",
+   "usdaName": "Spinach, frozen, chopped or leaf, cooked, boiled, drained, without salt",
+   "fdcId": "169288",
+   "cat": "veg"
+  },
+  {
+   "id": "kale",
+   "name": "Kale (cooked)",
+   "usdaName": "Kale, cooked, boiled, drained, without salt",
+   "fdcId": "169238",
+   "cat": "veg"
+  },
+  {
+   "id": "broccoli",
+   "name": "Broccoli (cooked)",
+   "usdaName": "Broccoli, cooked, boiled, drained, without salt",
+   "fdcId": "169967",
+   "cat": "veg"
+  },
+  {
+   "id": "carrot",
+   "name": "Carrots (raw)",
+   "usdaName": "Carrots, raw",
+   "fdcId": "170393",
+   "cat": "veg"
+  },
+  {
+   "id": "peas",
+   "name": "Garden peas (frozen, cooked)",
+   "usdaName": "Peas, green, frozen, cooked, boiled, drained, without salt",
+   "fdcId": "170017",
+   "cat": "veg"
+  },
+  {
+   "id": "tinned-tomatoes",
+   "name": "Chopped tomatoes (tinned)",
+   "usdaName": "Tomatoes, red, ripe, canned, packed in tomato juice",
+   "fdcId": "170051",
+   "cat": "veg"
+  },
+  {
+   "id": "onion",
+   "name": "Onions (cooked)",
+   "usdaName": "Onions, cooked, boiled, drained, without salt",
+   "fdcId": "170001",
+   "cat": "veg"
+  },
+  {
+   "id": "red-pepper",
+   "name": "Red pepper (raw)",
+   "usdaName": "Peppers, sweet, red, raw",
+   "fdcId": "170108",
+   "cat": "veg"
+  },
+  {
+   "id": "cabbage",
+   "name": "Cabbage (raw)",
+   "usdaName": "Cabbage, raw",
+   "fdcId": "169975",
+   "cat": "veg"
+  },
+  {
+   "id": "mushrooms",
+   "name": "Mushrooms (white, cooked)",
+   "usdaName": "Mushrooms, white, cooked, boiled, drained, without salt",
+   "fdcId": "169252",
+   "cat": "veg"
+  },
+  {
+   "id": "uv-mushrooms",
+   "name": "Mushrooms (UV-exposed, 'vitamin D' mushrooms)",
+   "usdaName": "Mushrooms, portabella, exposed to ultraviolet light, raw",
+   "fdcId": "170143",
+   "cat": "veg"
+  },
+  {
+   "id": "banana",
+   "name": "Bananas",
+   "usdaName": "Bananas, raw",
+   "fdcId": "173944",
+   "cat": "fruit"
+  },
+  {
+   "id": "apple",
+   "name": "Apples (with skin)",
+   "usdaName": "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "171688",
+   "cat": "fruit"
+  },
+  {
+   "id": "orange",
+   "name": "Oranges",
+   "usdaName": "Oranges, raw, all commercial varieties",
+   "fdcId": "169097",
+   "cat": "fruit"
+  },
+  {
+   "id": "blueberries",
+   "name": "Blueberries (frozen)",
+   "usdaName": "Blueberries, frozen, unsweetened (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "173950",
+   "cat": "fruit"
+  },
+  {
+   "id": "strawberries",
+   "name": "Strawberries",
+   "usdaName": "Strawberries, raw",
+   "fdcId": "167762",
+   "cat": "fruit"
+  },
+  {
+   "id": "raisins",
+   "name": "Raisins",
+   "usdaName": "Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "168165",
+   "cat": "fruit"
+  },
+  {
+   "id": "dried-apricots",
+   "name": "Dried apricots",
+   "usdaName": "Apricots, dried, sulfured, uncooked",
+   "fdcId": "173941",
+   "cat": "fruit"
+  },
+  {
+   "id": "walnuts",
+   "name": "Walnuts",
+   "usdaName": "Nuts, walnuts, english",
+   "fdcId": "170187",
+   "cat": "nuts"
+  },
+  {
+   "id": "almonds",
+   "name": "Almonds",
+   "usdaName": "Nuts, almonds",
+   "fdcId": "170567",
+   "cat": "nuts"
+  },
+  {
+   "id": "peanuts",
+   "name": "Peanuts (dry roasted, unsalted)",
+   "usdaName": "Peanuts, all types, dry-roasted, without salt",
+   "fdcId": "173806",
+   "cat": "nuts"
+  },
+  {
+   "id": "peanut-butter",
+   "name": "Peanut butter (smooth)",
+   "usdaName": "Peanut butter, smooth style, without salt",
+   "fdcId": "172470",
+   "cat": "nuts"
+  },
+  {
+   "id": "sunflower-seeds",
+   "name": "Sunflower seeds",
+   "usdaName": "Seeds, sunflower seed kernels, dried",
+   "fdcId": "170562",
+   "cat": "nuts"
+  },
+  {
+   "id": "pumpkin-seeds",
+   "name": "Pumpkin seeds",
+   "usdaName": "Seeds, pumpkin and squash seed kernels, dried",
+   "fdcId": "170556",
+   "cat": "nuts"
+  },
+  {
+   "id": "flaxseed",
+   "name": "Ground flaxseed (linseed)",
+   "usdaName": "Seeds, flaxseed",
+   "fdcId": "169414",
+   "cat": "nuts"
+  },
+  {
+   "id": "chia",
+   "name": "Chia seeds",
+   "usdaName": "Seeds, chia seeds, dried",
+   "fdcId": "170554",
+   "cat": "nuts"
+  },
+  {
+   "id": "tahini",
+   "name": "Tahini",
+   "usdaName": "Seeds, sesame butter, tahini, from roasted and toasted kernels (most common type)",
+   "fdcId": "170189",
+   "cat": "nuts"
+  },
+  {
+   "id": "rapeseed-oil",
+   "name": "Rapeseed oil",
+   "usdaName": "Oil, canola",
+   "fdcId": "172336",
+   "cat": "oils"
+  },
+  {
+   "id": "olive-oil",
+   "name": "Olive oil",
+   "usdaName": "Oil, olive, salad or cooking",
+   "fdcId": "171413",
+   "cat": "oils"
+  },
+  {
+   "id": "yeast-extract",
+   "name": "Yeast extract (e.g. Marmite)",
+   "usdaName": "Yeast extract spread",
+   "fdcId": "167717",
+   "cat": "other"
+  },
+  {
+   "id": "cauliflower",
+   "name": "Cauliflower (cooked)",
+   "usdaName": "Cauliflower, cooked, boiled, drained, without salt",
+   "fdcId": "170397",
+   "cat": "veg"
+  },
+  {
+   "id": "courgette",
+   "name": "Courgette (cooked)",
+   "usdaName": "Squash, summer, zucchini, includes skin, cooked, boiled, drained, without salt",
+   "fdcId": "169292",
+   "cat": "veg"
+  },
+  {
+   "id": "cucumber",
+   "name": "Cucumber",
+   "usdaName": "Cucumber, with peel, raw",
+   "fdcId": "168409",
+   "cat": "veg"
+  },
+  {
+   "id": "lettuce",
+   "name": "Lettuce (cos)",
+   "usdaName": "Lettuce, cos or romaine, raw",
+   "fdcId": "169247",
+   "cat": "veg"
+  },
+  {
+   "id": "green-beans",
+   "name": "Green beans (frozen, cooked)",
+   "usdaName": "Beans, snap, green, frozen, cooked, boiled, drained without salt",
+   "fdcId": "169963",
+   "cat": "veg"
+  },
+  {
+   "id": "sweetcorn",
+   "name": "Sweetcorn (frozen, cooked)",
+   "usdaName": "Corn, sweet, yellow, frozen, kernels cut off cob, boiled, drained, without salt",
+   "fdcId": "168399",
+   "cat": "veg"
+  },
+  {
+   "id": "brussels",
+   "name": "Brussels sprouts (cooked)",
+   "usdaName": "Brussels sprouts, cooked, boiled, drained, without salt",
+   "fdcId": "169971",
+   "cat": "veg"
+  },
+  {
+   "id": "leeks",
+   "name": "Leeks (cooked)",
+   "usdaName": "Leeks, (bulb and lower leaf-portion), cooked, boiled, drained, without salt",
+   "fdcId": "168426",
+   "cat": "veg"
+  },
+  {
+   "id": "garlic",
+   "name": "Garlic",
+   "usdaName": "Garlic, raw",
+   "fdcId": "169230",
+   "cat": "veg"
+  },
+  {
+   "id": "beetroot",
+   "name": "Beetroot (cooked)",
+   "usdaName": "Beets, cooked, boiled, drained",
+   "fdcId": "169146",
+   "cat": "veg"
+  },
+  {
+   "id": "parsnip",
+   "name": "Parsnips (cooked)",
+   "usdaName": "Parsnips, cooked, boiled, drained, without salt",
+   "fdcId": "170009",
+   "cat": "veg"
+  },
+  {
+   "id": "celery",
+   "name": "Celery",
+   "usdaName": "Celery, raw",
+   "fdcId": "169988",
+   "cat": "veg"
+  },
+  {
+   "id": "red-cabbage",
+   "name": "Red cabbage (raw)",
+   "usdaName": "Cabbage, red, raw",
+   "fdcId": "169977",
+   "cat": "veg"
+  },
+  {
+   "id": "watercress",
+   "name": "Watercress",
+   "usdaName": "Watercress, raw",
+   "fdcId": "170068",
+   "cat": "veg"
+  },
+  {
+   "id": "avocado",
+   "name": "Avocado",
+   "usdaName": "Avocados, raw, all commercial varieties",
+   "fdcId": "171705",
+   "cat": "fruit"
+  },
+  {
+   "id": "pear",
+   "name": "Pears",
+   "usdaName": "Pears, raw, bartlett (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "167776",
+   "cat": "fruit"
+  },
+  {
+   "id": "grapes",
+   "name": "Grapes",
+   "usdaName": "Grapes, red or green (European type, such as Thompson seedless), raw",
+   "fdcId": "174683",
+   "cat": "fruit"
+  },
+  {
+   "id": "kiwi",
+   "name": "Kiwi fruit",
+   "usdaName": "Kiwifruit, green, raw",
+   "fdcId": "168153",
+   "cat": "fruit"
+  },
+  {
+   "id": "mango",
+   "name": "Mango",
+   "usdaName": "Mangos, raw",
+   "fdcId": "169910",
+   "cat": "fruit"
+  },
+  {
+   "id": "plums",
+   "name": "Plums",
+   "usdaName": "Plums, raw",
+   "fdcId": "169949",
+   "cat": "fruit"
+  },
+  {
+   "id": "melon",
+   "name": "Melon (cantaloupe)",
+   "usdaName": "Melons, cantaloupe, raw",
+   "fdcId": "169092",
+   "cat": "fruit"
+  },
+  {
+   "id": "raspberries",
+   "name": "Raspberries",
+   "usdaName": "Raspberries, raw",
+   "fdcId": "167755",
+   "cat": "fruit"
+  },
+  {
+   "id": "haricot",
+   "name": "Haricot beans (cooked)",
+   "usdaName": "Beans, navy, mature seeds, cooked, boiled, without salt",
+   "fdcId": "173746",
+   "cat": "pulses"
+  },
+  {
+   "id": "butter-beans",
+   "name": "Butter beans (cooked)",
+   "usdaName": "Lima beans, large, mature seeds, cooked, boiled, without salt",
+   "fdcId": "174253",
+   "cat": "pulses"
+  },
+  {
+   "id": "pinto",
+   "name": "Pinto beans (cooked)",
+   "usdaName": "Beans, pinto, mature seeds, cooked, boiled, without salt",
+   "fdcId": "175200",
+   "cat": "pulses"
+  },
+  {
+   "id": "red-lentils",
+   "name": "Red lentils (dry)",
+   "usdaName": "Lentils, pink or red, raw",
+   "fdcId": "174284",
+   "cat": "pulses"
+  },
+  {
+   "id": "hummus",
+   "name": "Hummus",
+   "usdaName": "Hummus, commercial",
+   "fdcId": "174289",
+   "cat": "pulses"
+  },
+  {
+   "id": "tempeh",
+   "name": "Tempeh",
+   "usdaName": "Tempeh",
+   "fdcId": "174272",
+   "cat": "pulses"
+  },
+  {
+   "id": "mozzarella",
+   "name": "Mozzarella",
+   "usdaName": "Cheese, mozzarella, whole milk",
+   "fdcId": "170845",
+   "cat": "dairy"
+  },
+  {
+   "id": "feta",
+   "name": "Feta",
+   "usdaName": "Cheese, feta",
+   "fdcId": "173420",
+   "cat": "dairy"
+  },
+  {
+   "id": "parmesan",
+   "name": "Parmesan",
+   "usdaName": "Cheese, parmesan, hard",
+   "fdcId": "170848",
+   "cat": "dairy"
+  },
+  {
+   "id": "whole-milk",
+   "name": "Whole milk",
+   "usdaName": "Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",
+   "fdcId": "172217",
+   "cat": "dairy"
+  },
+  {
+   "id": "skimmed-milk",
+   "name": "Skimmed milk",
+   "usdaName": "Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",
+   "fdcId": "173432",
+   "cat": "dairy"
+  },
+  {
+   "id": "greek-yogurt-full",
+   "name": "Greek yoghurt (plain, full-fat)",
+   "usdaName": "Yogurt, Greek, plain, whole milk",
+   "fdcId": "171304",
+   "cat": "dairy"
+  },
+  {
+   "id": "butter",
+   "name": "Butter (unsalted)",
+   "usdaName": "Butter, without salt",
+   "fdcId": "173430",
+   "cat": "dairy"
+  },
+  {
+   "id": "couscous",
+   "name": "Couscous (cooked)",
+   "usdaName": "Couscous, cooked",
+   "fdcId": "169700",
+   "cat": "grains"
+  },
+  {
+   "id": "bulgur",
+   "name": "Bulgur wheat (cooked)",
+   "usdaName": "Bulgur, cooked",
+   "fdcId": "170287",
+   "cat": "grains"
+  },
+  {
+   "id": "wholemeal-flour",
+   "name": "Wholemeal flour",
+   "usdaName": "Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "168893",
+   "cat": "grains"
+  },
+  {
+   "id": "cashews",
+   "name": "Cashews",
+   "usdaName": "Nuts, cashew nuts, raw",
+   "fdcId": "170162",
+   "cat": "nuts"
+  },
+  {
+   "id": "hazelnuts",
+   "name": "Hazelnuts",
+   "usdaName": "Nuts, hazelnuts or filberts",
+   "fdcId": "170581",
+   "cat": "nuts"
+  },
+  {
+   "id": "brazil-nuts",
+   "name": "Brazil nuts",
+   "usdaName": "Nuts, brazilnuts, dried, unblanched",
+   "fdcId": "170569",
+   "cat": "nuts"
+  },
+  {
+   "id": "sesame",
+   "name": "Sesame seeds",
+   "usdaName": "Seeds, sesame seeds, whole, dried",
+   "fdcId": "170150",
+   "cat": "nuts"
+  },
+  {
+   "id": "hemp-seeds",
+   "name": "Hemp seeds (hulled)",
+   "usdaName": "Seeds, hemp seed, hulled",
+   "fdcId": "170148",
+   "cat": "nuts"
+  },
+  {
+   "id": "almond-drink",
+   "name": "Almond drink (unsweetened)",
+   "usdaName": "Beverages, almond milk, unsweetened, shelf stable",
+   "fdcId": "174832",
+   "cat": "drinks"
+  },
+  {
+   "id": "chicken-breast",
+   "name": "Chicken breast (roasted)",
+   "usdaName": "Chicken, broilers or fryers, breast, meat only, cooked, roasted",
+   "fdcId": "171477",
+   "cat": "meat"
+  },
+  {
+   "id": "chicken-thigh",
+   "name": "Chicken thigh (roasted)",
+   "usdaName": "Chicken, broilers or fryers, thigh, meat only, cooked, roasted",
+   "fdcId": "172388",
+   "cat": "meat"
+  },
+  {
+   "id": "turkey-mince",
+   "name": "Turkey mince (cooked)",
+   "usdaName": "Turkey, Ground, cooked",
+   "fdcId": "171506",
+   "cat": "meat"
+  },
+  {
+   "id": "beef-mince",
+   "name": "Beef mince, 15% fat (cooked)",
+   "usdaName": "Beef, ground, 85% lean meat / 15% fat, patty, cooked, broiled",
+   "fdcId": "174032",
+   "cat": "meat"
+  },
+  {
+   "id": "beef-steak",
+   "name": "Beef sirloin steak (lean, grilled)",
+   "usdaName": "Beef, top sirloin, steak, separable lean only, trimmed to 0\" fat, choice, cooked, broiled",
+   "fdcId": "168635",
+   "cat": "meat"
+  },
+  {
+   "id": "pork-loin",
+   "name": "Pork tenderloin (lean, roasted)",
+   "usdaName": "Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted",
+   "fdcId": "168250",
+   "cat": "meat"
+  },
+  {
+   "id": "lamb-leg",
+   "name": "Lamb leg (lean, roasted)",
+   "usdaName": "Lamb, New Zealand, imported, frozen, leg, whole (shank and sirloin), separable lean only, cooked, roasted",
+   "fdcId": "172516",
+   "cat": "meat"
+  },
+  {
+   "id": "ham",
+   "name": "Ham (sliced)",
+   "usdaName": "Ham, sliced, regular (approximately 11% fat)",
+   "fdcId": "173864",
+   "cat": "meat"
+  },
+  {
+   "id": "beef-liver",
+   "name": "Beef liver (cooked)",
+   "usdaName": "Beef, variety meats and by-products, liver, cooked, braised",
+   "fdcId": "168626",
+   "cat": "meat"
+  },
+  {
+   "id": "salmon",
+   "name": "Salmon (farmed, cooked)",
+   "usdaName": "Fish, salmon, Atlantic, farmed, cooked, dry heat",
+   "fdcId": "175168",
+   "cat": "fish"
+  },
+  {
+   "id": "tinned-salmon",
+   "name": "Tinned pink salmon (with bones)",
+   "usdaName": "Fish, salmon, pink, canned, total can contents",
+   "fdcId": "173690",
+   "cat": "fish"
+  },
+  {
+   "id": "tuna",
+   "name": "Tinned tuna in water",
+   "usdaName": "Fish, tuna, light, canned in water, drained solids (Includes foods for USDA's Food Distribution Program)",
+   "fdcId": "173709",
+   "cat": "fish"
+  },
+  {
+   "id": "sardines",
+   "name": "Sardines in oil (tinned)",
+   "usdaName": "Fish, sardine, Atlantic, canned in oil, drained solids with bone",
+   "fdcId": "175139",
+   "cat": "fish"
+  },
+  {
+   "id": "mackerel",
+   "name": "Mackerel (cooked)",
+   "usdaName": "Fish, mackerel, Atlantic, cooked, dry heat",
+   "fdcId": "175120",
+   "cat": "fish"
+  },
+  {
+   "id": "cod",
+   "name": "Cod (cooked)",
+   "usdaName": "Fish, cod, Atlantic, cooked, dry heat",
+   "fdcId": "171956",
+   "cat": "fish"
+  },
+  {
+   "id": "haddock",
+   "name": "Haddock (cooked)",
+   "usdaName": "Fish, haddock, cooked, dry heat",
+   "fdcId": "174198",
+   "cat": "fish"
+  },
+  {
+   "id": "prawns",
+   "name": "Prawns (cooked)",
+   "usdaName": "Crustaceans, shrimp, mixed species, cooked, moist heat (may contain additives to retain moisture)",
+   "fdcId": "171971",
+   "cat": "fish"
+  },
+  {
+   "id": "mussels",
+   "name": "Mussels (cooked)",
+   "usdaName": "Mollusks, mussel, blue, cooked, moist heat",
+   "fdcId": "174217",
+   "cat": "fish"
+  }
+ ]
+}

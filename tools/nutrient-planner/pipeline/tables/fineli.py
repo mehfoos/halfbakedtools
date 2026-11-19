@@ -104,7 +104,7 @@ def main() -> int:
             bcat = common.basic_category(cat, rule_name)
         fid = common.unique_id(TABLE, code, seen)
         e = common.entry(TABLE, fid, code, name, bcat or cat, vals, f["labels"], basic=bool(bcat),
-                         extra={"nameFi": sentence(fi.get(code, ""))}, rule_name=rule_name)
+                         extra={"nameFi": sentence(fi.get(code, "")), "process": row["PROCESS"]})
         (out_basic if bcat else out_more).append(e)
     common.write(TABLE, TITLE, {"data": ZIP}, {k: m[2] for k, m in MAP.items() if m[2]}, out_basic, out_more,
                  ["Fineli's open package has 74 components: no amino acids other than tryptophan, no vitamin D2/D3 split, "

@@ -30,13 +30,17 @@ const standards = [uk, us, eu];
         <summary>Which foods are included</summary>
         <div class="details-body">
         <p>
-          Nutrient values come from the US Department of Agriculture's FoodData Central (public domain), SR Legacy
-          dataset <Fragment set:html={cite("usda-sr")} />. About 115 cheap, common, UK-available foods are hand-matched to USDA records, given
-          friendly names and practical units, and switched on by default. Around 2,100 more vegetables, fruits, pulses,
-          grains, breads, nuts, seeds, meat, fish, dairy foods, eggs, oils, herbs and spices are added automatically by
-          rules that keep cooked lean cuts of meat and leave out baby foods, branded and heavily processed products;
-          these are off by default and can be switched on in the planner's food list, one by one, all at once, or as a "wider selection" of about 400 ordinary foods (a list chosen by judgement, not taken from a source; it is in the repository). US products with added nutrients (enriched or fortified) are marked "US-fortified" and aren't included when you switch on everything, because the UK versions may differ. Choosing vegetarian hides meat and
-          fish; choosing vegan also hides dairy, eggs and honey. The food list, the rules and a match report live in the repository's
+          Each food table's foods are listed as published. The Planner uses each table's basic foods: no dishes, sweets,
+          fried or coated foods, offal or raw meat. Its default list, <strong>Common foods</strong>, holds the basic foods
+          found as the same food in at least two independent tables, leaving out raw foods people don't normally eat
+          raw. Two records count as the same food when their names describe the same food and preparation and their
+          protein, fat and energy agree within set tolerances. Records whose values a table says come from another
+          table, or that are nearly identical to another table's values, don't count as independent: for example, most
+          Canadian (CNF) values are taken from the USDA table. The matching is automated, without manual human
+          verification, and is a beta; it chooses foods only, and the values are always the table's own. <strong>All foods</strong>
+          switches on every basic food. US products with added nutrients (enriched or fortified) are marked
+          "US-fortified" and aren't included in All foods, because the UK versions may differ. Choosing vegetarian hides meat and
+          fish; choosing vegan also hides dairy, eggs and honey. The rules, the list of matches and a report live in the repository's
           <code>tools/nutrient-planner/</code> folder so anyone can check them.
         </p>
         </div>

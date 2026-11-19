@@ -77,9 +77,8 @@ def unique_id(table: str, code: str, seen: set) -> str:
     return fid
 
 
-# Raw foods people don't normally eat raw stay out of a table's default list (owner, 18 Nov 2026; the USDA rules are
-# in wider_selection.json "rawRules"). For tables without a curated common list, the default is every basic food
-# except these ("wider" flag); they stay selectable by hand.
+# Raw foods people don't normally eat raw stay out of the Common list (owner, 18 Nov 2026; the USDA rules are in
+# pipeline/raw_rules.json). common_list.py applies this rule; the foods stay in "All foods".
 RAW = re.compile(r"\b(raw|uncooked)\b", re.I)
 RAW_OK_VEG = re.compile(r"\b(cabbage|carrots?|celery|chicory|chives?|cucumbers?|fennel|garlic|lettuce|lamb's lettuce|"
                         r"endive|mangetout|parsley|peppers?|bell pepper|radish(es)?|rocket|spinach|spring onions?|"
@@ -102,7 +101,7 @@ def raw_unusual(cat: str, name: str) -> bool:
 
 def entry(table: str, fid: str, code: str, name: str, cat: str, vals: dict, labels: dict, *, basic: bool,
           src_name: str | None = None, extra: dict | None = None, diet: str | None = None,
-          group: str | None = None, rule_name: str | None = None) -> dict:
+          group: str | None = None) -> dict:
     """One food. Basic foods get the shared diet, amount and cap rules; other foods are Food Finder only.
     The list group is the name up to its first comma; a table whose names have no commas can pass its own."""
     g, variant = auto_foods.group_and_variant(name)
@@ -113,8 +112,7 @@ def entry(table: str, fid: str, code: str, name: str, cat: str, vals: dict, labe
     if basic:
         step, max_g = auto_foods.amounts_for(cat, name)
         f |= {"diet": diet or auto_foods.diet_for(cat, name), "unit": "g", "unitGrams": 1, "step": step, "maxGrams": max_g,
-              "notes": None, "noteRef": None, "capGroup": auto_foods.cap_group(cat, name), "common": False,
-              "wider": None if raw_unusual(cat, rule_name or name) else True}
+              "notes": None, "noteRef": None, "capGroup": auto_foods.cap_group(cat, name), "common": False}
     else:
         f |= {"diet": "meat" if cat in auto_foods.MEAT_CATS else "unknown", "unit": "g", "unitGrams": 1, "step": 10,
               "maxGrams": 1000, "notes": None, "noteRef": None, "capGroup": None, "common": False, "basic": False}

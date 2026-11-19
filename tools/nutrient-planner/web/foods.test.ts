@@ -41,17 +41,16 @@ test("blend overlay: a missing value stays missing, and every value has its sour
   }
 });
 
-// The default lists (common and wider selection) hold no raw food that people don't normally eat raw. Rules and
-// reasons: pipeline/wider_selection.json ("rawRules"). Everything stays available in the "Everything" preset.
+// The Common list holds no raw food that people don't normally eat raw. USDA rules and reasons:
+// pipeline/raw_rules.json. Everything stays available in the "All foods" preset.
 test("default lists leave out raw foods that aren't normally eaten raw", () => {
   const data = load();
-  const rules = JSON.parse(readFileSync(new URL("../pipeline/wider_selection.json", import.meta.url), "utf8")).rawRules;
+  const rules = JSON.parse(readFileSync(new URL("../pipeline/raw_rules.json", import.meta.url), "utf8"));
   const rawOk = new Set<string>(rules.veg.rawOk.map((g: string) => g.toLowerCase()));
   const isRaw = (n: string) => /\b(raw|uncooked)\b/i.test(n);
-  // A special-purpose raw food kept on purpose in the common list: no cooked USDA record exists.
-  const exceptions = new Set(["Mushrooms (UV-exposed, 'vitamin D' mushrooms)"]);
+  const exceptions = new Set<string>();
   const bad: string[] = [];
-  for (const f of data.foods.filter((x) => x.common || x.wider)) {
+  for (const f of data.foods.filter((x) => x.common)) {
     if (!isRaw(f.srcName) || exceptions.has(f.name)) continue;
     const g = f.group.toLowerCase();
     if (f.diet === "meat") bad.push(`${f.name}: raw meat or fish`);
@@ -61,7 +60,7 @@ test("default lists leave out raw foods that aren't normally eaten raw", () => {
     else if (f.cat === "nuts" && /^chestnuts/.test(g)) bad.push(`${f.name}: raw chestnuts`);
   }
   assert.deepEqual(bad, []);
-  assert.ok(data.foods.some((f) => !f.common && !f.wider && f.cat === "dairy" && /raw/.test(f.srcName)), "raw eggs remain in the full list");
+  assert.ok(data.foods.some((f) => !f.common && f.cat === "dairy" && /raw/.test(f.srcName)), "raw eggs remain in the full list");
 });
 
 // Every table is offered on an equal footing (pipeline/tables/tables.json): two files per table, the Planner's basic

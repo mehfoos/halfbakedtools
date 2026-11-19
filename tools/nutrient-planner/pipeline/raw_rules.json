@@ -1,0 +1,48 @@
+{
+  "_comment": "Raw foods people don't normally eat raw: left out of the Common list (they stay in 'All foods'). USDA foods use these rules, reviewed by the site owner (18 Nov 2026, first kept in the old wider_selection.json); the other tables use the shared rule in pipeline/tables/common.py (raw_unusual). Raw foods that people don't normally eat raw are left out of the 'Wider selection' preset (they stay in 'Everything' and can be switched on by hand), so the default list is mostly cooked unless a food is usually eaten raw. A judgement list drawn up for the site owner to review. For vegetables only the groups in 'rawOk' keep their raw foods (salad vegetables, raw snacks, herbs). For the other categories, a group whose name starts with a 'rawNot' word loses its raw foods. A food counts as raw if its USDA description says raw or uncooked.",
+  "veg": {
+    "rawOk": [
+      "Cabbage, raw",
+      "Cabbage, red",
+      "Carrots, baby",
+      "Carrots, raw",
+      "Celery",
+      "Chicory",
+      "Chives",
+      "Cucumber",
+      "Fennel",
+      "Garlic",
+      "Lettuce, butterhead",
+      "Lettuce, cos",
+      "Lettuce, green leaf",
+      "Lettuce, iceberg",
+      "Lettuce, red leaf",
+      "Mangetout",
+      "Parsley",
+      "Peppers, green",
+      "Peppers, red",
+      "Peppers, yellow",
+      "Radishes",
+      "Rocket",
+      "Spinach, raw",
+      "Spring onions",
+      "Tomatoes, red",
+      "Watercress"
+    ]
+  },
+  "fruit": {
+    "rawNot": [
+      "Rhubarb"
+    ]
+  },
+  "nuts": {
+    "rawNot": [
+      "Chestnuts"
+    ]
+  },
+  "dairy": {
+    "rawNot": [
+      "Egg"
+    ]
+  }
+}

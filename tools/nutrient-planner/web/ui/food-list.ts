@@ -24,7 +24,7 @@ export type SingleMode = {
 /** How each source is named after a food in Food Finder's list: the table's short tag, or "blended, beta". */
 export const sourceLabel = (app: App, src: Source) => (src === "blend" ? "blended, beta" : app.tables.find((t) => t.id === src)?.tag ?? src);
 
-const PRESET_TEXT: Record<Base, string> = { common: "common foods", wider: "the wider selection", all: "everything except US-fortified products", none: "nothing" };
+const PRESET_TEXT: Record<Base, string> = { common: "common foods", all: "all foods except US-fortified products", none: "nothing" };
 const commonFirst = (a: { common?: boolean }, b: { common?: boolean }) => Number(b.common) - Number(a.common);
 
 /**

@@ -17,16 +17,17 @@
 :is(#planner, #finder) .preset-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
 :is(#planner, #finder) #foodSearch { margin-bottom: 6px; }
 :is(#planner, #finder) .tree summary { font-weight: 700; }
-:is(#planner, #finder) .tree summary input, :is(#planner, #finder) .tree .item input { margin: 0 4px 0 0; transform: translateY(1px); }
+:is(#planner, #finder) .tree summary input, :is(#planner, #finder) :is(.tree, .flat) .item input { margin: 0 4px 0 0; transform: translateY(1px); }
 :is(#planner, #finder) .tree .count { font-family: var(--sans); font-weight: 400; font-size: 0.82rem; color: var(--muted); }
 :is(#planner, #finder) .tree details[open] > summary .count { color: #dcdcf5; }
-:is(#planner, #finder) .tree .items { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 14px; padding: 6px 10px 8px 26px; font-family: var(--sans); font-size: 0.92rem; }
-:is(#planner, #finder) .tree .item { display: flex; gap: 4px; align-items: baseline; flex-wrap: wrap; }
+:is(#planner, #finder) .tree .items { display: grid; grid-template-columns: 1fr; gap: 3px; padding: 6px 10px 8px 26px; font-family: var(--sans); font-size: 0.92rem; }
+:is(#planner, #finder) :is(.tree, .flat) .item { display: flex; gap: 4px; align-items: baseline; }
+:is(#planner, #finder) :is(.tree, .flat) .item > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 :is(#planner, #finder) .tree .food-sources { grid-column: 1 / -1; margin: 4px 0 8px; }
 :is(#planner, #finder) .tree details details { margin: 2px 0 2px 16px; }
 :is(#planner, #finder) .tree details details > summary { font-family: var(--sans); font-size: 0.93rem; padding: 3px 8px 3px 28px; }
 :is(#planner, #finder) .tree details details > summary::before { top: 3px; }
-:is(#planner, #finder) .flat { list-style: none; padding: 0; margin: 6px 0; font-family: var(--sans); font-size: 0.92rem; columns: 2 300px; }
+:is(#planner, #finder) .flat { list-style: none; padding: 0; margin: 6px 0; font-family: var(--sans); font-size: 0.92rem; }
 :is(#planner, #finder) .flat li { break-inside: avoid; margin-bottom: 3px; }
 :is(#planner, #finder) .flat .path { color: var(--muted); font-size: 0.8rem; }
 :is(#planner, #finder) .mode { margin-bottom: 14px; }
