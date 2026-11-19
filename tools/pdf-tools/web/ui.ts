@@ -20,6 +20,7 @@ import { SIZE_MIN, SIZE_MAX } from "./marks.ts";
 import { encodeBmp } from "./bmp.ts";
 import { pagesToText } from "./text.ts";
 import { jpegOrientation, orientationToRotation } from "./exif.ts";
+import { NO_CROP, CROP_UNITS, MARGIN_LIMIT, toPoints, fromPoints, isCropped, appliesTo, clampMargins, type CropUnit, type Margins } from "./crop.ts";
 import { taskBySlug, showsPages, type Part } from "./tasks.ts";
 import { openPdf, closePdf, drawPage, pageText, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle } from "./render.ts";
 
@@ -333,6 +334,11 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     put("nSize", String(nb.size)); put("nMargin", String(nb.margin)); put("nFont", nb.font); put("nColor", nb.color);
     const tick = (id: string, on: boolean) => { const e = root.querySelector<HTMLInputElement>(`#${id}`); if (e) e.checked = on; };
     tick("nOn", nb.on); tick("nBold", nb.bold);
+    if (can("crop")) {
+      const c = o.crop, dp = c.unit === "in" ? 3 : c.unit === "mm" ? 1 : 0, show = (x: number) => String(Math.round(fromPoints(x, c.unit) * 10 ** dp) / 10 ** dp);
+      put("crUnit", c.unit); put("crTop", show(c.top)); put("crBottom", show(c.bottom)); put("crLeft", show(c.left)); put("crRight", show(c.right));
+      if (c.pages.trim()) put("crWhich", "some"); put("crPages", c.pages);
+    }
     const wm = o.watermark;
     put("wText", wm.text); put("wLayout", wm.layout); put("wAngle", String(wm.angle)); put("wOpacity", String(Math.round(wm.opacity * 100)));
     put("wSize", String(wm.size)); put("wFont", wm.font); put("wColor", wm.color); tick("wOn", wm.on); tick("wBold", wm.bold);
@@ -342,6 +348,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     showOptions(); refreshButtons();
     if (editor?.isOpen()) editor.refresh();
     schedulePreview();
+    if (can("crop")) { if (!firstFile()) { $("cropper").hidden = true; cropKey = ""; cropShown = false; } else if (!cropShown || cropKey !== firstFile()!.sha256) { cropKey = firstFile()!.sha256; cropAt = 0; drawCropper(); } else cropOverlay(); }
   }
   const fmtSize = (n: number) => n < 1e6 ? `${Math.max(1, Math.round(n / 1e3))} kB` : `${(n / 1e6).toFixed(1)} MB`;
 
@@ -470,6 +477,14 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         quality: clamp(Number(v("cQuality")) / 100, 0.1, 1, o.compress.quality), grey: !!root.querySelector<HTMLInputElement>("#cGrey")?.checked,
       };
     }
+    let crop = o.crop;
+    if (root.querySelector("#crTop")) {
+      const unit = (CROP_UNITS.find((u) => u === v("crUnit")) ?? o.crop.unit) as CropUnit;
+      const pt = (id: string, d: number) => { const x = Number(v(id)); return v(id) !== "" && Number.isFinite(x) ? Math.min(MARGIN_LIMIT, Math.max(0, toPoints(x, unit))) : d; };
+      // Margins typed in a unit are kept in points; if the unit was only just changed, keep the same margins and show them in the new unit.
+      const pages = v("crWhich") === "some" ? v("crPages") : "";
+      crop = unit !== o.crop.unit ? { ...o.crop, unit, pages } : { top: pt("crTop", o.crop.top), bottom: pt("crBottom", o.crop.bottom), left: pt("crLeft", o.crop.left), right: pt("crRight", o.crop.right), unit, pages };
+    }
     let numbers = o.numbers;
     if (root.querySelector("#nPos")) {
       const ticked = (id: string) => !!root.querySelector<HTMLInputElement>(`#${id}`)?.checked;
@@ -492,7 +507,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       };
     }
     session = { ...session, output: {
-      compress, numbers, watermark,
+      compress, numbers, watermark, crop,
       name: safeName(v("outName")), format: v("format") as OutputFormat, split: v("split") as SplitMode,
       every: Math.max(1, Math.round(Number(v("every")) || 1)), ranges: v("ranges"),
       dpi: clamp(Number(v("dpi")), DPI_MIN, DPI_MAX, o.dpi), quality: clamp(Number(v("quality")) / 100, 0.1, 1, o.quality),
@@ -507,6 +522,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const c = session.output.compress;
     hide("optWatermark", f !== "pdf"); hide("wFields", !session.output.watermark.on); hide("wOnRow", task.slug === "watermark");
     const wNote = root.querySelector<HTMLElement>("#wOpacityNote"); if (wNote) wNote.textContent = `${Math.round(session.output.watermark.opacity * 100)}%`;
+    const cw = root.querySelector<HTMLSelectElement>("#crWhich"); if (cw) hide("crPagesRow", cw.value !== "some");
     hide("optNumbers", f !== "pdf"); hide("nFields", !session.output.numbers.on); hide("nOnRow", task.slug === "page-numbers");
     hide("optCompress", f !== "pdf"); hide("cCustom", level !== "custom");
     hide("cDpiRow", c.mode === "tidy"); hide("cQualityRow", c.mode === "tidy"); hide("cGreyRow", c.mode === "tidy"); hide("cFlattenWarn", c.mode !== "flatten");
@@ -518,6 +534,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   }
   $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); if (task.perFile) clearResult(); schedulePreview(); });
   $("savePanel").addEventListener("input", (e) => { if ((e.target as HTMLElement).closest("#optNumbers, #optWatermark")) { readOptions(); showOptions(); schedulePreview(); } });
+  $("savePanel").addEventListener("input", (e) => { if (e.target instanceof HTMLInputElement && e.target.closest("#optCrop")) { readOptions(); showOptions(); cropOverlay(); clearResult(); } });
+  // (the general change handler above has already read the options, including a new unit)
+  $("savePanel").addEventListener("change", (e) => { if ((e.target as HTMLElement).closest("#optCrop")) { if ((e.target as HTMLElement).id === "crUnit") render(); else showOptions(); cropOverlay(); } });
 
   // ---------- preview of a page with everything that is added when saving (page numbers) ----------
   let previewTimer = 0, previewRun = 0;
@@ -542,6 +561,64 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       box.hidden = false;
     } catch (e) { console.error(e); if (mine === previewRun) { box.hidden = true; say(e instanceof Error ? e.message : String(e), "bad"); } }
   }
+
+  // ---------- crop: the page with a box to drag ----------
+  let cropKey = "", cropAt = 0, cropSize = { w: 0, h: 0 }, cropRun = 0, cropShown = false;
+  const firstFile = () => session.sources.find((s) => loaded.has(s.sha256) && s.kind === "pdf" && session.pages.some((p) => p.src === s.id));
+  async function drawCropper() {
+    if (!can("crop")) return;
+    const box = $("cropper"), first = firstFile(), mine = ++cropRun;
+    if (!first) { box.hidden = true; return; }
+    const item = loaded.get(first.sha256)!, mine_pages = session.pages.filter((p) => p.src === first.id);
+    cropAt = Math.max(0, Math.min(mine_pages.length - 1, cropAt));
+    try {
+      const page = mine_pages[cropAt].page, size = await pageSize(item.handle, page, 72);
+      const z = (500 * Math.min(2, window.devicePixelRatio || 1)) / size.w;
+      const canvas = await drawPage(item.handle, page, 0, { pxPerPoint: z, pxPerImagePx: z });
+      if (mine !== cropRun) return;
+      cropSize = size;
+      $("crStage").querySelector("canvas")!.replaceWith(canvas);
+      $("crWhere").textContent = `Page ${cropAt + 1} of ${mine_pages.length}${session.sources.length > 1 ? ` in ${first.name}` : ""}`;
+      $<HTMLButtonElement>("crPrev").disabled = cropAt === 0; $<HTMLButtonElement>("crNext").disabled = cropAt >= mine_pages.length - 1;
+      box.hidden = false; cropShown = true; cropOverlay();
+    } catch (e) { console.error(e); if (mine === cropRun) { box.hidden = true; say(e instanceof Error ? e.message : String(e), "bad"); } }
+  }
+  /** Places the box (and the note under it) from the margins in the options. */
+  function cropOverlay() {
+    if (!can("crop") || !cropShown || !cropSize.w) return;
+    const c = session.output.crop, m = clampMargins(cropSize, c), bx = $("crBox"), total = session.pages.filter((p) => p.src === firstFile()?.id).length;
+    let applies = true, why = "";
+    try { applies = appliesTo(c, cropAt, total); } catch (e) { applies = true; why = e instanceof Error ? e.message : ""; }
+    const pct = (x: number, whole: number) => `${(x / whole) * 100}%`;
+    bx.style.left = pct(m.left, cropSize.w); bx.style.top = pct(m.top, cropSize.h);
+    bx.style.right = pct(m.right, cropSize.w); bx.style.bottom = pct(m.bottom, cropSize.h);
+    bx.hidden = !applies;
+    $("crNote").textContent = why ? why : !applies ? "This page is not one of the pages you chose, so it is not cropped."
+      : isCropped(c) ? "The darker area is hidden when the PDF is saved. Drag the box's edges or corners, or move the whole box." : "Drag the box's edges or corners to choose what to keep, or type the margins.";
+  }
+  let dragFrom: { h: string; x: number; y: number; m: Margins } | null = null;
+  $("crStage").addEventListener("pointerdown", (e) => {
+    const t = e.target as HTMLElement; if (busy || !t.closest("#crBox")) return;
+    e.preventDefault(); (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    dragFrom = { h: t.dataset.h ?? "move", x: e.clientX, y: e.clientY, m: clampMargins(cropSize, session.output.crop) };
+  });
+  $("crStage").addEventListener("pointermove", (e) => {
+    if (!dragFrom) return;
+    const k = $("crStage").getBoundingClientRect().width / cropSize.w, dx = (e.clientX - dragFrom.x) / k, dy = (e.clientY - dragFrom.y) / k, f = dragFrom, h = f.h;
+    let { top, right, bottom, left } = f.m;
+    if (h === "move") { const mx = Math.min(Math.max(dx, -left), right), my = Math.min(Math.max(dy, -top), bottom); left += mx; right -= mx; top += my; bottom -= my; }
+    else { if (h.includes("w")) left += dx; if (h.includes("e")) right -= dx; if (h.includes("n")) top += dy; if (h.includes("s")) bottom -= dy; }
+    const m = clampMargins(cropSize, { top, right, bottom, left });
+    session = { ...session, output: { ...session.output, crop: { ...session.output.crop, ...m } } };
+    const c = session.output.crop, dp = c.unit === "in" ? 3 : c.unit === "mm" ? 1 : 0, show = (x: number) => String(Math.round(fromPoints(x, c.unit) * 10 ** dp) / 10 ** dp);
+    $<HTMLInputElement>("crTop").value = show(c.top); $<HTMLInputElement>("crBottom").value = show(c.bottom); $<HTMLInputElement>("crLeft").value = show(c.left); $<HTMLInputElement>("crRight").value = show(c.right);
+    cropOverlay();
+  });
+  const endDrag = () => { if (dragFrom) { dragFrom = null; clearResult(); } };
+  $("crStage").addEventListener("pointerup", endDrag); $("crStage").addEventListener("pointercancel", endDrag);
+  root.querySelector("#crPrev")?.addEventListener("click", () => { cropAt--; drawCropper(); });
+  root.querySelector("#crNext")?.addEventListener("click", () => { cropAt++; drawCropper(); });
+  root.querySelector("#crReset")?.addEventListener("click", () => { session = { ...session, output: { ...session.output, crop: { ...NO_CROP, unit: session.output.crop.unit } } }; clearResult(); render(); });
 
   // ---------- this page's task: show only its controls ----------
   root.querySelectorAll<HTMLElement>("[data-part]").forEach((e) => { if (!can(e.dataset.part as Part)) e.remove(); });
@@ -609,6 +686,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     readOptions(); clearResult(); if (busy || !ask.hidden) return;
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);
+    if (can("crop") && !isCropped(o.crop)) return say("Set at least one margin first: drag the box on the page, or type how much to cut off.", "bad");
     let password = "";
     if (can("protect")) {
       password = $<HTMLInputElement>("pw1").value;
@@ -626,7 +704,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (o.format === "pdf") {
         const data = new Map(session.sources.filter((s) => loaded.has(s.sha256)).map((s) => [s.id, loaded.get(s.sha256)!.data]));
         if (o.watermark.on && !o.watermark.text.trim()) throw new Error("Type the words for the watermark first.");
-        const build = makeBuilder(data, { imageDpi: o.imageDpi, numbers: o.numbers, watermark: o.watermark });
+        const build = makeBuilder(data, { imageDpi: o.imageDpi, crop: o.crop, numbers: o.numbers, watermark: o.watermark });
         const c = o.compress;
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };
@@ -766,6 +844,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (!can("split")) next.output.split = "none";
       if (!can("watermark")) next.output.watermark = { ...NO_WATERMARK };
       else if (task.slug === "watermark") next.output.watermark.on = true;
+      if (!can("crop")) next.output.crop = { ...NO_CROP };
       if (!can("numbers")) next.output.numbers = { ...NO_NUMBERS };
       else if (task.slug === "page-numbers") next.output.numbers.on = true;
       if (!can("compress")) next.output.compress = { ...NO_COMPRESSION };

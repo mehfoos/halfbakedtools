@@ -1,6 +1,7 @@
 // Writes the output PDF(s) from the session's page list. No DOM, so it runs in tests as well as in the browser.
 // Pages are copied from the source files as they are (text stays text, images are not re-compressed);
 // only the page order, rotation and size change.
+import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
 import { placeText, placeImage, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
 import { numberMark, watermarkMarks, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
@@ -11,7 +12,7 @@ export type SourceData =
   /** `turn`: degrees clockwise the stored pixels must be turned to look right (a photo's orientation note). */
   | { kind: "image"; bytes: Uint8Array; type: "png" | "jpeg"; turn?: Rotation };
 
-export type BuildOptions = { imageDpi: number; numbers?: NumberOptions; watermark?: WatermarkOptions };
+export type BuildOptions = { imageDpi: number; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions };
 /** For building one page out of a longer document (a preview): its position, and the document's length. */
 export type Place = { index: number; total: number };
 
@@ -35,6 +36,21 @@ export function fontSet(doc: PDFDocument) {
 export const cantDraw = (text: string, font: PDFFont) => unsupported(text, new Set(font.getCharacterSet()));
 
 /** Opens each source once, so several output files (a split) can share it. */
+/** Scales a page and everything on it. The library's own `scale` resets the crop box (and the other boxes) to the full
+ *  page size, which shows the wrong part of a page that was already cropped, so every box is scaled here instead. */
+export function scalePage(page: PDFPage, s: number): void {
+  const names = ["Media", "Crop", "Bleed", "Trim", "Art"] as const;
+  const had = { Crop: !!page.node.CropBox(), Bleed: !!page.node.BleedBox(), Trim: !!page.node.TrimBox(), Art: !!page.node.ArtBox() };
+  const before = { Media: page.getMediaBox(), Crop: page.getCropBox(), Bleed: page.getBleedBox(), Trim: page.getTrimBox(), Art: page.getArtBox() };
+  page.scaleContent(s, s);
+  page.scaleAnnotations(s, s);
+  for (const n of names) {
+    if (n !== "Media" && !had[n]) continue;                      // a box the page never had stays absent (it follows the page size)
+    const b = before[n];
+    page[`set${n}Box`](b.x * s, b.y * s, b.width * s, b.height * s);
+  }
+}
+
 export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
   const open = new Map<string, Promise<PDFDocument>>();
   const source = (id: string) => {
@@ -108,8 +124,13 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       const own = d.kind === "image" ? d.turn ?? 0 : 0;
       if (own) page.setRotation(degrees((page.getRotation().angle + own) % 360));
       if (p.marks?.length) await drawMarks(page, p.marks);
+      // Cropping hides the margins (the page's crop box); it works in the page as the file shows it, so it comes before the turn.
+      if (opts.crop && isCropped(opts.crop) && appliesTo(opts.crop, (place?.index ?? 0) + i, place?.total ?? pages.length)) {
+        const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter), b = cropBoxFor(page.getCropBox(), rotation, opts.crop);
+        page.setCropBox(b.x, b.y, b.width, b.height);
+      }
       if (p.rotate) page.setRotation(degrees((page.getRotation().angle + p.rotate) % 360));
-      if (p.scale !== 1) page.scale(p.scale, p.scale);
+      if (p.scale !== 1) scalePage(page, p.scale);
       // Stamps go on last, placed on the page as it will finally be seen, so they are the same size on every page.
       if (opts.watermark?.on && opts.watermark.text.trim()) {
         const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);

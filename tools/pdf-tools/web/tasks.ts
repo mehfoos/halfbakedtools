@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "preview";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "preview";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -59,6 +59,9 @@ export const TASKS: Task[] = [
   { slug: "edit", name: "Edit PDF", blurb: "Add text and pictures to pages: fill in a form, add a note, a date, a signature picture or a logo.", group: "Edit", accept: "both",
     pick: "Select PDF file", hint: "Press ＋ Text or ＋ Picture, then drag it into place. This adds to pages; it can't yet change or remove what is already on them.",
     parts: ["marks"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "edited", tag: "✎" },
+  { slug: "crop", name: "Crop PDF", blurb: "Trim the margins off pages: drag the edges of the page, or type the margins. Cut-off parts are hidden, not deleted.", group: "Edit", accept: "pdf",
+    pick: "Select PDF files", hint: "Drag the edges of the box on the page, or type the margins. Everything outside the box is hidden when the PDF is opened, but is still stored in the file.",
+    parts: ["crop"], formats: ["pdf"], which: "all", action: "Crop PDF", perFile: true, suffix: "cropped", tag: "▢" },
   { slug: "page-numbers", name: "Page numbers", blurb: "Add page numbers to a PDF: choose where they go, how they read, and which page they start on.", group: "Edit", accept: "pdf",
     pick: "Select PDF files", hint: "Choose the position and style. The preview shows a page exactly as it will be saved.",
     parts: ["numbers", "preview"], formats: ["pdf"], which: "all", action: "Add page numbers", perFile: true, suffix: "numbered", tag: "1,2" },
@@ -110,7 +113,6 @@ export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "PDF to Word", tag: "DOC", group: "Convert from PDF" }, { name: "PDF to PowerPoint", tag: "PPT", group: "Convert from PDF" },
   { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" }, { name: "PDF to HTML", tag: "WEB", group: "Convert from PDF" },
   { name: "PDF to Markdown", tag: "MD", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
-  { name: "Crop PDF", tag: "▢", group: "Edit" },
   { name: "Fill in PDF forms", tag: "☑", group: "Edit" },
   { name: "Sign PDF (draw your signature)", tag: "✍", group: "Security" }, { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
   { name: "Compare PDF", tag: "⇆", group: "Security" },

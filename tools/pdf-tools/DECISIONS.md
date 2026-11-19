@@ -66,3 +66,6 @@ It deliberately does not: keep files between visits, offer accounts, or claim Wo
 | 2026-11-19 | Whole-file tasks (Split, Compress, Unlock, Protect, Page numbers, Watermark, PDF to text) show a file list, not page thumbnails | The pages can't be acted on separately there, and hundreds of thumbnails buried the options and the button |
 | 2026-11-19 | Page lists are shown a screenful at a time, sized to the screen, rather than as one long scrolling list | Long files stayed usable; fewer thumbnails drawn at once; selection still covers every page |
 | 2026-11-19 | Selection starts as "all" for Rotate, Resize and PDF to picture tasks, but "none" for Remove, Extract, Merge and Organise | "All" there only means "use these pages"; for Remove it would delete the lot |
+| 2026-11-19 | Crop sets the page's crop box and does not delete anything; the page says so | Content outside stays in the file; calling it removal would mislead (true removal is the Redact chunk) |
+| 2026-11-19 | Crop margins are absolute (points, shown in mm, inches or points) and the same on every chosen page | Simple and predictable; a percentage option is a follow-up |
+| 2026-11-19 | Resizing scales every page box itself instead of calling the library's `page.scale` | The library resets the crop box to the full page size, which shows the wrong area on any page that is already cropped |

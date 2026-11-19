@@ -56,6 +56,11 @@
       "nav": false
     },
     {
+      "page": "crop",
+      "label": "Crop PDF",
+      "nav": false
+    },
+    {
       "page": "watermark",
       "label": "Watermark",
       "nav": false

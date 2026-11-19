@@ -522,3 +522,59 @@ test("pagerItems: short row for long files, never skips by one", () => {
   assert.deepEqual(pagerItems(16, 17), [0, "gap", 15, 16]);
   assert.ok(pagerItems(250, 500).length <= 9);
 });
+
+// ---- crop ----
+import { NO_CROP, cleanCrop, cropBoxFor, clampMargins, marginsFromRect, appliesTo, toPoints, fromPoints, MIN_VISIBLE } from "./crop.ts";
+test("crop: units convert exactly (an inch is 72 points and 25.4 mm)", () => {
+  assert.equal(toPoints(1, "in"), 72); assert.equal(toPoints(25.4, "mm"), 72); assert.equal(toPoints(5, "pt"), 5);
+  assert.ok(Math.abs(fromPoints(72, "mm") - 25.4) < 1e-9);
+});
+test("crop: box for an upright page, and for a page the file shows turned", () => {
+  const box = { x: 0, y: 0, width: 400, height: 600 };
+  assert.deepEqual(cropBoxFor(box, 0, { top: 10, right: 20, bottom: 30, left: 40 }), { x: 40, y: 30, width: 340, height: 560 });
+  // Shown turned 90° the page is 600 wide and 400 tall; "top" is then the page's own left edge, "left" its own bottom edge.
+  assert.deepEqual(cropBoxFor(box, 90, { top: 10, right: 20, bottom: 30, left: 40 }), { x: 10, y: 40, width: 360, height: 540 });
+  assert.deepEqual(cropBoxFor({ x: 5, y: 7, width: 400, height: 600 }, 0, { top: 0, right: 0, bottom: 0, left: 10 }), { x: 15, y: 7, width: 390, height: 600 });
+});
+test("crop: a mistyped margin can't leave less than a quarter inch", () => {
+  const m = clampMargins({ w: 100, h: 100 }, { left: 90, right: 90, top: 5, bottom: 5 });
+  assert.ok(Math.abs(100 - m.left - m.right - MIN_VISIBLE) < 1e-9); assert.equal(m.left, m.right); assert.deepEqual([m.top, m.bottom], [5, 5]);
+  assert.deepEqual(clampMargins({ w: 100, h: 100 }, { left: -4, right: 0, top: 0, bottom: 0 }), { left: 0, right: 0, top: 0, bottom: 0 });
+  assert.deepEqual(marginsFromRect({ w: 200, h: 100 }, { x: 20, y: 10, w: 150, h: 60 }), { left: 20, top: 10, right: 30, bottom: 30 });
+});
+test("crop: which pages", () => {
+  assert.ok(appliesTo(NO_CROP, 3, 10));
+  const o = { ...NO_CROP, pages: "2-3, 9-" };
+  assert.deepEqual([0, 1, 2, 3, 8, 9].map((i) => appliesTo(o, i, 10)), [false, true, true, false, true, true]);
+  assert.throws(() => appliesTo({ ...NO_CROP, pages: "x" }, 0, 10));
+});
+test("crop: settings are checked, and older files without them load with no crop", () => {
+  assert.deepEqual(cleanCrop(undefined), NO_CROP);
+  assert.deepEqual(cleanCrop({ top: 5, right: 6, bottom: 7, left: 8, unit: "in", pages: "1-2" }), { top: 5, right: 6, bottom: 7, left: 8, unit: "in", pages: "1-2" });
+  assert.deepEqual(cleanCrop({ top: -1, right: "x", bottom: 1e9, left: NaN, unit: "furlong", pages: 7 }), NO_CROP);
+  let s = addSource(emptySession(), { name: "a.pdf", size: 10, sha256: SHA("a"), pages: 1, kind: "pdf" }).session;
+  s = { ...s, output: { ...s.output, crop: { ...NO_CROP, top: 12 } } };
+  assert.equal(parseSettings(serialise(s)).output.crop.top, 12);
+  const old = JSON.parse(serialise(s)); delete old.output.crop;
+  assert.deepEqual(parseSettings(JSON.stringify(old)).output.crop, NO_CROP);
+});
+test("build: crop sets the visible area of chosen pages only, before any turn or resize", async () => {
+  const data = new Map<string, SourceData>([["a", { kind: "pdf", bytes: await sample(3) }]]);   // pages 100,101,102 wide, 200 tall
+  const crop = { ...NO_CROP, top: 20, left: 10, pages: "2-3" };
+  const out = await makeBuilder(data, { imageDpi: 96, crop })([P("a", 0), P("a", 1), { ...P("a", 2), rotate: 90, scale: 2 }]);
+  const pages = (await PDFDocument.load(out)).getPages();
+  const box = (i: number) => { const b = pages[i].getCropBox(); return [b.x, b.y, b.width, b.height]; };
+  assert.deepEqual(box(0), [0, 0, 100, 200], "page 1 is not in the range");
+  assert.deepEqual(box(1), [10, 0, 91, 180]);
+  assert.deepEqual(box(2).map((v) => Math.round(v * 100) / 100), [20, 0, 184, 360], "cropped 10 left and 20 top, then doubled; turning does not change the box");
+  assert.equal(pages[2].getRotation().angle, 90);
+});
+test("build: resizing keeps an already-cropped page's visible area (the library's own scale loses it)", async () => {
+  const doc = await PDFDocument.create(); const pg = doc.addPage([400, 600]); pg.setCropBox(50, 100, 200, 300); pg.drawText("x", { x: 60, y: 110 });
+  const data = new Map<string, SourceData>([["a", { kind: "pdf", bytes: await doc.save() }]]);
+  const out = (await PDFDocument.load(await makeBuilder(data, { imageDpi: 96 })([{ ...P("a", 0), scale: 0.5 }]))).getPage(0);
+  const c = out.getCropBox(), m = out.getMediaBox();
+  assert.deepEqual([c.x, c.y, c.width, c.height], [25, 50, 100, 150]);
+  assert.deepEqual([m.x, m.y, m.width, m.height], [0, 0, 200, 300]);
+  assert.equal(out.node.TrimBox(), undefined, "boxes the page never had are not invented");
+});

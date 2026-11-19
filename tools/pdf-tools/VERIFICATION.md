@@ -18,6 +18,7 @@ What the tool relies on, what it was checked against, and when.
 | Page-range text: pages, ranges, open and reverse ranges, rejection of bad input | `core.test.ts` "ranges: …" |
 | Add/remove source; move, duplicate, remove, rotate, resize pages | `core.test.ts` "session: …" |
 | Split plans (one file, every N, chosen ranges, one per page) and file names | `core.test.ts` "session: planFiles…" |
+| Crop: unit conversion, crop box on upright and turned pages, minimum visible area, chosen pages, settings; resizing keeps an already-cropped page's area | `core.test.ts` "crop: …", "build: crop …", "build: resizing keeps …" |
 | Paging of long page lists: whole rows that fit the screen, screen counts and ranges, short pager row | `core.test.ts` "perScreen…", "screen arithmetic", "pagerItems…" |
 | Settings file round trip; rejection of foreign, damaged and newer files; no content keys | `core.test.ts` "settings: …" |
 | Written PDFs: merge order, repeated pages independent, rotation adds to existing, resize, image pages, several files from one builder, fonts kept | `core.test.ts` "build: …" |
@@ -96,3 +97,16 @@ screen; "Pages per screen" changes the count; the main button was inside the scr
 every task; no script errors and no requests to any other site. The earlier end-to-end suites (every task, compress,
 edit, names, security, page numbers, watermark, extended compression levels) were re-run unchanged and pass.
 Not checked: real phones, Firefox, Safari.
+
+### Crop PDF (2026-11-19)
+
+Headless Chrome on a three-page test PDF (one page stored turned 90°) with a red square at the stored top-left and
+a blue square at the bottom-right. Margins typed in mm (top 20, left 10, right 5): the saved PDF's crop boxes were
+read back with pypdf and matched the expected numbers on upright and turned pages; each page was then rendered by
+poppler (`pdftoppm -cropbox`): page sizes shrank by exactly the margins, the red square disappeared, and the blue
+square lost the expected 5 mm / 10 mm slice. Changing the unit kept the same margins (20 mm = 0.787 in). Dragging the
+box's east and north edges changed the margins by the distance dragged (80 and 100 points); dragging an edge far past
+the other stopped at the quarter-inch minimum. "Only the pages I choose" cropped only that page; a page range outside
+the file gave the library's clear message; saving with no margins was refused with a message. Settings file
+included the crop margins. No requests left the browser. Earlier suites were re-run and pass; Resize (50%) still
+gives the right sizes after the page-box fix. Not checked: real phones (touch dragging), Firefox, Safari.

@@ -47,6 +47,22 @@ const policy = import.meta.env.PROD ? CSP : "";
           <div id="edStage" class="stage"><canvas></canvas><div id="edLayer" class="layer"></div></div>
           <p class="small muted sans">Drag an addition to move it; drag a picture's corner square to resize it. With one selected, the arrow keys nudge it and Delete removes it. What you see is the page exactly as it will be saved.</p>
         </div>
+        <div id="cropper" class="cropper" data-part="crop" hidden>
+          <div class="row sans small cropnav">
+            <button type="button" class="small" id="crPrev" aria-label="Previous page">‹</button>
+            <span id="crWhere"></span>
+            <button type="button" class="small" id="crNext" aria-label="Next page">›</button>
+          </div>
+          <div id="crStage" class="stage">
+            <canvas></canvas>
+            <div id="crBox" class="crbox">
+              <span class="ch" data-h="nw"></span><span class="ch" data-h="n"></span><span class="ch" data-h="ne"></span>
+              <span class="ch" data-h="w"></span><span class="ch" data-h="e"></span>
+              <span class="ch" data-h="sw"></span><span class="ch" data-h="s"></span><span class="ch" data-h="se"></span>
+            </div>
+          </div>
+          <p class="small sans muted" id="crNote"></p>
+        </div>
         <div id="preview" class="preview" data-part="preview" hidden>
           <p class="small sans muted" id="previewNote"></p>
           <div class="stage"><canvas></canvas></div>
@@ -186,6 +202,20 @@ const policy = import.meta.env.PROD ? CSP : "";
               </details>
               <p class="small muted">The watermark is drawn on top of each page as ordinary see-through text. It marks a document; it does not protect it: someone with PDF software can remove it.</p>
             </div>
+          </div>
+          <div id="optCrop" data-part="crop">
+            <p><label class="field">Measure in
+              <select id="crUnit"><option value="mm">millimetres</option><option value="in">inches</option><option value="pt">points</option></select></label></p>
+            <p class="small muted">How much to cut off each edge:</p>
+            <p><label class="field">Top <input id="crTop" type="number" min="0" step="any" inputmode="decimal" /></label>
+               <label class="field">Bottom <input id="crBottom" type="number" min="0" step="any" inputmode="decimal" /></label></p>
+            <p><label class="field">Left <input id="crLeft" type="number" min="0" step="any" inputmode="decimal" /></label>
+               <label class="field">Right <input id="crRight" type="number" min="0" step="any" inputmode="decimal" /></label></p>
+            <p><label class="field">Crop
+              <select id="crWhich"><option value="all">every page</option><option value="some">only the pages I choose</option></select></label></p>
+            <p id="crPagesRow"><label class="field">Pages <input id="crPages" type="text" placeholder="1-3, 8-" size="12" /></label><br /><span class="small muted">"8-" means page 8 to the end.</span></p>
+            <p class="small muted">The same margins are used on every page chosen, so pages of different sizes lose the same width. <strong>Cropping hides; it does not delete.</strong> Anything outside the box is still stored in the PDF, and some software can show it again. For information that must be gone, wait for the Redact tool.</p>
+            <p><button type="button" class="small" id="crReset">Reset margins</button></p>
           </div>
           <div id="optProtect" data-part="protect">
             <p><label class="field">Password <input id="pw1" type="password" autocomplete="off" size="16" /></label></p>
@@ -330,6 +360,14 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .props { border: 1px solid var(--navy); border-radius: 6px; padding: 10px; margin-bottom: 12px; background: #f6f7fd; }
     #pdftools .props textarea { width: 100%; font: inherit; padding: 4px; box-sizing: border-box; }
     #pdftools .tile .edit { margin-top: 2px; }
+    #pdftools .cropper { max-width: 520px; margin: 0 auto 14px; }
+    #pdftools .cropnav { justify-content: center; align-items: center; margin-bottom: 6px; }
+    #pdftools .crbox { position: absolute; box-sizing: border-box; border: 2px solid var(--navy); box-shadow: 0 0 0 9999px rgba(0, 0, 40, 0.45); cursor: move; touch-action: none; }
+    #pdftools .ch { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; background: #fff; border: 2px solid var(--navy); box-sizing: border-box; touch-action: none; }
+    #pdftools .ch[data-h="nw"] { left: 0; top: 0; cursor: nwse-resize; } #pdftools .ch[data-h="n"] { left: 50%; top: 0; cursor: ns-resize; } #pdftools .ch[data-h="ne"] { left: 100%; top: 0; cursor: nesw-resize; }
+    #pdftools .ch[data-h="w"] { left: 0; top: 50%; cursor: ew-resize; } #pdftools .ch[data-h="e"] { left: 100%; top: 50%; cursor: ew-resize; }
+    #pdftools .ch[data-h="sw"] { left: 0; top: 100%; cursor: nesw-resize; } #pdftools .ch[data-h="s"] { left: 50%; top: 100%; cursor: ns-resize; } #pdftools .ch[data-h="se"] { left: 100%; top: 100%; cursor: nwse-resize; }
+    #pdftools .cropper .stage { overflow: hidden; }
     #pdftools .preview { max-width: 440px; margin: 0 auto 14px; }
     #pdftools .preview p { text-align: center; margin: 0 0 4px; }
     #pdftools .result .go-result .big { width: 100%; }
