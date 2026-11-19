@@ -6,6 +6,7 @@ import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
 import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
 import { standardFace, type Face } from "./face.ts";
 import { embedOwnFont, type OwnFont } from "./ownfont.ts";
+import { notoFace, notoLibrary, type NotoLoader } from "./noto.ts";
 import { placeText, placeImage, placeBox, shapePath, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
 import { numberMark, watermarkMarks, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import type { PageItem, Rotation } from "./session.ts";
@@ -15,11 +16,11 @@ export type SourceData =
   /** `turn`: degrees clockwise the stored pixels must be turned to look right (a photo's orientation note). */
   | { kind: "image"; bytes: Uint8Array; type: "png" | "jpeg"; turn?: Rotation };
 
-export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions; ownFont?: OwnFont };
+export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions; ownFont?: OwnFont; noto?: NotoLoader };
 /** For building one page out of a longer document (a preview): its position, and the document's length. */
 export type Place = { index: number; total: number };
 
-const FONT_NAMES: Record<Exclude<FontKey, "own">, [StandardFonts, StandardFonts]> = {
+const FONT_NAMES: Record<Exclude<FontKey, "own" | "noto">, [StandardFonts, StandardFonts]> = {
   sans: [StandardFonts.Helvetica, StandardFonts.HelveticaBold],
   serif: [StandardFonts.TimesRoman, StandardFonts.TimesRomanBold],
   mono: [StandardFonts.Courier, StandardFonts.CourierBold],
@@ -29,7 +30,7 @@ const FONT_NAMES: Record<Exclude<FontKey, "own">, [StandardFonts, StandardFonts]
 export function fontSet(doc: PDFDocument) {
   const made = new Map<string, PDFFont>();
   return (font: FontKey, bold: boolean): PDFFont => {
-    const name = FONT_NAMES[font === "own" ? "sans" : font][bold ? 1 : 0];
+    const name = FONT_NAMES[font === "own" || font === "noto" ? "sans" : font][bold ? 1 : 0];
     let f = made.get(name);
     if (!f) made.set(name, (f = doc.embedStandardFont(name)));
     return f;
@@ -38,9 +39,15 @@ export function fontSet(doc: PDFDocument) {
 export const OWN_FONT_MISSING = "Text is set in your own font, but no font file is chosen. Font files are not kept in settings files or between visits: choose it again under \u201cYour own font\u201d.";
 /** Faces for added text in `doc`: built-in fonts, or the visitor's own font (embedded on first use, so a file
  *  that doesn't use it doesn't carry it). Bold has no effect on the visitor's own font. */
-export function faceSet(doc: PDFDocument, own?: OwnFont) {
-  const fonts = fontSet(doc); let mine: Promise<Face> | null = null;
+const libraries = new WeakMap<NotoLoader, ReturnType<typeof notoLibrary>>();
+export function faceSet(doc: PDFDocument, own?: OwnFont, noto?: NotoLoader) {
+  const fonts = fontSet(doc); let mine: Promise<Face> | null = null, shipped: Face | null = null;
   return async (font: FontKey, bold: boolean): Promise<Face> => {
+    if (font === "noto") {
+      if (!noto) throw new Error("The shipped Noto fonts aren't available here.");
+      let lib = libraries.get(noto); if (!lib) libraries.set(noto, (lib = notoLibrary(noto)));
+      return (shipped ??= notoFace(doc, lib));
+    }
     if (font !== "own") return standardFace(fonts(font, bold));
     if (!own) throw new Error(OWN_FONT_MISSING);
     return (mine ??= embedOwnFont(doc, own));
@@ -108,14 +115,17 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       if (!img) embedded.set(id, (img = d.type === "png" ? await out.embedPng(d.bytes) : await out.embedJpg(d.bytes)));
       return img;
     };
-    const faces = faceSet(out, opts.ownFont);
+    const faces = faceSet(out, opts.ownFont, opts.noto);
+    const prepared = async (font: FontKey, bold: boolean, text: string) => { const f = await faces(font, bold); await f.prepare?.(text); return f; };
     async function drawMarks(page: PDFPage, marks: Mark[]) {
       const box = page.getCropBox(), rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
       for (const m of marks) {
         if (m.type === "text") {
-          const face = await faces(m.font, m.bold), bad = face.missing(m.text.replace(/\n/g, ""));
+          const face = await faces(m.font, m.bold); await face.prepare?.(m.text);
+          const bad = face.missing(m.text.replace(/\n/g, ""));
           if (bad.length) throw new Error(m.font === "own"
             ? `Your font has no letters for: ${bad.slice(0, 12).join(" ")}. Choose a font that covers them.`
+            : m.font === "noto" ? `The shipped Noto fonts have no letters for: ${bad.slice(0, 12).join(" ")}. For these, choose \u201cYour own font\u201d.`
             : `Added text contains characters the built-in fonts can't write: ${bad.slice(0, 12).join(" ")}. They cover Western European letters, digits and common punctuation; for other alphabets choose \u201cYour own font\u201d.`);
           const placed = placeText(m, face, box, rotation), c = parseColor(m.color);
           for (const l of placed.lines) if (l.text) face.draw(page, l.text, { x: l.x, y: l.y, size: m.size, color: c, rotate: placed.angle, opacity: m.opacity ?? 1 });
@@ -160,11 +170,11 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       // Stamps go on last, placed on the page as it will finally be seen, so they are the same size on every page.
       if (opts.watermark?.on && opts.watermark.text.trim()) {
         const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
-        await drawMarks(page, watermarkMarks(opts.watermark, visibleSize(page.getCropBox(), rotation), await faces(opts.watermark.font, opts.watermark.bold)));
+        await drawMarks(page, watermarkMarks(opts.watermark, visibleSize(page.getCropBox(), rotation), await prepared(opts.watermark.font, opts.watermark.bold, opts.watermark.text)));
       }
       if (opts.numbers?.on) {
         const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
-        const n = numberMark(opts.numbers, (place?.index ?? 0) + i, place?.total ?? pages.length, visibleSize(page.getCropBox(), rotation), await faces(opts.numbers.font, opts.numbers.bold));
+        const n = numberMark(opts.numbers, (place?.index ?? 0) + i, place?.total ?? pages.length, visibleSize(page.getCropBox(), rotation), await prepared(opts.numbers.font, opts.numbers.bold, "Page 0123456789 of /"));
         if (n) await drawMarks(page, [n]);
       }
     }

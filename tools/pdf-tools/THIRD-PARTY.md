@@ -20,6 +20,27 @@ with versions and licences read from the installed packages when the site is bui
 
 Licence files that come with the packages are copied to `vendor/licenses/` on the site (`tool.json` "vendor") and linked from the methods page.
 
+## Fonts shipped with the site: Noto Sans
+
+The font choice "Noto Sans (many alphabets)" uses these files, all version 5.3.0 of the Fontsource npm packages
+`@fontsource/<family>` (Fontsource redistributes Google Fonts), weight 400, WOFF format, one file per alphabet:
+noto-sans (latin, latin-ext, cyrillic, cyrillic-ext, greek, greek-ext, vietnamese), noto-sans-malayalam (malayalam),
+noto-sans-arabic (arabic), noto-sans-hebrew (hebrew), noto-sans-devanagari (devanagari), noto-sans-bengali (bengali),
+noto-sans-gurmukhi (gurmukhi), noto-sans-tamil (tamil), noto-sans-telugu (telugu), noto-sans-kannada (kannada),
+noto-sans-thai (thai). The list, with the characters each file covers, is `web/notofiles.ts` (a test checks it against
+each package's `unicode.json`).
+
+- **Licence:** SIL Open Font License 1.1. Each package's `LICENSE` holds the copyright line ("Copyright 2022 The Noto
+  Project Authors", with the year and the notofonts repository for each family) and the licence text, and names **no
+  Reserved Font Name** (checked 2026-11-19: the only match for the phrase is the licence's own definition of it).
+- **How they are shipped:** each file is bundled into the site as its own script (base64), loaded only when text needs
+  that alphabet. The licence of every family is served beside them in `vendor/licenses/` and linked from the methods
+  page, as the OFL asks when fonts are redistributed (OFL FAQ 1.8: hosting fonts for others is allowed "as long as you
+  make the full font package available"; archived as `pdftools_OFL-FAQ-1.1-update8.txt`).
+- **In saved PDFs:** only the letters used are embedded. OFL FAQ 1.12: embedding in documents is allowed, "either in
+  full or a subset", and 1.13: it does not change the document's licence. Fonts are not sold, by themselves or at all.
+- **Not shipped (yet):** Chinese, Japanese and Korean (3 to 5 MB per family in Fontsource's many small files); bold.
+
 ## OCR language models
 
 `vendor/tesseract/lang/<code>.traineddata.gz`, from the npm packages `@tesseract.js-data/<code>` version 1.0.0, folder
@@ -43,8 +64,9 @@ Languages shipped (code, name): `eng` English, `ara` Arabic, `ben` Bengali, `bul
   the same empty glyph), so it reproduces no typeface. The idea follows Tesseract's own "glyphless" PDF font; no code
   or data was taken from it. It passes the OpenType Sanitizer used by Chrome and Firefox (checked 2026-11-19).
 - **Visible text** added by the tools (Edit PDF text, Text to PDF, page numbers, watermarks) uses the PDF format's
-  built-in fonts, which viewers supply themselves (no font file is embedded), or a font file the visitor chooses from
-  their own device ("Your own font"). The site ships no font for this. The visitor's file is read in their browser and
+  built-in fonts, which viewers supply themselves (no font file is embedded), the shipped Noto Sans files above, or a
+  font file the visitor chooses from
+  their own device ("Your own font"). The visitor's file is read in their browser and
   never uploaded; its maker's embedding setting (OS/2 fsType) is respected: "restricted" and "bitmap only" fonts are
   refused, "no subsetting" fonts are embedded whole, "preview and print" fonts are used with a note. That setting is
   not the licence, and the page tells visitors to use fonts they have the right to use. Form filling still uses the

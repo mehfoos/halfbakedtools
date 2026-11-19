@@ -110,10 +110,11 @@ items are listed at the bottom of [`VERIFICATION.md`](VERIFICATION.md).
 - [x] **Your own font** (owner's option 1, 2026-11-19): a font file from the visitor's device for Edit PDF text,
       Text to PDF, page numbers and watermarks; HarfBuzz shaping and bidi (owner's option 3, needed: fontkit misplaced
       accents). Not yet: form filling; bold for own fonts; a font kept between visits.
-- [ ] **Shipped fonts (owner's option 2): Noto, under the SIL Open Font License.** Before shipping any font file: archive
-      the OFL 1.1 text and FAQ and the Noto licence page (source-archive release, owner), check Reserved Font Names,
-      and decide where the files come from (npm packages such as Fontsource, or the Noto project's releases). Then offer
-      them in the font lists by script, loaded on first use, with the OFL text served beside them.
+- [x] **Shipped fonts (owner's option 2): "Noto Sans (many alphabets)"** (2026-11-19): Latin, Greek, Cyrillic, Vietnamese,
+      Malayalam, Arabic, Hebrew, Devanagari, Bengali, Gurmukhi, Tamil, Telugu, Kannada, Thai, from Fontsource (OFL 1.1, no
+      reserved names), loaded per alphabet, with per-character font fallback. OFL text and FAQ downloaded and handed to the
+      owner for the release. Next: Chinese, Japanese and Korean (Fontsource's numbered files: load only those a text
+      needs); Urdu in Nastaliq style; bold; form filling.
 - [ ] Pages with a `UserUnit` other than 1 (rare, very large pages) are untested.
 - [ ] Multi-image TIFF: use every image, not only the first (`loadImage` in `web/ui.ts`; a source would then have
       several pages and `SourceData` needs one image per page).

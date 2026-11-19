@@ -5,8 +5,8 @@
 // turns and resizes with its page. Two conversions are needed: base view <-> the PDF's own coordinates, which
 // start at the bottom-left of the unrotated page (for saving), and base view <-> the turned view on screen.
 
-export type FontKey = "sans" | "serif" | "mono" | "own";   // "own": a font file the visitor chose (ownfont.ts)
-export const FONT_KEYS: FontKey[] = ["sans", "serif", "mono", "own"];
+export type FontKey = "sans" | "serif" | "mono" | "noto" | "own";   // "noto": the shipped Noto Sans fonts (noto.ts); "own": a font file the visitor chose (ownfont.ts)
+export const FONT_KEYS: FontKey[] = ["sans", "serif", "mono", "noto", "own"];
 /** x, y: top-left corner. rotate: degrees clockwise about that corner. */
 export type TextMark = { type: "text"; x: number; y: number; rotate: number; text: string; size: number; color: string; font: FontKey; bold: boolean; opacity?: number };
 /** src: id of an image source in the session. w, h: size on the page in points. */

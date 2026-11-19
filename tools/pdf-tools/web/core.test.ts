@@ -962,3 +962,36 @@ test("own font: a WOFF file is unpacked to the plain font; WOFF 2 is refused wit
   assert.throws(() => plainFont(Uint8Array.from([0x77, 0x4f, 0x46, 0x32, ...new Array(60).fill(0)])), /WOFF 2/);
   assert.equal(plainFont(ttf), ttf);
 });
+
+// ---- shipped Noto fonts ----
+import { NOTO_FILES, notoId } from "./notofiles.ts";
+import { notoFilesFor, notoMissing, notoFace, notoLibrary } from "./noto.ts";
+const fsNoto = async (id: string) => { const f = NOTO_FILES.find((x) => notoId(x) === id)!; return new Uint8Array(readFileSync(new URL(`../../../node_modules/@fontsource/${f.family}/files/${id}-400-normal.woff`, import.meta.url))); };
+test("noto: the list of shipped files matches the installed packages' coverage", () => {
+  for (const f of NOTO_FILES) {
+    const u = JSON.parse(readFileSync(new URL(`../../../node_modules/@fontsource/${f.family}/unicode.json`, import.meta.url), "utf8")) as Record<string, string>;
+    const ranges = u[f.subset].split(",").map((r) => r.trim().replace("U+", "")).map((r) => r.includes("-") ? r.split("-").map((x) => parseInt(x, 16)) : [parseInt(r, 16), parseInt(r, 16)]);
+    assert.deepEqual(f.ranges, ranges, notoId(f));
+    assert.ok(existsSync(new URL(`../../../node_modules/@fontsource/${f.family}/files/${notoId(f)}-400-normal.woff`, import.meta.url)));
+  }
+  const meta = JSON.parse(readFileSync(new URL("../tool.json", import.meta.url), "utf8")) as { vendor: Record<string, string> };
+  for (const fam of new Set(NOTO_FILES.map((f) => f.family))) assert.equal(meta.vendor[`licenses/${fam}-LICENSE.txt`], `@fontsource/${fam}/LICENSE`, `${fam}: its licence must be served`);
+});
+test("noto: only the files a text needs are chosen; uncovered characters are reported", () => {
+  assert.deepEqual(notoFilesFor("Hello").map(notoId), ["noto-sans-latin"]);
+  assert.deepEqual(notoFilesFor("അവൻ 25 വയസ്സ്").map(notoId), ["noto-sans-latin", "noto-sans-malayalam-malayalam"]);
+  assert.deepEqual(notoFilesFor("Привет मराठी").map(notoId), ["noto-sans-latin", "noto-sans-cyrillic", "noto-sans-devanagari-devanagari"]);
+  assert.deepEqual(notoMissing("abc 日本 😀"), ["日", "本", "😀"]);
+});
+test("noto: mixed Malayalam, Hindi and English text is drawn with each script's font, embedded only as needed", async () => {
+  const doc = await PDFDocument.create(), face = notoFace(doc, notoLibrary(fsNoto)), page = doc.addPage([400, 200]);
+  const text = "മലയാളം and हिन्दी 2026";
+  await face.prepare!(text);
+  assert.deepEqual(face.missing(text), []);
+  assert.ok(face.widthOfTextAtSize(text, 20) > 100);
+  face.draw(page, text, { x: 10, y: 100, size: 20, color: { r: 0, g: 0, b: 0 }, rotate: 0, opacity: 1 });
+  const saved = await doc.save(), back = await PDFDocument.load(saved);
+  const fams = back.context.enumerateIndirectObjects().map(([, o]) => (o as { get?: (n: PDFName) => unknown }).get?.(PDFName.of("BaseFont"))?.toString() ?? "").filter((n) => /Noto/.test(n));
+  assert.ok(fams.some((n) => /Malayalam/.test(n)) && fams.some((n) => /Devanagari/.test(n)) && fams.some((n) => /NotoSans-/.test(n)), fams.join(" "));
+  assert.ok(!fams.some((n) => /Arabic|Thai|Tamil|Bengali/.test(n)), "fonts not needed are not embedded");
+});

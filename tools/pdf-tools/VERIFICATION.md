@@ -254,3 +254,16 @@ the encoding fix, poppler 0.94 / PDF.js 0.97 similar (the engine wrote old-style
 poppler extracts the text exactly; PDF.js gives vowel signs in display order (as for any Malayalam PDF it reads without
 ActualText). Fontsource's WOFF copy of the font, unpacked by this tool, shapes the sentence to the same glyph ids and
 widths as the official file.
+
+### Noto Sans (many alphabets) (2026-11-19)
+
+Unit tests: the shipped-file list equals each installed package's unicode.json; only the needed files are chosen; a line
+of Malayalam, Hindi and English embeds the Malayalam, Devanagari and Latin fonts and no others; uncovered characters
+(Chinese, emoji) are reported. Headless Chrome, Text to PDF with four lines (Malayalam; Malayalam with brackets and a
+number; English, Hindi, Arabic, Tamil and Thai; Greek, Russian and Vietnamese): exactly the nine needed font files were
+loaded, all from this site; nine fonts embedded (pdffonts), each once; rendering correct; poppler extracted every line
+exactly (after mapping clusters to their widest glyph; before, it split "مرحبا"); PDF.js exactly, except Malayalam vowel
+signs in display order; the Arabic phrase sits right to left inside the left-to-right line, as browsers place it. Edit
+PDF: a Malayalam text box in Noto Sans had no warning, saved, and poppler extracted it exactly; Chinese text in Noto Sans
+gave the warning pointing to "Your own font". Not checked: Firefox, Safari, phones, very long texts, every alphabet
+individually (Hebrew, Bengali, Gurmukhi, Telugu, Kannada untested in the browser).

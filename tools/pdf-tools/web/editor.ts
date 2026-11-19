@@ -100,7 +100,9 @@ export function createEditor(host: EditorHost) {
       warn.hidden = !bad.length;
       warn.textContent = !bad.length ? "" : m.font === "own"
         ? `Your font has no letters for: ${bad.slice(0, 12).join(" ")}. Choose a font that covers them, or remove them to save.`
-        : `The built-in fonts can't write: ${bad.slice(0, 12).join(" ")}. They cover Western European letters. For other alphabets choose \u201cYour own font\u201d in the Font list.`;
+        : m.font === "noto"
+          ? `The Noto fonts on this site have no letters for: ${bad.slice(0, 12).join(" ")}. For these (for example Chinese, Japanese or Korean), choose \u201cYour own font\u201d.`
+          : `The built-in fonts can't write: ${bad.slice(0, 12).join(" ")}. They cover Western European letters. For other alphabets choose \u201cNoto Sans (many alphabets)\u201d or \u201cYour own font\u201d in the Font list.`;
     }
   }
 

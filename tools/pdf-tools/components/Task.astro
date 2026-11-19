@@ -132,7 +132,7 @@ const policy = import.meta.env.PROD ? CSP : "";
           <p id="mWarn" class="notice small" hidden></p>
           <p data-for="text"><label class="field">Size <input id="mSize" type="number" min="4" max="400" step="1" inputmode="decimal" /> points</label></p>
           <p data-for="text"><label class="field">Font
-            <select id="mFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option><option value="own">Your own font…</option></select></label></p>
+            <select id="mFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option><option value="noto">Noto Sans (many alphabets)</option><option value="own">Your own font…</option></select></label></p>
           <p data-for="text"><label><input id="mBold" type="checkbox" /> Bold</label></p>
           <p data-for="text"><label class="field">Colour <input id="mColor" type="color" /></label></p>
           <p data-for="shape ink"><label class="field">Line colour <input id="mStroke" type="color" /></label></p>
@@ -146,7 +146,7 @@ const policy = import.meta.env.PROD ? CSP : "";
 
         <details id="ownFontBox" class="sans opts" data-part="marks numbers watermark">
           <summary>Your own font <span class="small muted">(for other alphabets)</span></summary>
-          <p class="small">The built-in fonts cover Western European letters only. For Arabic, Chinese, Cyrillic, Greek, Hebrew, Hindi, Urdu and other scripts, use a font file from this device.</p>
+          <p class="small">Helvetica, Times and Courier cover Western European letters only. “Noto Sans (many alphabets)” in the Font lists covers Latin, Greek, Cyrillic, Vietnamese, Arabic (also Persian and Urdu), Hebrew, Devanagari (Hindi, Marathi, Nepali), Bengali, Gurmukhi (Punjabi), Tamil, Telugu, Malayalam, Kannada and Thai; it is part of this site and loads the alphabets you use. For anything else, such as Chinese, Japanese or Korean, use a font file from this device.</p>
           <p><button type="button" class="small" id="ownPick">Choose a font file…</button>
             <input id="ownFile" class="sr-only" type="file" accept={FONT_ACCEPT} /></p>
           <p id="ownFaceRow" hidden><label class="field">Style <select id="ownFace"></select></label></p>
@@ -214,7 +214,7 @@ const policy = import.meta.env.PROD ? CSP : "";
                   <p><label class="field">Size <input id="nSize" type="number" min="4" max="400" step="1" inputmode="decimal" /> points</label></p>
                   <p><label class="field">From the edge <input id="nMargin" type="number" min="0" max="400" step="1" inputmode="decimal" /> points</label><br /><span class="small muted">72 points is one inch (2.54 cm).</span></p>
                   <p><label class="field">Typeface
-                    <select id="nFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option><option value="own">Your own font…</option></select></label></p>
+                    <select id="nFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option><option value="noto">Noto Sans (many alphabets)</option><option value="own">Your own font…</option></select></label></p>
                   <p><label><input id="nBold" type="checkbox" /> Bold</label></p>
                   <p><label class="field">Colour <input id="nColor" type="color" /></label></p>
                 </div>
@@ -236,7 +236,7 @@ const policy = import.meta.env.PROD ? CSP : "";
                 <summary>Typeface and colour</summary>
                 <div class="details-body">
                   <p><label class="field">Typeface
-                    <select id="wFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option><option value="own">Your own font…</option></select></label></p>
+                    <select id="wFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option><option value="noto">Noto Sans (many alphabets)</option><option value="own">Your own font…</option></select></label></p>
                   <p><label><input id="wBold" type="checkbox" /> Bold</label></p>
                   <p><label class="field">Colour <input id="wColor" type="color" /></label></p>
                 </div>

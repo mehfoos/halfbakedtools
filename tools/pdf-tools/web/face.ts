@@ -18,6 +18,8 @@ import { unsupported } from "./marks.ts";
 export type Rgb = { r: number; g: number; b: number };
 export type DrawOptions = { x: number; y: number; size: number; color: Rgb; rotate: number; opacity: number };   // rotate: degrees anticlockwise, as the PDF library uses
 export interface Face {
+  /** Loads whatever this face needs to draw `text` (fonts loaded on demand); not every face needs it. */
+  prepare?(text: string): Promise<void>;
   widthOfTextAtSize(text: string, size: number): number;
   heightAtSize(size: number, options?: { descender?: boolean }): number;
   /** Characters of `text` this face cannot draw (each listed once). */
@@ -55,9 +57,21 @@ export type Placed = ShapedGlyph & { x: number };
 
 const bidi = bidiFactory();
 
-/** Splits `text` into runs of one direction, shapes each, and puts the runs in display order (left to right). */
-export function shapeLine(shape: Shaper, text: string): { glyphs: Placed[]; width: number } {
-  if (!text) return { glyphs: [], width: 0 };
+/** A font that a line can be shaped with: its shaper, whether it has a character, and its units per em. */
+export type ShapeFont = { shape: Shaper; has(cp: number): boolean; upem: number };
+/** A shaped glyph from one of several fonts: `font` is its index; `x`, `dx`, `dy` and `ax` are in ems. */
+export type PlacedIn = ShapedGlyph & { x: number; font: number };
+
+/** Characters that belong with the one before them (marks, joiners, variation selectors), so they stay in its font. */
+const CLINGS = /[\p{M}\u200C\u200D\uFE00-\uFE0F]/u;
+
+/**
+ * Splits `text` into runs of one direction (Unicode Bidirectional Algorithm), puts the runs in display order, splits each
+ * run by font (each character goes to the font of the character before it if that font has it, otherwise to the first
+ * font that has it, otherwise to the first font), shapes each piece, and returns the glyphs left to right.
+ */
+export function shapeRuns(text: string, fonts: ShapeFont[]): { glyphs: PlacedIn[]; width: number } {
+  if (!text || !fonts.length) return { glyphs: [], width: 0 };
   const levels = bidi.getEmbeddingLevels(text).levels;
   // logical runs of equal level (index ranges in the string; code units, as bidi-js uses)
   const runs: { start: number; end: number; level: number }[] = [];
@@ -75,13 +89,30 @@ export function shapeLine(shape: Shaper, text: string): { glyphs: Placed[]; widt
       runs.splice(i, j - i + 1, ...runs.slice(i, j + 1).reverse()); i = j + 1;
     }
   }
-  const glyphs: Placed[] = []; let pen = 0;
+  const glyphs: PlacedIn[] = []; let pen = 0;
   for (const r of runs) {
-    const rtl = r.level % 2 === 1;
+    const rtl = r.level % 2 === 1, part = text.slice(r.start, r.end);
+    // pieces of one font, in reading order
+    const pieces: { font: number; text: string }[] = [];
+    for (const ch of part) {
+      const cp = ch.codePointAt(0)!, last = pieces[pieces.length - 1];
+      const font = last && (fonts[last.font].has(cp) || CLINGS.test(ch)) ? last.font : Math.max(0, fonts.findIndex((f) => f.has(cp)));
+      if (last && last.font === font) last.text += ch; else pieces.push({ font, text: ch });
+    }
+    if (rtl) pieces.reverse();   // right-to-left: the last piece in reading order is leftmost
     // The shaper mirrors brackets in right-to-left runs itself (HarfBuzz does), so ( still opens towards the text.
-    for (const g of shape(text.slice(r.start, r.end), rtl)) { glyphs.push({ ...g, x: pen }); pen += g.ax; }
+    for (const p of pieces) {
+      const f = fonts[p.font];
+      for (const g of f.shape(p.text, rtl)) { glyphs.push({ ...g, ax: g.ax / f.upem, dx: g.dx / f.upem, dy: g.dy / f.upem, x: pen, font: p.font }); pen += g.ax / f.upem; }
+    }
   }
   return { glyphs, width: pen };
+}
+
+/** One font: positions in the font's own units (as HarfBuzz gives them). */
+export function shapeLine(shape: Shaper, text: string): { glyphs: Placed[]; width: number } {
+  const r = shapeRuns(text, [{ shape, has: () => true, upem: 1 }]);
+  return { glyphs: r.glyphs, width: r.width };
 }
 
 /** The glyph-id encoder of a font embedded by the PDF library with subsetting: adds a glyph to the subset and
@@ -100,18 +131,33 @@ function glyphEncoder(font: PDFFont): (g: FkGlyph) => number {
 const utf16Hex = (t: string) => PDFHexString.fromText(t);
 const RTL = /[\p{Script=Arabic}\p{Script=Hebrew}\p{Script=Syriac}\p{Script=Thaana}\p{Script=Nko}]/u;
 
+/** One font of a face: the font file read by fontkit, the same file embedded by the PDF library, and its shaper. */
+export type FacePart = { fk: FkFont; font: PDFFont; shape: Shaper };
+
 /** A face for a font file embedded in `font` (embedded with the PDF library from the same bytes as `fk`); `shape`
  *  shapes text with the same font. */
-export function ownFace(fk: FkFont, font: PDFFont, shape: Shaper): Face {
-  const encode = glyphEncoder(font);
+export const ownFace = (fk: FkFont, font: PDFFont, shape: Shaper): Face => multiFace(() => [{ fk, font, shape }]);
+
+/**
+ * A face made of several fonts, tried in order for each character (see shapeRuns). `parts` is read each time, so fonts
+ * added later (loaded on demand) are used from then on.
+ */
+export function multiFace(parts: () => FacePart[]): Face {
+  const encoders = new WeakMap<PDFFont, (g: FkGlyph) => number>();
+  const fontsOf = (ps: FacePart[]): ShapeFont[] => ps.map((p) => ({ shape: p.shape, has: (cp) => p.fk.hasGlyphForCodePoint(cp), upem: p.fk.unitsPerEm }));
   return {
-    widthOfTextAtSize: (t, s) => (shapeLine(shape, t).width * s) / fk.unitsPerEm,
-    heightAtSize: (s, o) => ((fk.ascent - (o?.descender === false ? 0 : fk.descent)) * s) / fk.unitsPerEm,
-    missing: (t) => [...new Set([...t].filter((c) => { const cp = c.codePointAt(0)!; return cp > 0x20 && !/\p{Cf}|\p{Zs}/u.test(c) && !fk.hasGlyphForCodePoint(cp); }))],
+    widthOfTextAtSize: (t, s) => shapeRuns(t, fontsOf(parts())).width * s,
+    heightAtSize(s, o) {
+      const ps = parts(); if (!ps.length) return s;
+      const up = Math.max(...ps.map((p) => p.fk.ascent / p.fk.unitsPerEm)), down = Math.max(...ps.map((p) => -p.fk.descent / p.fk.unitsPerEm));
+      return (up + (o?.descender === false ? 0 : down)) * s;
+    },
+    missing: (t) => { const ps = parts(); return [...new Set([...t].filter((c) => { const cp = c.codePointAt(0)!; return cp > 0x20 && !/\p{Cf}|\p{Zs}/u.test(c) && !ps.some((p) => p.fk.hasGlyphForCodePoint(cp)); }))]; },
     draw(page, text, o) {
-      const { glyphs } = shapeLine(shape, text); if (!glyphs.length) return;
-      const key = page.node.newFontDictionary(font.name, font.ref), k = o.size / fk.unitsPerEm;
-      const a = (o.rotate * Math.PI) / 180, cos = Math.cos(a), sin = Math.sin(a);
+      const ps = parts(), { glyphs } = shapeRuns(text, fontsOf(ps)); if (!glyphs.length) return;
+      const keys = ps.map((p) => page.node.newFontDictionary(p.font.name, p.font.ref));
+      const encoderFor = (p: FacePart) => { let e = encoders.get(p.font); if (!e) encoders.set(p.font, (e = glyphEncoder(p.font))); return e; };
+      const a = (o.rotate * Math.PI) / 180, cos = Math.cos(a), sin = Math.sin(a), k = o.size;
       const ops: PDFOperator[] = [pushGraphicsState()];
       if (o.opacity < 1) ops.push(setGraphicsState(page.node.newExtGState("GS", page.doc.context.obj({ Type: "ExtGState", ca: o.opacity, CA: o.opacity }))));
       // The real text goes with the glyphs ("ActualText"), so readers that use it (Acrobat, Chrome, poppler) give back
@@ -120,10 +166,12 @@ export function ownFace(fk: FkFont, font: PDFFont, shape: Shaper): Face {
       // ActualText again (seen with poppler).
       const tag = !RTL.test(text);
       if (tag) ops.push(PDFOperator.of("BDC" as never, [PDFName.of("Span"), page.doc.context.obj({ ActualText: utf16Hex(text) }) as never]));
-      ops.push(beginText(), setFillingColor(rgb(o.color.r, o.color.g, o.color.b)), setFontAndSize(key, o.size));
-      for (const p of glyphs) {
-        const u = (p.x + p.dx) * k, v = p.dy * k;
-        const id = encode(fk.getGlyph(p.id, [...p.chars].map((c) => c.codePointAt(0)!)));   // the characters go into the font's character map, for search
+      ops.push(beginText(), setFillingColor(rgb(o.color.r, o.color.g, o.color.b)));
+      let current = -1;
+      for (const g of glyphs) {
+        if (g.font !== current) { ops.push(setFontAndSize(keys[g.font], o.size)); current = g.font; }
+        const p = ps[g.font], u = (g.x + g.dx) * k, v = g.dy * k;
+        const id = encoderFor(p)(p.fk.getGlyph(g.id, [...g.chars].map((c) => c.codePointAt(0)!)));   // the characters go into the font's character map, for search
         ops.push(setTextMatrix(cos, sin, -sin, cos, o.x + u * cos - v * sin, o.y + u * sin + v * cos), showText(PDFHexString.of(id.toString(16).padStart(4, "0"))));
       }
       ops.push(endText()); if (tag) ops.push(PDFOperator.of("EMC" as never)); ops.push(popGraphicsState());
