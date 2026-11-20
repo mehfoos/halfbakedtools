@@ -99,6 +99,13 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     such studies show that a muscle grows with an exercise, it is marked † instead of ◇. That supports counting the muscle;
     whether it counts as a full or half set remains the planner's judgement.
   </p>
+  <p>
+    A study counts here if it trained people for several weeks, measured the muscle's size at rest before and after (MRI,
+    ultrasound or biopsy), and either trained that exercise on its own or compared it with a control group or another
+    exercise. Studies that only measured muscle activity, or muscle thickness during a contraction, or that trained
+    several exercises together for the same muscle, are not enough on their own; nor are studies of patients (for
+    example with back pain) applied to healthy adults.
+  </p>
   <ul>
     <li><strong>Glutes</strong> (checked 20 November 2026). A 2025 systematic review of 12 training studies found that
       the gluteus maximus grew with back squats to parallel or deeper, the leg press, the hip thrust and progressive
@@ -129,6 +136,11 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
       the gastrocnemius <Fragment set:html={cite("kinoshita-2023")} />. The planner's calf raise is the standing version.
       The study used weights (70% of the most each person could lift once); a bodyweight calf raise may be easier than
       that. The leg curl's half set for the calves stays ◇.</li>
+    <li><strong>Abs, lower back and forearms</strong> (checked 20 November 2026). No study meeting the standard above was
+      found for the crunch, cable crunch, hanging knee raise, plank, back extension (for the lower back), floor back
+      extension or farmer's carry. What exists measures muscle activity, muscle thickness during a contraction, programmes
+      for people with back pain, or several exercises together. These classifications, including counting holds such as
+      the plank and farmer's carry, stay marked ◇.</li>
   </ul>
   <p>
     Muscles that only hold the body still (such as the trunk muscles in a squat) are listed as "steadied" and not counted,
@@ -214,7 +226,7 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     muscle actions used from the anatomy textbook. Details, with dates, are in the repository's
     <code>tools/exercise-planner/VERIFICATION.md</code>.
   </p>
-  <Caveat kind="unverified">The planner's own classifications (◇) for the glutes, hamstrings, lats and calves have been compared with studies that
+  <Caveat kind="unverified">The planner's own classifications (◇) for the glutes, hamstrings, lats, calves, abs, lower back and forearms have been compared with studies that
     measured muscle growth (<a href="#growth-evidence">above</a>); the other muscle groups haven't yet, and are being
     checked one group at a time.</Caveat>
 
