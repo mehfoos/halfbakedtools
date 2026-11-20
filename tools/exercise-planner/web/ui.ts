@@ -191,7 +191,7 @@ export function start(root: HTMLElement) {
     const light = s.exercises.filter((e) => e.kind === "strength" && e.needs.length === 1 && e.needs[0].length === 1 && e.needs[0][0] === "body");
     const bodyNote = light.length
       ? `<p class="small sans muted">The studies behind the set counts controlled how heavy each set was and how close to failure it went.
-        A set of ${esc(list(light.map((e) => e.name.toLowerCase())))} may be much easier than that if you are trained, so it may count for less than shown.
+        The bodyweight-only exercises here (${esc(list(light.map((e) => e.name.toLowerCase())))}) may be much easier than that if you are trained, so they may count for less than shown.
         <a href="${METHODS}#limitations">Limitations</a>.</p>` : "";
     const who = targets.includes(AEROBIC) && s.exercises.some((e) => e.kind === "aerobic")
       ? `<p class="small sans">For adults aged 18 to 64, the WHO recommends <strong>at least</strong> 150–300 minutes a week of
