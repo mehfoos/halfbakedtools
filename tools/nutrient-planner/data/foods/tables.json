@@ -25,8 +25,8 @@
    "notice": "Includes Australian data (AFCD, © FSANZ), which may not be appropriate for use in other countries; food composition can vary substantially between batches and brands. AFCD licence: FSANZ Data User Licence Agreement",
    "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
    "default": true,
-   "foods": 437,
-   "basicFoods": 437,
+   "foods": 438,
+   "basicFoods": 438,
    "generated": "2026-11-20"
   },
   {

@@ -23,6 +23,28 @@ def rec(table: str, name: str, cat: str = "veg", **vals) -> dict:
             "f": {"cat": cat, "v": v, "src": {"code": name}, "id": f"{table}:{name}"}}
 
 
+class CommonListPairs(unittest.TestCase):
+    """The Common list keeps fortified milks and sweetened milk products apart from plain ones, but not cheeses."""
+    def linked(self, x, y):
+        return bool(cl.match_all([x, y]).get(0))
+
+    def test_fortified_milk_is_not_unfortified_milk(self):
+        plain = rec("bls", "Milk, skimmed, pasteurised", "dairy", protein=3.4, fat=0.1, energy=34, sugars=4.8, vitaminD=0.0)
+        fort = rec("cnf", "Milk, skimmed, pasteurised", "dairy", protein=3.5, fat=0.1, energy=34, sugars=4.8, vitaminD=2.07)
+        self.assertFalse(self.linked(plain, fort))
+        self.assertTrue(self.linked(plain, dict(fort, f=dict(fort["f"], v=list(plain["f"]["v"])))))
+
+    def test_cheese_vitamin_d_varies_naturally(self):
+        a = rec("bls", "Cheese, gouda", "dairy", protein=25, fat=28, energy=356, sugars=0.1, vitaminD=0.8)
+        c = rec("cofid", "Cheese, gouda", "dairy", protein=25, fat=29, energy=360, sugars=0.1, vitaminD=0.16)
+        self.assertTrue(self.linked(a, c))
+
+    def test_fruit_yoghurt_is_not_plain_yoghurt(self):
+        plain = rec("frida", "Yoghurt, plain", "dairy", protein=4, fat=3, energy=61, sugars=4.8)
+        fruit = rec("fineli", "Yoghurt, plain", "dairy", protein=3.8, fat=3, energy=85, sugars=10.6)
+        self.assertFalse(self.linked(plain, fruit))
+
+
 class SameFood(unittest.TestCase):
     def test_flavoured_and_fortified_names(self):
         self.assertIn("flavoured", cl.read_name("Yoghurt, flavoured, 2.5% fat")[0])   # flavoured is another product

@@ -191,6 +191,35 @@ def near(a, b, absol, rel) -> bool:
     return abs(a - b) <= max(absol, rel * max(abs(a), abs(b)))
 
 
+# Nutrients added by fortification, with the absolute difference that, with a three-fold ratio, means one record is
+# fortified and the other isn't (Canadian flour and milk are fortified without the name saying so).
+# Checked only for the kinds of food that get fortified, and only for what is usually added to them.
+FORTIFIABLE = {
+    "grains": (("iron", 1.0), ("folate", 40), ("thiamin", 0.2), ("riboflavin", 0.2)),
+    "cereals": (("iron", 1.0), ("folate", 40), ("thiamin", 0.2), ("riboflavin", 0.2), ("vitaminD", 0.5)),
+    "dairy": (("vitaminD", 0.5), ("vitaminA", 60)),
+    "drinks": (("vitaminD", 0.5), ("calcium", 50), ("vitaminB12", 0.1), ("riboflavin", 0.1)),
+    "beverages": (("vitaminC", 15), ("calcium", 150)),
+    "oils": (("vitaminD", 0.5), ("vitaminA", 100)),
+}
+
+
+# For the Common list only the clearest signs: vitamin D between two milks and the drinks rule. Iron, folate and B
+# vitamins in grains and vitamin A in cheese vary too much between unfortified foods to show fortification.
+NOT_MILK = {"cheese", "cream", "egg", "yolk", "butter", "chocolate"}   # their vitamin D varies naturally
+COMMON_FORTIFIABLE = {"dairy": (("vitaminD", 0.5),), "drinks": FORTIFIABLE["drinks"]}
+
+
+def fortified_apart(cat_a: str, cat_b: str, u: list, v: list, rules: dict = FORTIFIABLE) -> bool:
+    """Whether the values show one record is fortified and the other isn't: for the kinds of food that get
+    fortified, a nutrient usually added differs by more than its gap and three-fold."""
+    for k, gap in tuple(x for c in {cat_a, cat_b} for x in rules.get(c, ())):
+        x, y = u[IX[k]], v[IX[k]]
+        if x is not None and y is not None and abs(x - y) > gap and max(x, y) > 3 * max(min(x, y), 1e-9):
+            return True
+    return False
+
+
 def composition_ok(u: list, v: list) -> bool:
     known = 0
     for k, absol, rel in (("protein", 1, 0.2), ("fat", 1, 0.3), ("energy", 30, 0.3)):
@@ -333,6 +362,13 @@ def match_all(recs: list[dict]) -> dict[int, list[tuple[int, str]]]:
             return
         if not composition_ok(a["f"]["v"], b["f"]["v"]):
             return
+        sa, sb = a["f"]["v"][IX["sugars"]], b["f"]["v"][IX["sugars"]]
+        if "dairy" in (a["f"]["cat"], b["f"]["cat"]) and sa is not None and sb is not None and not near(sa, sb, 4, 0.5):
+            return   # flavoured or sweetened milk products ("strawberry yoghurt") are not the plain food
+        milks = all("milk" in r["words"] and not r["words"] & NOT_MILK for r in (a, b))
+        rules = COMMON_FORTIFIABLE if milks else {"drinks": COMMON_FORTIFIABLE["drinks"]}
+        if fortified_apart(a["f"]["cat"], b["f"]["cat"], a["f"]["v"], b["f"]["v"], rules):
+            return   # Canadian and Finnish milk are fortified without the name saying so
         if bool(NAMED_DOSE.search(a["name"])) != bool(NAMED_DOSE.search(b["name"])):
             return   # Fineli "1 ug vitamin d": a fortified product is not the unfortified food
         links[i].append((j, how))

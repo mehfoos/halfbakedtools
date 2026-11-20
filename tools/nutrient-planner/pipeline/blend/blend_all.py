@@ -176,17 +176,7 @@ FLOUR_TYPE = re.compile(r"\b(?:type|typ|t)\s?(\d{2,4})\b", re.I)
 PREPARED = re.compile(r"\b(?:prepared|made) (?:with|from) ([^,(]*)")
 LATIN = re.compile(r"\(([A-Z][a-z]+ [a-z]+)")
 DRAINED = re.compile(r"\bdrained\b", re.I)
-# Nutrients added by fortification, with the absolute difference that, with a three-fold ratio, means one record is
-# fortified and the other isn't (Canadian flour and milk are fortified without the name saying so).
-# Checked only for the kinds of food that get fortified, and only for what is usually added to them.
-FORTIFIABLE = {
-    "grains": (("iron", 1.0), ("folate", 40), ("thiamin", 0.2), ("riboflavin", 0.2)),
-    "cereals": (("iron", 1.0), ("folate", 40), ("thiamin", 0.2), ("riboflavin", 0.2), ("vitaminD", 0.5)),
-    "dairy": (("vitaminD", 0.5), ("vitaminA", 60)),
-    "drinks": (("vitaminD", 0.5), ("calcium", 50), ("vitaminB12", 0.1), ("riboflavin", 0.1)),
-    "beverages": (("vitaminC", 15), ("calcium", 150)),
-    "oils": (("vitaminD", 0.5), ("vitaminA", 100)),
-}
+FORTIFIABLE = cl.FORTIFIABLE   # defined with the Common list, which uses the same check
 
 
 def identity_ok(a: dict, b: dict, reviewed: bool = False) -> bool:
@@ -350,7 +340,9 @@ def groups(recs: list[dict]) -> list[list[int]]:
     for members in comp.values():
         # Every two records of a group must pass identity_ok (complete linkage): best-linked records first, each
         # joining the first group where it fits with every member and is linked to at least one; one per table.
-        order = sorted(members, key=lambda i: (-links[i], ORDER.index(recs[i]["table"])))
+        # A record whose values can't count (borrowed from an unnamed source) joins last, so it can't take a partner
+        # from a group where both would count.
+        order = sorted(members, key=lambda i: (recs[i]["family"] == "?", -links[i], ORDER.index(recs[i]["table"])))
         clusters: list[list[int]] = []
         for i in order:
             for c in clusters:
