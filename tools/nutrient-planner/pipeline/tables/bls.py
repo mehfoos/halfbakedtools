@@ -5,11 +5,21 @@ BLS calculated from a recipe, a pattern, by rescaling, from labelling, or borrow
 labelled with BLS's own term (the file's "labels" legend). "-" is missing (NA); "<LOD" (below the limit of
 detection) and "Traces" are missing with that label. Units are converted to the planner's (µg -> mg for vitamin B6,
 copper and manganese). Component definitions: BLS_4_0_Components_DE_EN.xlsx and the BLS 4.0 documentation.
+"<LOQ" and "<LOD or <LOQ" are missing with that label too. A "Logical zero" (documentation 4.2.10: the nutrient is
+assumed not to occur, for example retinol in plant foods) is kept as 0 with the label "z" (not a measurement).
+
+The BLS 4.0 errata (August 2026, bls_erratum.json) apply until BLS 4.1: the corrected values in its Tables 1-3 replace
+the published ones; values of recipes the erratum names as affected by a corrected ingredient, and the fat, energy and
+fatty acids of raw anchovy and the entries derived from it (no corrected value yet), are missing with an erratum label;
+energy of the 411 foods with oligosaccharides is recalculated without the double-counted 2 kcal/g (published - 2 x
+OLSAC); zero amino acids in foods with protein are missing (the erratum found false zeros for phenylalanine and is
+reviewing every amino acid for the same causes).
 
   python3 -I tools/nutrient-planner/pipeline/tables/bls.py
 """
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -61,7 +71,28 @@ LABELS = {"r": "BLS: recipe calculation", "p": "BLS: pattern calculation (from s
           "s": "BLS: rescaling (from another state of the food)", "b": "BLS: borrowed from another food",
           "d": "BLS: taken from another food composition database", "a": "BLS: aggregation of several foods",
           "l": "BLS: from product labelling", "x": "BLS: logical assumption",
-          "lod": "below the limit of detection", "trace": "trace"}
+          "lod": "below the limit of detection", "trace": "trace", "loq": "below the limit of quantification",
+          "lodloq": "below the limit of detection or quantification",
+          "z": "BLS: logical zero (assumed not to occur in this food; not a measurement)",
+          "err": "BLS erratum (August 2026): corrected value, in force until BLS 4.1",
+          "errna": "BLS erratum (August 2026): this value is wrong in BLS 4.0 and its correction is not yet published, so it is not available",
+          "erren": "BLS erratum (August 2026): energy recalculated without the oligosaccharides BLS 4.0 counted twice (published value - 2 kcal per g of oligosaccharides)",
+          "erraa": "BLS erratum (August 2026): a zero amino acid in a food with protein may be a rounding or transfer error (under review for BLS 4.1), so it is not available"}
+AMINO = ("histidine", "isoleucine", "leucine", "lysine", "methionine", "cystine", "phenylalanine", "tyrosine",
+         "threonine", "tryptophan", "valine")
+ERRATUM = json.loads((HERE / "bls_erratum.json").read_text())
+ERRATUM_FILE = "bls4_Erratum_BLS_4_0_DE.pdf"
+
+
+def erratum_rules() -> tuple[dict, dict, set, set]:
+    """(corrected values, keys made missing per food, foods whose energy is recalculated, zinc codes below a limit)."""
+    fixed = {(c["code"], c["key"]): c["value"] for c in ERRATUM["corrected"]}
+    gone: dict[str, set] = {}
+    for part in ("recipesTooHigh", "recipesIodine", "recipesCalcium", "anchovy"):
+        for code in ERRATUM[part]["codes"]:
+            gone.setdefault(code, set()).update(ERRATUM[part]["keys"])
+    zinc = {c: "loq" for c in ERRATUM["zincBelowLimit"]["loq"]} | {c: "lod" for c in ERRATUM["zincBelowLimit"]["lod"]}
+    return fixed, gone, set(ERRATUM["energyOligosaccharides"]["codes"]), zinc
 SELENIUM_NOTE = "BLS 4.0 gives no selenium, choline or vitamin B6 by form; those are NA."
 
 NUTS = re.compile(r"\b(nut|nuts|almond|hazelnut|walnut|cashew|pistachio|pecan|macadamia|peanut|seed|seeds|linseed|"
@@ -114,6 +145,9 @@ def main() -> int:
     if missing:
         raise SystemExit(f"BLS file lacks components: {missing}")
     fetch.get(COMPONENTS)   # the definitions cited above: checked to be the archived copy
+    fetch.get(ERRATUM_FILE)  # the errata applied below: checked to be the archived copy
+    fixed, gone, olsac_foods, zinc_limit = erratum_rules()
+    n_err = {"corrected": 0, "missing": 0, "energy": 0, "amino": 0}
     seen, out_basic, out_more = set(), [], []
     for row in rows[1:]:
         if not row or not row[0]:
@@ -124,8 +158,19 @@ def main() -> int:
             i = col[comp]
             cell = row[i] if i < len(row) else None
             origin = row[i + 1] if i + 1 < len(row) else None
-            if cell == "<LOD":
-                labels[key] = "lod"
+            if (code, key) in fixed:
+                vals[key], labels[key] = float(fixed[code, key]), "err"
+                n_err["corrected"] += 1
+                continue
+            if key in gone.get(code, ()):
+                labels[key] = "errna"
+                n_err["missing"] += 1
+                continue
+            if key == "zinc" and code in zinc_limit:
+                labels[key] = zinc_limit[code]
+                continue
+            if cell in ("<LOD", "<LOQ", "<LOD or <LOQ"):
+                labels[key] = {"<LOD": "lod", "<LOQ": "loq", "<LOD or <LOQ": "lodloq"}[cell]
                 continue
             if origin == "Traces":
                 labels[key] = "trace"
@@ -133,8 +178,20 @@ def main() -> int:
             v = common.num(cell)
             if v is None:
                 continue
+            if key == "energy" and code in olsac_foods:
+                v -= 2 * common.num(row[col["OLSAC"]])
+                labels[key] = "erren"
+                n_err["energy"] += 1
+            if key in AMINO and v == 0 and (common.num(row[col["PROT625"]]) or 0) > 0:
+                labels[key] = "erraa"
+                n_err["amino"] += 1
+                continue
             vals[key] = v * factor
-            if origin in ORIGIN_CODE:
+            if key == "energy" and code in olsac_foods:
+                continue
+            if origin == "Logical zero" and v == 0:
+                labels[key] = "z"
+            elif origin in ORIGIN_CODE:
                 labels[key] = ORIGIN_CODE[origin]
         if not vals:
             continue
@@ -146,8 +203,11 @@ def main() -> int:
                          extra={"nameDe": de}, group=common.first_word_group(name))
         (out_basic if bcat else out_more).append(f)
     defs = {k: m[2] for k, m in MAP.items() if m[2]}
-    common.write(TABLE, TITLE, {"data": DATA, "components": COMPONENTS}, defs, out_basic, out_more,
+    common.write(TABLE, TITLE, {"data": DATA, "components": COMPONENTS, "erratum": ERRATUM_FILE}, defs, out_basic, out_more,
                  ["Each value's data origin is kept as BLS gives it; see the `labels` legend in `foods-bls.json`.",
+                  f"BLS 4.0 errata (August 2026) applied: {n_err['corrected']} corrected values; {n_err['missing']} values of affected "
+                  f"recipes and of raw anchovy and its derived entries missing; energy recalculated for {n_err['energy']} foods with "
+                  f"oligosaccharides; {n_err['amino']} zero amino acids in foods with protein missing (pipeline/tables/bls_erratum.json).",
                   SELENIUM_NOTE, "Sausages, cured meats, dishes, cakes, sweets and drinks are Food Finder only."],
                  LABELS)
     return 0

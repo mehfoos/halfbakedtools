@@ -480,7 +480,7 @@
       "post": "Karlsruhe, Germany, 2025. doi: 10.25826/Data20251217-134202-0.",
       "url": "https://doi.org/10.25826/Data20251217-134202-0",
       "licence": "CC BY 4.0; credit the Max Rubner-Institut",
-      "usedFor": "German food composition (the BLS food table)",
+      "usedFor": "German food composition (the BLS food table), with the corrections in the BLS 4.0 errata (August 2026)",
       "accessed": "2026-11-18",
       "archive": [
         {
@@ -494,6 +494,10 @@
         {
           "asset": "bls4_BLS_4_0_Documentation_EN.pdf",
           "label": "Archived copy (documentation)"
+        },
+        {
+          "asset": "bls4_Erratum_BLS_4_0_DE.pdf",
+          "label": "Archived copy (errata, August 2026, German)"
         }
       ],
       "ownerCopy": [
@@ -508,6 +512,10 @@
         {
           "file": "bls4_BLS_4_0_Documentation_EN.pdf",
           "sha256": "c3a7c0d44d4a7638da935de75a37e06e78409f9306262e6fe060a9371adaeee6"
+        },
+        {
+          "file": "bls4_Erratum_BLS_4_0_DE.pdf",
+          "sha256": "ae021760436f1b6af09fd1df46e93b64d94e415f0a3b665e1d901cdee4ddd8c3"
         }
       ]
     },

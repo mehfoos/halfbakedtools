@@ -23,24 +23,26 @@ import fetch  # noqa: E402
 TABLE, TITLE = "ciqual", "France Ciqual 2025 (ANSES)"
 ZIP = "ciqual2025_XML_2025_11_03.zip"
 MAP = {
-    "energy": ("328", 1, "EU Regulation 1169/2011 factors: protein 4, carbohydrate 4, fat 9, fibre 2, alcohol 7, organic acids 3, polyols 2.4 kcal/g"),
+    "energy": ("328", 1, "EU Regulation 1169/2011 factors: protein (as N x 6.25) 4, carbohydrate 4, fat 9, fibre 2, alcohol 7, organic acids 3, polyols 2.4 kcal/g; unknown polyols and organic acids counted as 0 (documentation 3.3.6)"),
     "protein": ("25000", 1, "Total nitrogen x Jones' food-specific factor"),
     "fat": ("40000", 1, ""), "satfat": ("40302", 1, ""),
-    "carbohydrate": ("31000", 1, "Available carbohydrate by weight (sugars, starch and polyols; not by difference; excludes fibre)"),
+    "carbohydrate": ("31000", 1, "Carbohydrate including polyols and excluding fibre; by difference, as starch + sugars, or as total carbohydrate minus fibre, depending on the food (documentation 3.3.2)"),
     "fibre": ("34100", 1, "Dietary fibre, AOAC methods"), "sugars": ("32000", 1, ""),
     "calcium": ("10200", 1, ""), "iron": ("10260", 1, ""), "magnesium": ("10120", 1, ""), "phosphorus": ("10150", 1, ""),
     "potassium": ("10190", 1, ""), "sodium": ("10110", 1, ""), "zinc": ("10300", 1, ""), "copper": ("10290", 1, ""),
     "manganese": ("10251", 1, ""), "selenium": ("10340", 1, ""), "iodine": ("10530", 1, ""),
-    "vitaminA": ("51104", 1, "Retinol equivalents (the UK and EU definition; US targets use retinol activity equivalents)"),
+    "vitaminA": ("51104", 1, "Retinol + beta-carotene / 12 (IOM 2001 factors, documentation 3.3.7; other carotenoids not counted): retinol activity equivalents, the US definition, not the UK and EU retinol equivalents (beta-carotene / 6)"),
     "retinol": ("51200", 1, ""), "vitaminD": ("52100", 1, ""), "vitaminD2": ("52200", 1, ""), "vitaminD3": ("52300", 1, ""),
     "vitaminE": ("71010", 1, "Alpha-tocopherol"), "vitaminK": ("54101", 1, "Phylloquinone (vitamin K1) only"),
     "vitaminC": ("55100", 1, ""), "thiamin": ("56100", 1, ""), "riboflavin": ("56200", 1, ""),
     "niacinPreformed": ("56310", 1, ""), "pantothenic": ("56400", 1, ""), "vitaminB6": ("56500", 1, ""),
-    "folate": ("56700", 1, "Total folate (not dietary folate equivalents)"), "vitaminB12": ("56600", 1, ""),
+    "folate": ("56700", 1, "Vitamin B9 as Ciqual gives it (documentation 3.3.9): total folate without a stated breakdown (code 56700), or, where Ciqual gives that instead, dietary folate equivalents (code 56702: food folate + 1.7 x folic acid), labelled \"dfe\""), "vitaminB12": ("56600", 1, ""),
     "la": ("41826", 1, "C18:2 9c,12c (n-6)"), "ala": ("41833", 1, "C18:3 c9,c12,c15 (n-3)"),
     "epa": ("42053", 1, "C20:5 n-3"), "dha": ("42263", 1, "C22:6 n-3"),
 }
-LABELS = {"trace": "trace", "D": "Ciqual confidence code D (its least reliable grade)"}
+LABELS = {"trace": "trace", "D": "Ciqual confidence code D (its least reliable grade)",
+          "dfe": "Ciqual: dietary folate equivalents (food folate + 1.7 x folic acid), not total folate"}
+FOLATE_DFE = "56702"   # Ciqual gives B9 either as 56700 (total, unspecified) or as 56702 (DFE), never both (checked 20 Nov 2026)
 SUB = {  # Ciqual sub-group -> category
     "0201": "veg", "0202": "veg", "0203": "pulses", "0204": "fruit", "0205": "nuts",
     "0301": "grains", "0302": "grains", "0304": "grains", "0303": "sweets", "0305": "sweets",
@@ -67,8 +69,15 @@ def main() -> int:
                                         "fr": text(el, "alim_nom_fr"), "sub": text(el, "alim_ssgrp_code"),
                                         "grp": text(el, "alim_grp_code"), "vals": {}, "labels": {}}
     want = {m[0]: k for k, m in MAP.items()}
+    dfe = {}
     for _ev, el in ET.iterparse(z.open(names["compo"])):
         if el.tag != "COMPO":
+            continue
+        if text(el, "const_code") == FOLATE_DFE:
+            v = common.num(text(el, "teneur"))
+            if v is not None:
+                dfe[text(el, "alim_code")] = v
+            el.clear()
             continue
         key = want.get(text(el, "const_code"))
         f = foods.get(text(el, "alim_code"))
@@ -84,6 +93,15 @@ def main() -> int:
             elif t.startswith("<"):
                 f["labels"][key] = t.replace(",", ".")
         el.clear()
+    n_dfe = 0
+    for code, v in dfe.items():
+        f = foods.get(code)
+        if f is None:
+            continue
+        if "folate" in f["vals"]:
+            raise SystemExit(f"Ciqual {code}: both total folate and DFE are given; the rule above assumes they never are")
+        f["vals"]["folate"], n_dfe = v, n_dfe + 1
+        f["labels"]["folate"] = "dfe"
     seen, out_basic, out_more = set(), [], []
     for code, f in sorted(foods.items(), key=lambda kv: int(kv[0])):
         vals, name = f["vals"], f["name"]
@@ -101,7 +119,8 @@ def main() -> int:
         (out_basic if bcat else out_more).append(e)
     common.write(TABLE, TITLE, {"data": ZIP}, {k: m[2] for k, m in MAP.items() if m[2]}, out_basic, out_more,
                  ["Ciqual 2025 gives no amino acids or choline, and niacin only as preformed niacin; those are NA.",
-                  "Values below a limit (\"< x\") and traces are NA with the table's own wording as a label."], LABELS)
+                  "Values below a limit (\"< x\") and traces are NA with the table's own wording as a label.",
+                  f"Folate: {n_dfe} foods have B9 only as dietary folate equivalents (code 56702); those values are labelled \"dfe\"."], LABELS)
     return 0
 
 

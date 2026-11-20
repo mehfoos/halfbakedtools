@@ -4,7 +4,9 @@
 Reads the archived spreadsheets (fetch.py): the main table (_02), amino acids (_04) and fatty acids (_09), joined by
 food number, and MEXT's 2015 English names of food sources (0r10). Each value is MEXT's own. "-" (not measured) and
 "*" are missing (NA); "Tr" and "(Tr)" are missing with a trace label; a value in brackets, such as "(0)" or "(1.2)",
-is MEXT's estimate: it is used and labelled. Amino acids and the named fatty acids are converted from mg to g.
+is MEXT's estimate: it is used and labelled ("(0)" separately: assumed none, not measured). A plain "0" is MEXT's
+"less than 1/10 of the smallest amount shown (3/10 for iodine and selenium), or not detected", so it is kept as 0.
+"18.5†"-style values with a dagger (two cells, one food) are left missing. Amino acids and the named fatty acids are converted from mg to g.
 
 Food names: MEXT publishes Japanese names only. The English name shown is the MEXT English name of the food source
 (plant or animal) followed by this site's translation of the other terms (japan_glossary.json); terms not in the
@@ -54,7 +56,8 @@ MAP = {
     "tyrosine": (AMINO, "TYR", MG, ""), "threonine": (AMINO, "THR", MG, ""), "tryptophan": (AMINO, "TRP", MG, ""),
     "valine": (AMINO, "VAL", MG, ""), "histidine": (AMINO, "HIS", MG, ""),
 }
-LABELS = {"e": "MEXT: estimated value (shown in brackets in the table)", "trace": "trace"}
+LABELS = {"e": "MEXT: estimated value (shown in brackets in the table)", "trace": "trace",
+          "z": "MEXT: (0), estimated as none from the literature, not measured (documentation, chapter 1, section on symbols)"}
 GROUP = {"01": "grains", "02": "veg", "03": "sweets", "04": "pulses", "05": "nuts", "06": "veg", "07": "fruit", "08": "veg",
          "09": "veg", "10": "fish", "11": "meat", "12": "dairy", "13": "dairy", "14": "oils", "15": "sweets",
          "16": "beverages", "17": "dishes", "18": "dishes"}
@@ -123,7 +126,7 @@ def main() -> int:
                 continue
             vals[key] = v * factor
             if est:
-                labels[key] = "e"
+                labels[key] = "z" if v == 0 else "e"
         if not vals:
             continue
         vals |= common.derive(vals, table_gives_ne=True)

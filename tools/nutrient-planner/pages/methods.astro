@@ -129,12 +129,13 @@ const basisLists = (s: typeof uk) => {
         <div class="details-body">
           <p>Only these values are calculated rather than read from a table, and each only when every part is known (a missing part is never taken as zero):</p>
           <ul class="prose">
-            <li><strong>Carbohydrate (USDA, CNF and KFCDb).</strong> These tables give "carbohydrate by difference", which includes fibre <Fragment set:html={cite("usda-sr-doc")} />. Targets and food labels count carbohydrate without fibre, so the food's fibre is subtracted (not below 0). A food with no fibre value keeps the table's figure. The other tables give available carbohydrate, which already excludes fibre.</li>
+            <li><strong>Carbohydrate (USDA, CNF and KFCDb).</strong> These tables give "carbohydrate by difference", which includes fibre <Fragment set:html={cite("usda-sr-doc")} />. Targets and food labels count carbohydrate without fibre, so the food's fibre is subtracted (not below 0). A food with no fibre value keeps the table's figure. The other tables give carbohydrate that already excludes fibre: Frida as carbohydrate by difference minus fibre <Fragment set:html={cite("frida-55")} />, the rest as available carbohydrate.</li>
             <li><strong>Salt</strong> = sodium (mg) × 2.5 ÷ 1,000, in grams, as on food labels <Fragment set:html={cite("eu-1169")} />.</li>
             <li><strong>Niacin equivalents</strong> = preformed niacin (mg) + tryptophan (g) × 1,000 ÷ 60, where the table doesn't give niacin equivalents itself.</li>
             <li><strong>Methionine + cysteine</strong> and <strong>phenylalanine + tyrosine</strong>: the sum of the two, as the WHO amino acid requirements are set <Fragment set:html={cite("who-2007")} />.</li>
             <li><strong>EPA + DHA</strong> = (EPA + DHA, g) × 1,000, in mg.</li>
             <li><strong>Energy (AFCD)</strong>: kcal = kJ ÷ 4.184.</li>
+            <li><strong>Energy (BLS, 411 foods with oligosaccharides)</strong>: the published kcal minus 2 kcal per gram of oligosaccharides, which the BLS 4.0 errata say were counted twice <Fragment set:html={cite("bls-4")} />. For example, glucose syrup: 413 kcal published, 318 kcal used (79.5 g carbohydrate × 4).</li>
           </ul>
         </div>
       </details>
@@ -370,7 +371,9 @@ const basisLists = (s: typeof uk) => {
       <ul class="prose">
         <li><strong>NA, never zero.</strong> Where a food has no value for a nutrient, it is not counted as zero. A day's amount is shown as "NA" (no data) if no food in it has a value, or as "at least" the known total if some do.</li>
         <li><strong>Results.</strong> Met: at least 99.5% of the target. Short: 66% to 99.5%. Low: below 66%. Over: more than the limit (by over 0.1%). When some foods have no value, a result that the missing data could change is "unclear" rather than short or within the limit; a target already met, or a limit already exceeded, by the known values stays so, because missing values can only add to them.</li>
-        <li><strong>Codes kept.</strong> Where a table gives a code instead of a number (for example CoFID "Tr", trace, and "N", present but no reliable amount), the value is missing and the code is shown with it.</li>
+        <li><strong>Codes kept.</strong> Where a table gives a code instead of a number (for example CoFID "Tr", trace, and "N", present but no reliable amount; BLS "&lt;LOD" and "&lt;LOQ", below the limit of detection or quantification), the value is missing and the code is shown with it.</li>
+        <li><strong>Zeros.</strong> A zero a table says it assumed rather than measured (BLS "logical zero", CNF "assumed zero", MEXT "(0)", AFCD "imputed zero", Frida "natural zero, not analysed") is kept as 0 and labelled. The AFCD also writes 0 for results below its limit of reporting <Fragment set:html={cite("afcd-3")} />, so any other AFCD zero is missing, labelled "below the limit of reporting". 48 CNF values coded "assumed zero" but given as an amount contradict themselves and are missing.</li>
+        <li><strong>BLS errata.</strong> The BLS 4.0 errata (August 2026) apply until BLS 4.1 <Fragment set:html={cite("bls-4")} />: their corrected values are used (skimmed milk retinol 2.4 µg, not 414 µg; low-fat milk iodine 9.5 µg; almond calcium 254 mg; and four more); values the errata say are wrong but not yet corrected are missing (retinol, iodine or calcium of 157 recipes made with those foods; fat, energy and fatty acids of raw anchovy and 16 foods made from it); zero amino acids in foods with protein are missing, because the errata found such zeros to be errors and are reviewing every amino acid.</li>
         <li><strong>Not assessed.</strong> Free sugars (UK limit 5% of energy), because the tables don't separate free from other sugars; any target too few of the chosen foods give a value for (see "The optimiser").</li>
         <li><strong>Caveats shown</strong> with values and results, in one style across the site: Beta (the Blended table and the Common list), Assumption (a definition that differs from the one your standard's targets use), Estimate, Borrowed (a value a table took from another), and Translated (Japanese food names, translated by this site from MEXT's English names and a glossary).</li>
       </ul>
@@ -409,12 +412,15 @@ const basisLists = (s: typeof uk) => {
       <tr><td>Unit weights (egg, slice of bread, banana)</td><td>USDA SR Legacy <code>food_portion.csv</code>; bread corrected from 36 g to 32 g</td><td>18 Nov 2026</td></tr>
       <tr><td>CoFID definitions and sample values</td><td>CoFID 2021 user guide; four foods' values against the spreadsheet</td><td>18 Nov 2026</td></tr>
       <tr><td>Nutrient definitions by standard (which definition each standard's targets use)</td><td>PHE, NASEM, EFSA, SACN and Regulation 1169/2011, archived copies <Fragment set:html={cite("sacn-2015")} /></td><td>18 Nov 2026</td></tr>
+      <tr><td>Conversions of BLS, Ciqual, Frida, Fineli, KFCDb, MEXT, CNF and AFCD</td><td>Each table's definitions and missing-value codes against its archived documentation (KFCDb: column headings only; it has none); BLS also against its errata (August 2026). Values of 30 or more foods per table, picked at random, against the archived files: about 1,100 to 1,600 values each, no differences. Corrections listed under Changes</td><td>20 Nov 2026</td></tr>
       <tr><td>Blended table</td><td>Two independent reviews by separate agents: 406 of 556 groups, then all 505; medians correct; wrong and doubtful groups fixed by tested rules</td><td>19 Nov 2026</td></tr>
     </tbody>
   </table></div>
   <p><strong>Not yet checked:</strong></p>
   <ul class="prose">
-    <li>The conversions of the other eight tables (BLS, Ciqual, Frida, Fineli, KFCDb, MEXT, CNF and AFCD) have not been checked against each table's own documentation or spot-checked against its published values. Their definitions are recorded from the documentation when the converter was written.</li>
+    <li>Only a sample of each table's values was compared with its file (see above), not every value.</li>
+    <li>Fineli: its archived documentation doesn't say how its two fibre values ("fibre, total", used here, and "fibre, total dietary") differ, which forms its vitamin D counts, or how its available carbohydrate is derived. KFCDb: no documentation was archived, so its definitions rest on its column headings.</li>
+    <li>BLS recipes whose zinc the errata say will be recalculated (where an ingredient's zinc was missing) are used as published, because the errata don't list them.</li>
     <li>The matching behind the Common list and the Blended table has been checked by automated reviews only, without manual human verification.</li>
     <li>The Japanese food names translated by this site.</li>
   </ul>
@@ -435,6 +441,7 @@ const basisLists = (s: typeof uk) => {
 
   <h2>Changes</h2>
   <ul class="prose small">
+    <li><strong>20 Nov 2026:</strong> the eight newer tables checked against their documentation and files. Corrections: AFCD zeros that may be below the limit of reporting are now missing (11,345 values; 5,475 zeros FSANZ says it imputed stay 0, labelled); BLS errata applied (7 corrected values, 282 values missing, energy of 411 foods recalculated, 1,921 zero amino acids missing); Ciqual vitamin A recognised as retinol activity equivalents (retinol + beta-carotene ÷ 12), not retinol equivalents, and folate read for 908 foods that give it only as dietary folate equivalents; Frida carbohydrate recognised as by difference minus fibre; assumed zeros labelled in BLS, Frida and MEXT; 48 contradictory CNF values missing. The Blended table has 426 foods (was 440): records whose protein or fat is now missing no longer pass the composition check.</li>
     <li><strong>20 Nov 2026:</strong> this page rewritten to record the full method: inputs and defaults, the ten tables generated from their files, worked-out values, formulas with a worked example, the optimiser's constants, missing-data rules, and what has and hasn't been checked. No calculation changed.</li>
     <li><strong>19 Nov 2026:</strong> The Blended table, a beta, rebuilt from all ten tables and made the default table, after two independent reviews; Common foods derived from the tables (same food in at least two independent tables) instead of hand-picked; two presets, Common foods and All foods.</li>
     <li><strong>18 Nov 2026:</strong> eight more tables added on an equal footing (BLS, Ciqual, Frida, Fineli, KFCDb, MEXT, CNF, AFCD) after CoFID; raw foods people don't normally eat raw left out of the default lists; slice of bread corrected to 32 g.</li>

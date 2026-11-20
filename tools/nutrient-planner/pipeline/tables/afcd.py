@@ -2,7 +2,15 @@
 
 Reads the archived zip of the Release 3 Excel files (fetch.py): Food Details (names, classification, derivation),
 Nutrient profiles (the values, sheet "All solids & liquids per 100 g") and Food group information (group names).
-Each value is the AFCD's own, per 100 g, in the planner's units; a blank is missing (NA). The AFCD gives each food one
+Each value is the AFCD's own, per 100 g, in the planner's units; a blank is missing (NA).
+
+Zeros (checked 20 Nov 2026 against the About Release 3 PDF, page 3, and the Food Details "Sampling Details"): the AFCD
+has no blanks for its core nutrients (the AUSNUT 2023 set), and a 0 there or elsewhere is one of two things. FSANZ
+reports analytical results below the limit of reporting (LOR) as zero; and where it assumed a nutrient absent it
+"imputed zero", which the food's Sampling Details name ("Alcohol, vitamins (B12, D, retinol) ... were imputed zero").
+A zero the Sampling Details name as imputed is kept as 0 with the label "z" (an assumption, not a measurement, as for
+the CNF's assumed zeros). Any other zero may be below the LOR, so it is missing (NA) with the label "lor", as other
+tables' values below a limit are. The AFCD gives each food one
 overall derivation (analysed, recipe, imputed, label data, borrowed, estimated); for any food that isn't "analysed"
 every value carries that derivation as its label (the AFCD says individual values can differ from the food's overall
 derivation, so the legend says so).
@@ -64,7 +72,31 @@ LABELS = {
     "i": "AFCD: the food's overall derivation is imputed from a similar food (individual values can differ)",
     "l": "AFCD: the food's overall derivation is label data (individual values can differ)",
     "e": "AFCD: the food's overall derivation is estimated (individual values can differ)",
+    "z": "AFCD: imputed zero (FSANZ assumed none is present, as the food's sampling details say; not a measurement)",
+    "lor": "AFCD gives 0, which it also uses for amounts below the limit of reporting, so the amount is not known (NA)",
 }
+# "... were imputed zero" in a food's Sampling Details: which planner keys each named nutrient covers. A derived key
+# (vitamin A, carbohydrate, niacin equivalents, fatty acids) is an imputed zero only when every part it needs is named.
+IMPUTED = re.compile(r"([^.]*?)\b(?:was|were) (?:imputed|presumed|assumed|imported)(?: to be| as)? zero\b", re.I)
+NAMED = {"vitD": r"\bD\b|vitamin D\b", "B12": r"\bB12\b", "B6": r"\bB6\b", "B1": r"\bB1\b", "B2": r"\bB2\b",
+         "B3": r"\bB3\b", "B5": r"\bB5\b", "retinol": r"(?i)retinol", "carot": r"(?i)beta-carotene|carotenes",
+         "C": r"\bvitamin C\b|\bC\b", "fibre": r"(?i)fibre", "sugars": r"(?i)sugar", "starch": r"(?i)starch",
+         "fa": r"(?i)(?<!trans )(?<!some polyunsaturated )\bfatty acids\b", "I": r"\bI\b|(?i:iodine)",
+         "Se": r"\bSe\b|(?i:selenium)", "P": r"\bP\b", "E": r"(?i)tocopherol", "trp": r"(?i)tryptophan",
+         "protein": r"(?i)\bprotein\b", "fat": r"(?i)(?<!trans )\bfat\b", "folate": r"(?i)\bfolate\b"}
+NEEDS = {"vitaminD": [["vitD"]], "vitaminD2": [["vitD"]], "vitaminD3": [["vitD"]], "vitaminB12": [["B12"]],
+         "vitaminB6": [["B6"]], "thiamin": [["B1"]], "riboflavin": [["B2"]], "niacinPreformed": [["B3"]],
+         "niacinNE": [["B3", "trp"]], "pantothenic": [["B5"]], "retinol": [["retinol"]], "vitaminA": [["retinol", "carot"]],
+         "vitaminC": [["C"]], "fibre": [["fibre"]], "sugars": [["sugars"]], "carbohydrate": [["starch", "sugars"]],
+         "satfat": [["fa"], ["fat"]], "la": [["fa"], ["fat"]], "ala": [["fa"], ["fat"]], "epa": [["fa"], ["fat"]],
+         "dha": [["fa"], ["fat"]], "iodine": [["I"]], "selenium": [["Se"]], "phosphorus": [["P"]], "vitaminE": [["E"]],
+         "tryptophan": [["trp"]], "protein": [["protein"]], "fat": [["fat"]], "folate": [["folate"]]}
+
+
+def imputed_zero(sampling: str) -> set[str]:
+    """Planner keys that a food's Sampling Details say were imputed zero."""
+    named = {k for m in IMPUTED.finditer(sampling or "") for k, p in NAMED.items() if re.search(p, m.group(1))}
+    return {key for key, alts in NEEDS.items() if any(all(n in named for n in alt) for alt in alts)}
 DERIVATION_LABEL = {"Recipe": "rec", "Borrowed": "b", "Imputed": "i", "Label Data": "l", "Estimated": "e"}
 # First two digits of the classification code are the AFCD (AUSNUT 2023) food group.
 GROUP = {"11": "beverages", "12": "grains", "13": "dishes", "14": "oils", "15": "fish", "16": "fruit", "17": "dairy",
@@ -99,7 +131,8 @@ def main() -> int:
     for r in rows[3:]:
         if r and r[0]:
             details[str(r[0]).strip()] = {"cls": str(r[ix["Classification"]]).strip(), "der": str(r[ix["Derivation"]] or "").strip(),
-                                          "name": norm(r[ix["Food Name"]]), "desc": norm(r[ix["Food Description"]])}
+                                          "name": norm(r[ix["Food Name"]]), "desc": norm(r[ix["Food Description"]]),
+                                          "zero": imputed_zero(str(r[ix["Sampling Details"]] or "") if ix["Sampling Details"] < len(r) else "")}
     groups = {}
     for r in xlsx_min.read(out / GROUPS_X)["Food group information"][3:]:
         if r and r[0] and re.fullmatch(r"\d+", str(r[0]).strip()):
@@ -115,7 +148,7 @@ def main() -> int:
             raise SystemExit(f"AFCD profiles file: column {header!r} for {key} found {count.get(header, 0)} times")
         col[key] = ph.index(header)
     seen, out_basic, out_more = set(), [], []
-    n_foods = 0
+    n_foods = n_lor = n_z = 0
     for r in prof[3:]:
         if not r or not r[0]:
             continue
@@ -129,6 +162,15 @@ def main() -> int:
         for key, (_h, factor, _d) in MAP.items():
             v = common.num(r[col[key]] if col[key] < len(r) else None)
             if v is None:
+                continue
+            if v == 0:
+                if key not in d["zero"]:
+                    labels[key] = "lor"
+                    n_lor += 1
+                    continue
+                labels[key] = "z"
+                n_z += 1
+                vals[key] = 0.0
                 continue
             vals[key] = v * factor
             if lab:
@@ -165,6 +207,8 @@ def main() -> int:
                  ["Vitamin K and choline are NA: the AFCD does not give them.",
                   "Cystine is cystine plus cysteine (the AFCD does not separate them).",
                   "Only the \"All solids & liquids per 100 g\" sheet is used; the AFCD's 100 mL sheet for liquids repeats those foods per 100 mL.",
+                  f"Zeros: {n_z} values the food's sampling details name as imputed zero are 0 with the label \"z\" (not measurements); "
+                  f"{n_lor} other zeros are NA with the label \"lor\", because the AFCD also reports amounts below the limit of reporting as zero.",
                   "A food's overall derivation (recipe, borrowed, imputed, label data, estimated) is kept as a label on each of its values.",
                   "Licence and required notices: data/foods/LICENCE-AFCD.md."], LABELS, notice=common.AFCD_NOTICE)
     return 0

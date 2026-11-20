@@ -64,6 +64,7 @@ LABELS = {
     "l": "CNF: from the product's label declaration",
     "lit": "CNF: derived from the scientific literature",
     "z": "CNF: an assumed zero (not a measurement)",
+    "zx": "CNF: given as an amount but coded as an assumed zero; the two contradict each other, so the value is not used (NA)",
     "p": "CNF: provisional data",
     "rec": "CNF: calculated using a recipe",
     "x": "CNF: from another country's table (Danish, Finnish or other international database)",
@@ -108,12 +109,17 @@ def main() -> int:
         f = foods.get(r["Food_Code"])
         v = common.num(r["Nutrient_Amount"])
         if key and f and v is not None:
-            f["vals"][key] = v
             lab = SRC_LABEL.get(int(r["Nutrient_Source_Code"] or -1))
+            if lab == "z" and v != 0:
+                # 82 values in the 2026 file are coded "assumed zero" but given as an amount: they contradict
+                # themselves, so neither the amount nor a zero is used (checked 20 Nov 2026).
+                f["labels"][key] = "zx"
+                continue
+            f["vals"][key] = v
             if lab:
                 f["labels"][key] = lab
     seen, out_basic, out_more = set(), [], []
-    n_zero = 0
+    n_zero = n_zx = 0
     for code, f in sorted(foods.items(), key=lambda kv: int(kv[0])):
         vals, name = f["vals"], f["name"]
         if not vals:
@@ -122,6 +128,7 @@ def main() -> int:
             vals["carbohydrate"] = max(0.0, vals["carbohydrate"] - vals["fibre"])
         vals |= common.derive(vals, table_gives_ne="niacinNE" in vals)
         n_zero += sum(1 for l in f["labels"].values() if l == "z")
+        n_zx += sum(1 for l in f["labels"].values() if l == "zx")
         cat = GROUP.get(f["grp"], "other")
         if f["grp"] == "9" and re.search(r"juice|nectar", name, re.I):
             cat = "beverages"
@@ -145,7 +152,8 @@ def main() -> int:
                  out_basic, out_more,
                  ["CNF is built on USDA data: values labelled \"no change from the USDA value\" are USDA's, so the CNF and the USDA table "
                   "are not independent for those foods.",
-                  f"{n_zero} values are the CNF's \"assumed zero\" (labelled; they are not measurements).",
+                  f"{n_zero} values are the CNF's \"assumed zero\" (labelled; they are not measurements). "
+                  f"{n_zx} values coded as an assumed zero but given as a non-zero amount are NA (label \"zx\").",
                   "A nutrient the CNF gives no value for is NA; nothing is filled in."], LABELS)
     return 0
 

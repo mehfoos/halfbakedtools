@@ -72,9 +72,9 @@ ORDER = ["usda", "cofid", "afcd", "cnf", "ciqual", "frida", "fineli", "bls", "kf
 D = lambda **groups: {t: g for g, ts in groups.items() for t in ts.split()}  # noqa: E731
 DEFINITIONS = {
     "energy": D(atwater="usda cnf", uk="cofid", eu="bls ciqual frida", fineli="fineli", kfcdb="kfcdb", mext="japan", fsanz="afcd"),
-    "carbohydrate": D(diff="usda cnf kfcdb", mono="cofid", avail="bls ciqual frida fineli japan afcd"),
+    "carbohydrate": D(diff="usda cnf kfcdb frida", mono="cofid", avail="bls ciqual fineli japan afcd"),
     "sugars": D(mono="cofid", weight="usda bls ciqual frida fineli kfcdb japan cnf afcd"),
-    "vitaminA": D(re="cofid bls ciqual frida afcd", rae="usda fineli japan cnf"),
+    "vitaminA": D(re="cofid bls frida afcd", rae="usda fineli japan cnf ciqual"),
     "folate": D(total="cofid ciqual frida fineli japan", dfe="usda bls kfcdb cnf afcd"),
     "vitaminD": D(d2d3="usda bls kfcdb cnf", d25="cofid afcd", frida="frida", fineli="fineli", ciqual="ciqual", mext="japan"),
     "vitaminE": D(ate="cofid", alpha="usda bls ciqual frida fineli kfcdb japan cnf afcd"),
@@ -135,8 +135,12 @@ def packing(name: str) -> str:
 code_of = cl.code_of
 
 
-def group_of(key: str, table: str) -> str:
-    return DEFINITIONS.get(key, {}).get(table, "std")
+# A value whose label names its own definition (Ciqual gives B9 for some foods as DFE instead of total folate).
+VALUE_GROUP = {("ciqual", "folate", "dfe"): "dfe"}
+
+
+def group_of(key: str, table: str, label: str | None = None) -> str:
+    return VALUE_GROUP.get((table, key, label)) or DEFINITIONS.get(key, {}).get(table, "std")
 
 
 def def_id(key: str, group: str) -> str:
@@ -379,7 +383,7 @@ def blend_food(recs: list[dict], members: list[int], labels: dict, plant: bool =
         for i in members:
             x = recs[i]["f"]["v"][IX[k]]
             if x is not None:
-                by_group[group_of(k, recs[i]["table"])].append((i, x))
+                by_group[group_of(k, recs[i]["table"], (recs[i]["f"].get("q") or {}).get(k))].append((i, x))
         for g, vals in by_group.items():
             parts = []
             for i, x in vals:

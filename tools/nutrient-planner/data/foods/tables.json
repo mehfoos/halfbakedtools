@@ -25,9 +25,9 @@
    "notice": "Includes Australian data (AFCD, © FSANZ), which may not be appropriate for use in other countries; food composition can vary substantially between batches and brands. AFCD licence: FSANZ Data User Licence Agreement",
    "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
    "default": true,
-   "foods": 440,
-   "basicFoods": 440,
-   "generated": "2026-11-19"
+   "foods": 426,
+   "basicFoods": 426,
+   "generated": "2026-11-20"
   },
   {
    "id": "usda",
@@ -81,8 +81,8 @@
     "eu"
    ],
    "foods": 7140,
-   "basicFoods": 2880,
-   "generated": "2026-11-18"
+   "basicFoods": 2872,
+   "generated": "2026-11-20"
   },
   {
    "id": "ciqual",
@@ -97,8 +97,8 @@
    "licence": "Licence Ouverte / Etalab 2.0 (ANSES)",
    "standards": [],
    "foods": 3484,
-   "basicFoods": 1190,
-   "generated": "2026-11-18"
+   "basicFoods": 1188,
+   "generated": "2026-11-20"
   },
   {
    "id": "frida",
@@ -113,8 +113,8 @@
    "licence": "CC BY 4.0 (DTU National Food Institute)",
    "standards": [],
    "foods": 1381,
-   "basicFoods": 604,
-   "generated": "2026-11-18"
+   "basicFoods": 600,
+   "generated": "2026-11-20"
   },
   {
    "id": "fineli",
@@ -130,7 +130,7 @@
    "standards": [],
    "foods": 4232,
    "basicFoods": 774,
-   "generated": "2026-11-19"
+   "generated": "2026-11-20"
   },
   {
    "id": "kfcdb",
@@ -163,7 +163,7 @@
    "translated": true,
    "foods": 2538,
    "basicFoods": 1360,
-   "generated": "2026-11-19"
+   "generated": "2026-11-20"
   },
   {
    "id": "cnf",
@@ -178,8 +178,8 @@
    "licence": "Open Government Licence - Canada (Health Canada)",
    "standards": [],
    "foods": 5993,
-   "basicFoods": 2438,
-   "generated": "2026-11-18"
+   "basicFoods": 2437,
+   "generated": "2026-11-20"
   },
   {
    "id": "afcd",
@@ -197,7 +197,7 @@
    "noticeUrl": "https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement",
    "foods": 1588,
    "basicFoods": 829,
-   "generated": "2026-11-19"
+   "generated": "2026-11-20"
   }
  ]
 }

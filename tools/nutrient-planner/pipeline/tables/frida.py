@@ -2,7 +2,8 @@
 
 Reads the archived dataset (fetch.py), sheet "Data_Normalised" (one row per food and parameter) with "Food" (names,
 groups) and "Source". Each value is Frida's own. A value whose source Frida describes as an estimate or a recipe
-calculation is labelled with Frida's own description. A parameter with no row is missing (NA). Amino acids are
+calculation, or as a natural zero that wasn't analysed (source 1655), is labelled with Frida's own description. A
+parameter with no row is missing (NA). Frida's 0 means zero or insignificant traces (documentation 4.3). Amino acids are
 converted from mg to g. Definitions: the Frida 5.5 documentation (archived) and the "Parameter" sheet.
 
   python3 -I tools/nutrient-planner/pipeline/tables/frida.py
@@ -23,31 +24,32 @@ TABLE, TITLE = "frida", "Denmark Frida 5.5 (DTU, 2025)"
 DATA = "frida55_Frida_5.5_Dataset.xlsx"
 AA = 0.001  # mg -> g
 MAP = {
-    "energy": ("359", 1, "Energy for labelling: EU Regulation 1169/2011 factors"),
+    "energy": ("359", 1, "Energy for labelling: EU Regulation 1169/2011 factors, with protein as N x 6.25 and available carbohydrate as sugars + starch (documentation 5.1-5.3)"),
     "protein": ("218", 1, "Total nitrogen x food-specific factor"),
     "fat": ("141", 1, ""), "satfat": ("248", 1, ""),
-    "carbohydrate": ("172", 1, "Available carbohydrate (not by difference; excludes fibre)"),
+    "carbohydrate": ("172", 1, "Available carbohydrate: total carbohydrate by difference (dry matter minus protein, fat, ash, organic acids and residual) minus dietary fibre, not below 0 (documentation 5.2, Table 5.2)"),
     "fibre": ("168", 1, "Dietary fibre"), "sugars": ("245", 1, ""),
     "calcium": ("108", 1, ""), "iron": ("162", 1, ""), "magnesium": ("184", 1, ""), "phosphorus": ("214", 1, ""),
     "potassium": ("165", 1, ""), "sodium": ("201", 1, ""), "zinc": ("274", 1, ""), "copper": ("166", 1, ""),
     "manganese": ("187", 1, ""), "selenium": ("230", 1, ""), "iodine": ("163", 1, ""),
-    "vitaminA": ("12", 1, "Retinol equivalents (the UK and EU definition; US targets use retinol activity equivalents)"),
+    "vitaminA": ("12", 1, "Retinol equivalents: retinol + beta-carotene / 6 (documentation 6.1; the UK and EU definition; US targets use retinol activity equivalents)"),
     "retinol": ("225", 1, ""),
-    "vitaminD": ("126", 1, "Total vitamin D as Frida gives it (may include 25-hydroxy vitamin D for animal foods)"),
+    "vitaminD": ("126", 1, "Vitamin D2 + D3 + 2.5 x (25-hydroxy vitamin D2 + D3) (documentation 6.2)"),
     "vitaminD2": ("127", 1, ""), "vitaminD3": ("128", 1, ""),
     "vitaminE": ("276", 1, "Alpha-tocopherol"), "vitaminK": ("164", 1, "Phylloquinone (vitamin K1) only"),
     "vitaminC": ("47", 1, ""), "thiamin": ("37", 1, ""), "riboflavin": ("39", 1, ""),
-    "niacinPreformed": ("294", 1, ""), "niacinNE": ("203", 1, "Niacin equivalents as published by Frida"),
+    "niacinPreformed": ("294", 1, ""), "niacinNE": ("203", 1, "Niacin equivalents as published by Frida: niacin + tryptophan / 60; for cereals tryptophan only (documentation 6.6)"),
     "pantothenic": ("210", 1, ""), "vitaminB6": ("40", 1, ""),
-    "folate": ("143", 1, "Total folate (not dietary folate equivalents)"), "vitaminB12": ("38", 1, ""),
+    "folate": ("143", 1, "Total folate, all folate-active substances (documentation 6.10; not dietary folate equivalents)"), "vitaminB12": ("38", 1, ""),
     "choline": ("116", 1, ""),
     "la": ("71", 1, "C18:2 n-6"), "ala": ("74", 1, "C18:3 n-3"), "epa": ("87", 1, "C20:5 n-3"), "dha": ("99", 1, "C22:6 n-3"),
     "histidine": ("159", AA, ""), "isoleucine": ("161", AA, ""), "leucine": ("180", AA, ""), "lysine": ("183", AA, ""),
     "methionine": ("189", AA, ""), "cystine": ("124", AA, ""), "phenylalanine": ("211", AA, ""), "tyrosine": ("264", AA, ""),
     "threonine": ("258", AA, ""), "tryptophan": ("262", AA, ""), "valine": ("266", AA, ""),
 }
-# Frida sources that are estimates or calculations (Source sheet), labelled with Frida's own words.
-ESTIMATE_SOURCES = {"1001", "1002", "1004", "1005", "1933"}
+# Frida sources that are estimates or calculations (Source sheet), labelled with Frida's own words; and 1655, a zero
+# that wasn't analysed ("Natural zero value for content. Not analyzed": zero or insignificant traces, documentation 4.5).
+ESTIMATE_SOURCES = {"1001", "1002", "1004", "1005", "1933", "1655"}
 GROUP = {  # Frida FoodGroupID -> category
     **{g: "dairy" for g in (4, 5, 8, 12, 13, 14, 15, 16, 17, 87, 88, 89, 90, 215)},
     6: "baby", 135: "baby", 21: "sweets", 23: "sweets", 199: "sweets", 32: "sweets", 33: "sweets",

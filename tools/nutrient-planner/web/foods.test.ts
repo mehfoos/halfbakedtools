@@ -134,13 +134,15 @@ test("each table's values are its own, in the planner's units (spot checks again
   assert.equal(value("afcd", "F006136", "lysine"), null);        // no amino acid values: NA, not zero
 });
 
-test("codes are labels, never numbers: trace and below-limit values are missing", () => {
+test("codes are labels, never numbers: trace, below-limit and erratum values are missing; assumed zeros are 0", () => {
   const read = (f: string) => JSON.parse(readFileSync(new URL(f, dir), "utf8"));
   for (const t of read("tables.json").tables) {
     for (const file of [t.basic, t.more]) {
       const d = read(file);
       for (const f of d.foods) for (const [k, q] of Object.entries(f.q ?? {})) {
-        if (q === "trace" || q === "lod" || String(q).startsWith("<")) assert.equal(f.v[d.keys.indexOf(k)], null, `${t.id} ${f.name} ${k}`);
+        const missing = ["trace", "lod", "loq", "lodloq", "lor", "errna", "erraa", "zx"];
+        if (missing.includes(String(q)) || String(q).startsWith("<")) assert.equal(f.v[d.keys.indexOf(k)], null, `${t.id} ${f.name} ${k}`);
+        if (q === "z") assert.equal(f.v[d.keys.indexOf(k)], 0, `${t.id} ${f.name} ${k}: an assumed zero is 0`);
       }
     }
   }
