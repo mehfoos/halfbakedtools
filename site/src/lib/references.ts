@@ -11,6 +11,7 @@ type Archive = { label?: string; asset?: string; release?: string; fetch?: strin
 export type Source = {
   id: string; pre: string; title: string; style: "quoted" | "italic"; post: string; url: string;
   licence: string; usedFor: string; archive: Archive[];
+  accessed?: string;   // ISO date the original was read, for sources without an archived copy
 };
 export type ReferenceFile = { sources: Source[] };
 export type ArchiveLink = { label: string; href: string; sha256?: string; retrieved?: string | null; verified?: boolean };
@@ -36,13 +37,14 @@ export function archiveLinks(s: Source): ArchiveLink[] {
 export function entryHtml(s: Source): string {
   const title = s.style === "italic" ? `<i>${esc(s.title)}</i>,` : `“${esc(s.title)},”`;
   const links = archiveLinks(s);
-  const retrieved = links.map((l) => l.retrieved).filter(Boolean).sort()[0];
+  const retrieved = links.map((l) => l.retrieved).filter(Boolean).sort()[0] ?? s.accessed;
   const accessed = retrieved ? ` Accessed: ${ieeeDate(retrieved)}.` : "";
+  // a source that is meant to have an archived copy says so until the copy is verified; one that isn't says nothing
   const archive = links.length
-    ? links.map((l) => `<a href="${esc(l.href)}">${esc(l.label)}</a>`).join(" · ")
-    : `<span class="muted">archived copy not yet available</span>`;
+    ? links.map((l) => `<a href="${esc(l.href)}">${esc(l.label)}</a>`).join(" · ") + ". "
+    : s.archive.length ? `<span class="muted">archived copy not yet available</span>. ` : "";
   return `${esc(s.pre)} ${title} ${s.post}${accessed} [Online]. Available: <a href="${esc(s.url)}">${esc(s.url)}</a>`
-    + `<span class="ref-meta">${archive}. <span class="muted">Used for: ${esc(s.usedFor)}. ${esc(s.licence)}.</span></span>`;
+    + `<span class="ref-meta">${archive}<span class="muted">Used for: ${esc(s.usedFor)}. ${esc(s.licence)}.</span></span>`;
 }
 
 /** Citation helpers for one tool's reference list. */

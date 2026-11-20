@@ -53,11 +53,17 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
     `stable` = unlikely to change except for data updates.
   - No marketing language.
 
-## 3. Every claim is referenced, and every reference is archived
+## 3. Every claim is referenced, and sources behind health information are archived
 
-- **Rule:** each fact traces to a source, and that source is kept in this repository.
-- **Why:** readers must be able to check the work. Official links move and documents get revised, so the exact
-  version used has to survive.
+- **Rule:** each fact traces to a source. For tools whose information people act on for their health (nutrition,
+  exercise, and anything like them), that source is also kept in the `source-archive` release.
+- **Why:** readers must be able to check the work, and where getting it wrong could harm someone they must still be
+  able to check it after an official link moves or a document is revised, so the exact version used has to survive.
+  Utility tools (such as the PDF tools) cite their sources the same way, but an archived copy is optional there:
+  a broken link costs a reader little, and the tool's behaviour is checked by its own tests rather than by the source.
+- **Which tools:** archiving is required unless a tool's `tool.json` says `"archive": "optional"`. A reference in such
+  a tool may have no archived copy; it then gives the date the original was read (`"accessed"`), and the reference
+  list shows only the original link.
 - **In practice:**
   - **Citations:** IEEE style, [1], [2], …, numbered in each tool's `references.json`, in the order first cited.
   - **Reference list:** collapsible on the tool's pages. Each entry has the original link and a link to the archived
@@ -70,8 +76,8 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
     differs from the checked copy is never accepted.
   - **Blocked downloads:** if a document can't be downloaded automatically, say so and ask the owner to download it.
     Never substitute a guess, and never work around a site's blocks or terms.
-  - **Tests:** they fail if a citation is missing from the reference list, a reference has no archived copy, or a
-    new reference file is committed to the repository.
+  - **Tests:** they fail if a citation is missing from the reference list, a reference in a tool that requires
+    archiving has no archived copy, or a new reference file is committed to the repository.
 
 ## 4. Privacy by default
 
@@ -158,6 +164,7 @@ reason.
 |---|---|---|
 | 2026-11-18 | One style for data caveats: fixed kinds (Alpha, Beta, Not yet checked, Assumption, Estimate, Translated, Borrowed), rendered by `caveat()` / `<Caveat>`; the existing alpha, "not yet checked" and estimate disclaimers converted; generated reports use the same labels | Owner: disclaimers of this nature should look and read the same everywhere |
 | 2026-11-18 | History clean-up: the 39 copies once committed to `sources/` (and `docs/sources/`), the food tables, and deleted OpenStax copies were moved to the release and removed from the repository's history; `main` and `office-to-pdf` were force-pushed and the release tags moved (by a one-off owner-run workflow, then deleted); other clones must be re-cloned | The repository had reached about 180 MB of reference files; clones now stay small |
+| 2026-11-20 | Archived copies are required for tools with health information and optional for utility tools (`"archive": "optional"` in `tool.json`); the PDF tools' four PDF/A references are cited without archived copies | The archive rule exists so people can check information that could harm them if wrong; for utility tools it costs the owner uploads for little benefit |
 | 2026-11-18 | New archived copies are checked by an editor and attached to the release by the owner by hand; the editor verifies them with `archive_release.py --check`. No reference file is committed, on any branch; a test enforces it. The old *Archive sources* workflow, which committed downloads to `sources/`, is removed | Owner's choice: a manual upload after checking is simpler than more automation, and the repository must not grow |
 | 2026-11-18 | Archived copies go to a `source-archive` GitHub release, listed in `sources/archive.json` with the checksum of the checked copy; an owner-run workflow downloads, checks and uploads them. Older files in `sources/` (and their history) to be moved in a one-off clean-up later | Committed files stay in the repository's history for good: the repository had reached 127 MB, a third of it files already deleted. Releases are created only when the owner runs the workflow |
 | 2026-11-18 | Home page lists topics in a set order, food and health first (`TOPIC_ORDER` in `site/src/lib/tools.ts`); About says where source licences are recorded and how to ask for removal | Owner's request; the evidence-based tools are the site's main purpose. Licence text stays out of tool pages, as agreed |

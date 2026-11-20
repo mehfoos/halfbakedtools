@@ -19,9 +19,10 @@ automatically.
    run with `npm test` and must pass before anything deploys.
 5. **Cite everything.** Add each source to `references.json`, in the order the tool first cites it, and cite it in the
    text with `cite("id")`, which produces a numbered IEEE-style link ([1], [2], …). Each source needs an archived copy
-   in the `source-archive` release, given as `{"asset": "<file>"}`; follow `sources/README.md` (check the file, list
+   (unless the tool sets `"archive": "optional"` in `tool.json`: only for utility tools without health information;
+   such a reference gives `"accessed": "<date>"` instead) in the `source-archive` release, given as `{"asset": "<file>"}`; follow `sources/README.md` (check the file, list
    it in `sources/archive.json`, the owner attaches it). **Never commit the file itself.** The tests fail if a
-   citation isn't in `references.json`, a reference has no archived copy, or a reference file is committed.
+   citation isn't in `references.json`, a reference has no archived copy where one is required, or a reference file is committed.
 6. **Record verification** in `VERIFICATION.md`: each value or table, the document and page it was checked against,
    and the date. Until something is checked, say so on the methods page.
 7. **Data:** anything in `data/` (`*.json`, any depth) is published at `/tools/<slug>/data/…`. Scripts that build it

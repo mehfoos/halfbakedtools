@@ -23,7 +23,9 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
    - Every fact on the site cites a source with `cite("id")`; the id is listed in the tool's `references.json`.
    - **Never commit reference files** (PDFs, spreadsheets, datasets, zips, saved web pages) to the repository, on
      any branch, even temporarily: they stay in its history for good. The tests fail if you do.
-   - Every reference has an archived copy in the **`source-archive` release**. For a new one: find the official copy and check it's the right document and
+   - In tools with health information, every reference has an archived copy in the **`source-archive` release**
+     (utility tools whose `tool.json` says `"archive": "optional"` may skip it and give `"accessed": "<date>"`
+     instead; see principle 3). For a new one: find the official copy and check it's the right document and
      version; list it in `sources/archive.json` with its origin, licence and SHA-256; give it to the owner (or ask
      them to download it), who attaches it to the release by hand; then run
      `python3 -I scripts/archive_release.py --check`, commit `sources/release-manifest.json`, and cite it as

@@ -115,16 +115,8 @@
       "url": "https://github.com/veraPDF/veraPDF-validation-profiles/wiki/PDFA-Parts-2-and-3-rules",
       "licence": "CC BY 4.0",
       "usedFor": "The PDF/A-2 requirements this tool follows and checks, by rule number",
-      "archive": [
-        {
-          "label": "Archived copy (PDF print)",
-          "asset": "pdftools_verapdf_PDFA-Parts-2-and-3-rules.pdf"
-        },
-        {
-          "label": "page as downloaded (HTML)",
-          "asset": "pdftools_verapdf_PDFA-Parts-2-and-3-rules.html"
-        }
-      ]
+      "archive": [],
+      "accessed": "2026-11-20"
     },
     {
       "id": "icc-2001",
@@ -135,11 +127,8 @@
       "url": "https://www.color.org/ICC_Minor_Revision_for_Web.pdf",
       "licence": "Free to use and distribute (ICC notice)",
       "usedFor": "The layout of the sRGB colour profile this site writes into PDF/A files",
-      "archive": [
-        {
-          "asset": "pdftools_ICC.1-2001-04.pdf"
-        }
-      ]
+      "archive": [],
+      "accessed": "2026-11-20"
     },
     {
       "id": "css-color-4",
@@ -150,16 +139,8 @@
       "url": "https://www.w3.org/TR/2026/CRD-css-color-4-20261118/",
       "licence": "W3C permissive document license",
       "usedFor": "The numbers of sRGB in that profile",
-      "archive": [
-        {
-          "label": "Archived copy (PDF print)",
-          "asset": "pdftools_css-color-4_CRD-20261118.pdf"
-        },
-        {
-          "label": "page as downloaded (HTML)",
-          "asset": "pdftools_css-color-4_CRD-20261118.html"
-        }
-      ]
+      "archive": [],
+      "accessed": "2026-11-20"
     },
     {
       "id": "xmp-1",
@@ -170,11 +151,8 @@
       "url": "https://github.com/adobe/XMP-Toolkit-SDK/blob/main/docs/XMPSpecificationPart1.pdf",
       "licence": "Copyright Adobe; kept so the cited rules can be traced",
       "usedFor": "How the PDF/A metadata is written",
-      "archive": [
-        {
-          "asset": "pdftools_XMPSpecificationPart1.pdf"
-        }
-      ]
+      "archive": [],
+      "accessed": "2026-11-20"
     }
   ]
 }

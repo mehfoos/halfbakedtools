@@ -17,5 +17,6 @@
 - **Archived sources:** kept in the `source-archive` release, never committed. When an editor adds a reference,
   they check the file and list it in `sources/archive.json`; the owner attaches it to the release by hand (*Releases*
   -> *Source archive* -> *Edit*). See `sources/README.md`. The tests fail until every reference has an archived
-  copy, and if a reference file is committed.
+  copy (in tools that require one: those with health information; see principle 3 in `PRINCIPLES.md`), and if a
+  reference file is committed.
 - **Tool data jobs** are named `<slug>-*.yml` and described in the tool's README.

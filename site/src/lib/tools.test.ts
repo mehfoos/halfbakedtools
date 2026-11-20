@@ -34,7 +34,9 @@ for (const slug of folders) {
     assert.equal(t.pages[0].page, "index", "the first page must be index");
   });
 
-  test(`${slug}: every citation is in the reference list, and every reference has an archived copy`, () => {
+  // Archived copies are required for tools whose information people act on for their health ("archive" absent or
+  // "required" in tool.json); a utility tool can set "archive": "optional" (docs/PRINCIPLES.md, principle 3).
+  test(`${slug}: every citation is in the reference list, and every reference has an archived copy where the tool needs one`, () => {
     const refsPath = join(dir, "references.json");
     if (!existsSync(refsPath)) return;
     const refs = json(refsPath).sources as { id: string; archive: { asset?: string; release?: string }[] }[];
@@ -44,8 +46,10 @@ for (const slug of folders) {
     const cited = new Set([...code.matchAll(/cite\(\s*"([^"]+)"/g)].map((m) => m[1]));
     for (const c of cited) assert.ok(ids.includes(c), `cites unknown reference "${c}"`);
     if (template) return;
+    const optional = json(join(dir, "tool.json")).archive === "optional";
     for (const r of refs) {
-      assert.ok(r.archive.length, `${r.id} has no archived copy`);
+      if (!optional) assert.ok(r.archive.length, `${r.id} has no archived copy`);
+      else if (!r.archive.length) assert.match(String((r as { accessed?: string }).accessed), /^\d{4}-\d{2}-\d{2}$/, `${r.id}: a source without an archived copy needs "accessed" (the date it was read)`);
       for (const a of r.archive) assert.ok(a.asset || a.release, `${r.id}: archived copies are release files ({"asset": ...})`);
       // A release copy must be in the registry; until the workflow has verified it, the page says it isn't available yet.
       for (const a of r.archive) if (a.asset) assert.ok(registry.has(a.asset), `${r.id}: ${a.asset} is not listed in sources/archive.json`);

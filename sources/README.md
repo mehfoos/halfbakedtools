@@ -7,6 +7,10 @@ any branch. Anything committed stays in the repository's history for good, which
 bigger. They are kept as files of the repository's **`source-archive` release** instead, and the tests fail if a
 new one appears in the repository.
 
+Which sources need one: every source of a tool with health information (nutrition, exercise and the like). Utility
+tools such as the PDF tools set `"archive": "optional"` in their `tool.json` and may cite sources without a copy here
+(principle 3 in [`docs/PRINCIPLES.md`](../docs/PRINCIPLES.md)).
+
 Adding a new archived copy:
 
 1. **The editor finds and checks the file.** Use the publisher's official copy, and check it is the right one:
