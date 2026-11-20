@@ -120,6 +120,7 @@ const X = (e: Exercise) => e;
 export const EXERCISES: Exercise[] = [
   // --- Bodyweight ---
   X({ id: "pushUp", name: "Push-up", kind: "strength", needs: [["body"]],
+    evidence: { chest: ["kikuchi-2017"], triceps: ["kikuchi-2017"] },
     moves: "shoulder horizontal adduction (arms together across the chest); elbow extension",
     direct: ["chest"], indirect: ["triceps", "frontDelts"], steadies: ["abs"] }),
   X({ id: "pullUp", name: "Pull-up", kind: "strength", needs: [["pullupBar"]],
@@ -129,10 +130,10 @@ export const EXERCISES: Exercise[] = [
     moves: "shoulder extension and shoulder-blade retraction (pulling the chest to the bar); elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["forearms", "glutes"] }),
   X({ id: "squatBw", name: "Bodyweight squat", kind: "strength", needs: [["body"]],
-    evidence: { glutes: ["krause-neto-2025"] },
     moves: "knee extension; hip extension",
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "lunge", name: "Bodyweight lunge (reverse or forward)", kind: "strength", needs: [["body"]],
+    evidence: { glutes: ["wei-2023", "krause-neto-2025"] },
     moves: "knee extension; hip extension, one leg at a time",
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "gluteBridge", name: "Glute bridge", kind: "strength", needs: [["body"]],
@@ -196,6 +197,7 @@ export const EXERCISES: Exercise[] = [
     moves: "shoulder flexion and abduction (pressing overhead); elbow extension",
     direct: ["frontDelts"], indirect: ["triceps", "sideDelts", "upperBack"] }),
   X({ id: "lateralRaise", name: "Dumbbell lateral raise", kind: "strength", needs: [["dumbbells", "machines"]],
+    evidence: { sideDelts: ["larsen-2025"] },
     moves: "shoulder abduction (arms out to the sides)",
     direct: ["sideDelts"], indirect: [] }),
   X({ id: "curl", name: "Biceps curl", kind: "strength", needs: [["dumbbells", "barbell", "bands", "machines"]],

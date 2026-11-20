@@ -109,11 +109,15 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
   <ul>
     <li><strong>Glutes</strong> (checked 20 November 2026). A 2025 systematic review of 12 training studies found that
       the gluteus maximus grew with back squats to parallel or deeper, the leg press, the hip thrust and progressive
-      bodyweight squat variations <Fragment set:html={cite("krause-neto-2025")} />. In a randomised trial, 9 weeks of hip
+      bodyweight leg exercises <Fragment set:html={cite("krause-neto-2025")} />. In a randomised trial, 9 weeks of hip
       thrusts or back squats (equal sets) grew the gluteus maximus similarly <Fragment set:html={cite("plotkin-2023")} />.
+      The bodyweight study's programme was mostly lunges, Bulgarian split squats and skating squats; it thickened the
+      gluteus maximus as much as barbell squats did <Fragment set:html={cite("wei-2023")} />, so the planner's bodyweight
+      lunge is marked †, but its plain bodyweight squat is not.
       Squats to only 90° of knee bend grew it less, or not significantly, in the studies reviewed, so the planner's squat is
-      to parallel or lower. No study isolated the deadlift, Romanian deadlift, kettlebell swing, lunge or back extension,
-      so those stay marked ◇.</li>
+      to parallel or lower. No study isolated the deadlift, Romanian deadlift, kettlebell swing, dumbbell lunge, goblet
+      squat or back extension, so those stay marked ◇. In the bodyweight study the rectus femoris (part of the
+      quadriceps) didn't thicken significantly, so it gives no support for the quadriceps.</li>
     <li><strong>Hamstrings in hip thrusts.</strong> The hamstrings showed little to no growth with either the hip thrust
       or the back squat <Fragment set:html={cite("plotkin-2023")} />, so the planner no longer counts them for the hip
       thrust or the glute bridge (the same movement without a weight). For squats this matches Pelland and colleagues'
@@ -141,6 +145,21 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
       extension or farmer's carry. What exists measures muscle activity, muscle thickness during a contraction, programmes
       for people with back pain, or several exercises together. These classifications, including counting holds such as
       the plank and farmer's carry, stay marked ◇.</li>
+    <li><strong>Chest and triceps in push-ups</strong> (checked 20 November 2026). In a randomised trial, 8 weeks of
+      push-ups (adjusted, for example on the knees, to match a bench press at 40% of the most each person could lift once,
+      done to failure) thickened the pectoralis major and triceps as much as bench pressing did
+      <Fragment set:html={cite("kikuchi-2017")} />. The push-up's front-shoulder credit stays ◇ (not measured).</li>
+    <li><strong>Side shoulders in lateral raises</strong> (checked 20 November 2026). In trained lifters, 8 weeks of
+      dumbbell or cable lateral raises, the only side-deltoid exercise they were allowed, grew the side deltoid by 3.3–4.6%,
+      with no difference between the two <Fragment set:html={cite("larsen-2025")} />. There was no control group. The side
+      and rear shoulders' credits in presses and rows stay ◇.</li>
+    <li><strong>Not supported yet.</strong> No study meeting the standard was found for the other ◇ credits of these
+      muscles: chest in the dumbbell bench press, machine chest press and pec fly; triceps and front shoulders in dips and
+      the pike push-up; front shoulders in dumbbell and machine shoulder presses; biceps, upper back and rear shoulders in
+      pull-ups and rows; the trapezius in shrugs, face pulls and band pull-aparts; and the quadriceps and hamstrings in
+      bodyweight and goblet squats, lunges, deadlifts, single-leg Romanian deadlifts and kettlebell swings. A study of
+      one-arm dumbbell rows found some biceps growth near the shoulder only; it isn't open access and only its summary was
+      read, so it isn't used.</li>
   </ul>
   <p>
     Muscles that only hold the body still (such as the trunk muscles in a squat) are listed as "steadied" and not counted,
@@ -226,9 +245,9 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     muscle actions used from the anatomy textbook. Details, with dates, are in the repository's
     <code>tools/exercise-planner/VERIFICATION.md</code>.
   </p>
-  <Caveat kind="unverified">The planner's own classifications (◇) for the glutes, hamstrings, lats, calves, abs, lower back and forearms have been compared with studies that
-    measured muscle growth (<a href="#growth-evidence">above</a>); the other muscle groups haven't yet, and are being
-    checked one group at a time.</Caveat>
+  <Caveat kind="unverified">Every one of the planner's own classifications has been compared with studies that
+    measured muscle growth (<a href="#growth-evidence">above</a>, searched 20 November 2026). Those still marked ◇ have
+    no such study yet and rest on anatomy alone; they will be rechecked as new studies appear.</Caveat>
 
   <h2 id="limitations">Limitations</h2>
   <ul class="prose">

@@ -522,6 +522,17 @@
       "checked": "2026-11-18"
     },
     {
+      "file": "kikuchi-2017.xml",
+      "title": "Low-load bench press and push-up induce similar muscle hypertrophy and strength gain (Journal of Exercise Science & Fitness, 2017): full text (JATS XML)",
+      "publisher": "N. Kikuchi and K. Nakazato, Journal of Exercise Science & Fitness (Elsevier), via Europe PMC",
+      "licence": "CC BY-NC-ND 4.0",
+      "origin": "https://doi.org/10.1016/j.jesf.2017.06.003",
+      "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5812864/fullTextXML",
+      "sha256": "139bfd46d1a868928b9589348acd206137c65772ddd5310b7783cd4592e96f6c",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
+    },
+    {
       "file": "kinoshita-2023-standing-seated-calf-raise.pdf",
       "title": "Triceps surae muscle hypertrophy is greater after standing versus seated calf-raise training (Frontiers in Physiology, 2023)",
       "publisher": "M. Kinoshita et al., Frontiers in Physiology (Frontiers Media)",
@@ -540,6 +551,17 @@
       "origin": "https://doi.org/10.3389/fphys.2025.1542334",
       "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2025.1542334/pdf",
       "sha256": "7de04db71dc7d99e7c9d2e6f1709e7171ba53f0bf37d9e83b46530ce10990c6d",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "larsen-2025.xml",
+      "title": "Dumbbell versus cable lateral raises for lateral deltoid hypertrophy: an experimental study (Frontiers in Physiology, 2025): full text (JATS XML)",
+      "publisher": "S. Larsen et al., Frontiers in Physiology (Frontiers Media), via Europe PMC",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.3389/fphys.2025.1611468",
+      "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12277279/fullTextXML",
+      "sha256": "23df94ceea1b084f620a84ef85a07dc63230e608c86474e47b4425384a8a51ef",
       "retrieved": "2026-11-20",
       "checked": "2026-11-20"
     },
@@ -883,6 +905,17 @@
       "manual": "Moved from the repository's sources/ folder in Nov 2026 (the history clean-up); first archived there 2026-11-17.",
       "retrieved": "2026-11-17",
       "checked": "2026-11-18"
+    },
+    {
+      "file": "wei-2023.xml",
+      "title": "Effects of progressive body-weight versus barbell back squat training on strength, hypertrophy and body fat among sedentary young women (Scientific Reports, 2023): full text (JATS XML)",
+      "publisher": "W. Wei et al., Scientific Reports (Springer Nature), via Europe PMC",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.1038/s41598-023-40319-x",
+      "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10439966/fullTextXML",
+      "sha256": "d3073594f07eae0a15fba14ceab3792bc8066c1e67620212ef5a5f7887bbb886",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
     },
     {
       "file": "who-2007-trs-935.pdf",
