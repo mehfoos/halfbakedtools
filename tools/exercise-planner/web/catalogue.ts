@@ -155,6 +155,7 @@ export const EXERCISES: Exercise[] = [
     moves: "elbow extension, and shoulder flexion as you push up (the shoulders extend as you lower; hands on a bench behind you)",
     direct: ["triceps"], indirect: ["chest", "frontDelts"] }),
   X({ id: "calfRaise", name: "Standing calf raise", kind: "strength", needs: [["body", "stairs", "dumbbells", "machines"]],
+    evidence: { calves: ["kinoshita-2023"] },
     moves: "ankle plantar flexion (rising onto the toes)",
     direct: ["calves"], indirect: [] }),
   X({ id: "superman", name: "Back extension on the floor (superman)", kind: "strength", needs: [["body"]],

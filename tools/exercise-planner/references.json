@@ -173,6 +173,40 @@
       ]
     },
     {
+      "id": "paoli-2016",
+      "pre": "A. Paoli et al.,",
+      "title": "Protein supplementation does not further increase latissimus dorsi muscle fiber hypertrophy after eight weeks of resistance training in novice subjects, but partially counteracts the fast-to-slow muscle fiber transition",
+      "style": "quoted",
+      "post": "<i>Nutrients</i>, vol. 8, no. 6, art. 331, Jun. 2016, doi: 10.3390/nu8060331.",
+      "url": "https://doi.org/10.3390/nu8060331",
+      "licence": "CC BY 4.0",
+      "usedFor": "Latissimus dorsi fibres grew after a programme whose only back exercises were lat pulldowns and seated rows (context only)",
+      "archive": [
+        {
+          "label": "Archived copy (full text, XML from Europe PMC)",
+          "asset": "paoli-2016-latissimus-dorsi-fibres.xml",
+          "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4924172/fullTextXML"
+        }
+      ]
+    },
+    {
+      "id": "kinoshita-2023",
+      "pre": "M. Kinoshita et al.,",
+      "title": "Triceps surae muscle hypertrophy is greater after standing versus seated calf-raise training",
+      "style": "quoted",
+      "post": "<i>Frontiers in Physiology</i>, vol. 14, art. 1272106, Dec. 2023, doi: 10.3389/fphys.2023.1272106.",
+      "url": "https://doi.org/10.3389/fphys.2023.1272106",
+      "licence": "CC BY 4.0",
+      "usedFor": "Standing calf raises grew the gastrocnemius and the whole calf; seated calf raises barely grew the gastrocnemius",
+      "archive": [
+        {
+          "label": "Archived copy (PDF)",
+          "asset": "kinoshita-2023-standing-seated-calf-raise.pdf",
+          "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1272106/pdf"
+        }
+      ]
+    },
+    {
       "id": "who-2020",
       "pre": "World Health Organization,",
       "title": "WHO Guidelines on Physical Activity and Sedentary Behaviour",

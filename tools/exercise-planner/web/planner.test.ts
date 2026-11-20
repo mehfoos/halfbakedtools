@@ -229,6 +229,7 @@ test("outcome evidence: cited references exist, and only counted muscles carry i
   }
   // Glutes grew with squats, the leg press and the hip thrust; hamstrings didn't with the hip thrust (Plotkin 2023).
   for (const id of ["backSquat", "legPress", "hipThrust", "squatBw"]) assert.ok(isSupported(EXERCISES.find((e) => e.id === id)!, "glutes"), id);
+  assert.ok(isSupported(EXERCISES.find((e) => e.id === "calfRaise")!, "calves"));
   for (const id of ["rdl", "backExtension"]) assert.ok(isSupported(EXERCISES.find((e) => e.id === id)!, "hamstrings"), id);
   for (const id of ["hipThrust", "gluteBridge"]) {
     const e = EXERCISES.find((x) => x.id === id)!;
