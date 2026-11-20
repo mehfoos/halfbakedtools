@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "forms" | "ocr" | "preview" | "redact";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "forms" | "ocr" | "preview" | "redact" | "pdfa";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -108,6 +108,9 @@ export const TASKS: Task[] = [
   { slug: "extract-images", name: "Extract pictures", blurb: "Save the pictures stored inside a PDF as separate files: JPEGs exactly as stored, other pictures as PNG.", group: "Convert from PDF", accept: "pdf",
     pick: "Select PDF files", hint: "This finds pictures stored in the PDF, not drawings made of lines or text. Several pictures are saved together as one .zip file.",
     parts: ["extractPics"], formats: ["pdf"], which: "all", action: "Extract pictures", suffix: "pictures", tag: "▣" },
+  { slug: "pdf-to-pdfa", name: "PDF to PDF/A", blurb: "Make a copy of a PDF for long-term archiving, in the PDF/A-2b standard: fonts embedded, colours defined, no scripts or links to other files.", group: "Convert from PDF", accept: "pdf",
+    pick: "Select PDF files", hint: "Each PDF is converted on its own. What was changed, or why a file couldn't be converted, is listed after saving.",
+    parts: ["pdfa"], formats: ["pdf"], which: "all", action: "Convert to PDF/A", perFile: true, suffix: "pdfa", tag: "A" },
   { slug: "pdf-to-text", name: "PDF to text", blurb: "Pull the words out of a PDF into a plain text file.", group: "Convert from PDF", accept: "pdf",
     pick: "Select PDF files", hint: "Saves the words only, with no layout. Scanned pages are pictures and have no text to save.",
     parts: [], formats: ["txt"], which: "all", action: "Convert to text", suffix: "text", tag: "TXT" , selectAll: true },
@@ -137,7 +140,7 @@ export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "Word to PDF", tag: "DOC", group: "Convert to PDF" }, { name: "PowerPoint to PDF", tag: "PPT", group: "Convert to PDF" },
   { name: "Excel to PDF", tag: "XLS", group: "Convert to PDF" }, { name: "HTML file to PDF", tag: "WEB", group: "Convert to PDF" },
   { name: "PDF to Word", tag: "DOC", group: "Convert from PDF" }, { name: "PDF to PowerPoint", tag: "PPT", group: "Convert from PDF" },
-  { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
+  { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" },
 ];
 
 /** Things other PDF sites offer that can't be done without sending files to a server, so this tool won't offer them. */

@@ -107,6 +107,26 @@
       ]
     },
     {
+      "id": "verapdf-rules-2",
+      "pre": "veraPDF Consortium,",
+      "title": "PDF/A Parts 2 and 3 rules",
+      "style": "quoted",
+      "post": "veraPDF validation profiles wiki, GitHub.",
+      "url": "https://github.com/veraPDF/veraPDF-validation-profiles/wiki/PDFA-Parts-2-and-3-rules",
+      "licence": "CC BY 4.0",
+      "usedFor": "The PDF/A-2 requirements this tool follows and checks, by rule number",
+      "archive": [
+        {
+          "label": "Archived copy (PDF print)",
+          "asset": "pdftools_verapdf_PDFA-Parts-2-and-3-rules.pdf"
+        },
+        {
+          "label": "page as downloaded (HTML)",
+          "asset": "pdftools_verapdf_PDFA-Parts-2-and-3-rules.html"
+        }
+      ]
+    },
+    {
       "id": "icc-2001",
       "pre": "International Color Consortium,",
       "title": "File Format for Color Profiles",
@@ -138,26 +158,6 @@
         {
           "label": "page as downloaded (HTML)",
           "asset": "pdftools_css-color-4_CRD-20261118.html"
-        }
-      ]
-    },
-    {
-      "id": "verapdf-rules-2",
-      "pre": "veraPDF Consortium,",
-      "title": "PDF/A Parts 2 and 3 rules",
-      "style": "quoted",
-      "post": "veraPDF validation profiles wiki, GitHub.",
-      "url": "https://github.com/veraPDF/veraPDF-validation-profiles/wiki/PDFA-Parts-2-and-3-rules",
-      "licence": "CC BY 4.0",
-      "usedFor": "The PDF/A-2 requirements this tool follows and checks, by rule number",
-      "archive": [
-        {
-          "label": "Archived copy (PDF print)",
-          "asset": "pdftools_verapdf_PDFA-Parts-2-and-3-rules.pdf"
-        },
-        {
-          "label": "page as downloaded (HTML)",
-          "asset": "pdftools_verapdf_PDFA-Parts-2-and-3-rules.html"
         }
       ]
     },

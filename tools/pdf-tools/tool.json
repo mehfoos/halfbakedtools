@@ -141,6 +141,11 @@
       "nav": false
     },
     {
+      "page": "pdf-to-pdfa",
+      "label": "PDF to PDF/A",
+      "nav": false
+    },
+    {
       "page": "pdf-to-text",
       "label": "PDF to text",
       "nav": false
@@ -233,6 +238,9 @@
     "tesseract/lang/ukr.traineddata.gz": "@tesseract.js-data/ukr/4.0.0_best_int/ukr.traineddata.gz",
     "tesseract/lang/urd.traineddata.gz": "@tesseract.js-data/urd/4.0.0_best_int/urd.traineddata.gz",
     "tesseract/lang/vie.traineddata.gz": "@tesseract.js-data/vie/4.0.0_best_int/vie.traineddata.gz",
-    "tesseract/lang/cym.traineddata.gz": "@tesseract.js-data/cym/4.0.0_best_int/cym.traineddata.gz"
+    "tesseract/lang/cym.traineddata.gz": "@tesseract.js-data/cym/4.0.0_best_int/cym.traineddata.gz",
+    "licenses/arimo-LICENSE.txt": "@fontsource/arimo/LICENSE",
+    "licenses/tinos-LICENSE.txt": "@fontsource/tinos/LICENSE",
+    "licenses/cousine-LICENSE.txt": "@fontsource/cousine/LICENSE"
   }
 }

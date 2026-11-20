@@ -400,7 +400,7 @@ layer is still in the file, as in the original, and PDFium's text extraction giv
 Not checked: Adobe Acrobat or Apple Preview; very large documents (time and memory); encrypted originals; pages with
 annotations whose appearance carries the text (they are dropped with the page when it has areas).
 
-### PDF to PDF/A: the converter that keeps the content (2026-11-20; not on the site yet)
+### PDF to PDF/A (2026-11-20)
 
 `web/pdfaconvert.ts` with `web/pdfascan.ts` (content streams), `web/pdfafonts.ts` (font programs) and
 `web/pdfachecks.ts` (whole-file checks). Every output below was checked with veraPDF 1.30.4 (`-f 2b`); veraPDF and the
@@ -435,3 +435,15 @@ test files stay on the test machine and are not part of the repository.
 
 Not checked: Adobe Acrobat's preflight or other validators; files from Microsoft Office, Adobe InDesign or scanners
 (none were on the test machine); right-to-left and CJK files beyond the site's own; very large files.
+
+The page itself (headless Chrome, preview build):
+- A ReportLab form using Helvetica without embedding, with a CMYK picture file, "Don't convert it" chosen: one PDF saved
+  (Helvetica replaced by Arimo, fields' extra looks removed); the CMYK file listed as not converted with the reason and
+  how to convert it anyway. veraPDF: pass.
+- The CMYK file with "Rebuild its pages as pictures": saved, with the reason listed; veraPDF: pass. pdflatex and
+  LibreOffice files together: a .zip of two, each with its list of changes; both pass.
+- A ReportLab page of black CMYK text, rebuilt as pictures with text recognition (English): the three lines come back
+  exactly from pdftotext; veraPDF: pass.
+- Rebuilding outside the browser (`picturesToPdfA` with JPEG, RGB PNG, RGBA PNG, grey PNG and a line of recognised
+  text with ö and €): all four pass veraPDF, and the text is extracted.
+- Fonts and the text-recognition engine came from this site; no requests to other sites; no page errors.

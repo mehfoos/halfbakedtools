@@ -1422,7 +1422,7 @@ test("pdfa convert: Helvetica used without embedding gets Arimo; scripts go; the
   doc.catalog.set(PDFName.of("OpenAction"), doc.context.obj({ S: "JavaScript", JS: PDFString.of("app.alert(1)") }));
   const r = await convertToPdfA(await doc.save(), undefined, fsFonts, new Date(Date.UTC(2026, 10, 20)));
   assert.deepEqual(r.blockers, []); assert.ok(r.bytes);
-  assert.ok(r.changes.some((c) => c.includes("Arimo"))); assert.ok(r.changes.some((c) => c.includes("actions")));
+  assert.ok(r.changes.some((c) => c.startsWith("Embedded Arimo in place of Helvetica"))); assert.ok(r.changes.some((c) => c.includes("actions")));
   const back = await PDFDocument.load(r.bytes!, { updateMetadata: false });
   assert.equal(back.catalog.get(PDFName.of("OpenAction")), undefined);
   const font = back.getPages()[0].node.Resources()!.lookup(PDFName.of("Font"), PDFDict);

@@ -11,6 +11,9 @@ import { checkFonts } from "./pdfafonts.ts";
 import { checkObjects } from "./pdfachecks.ts";
 import { markPdfA, infoOf } from "./pdfa.ts";
 import { woffToSfnt } from "./woff.ts";
+import { addTextLayer } from "./ocr.ts";
+import { addGlyphlessFont } from "./glyphless.ts";
+import type { RedactedPage } from "./redact.ts";
 
 /** Font families embedded in place of the standard Latin fonts when a file uses them without embedding them: Arimo,
  *  Tinos and Cousine (OFL 1.1), drawn to the same widths as Helvetica, Times and Courier. As served by Fontsource, each
@@ -275,8 +278,9 @@ export async function convertToPdfA(bytes: Uint8Array, password: string | undefi
   // fonts (6.2.11): every font used for visible text must be embedded; standard Latin fonts can be replaced
   for (const [font, use] of scan.fonts) {
     if (!use.shown || isEmbedded(font, look)) continue;
-    const why = await substitute(doc, font, use, fonts);
-    if (why) blockers.push(why); else changes.add("Embedded free fonts with the same character widths (Arimo, Tinos, Cousine) for standard fonts the file used without embedding.");
+    const r = await substitute(doc, font, use, fonts);
+    if (typeof r === "string") blockers.push(r);
+    else changes.add(`Embedded ${r.family} in place of ${r.label}, which the file used without embedding: the widths are the same, so the text stays where it was; the letters' shapes differ slightly.`);
   }
   // embedded fonts: glyphs, widths, encodings, CMaps (6.2.11), including the replacements just embedded
   const fc = checkFonts(ctx, scan.fonts);
@@ -372,8 +376,8 @@ type Fk = { unitsPerEm: number; ascent: number; descent: number; capHeight: numb
 /** Embeds a replacement for a non-embedded standard Latin font, changing the font dictionary in place, if for every
  *  code the file draws with it: the code means the same character as in WinAnsi (6.2.11.6-2: no Differences), the
  *  replacement has that character, and its width is the one the file uses within 1/1000 of the text size. Returns
- *  why not, otherwise nothing. */
-async function substitute(doc: PDFDocument, font: PDFDict, use: FontUse, files: FontFiles): Promise<string | undefined> {
+ *  why not, or the replacement's name. */
+async function substitute(doc: PDFDocument, font: PDFDict, use: FontUse, files: FontFiles): Promise<string | { family: string; label: string }> {
   const ctx = doc.context, look = <T extends PDFObject>(o: PDFObject | undefined) => (o instanceof PDFRef ? (ctx.lookup(o) as T) : (o as T));
   const base = (look<PDFName>(font.get(N("BaseFont"))) as PDFName | undefined)?.decodeText?.() ?? "(unnamed)";
   const sub = (look<PDFName>(font.get(N("Subtype"))) as PDFName | undefined)?.decodeText?.();
@@ -419,7 +423,7 @@ async function substitute(doc: PDFDocument, font: PDFDict, use: FontUse, files: 
   for (const key of font.keys()) if (!["Type", "ToUnicode"].includes(key.decodeText())) font.delete(key);
   font.set(N("Subtype"), N("TrueType")); font.set(N("BaseFont"), N(fk.postscriptName)); font.set(N("Encoding"), N("WinAnsiEncoding"));
   font.set(N("FirstChar"), PDFNumber.of(first)); font.set(N("LastChar"), PDFNumber.of(last)); font.set(N("Widths"), ctx.obj(widths)); font.set(N("FontDescriptor"), ctx.register(descriptor));
-  return undefined;
+  return { family: fk.postscriptName.replace(/-Regular$/, ""), label };
 }
 
 /** A font dictionary's own widths, if it has them (they override the standard metrics). */
@@ -428,6 +432,36 @@ function ownWidths(font: PDFDict, look: <T extends PDFObject>(o: PDFObject | und
   if (!(w instanceof PDFArray) || !(fc instanceof PDFNumber)) return undefined;
   const first = fc.asNumber(), arr = w.asArray().map((x) => (look<PDFNumber>(x) as PDFNumber)?.asNumber?.());
   return (c) => arr[c - first];
+}
+
+/**
+ * PDF/A-2b with every page rebuilt as a picture (drawn in the browser, as Redact PDF draws its pages), for files whose
+ * content can't be kept as it is. Each page keeps its size; recognised words, if any, go on top as invisible text in
+ * the site's glyph-less font. The title, author and other details are carried over from the original where it can be
+ * read. Nothing else is: text, links, bookmarks, form fields, comments and attachments are not copied. The result is
+ * read back through the same checks as a converted file, and an error is raised if any fails (it shouldn't: pictures
+ * in RGB or grey, one font this site wrote).
+ */
+export async function picturesToPdfA(original: Uint8Array, password: string | undefined, count: number, page: (i: number) => Promise<RedactedPage>, now = new Date()): Promise<Uint8Array> {
+  let info: ReturnType<typeof infoOf> = {};
+  try { info = infoOf(await PDFDocument.load(original, { updateMetadata: false, ignoreEncryption: false, ...(password !== undefined ? { password } : {}) })); } catch { /* details left out */ }
+  const out = await PDFDocument.create({ updateMetadata: false });
+  let glyphless: PDFRef | undefined;
+  for (let i = 0; i < count; i++) {
+    const r = await page(i);
+    const pg = out.addPage([r.width, r.height]);
+    pg.drawImage(r.png ? await out.embedPng(r.image) : await out.embedJpg(r.image), { x: 0, y: 0, width: r.width, height: r.height });
+    if (r.lines?.length) addTextLayer(pg, (glyphless ??= addGlyphlessFont(out)), r.lines, (x, y) => [x / r.scale, r.height - y / r.scale]);
+  }
+  markPdfA(out, { ...info, producer: PRODUCER, created: info.created ?? now, modified: now }, crypto.getRandomValues(new Uint8Array(16)));
+  const bytes = await out.save({ useObjectStreams: true });
+  // the same checks as for a converted file
+  const back = await PDFDocument.load(bytes, { updateMetadata: false });
+  const scan = scanDocument(back.context, back.getPages().map((p) => p.node as unknown as PDFDict));
+  const problems = [...scan.problems, ...scan.inlineProblems, ...checkFonts(back.context, scan.fonts).problems, ...checkObjects(back.context).problems];
+  if (scan.device.has("cmyk")) problems.push("CMYK pictures");
+  if (problems.length) throw new Error(`The rebuilt file didn't pass this tool's own PDF/A checks (${problems.join("; ")}). Please report this.`);
+  return bytes;
 }
 
 /** Deletes every object the saved file would not reach from its trailer (earlier versions of changed objects, removed

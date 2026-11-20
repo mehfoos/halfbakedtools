@@ -403,6 +403,65 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       say(`Saved ${files.length === 1 ? files[0].name : `${files.length} PDFs in ${safeName(session.output.name)}.zip`}. ${lines.join(" ")} Recognised text can contain mistakes: check anything that matters.`);
     });
   }
+  // ---------- PDF to PDF/A ----------
+  const paMode = () => root.querySelector<HTMLInputElement>('input[name="paMode"]:checked')?.value ?? "stop";
+  const paOcr = root.querySelector<HTMLInputElement>("#paOcr");
+  const paRows = () => {
+    const pic = paMode() === "pictures", r = root.querySelector<HTMLElement>("#paPicRow"), l = root.querySelector<HTMLElement>("#paLangRow");
+    if (r) r.hidden = !pic; if (l) l.hidden = !pic || !paOcr?.checked;
+  };
+  root.querySelectorAll('input[name="paMode"], #paOcr').forEach((e) => e.addEventListener("change", paRows)); paRows();
+  async function savePdfA() {
+    if (busy || !ask.hidden) return;
+    const pdfs = session.sources.filter((s) => loaded.get(s.sha256)?.data.kind === "pdf"); if (!pdfs.length) return say("Add a PDF first.", "bad");
+    const names = pdfs.map(perFileName), zipName = safeName(session.output.name);
+    if (!(await consent(names.length === 1 ? names : [`${zipName}.zip`]))) return say("Nothing was saved. Change the file name and try again.");
+    const pictures = paMode() === "pictures", read = pictures && !!paOcr?.checked, dpi = Number(root.querySelector<HTMLSelectElement>("#paDpi")?.value) || 200;
+    type Report = { name: string; out?: string; how: "kept" | "pictures" | "refused"; changes: string[]; blockers: string[] };
+    const reports: Report[] = [], files: { name: string; bytes: Uint8Array }[] = [];
+    const done = await work("Converting…", async (progress) => {
+      const { convertToPdfA, picturesToPdfA } = await import("./pdfaconvert.ts");
+      const { loadSubstitute } = await import("./pdfafontload.ts");
+      let engine: Awaited<ReturnType<typeof import("./tess.ts").startRecogniser>> | null = null;
+      try {
+        for (const [k, s] of pdfs.entries()) {
+          const L = loaded.get(s.sha256)!, d = L.data; if (d.kind !== "pdf") continue;
+          progress(`${s.name}: checking and converting…`);
+          let r: { bytes: Uint8Array | null; changes: string[]; blockers: string[] };
+          try { r = await convertToPdfA(d.bytes, d.password, loadSubstitute); }
+          catch (e) { console.error(e); r = { bytes: null, changes: [], blockers: [`The file's structure couldn't be read for conversion (${e instanceof Error ? e.message : String(e)}). Repair PDF may help.`] }; }
+          if (r.bytes) { files.push({ name: names[k], bytes: r.bytes }); reports.push({ name: s.name, out: names[k], how: "kept", changes: r.changes, blockers: [] }); continue; }
+          if (!pictures || L.handle.kind !== "pdf") { reports.push({ name: s.name, how: "refused", changes: [], blockers: r.blockers }); continue; }
+          if (read && !engine) { const { startRecogniser } = await import("./tess.ts"); engine = await startRecogniser(new URL("../tesseract/", new URL(vendor, location.href)).href, chosenLangs(root.querySelector<HTMLSelectElement>("#paLang")!.value, ""), (share) => progress(`Loading the text-recognition engine… ${Math.round(share * 100)}%`)); }
+          const ui = await import("./redactui.ts"), h = L.handle as PdfHandle;
+          const bytes = await picturesToPdfA(d.bytes, d.password, s.pages, async (i) => {
+            progress(`${s.name}: rebuilding page ${i + 1} of ${s.pages}${read ? " and reading it back" : ""}…`);
+            return ui.redactedPage(h, i, [], dpi, engine ? (c) => engine!.read(c) : undefined);
+          });
+          files.push({ name: names[k], bytes }); reports.push({ name: s.name, out: names[k], how: "pictures", changes: [], blockers: r.blockers });
+        }
+      } finally { await engine?.stop(); }
+      return true;
+    });
+    if (!done) return;
+    if (files.length) await deliver(files, zipName);
+    // what happened to each file
+    result.replaceChildren(); result.className = "result sans"; result.hidden = false;
+    for (const r of reports) {
+      const head = r.how === "kept" ? `${r.name} → ${r.out}: converted, content kept` : r.how === "pictures" ? `${r.name} → ${r.out}: pages rebuilt as pictures` : `${r.name}: not converted`;
+      result.append(el("p", {}, el("strong", {}, head)));
+      if (r.how === "kept") result.append(r.changes.length ? el("ul", { className: "small" }, ...r.changes.map((c) => el("li", {}, c))) : el("p", { className: "small" }, "Nothing needed changing apart from the PDF/A markings (colour profile, metadata, file identifier)."));
+      else {
+        result.append(el("p", { className: "small" }, r.how === "pictures" ? "Its content couldn't be kept as it is, because:" : "Its content can't be kept as it is, because:"), el("ul", { className: "small" }, ...r.blockers.map((b) => el("li", {}, b))));
+        if (r.how === "refused") result.append(el("p", { className: "small muted" }, "To convert it anyway, choose “Rebuild its pages as pictures” and convert again."));
+      }
+    }
+    result.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    const kept = reports.filter((r) => r.how === "kept").length, pics = reports.filter((r) => r.how === "pictures").length, refused = reports.length - kept - pics;
+    say(files.length
+      ? `Saved ${files.length === 1 ? files[0].name : `${files.length} PDFs in ${zipName}.zip`}${pics ? ` (${pics === files.length ? "" : `${pics} of them `}with pages rebuilt as pictures)` : ""}.${refused ? ` ${refused === 1 ? "One file was" : `${refused} files were`} not converted.` : ""} The details are below.`
+      : `Nothing was saved: ${reports.length === 1 ? "the file" : "no file"} could be converted with its content kept. The reasons are below.`, files.length ? (refused ? "warn" : "info") : "bad");
+  }
   // ---------- Redact PDF ----------
   const rdTerms = () => (root.querySelector<HTMLTextAreaElement>("#rdTerms")?.value ?? "").split(/\r?\n/).map((t) => t.trim()).filter(Boolean);
   const rdWhole = () => !!root.querySelector<HTMLInputElement>("#rdWhole")?.checked;
@@ -1071,6 +1130,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     if (task.slug === "fill-forms") return saveForms();
     if (task.slug === "ocr") return saveOcr();
     if (task.slug === "redact") return saveRedact();
+    if (task.slug === "pdf-to-pdfa") return savePdfA();
     if (busy || !ask.hidden) return;
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);
