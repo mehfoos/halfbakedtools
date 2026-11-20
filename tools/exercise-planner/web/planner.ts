@@ -54,11 +54,27 @@ export type Suggestion = {
   missing: Target[];
 };
 
-export type Result = { suggestions: Suggestion[]; available: number; candidates: number; relaxed: boolean; truncated: boolean };
+export type Result = {
+  suggestions: Suggestion[];
+  available: number;
+  candidates: number;
+  /** True if some suggestions share more exercises than the visitor asked for (there weren't enough lists otherwise). */
+  relaxed: boolean;
+  /** The largest share of exercises any suggestion has in common with an earlier one (0..1). */
+  sharedMax: number;
+  /** Targets that none of the available exercises trains at all. */
+  unreachable: Target[];
+  truncated: boolean;
+};
 
 const MAX_CANDIDATES = 30;
 const PER_TARGET = 3;
 const HARD_MAX_EXERCISES = 10;
+
+const MAX_SUGGESTIONS = 6;
+const MAX_NODES = 400_000; // safety limit on the search; reaching it is reported as `truncated`
+const finite = (v: number, d: number) => (Number.isFinite(v) ? v : d);
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 export function suggest(o: Options): Result {
   const have = new Set(o.equipment);
@@ -66,10 +82,17 @@ export function suggest(o: Options): Result {
   const muscleTargets = o.targets.filter((t): t is Muscle => t !== AEROBIC);
   const wantAerobic = o.targets.includes(AEROBIC);
   const nT = muscleTargets.length + (wantAerobic ? 1 : 0);
-  const depth = Math.max(o.depth, 0.5);
-  const K = Math.min(Math.max(1, Math.round(o.maxExercises)), HARD_MAX_EXERCISES);
+  // Out-of-range or non-numeric settings are brought back into range rather than trusted.
+  const depth = clamp(finite(o.depth, 1), 0.5, 3);
+  const K = clamp(Math.round(finite(o.maxExercises, HARD_MAX_EXERCISES)), 1, HARD_MAX_EXERCISES);
+  const count = clamp(Math.round(finite(o.count, 3)), 1, MAX_SUGGESTIONS);
+  const overlap = clamp(finite(o.overlap, 0.5), 0, 1);
   const available = EXERCISES.filter((e) => canDo(e, have) && !excluded.has(e.id));
-  if (!nT) return { suggestions: [], available: available.length, candidates: 0, relaxed: false, truncated: false };
+  const unreachable: Target[] = [
+    ...muscleTargets.filter((m) => !available.some((e) => weights(e).has(m))),
+    ...(wantAerobic && !available.some((e) => e.kind === "aerobic") ? [AEROBIC as Target] : []),
+  ];
+  if (!nT) return { suggestions: [], available: available.length, candidates: 0, relaxed: false, sharedMax: 0, unreachable, truncated: false };
 
   // Candidates: available exercises that help with at least one target.
   const gain = (e: Exercise) => {
@@ -85,7 +108,7 @@ export function suggest(o: Options): Result {
   for (const m of muscleTargets) helpful.filter((e) => e.direct.includes(m)).slice(0, PER_TARGET).forEach((e) => keep.add(e));
   if (wantAerobic) helpful.filter((e) => e.kind === "aerobic").slice(0, PER_TARGET).forEach((e) => keep.add(e));
   for (const e of helpful) if (keep.size < MAX_CANDIDATES) keep.add(e);
-  const truncated = helpful.length > keep.size;
+  const truncatedList = helpful.length > keep.size;
   const cands = helpful.filter((e) => keep.has(e));
   // Exercises that do exactly the same for the chosen targets (e.g. bench press and push-up for "chest") are
   // grouped, the search runs over groups, and the groups' members are swapped in afterwards to make varied lists.
@@ -97,25 +120,30 @@ export function suggest(o: Options): Result {
   const W = groups.map((g) => muscleTargets.map((m) => weights(g[0]).get(m) ?? 0));
   const isAero = groups.map((g) => wantAerobic && g[0].kind === "aerobic");
 
-  // Depth-first search over sets of up to K groups. A group is only added if it raises the capped score;
-  // because the capped score has diminishing returns, a set containing a group that adds nothing is always
-  // beaten by the same set without it, so nothing worthwhile is skipped.
+  // Depth-first search over sets of up to K groups. A group may be used several times, once per different
+  // member (two chest exercises, say, to reach 2 sets of chest). A group is only added if it raises the capped
+  // score; because the capped score has diminishing returns, a set containing a group that adds nothing is
+  // always beaten by the same set without it, so nothing worthwhile is skipped.
   type Found = { idx: number[]; capped: number; extra: number };
   const found: Found[] = [];
   const cov = new Array(muscleTargets.length).fill(0);
   const pick: number[] = [];
-  let aero = 0;
+  const used = new Array(groups.length).fill(0);
+  let aero = 0, nodes = 0, cut = false;
   const capped = () => cov.reduce((s, v) => s + Math.min(v, depth), 0) + (aero > 0 ? depth : 0);
   const dfs = (start: number, current: number) => {
     if (pick.length) found.push({ idx: [...pick], capped: current, extra: cov.reduce((s, v) => s + Math.min(v, 2 * depth), 0) });
     if (pick.length === K) return;
     for (let i = start; i < groups.length; i++) {
+      if (used[i] >= groups[i].length) continue;
+      if (++nodes > MAX_NODES) { cut = true; return; }
       for (let j = 0; j < cov.length; j++) cov[j] += W[i][j];
       if (isAero[i]) aero++;
       const next = capped();
-      if (next > current + 1e-9) { pick.push(i); dfs(i + 1, next); pick.pop(); }
+      if (next > current + 1e-9) { pick.push(i); used[i]++; dfs(i, next); used[i]--; pick.pop(); }
       for (let j = 0; j < cov.length; j++) cov[j] -= W[i][j];
       if (isAero[i]) aero--;
+      if (cut) return;
     }
   };
   dfs(0, 0);
@@ -130,37 +158,47 @@ export function suggest(o: Options): Result {
   for (const f of found) {
     if (concretes.length >= MAX_ALL) break;
     const batch: Exercise[][] = [];
-    const walk = (k: number, acc: Exercise[]) => {
+    // A group used twice gets two different members (in order, so the same pair isn't listed twice).
+    const walk = (k: number, acc: Exercise[], last: number) => {
       if (batch.length >= MAX_PER) return;
       if (k === f.idx.length) { batch.push([...acc]); return; }
-      for (const e of groups[f.idx[k]]) { acc.push(e); walk(k + 1, acc); acc.pop(); if (batch.length >= MAX_PER) return; }
+      const g = groups[f.idx[k]];
+      for (let m = k > 0 && f.idx[k] === f.idx[k - 1] ? last + 1 : 0; m < g.length; m++) {
+        acc.push(g[m]); walk(k + 1, acc, m); acc.pop();
+        if (batch.length >= MAX_PER) return;
+      }
     };
-    walk(0, []);
+    walk(0, [], -1);
     const score = (ex: Exercise[]) => Math.max(0, ...ex.map(maxMet)) * 100 + ex.reduce((s, e) => s + allW(e), 0);
     batch.sort((x, y) => score(y) - score(x));
     for (const ex of batch) concretes.push({ ex, capped: f.capped });
   }
 
-  // Pick varied suggestions: each may share at most `overlap` of its exercises with every earlier one.
-  const choose = (overlap: number, from: Concrete[], chosen: Concrete[]) => {
+  // Pick varied suggestions: each may share at most `limit` of its exercises with every earlier one. If there
+  // aren't enough lists, the limit is loosened a little at a time (never straight to "any"), and only lists as
+  // good as the best one are used, so later suggestions are as different as the exercises allow.
+  const sharedShare = (a: Concrete, b: Concrete) => a.ex.filter((e) => b.ex.includes(e)).length / Math.min(a.ex.length, b.ex.length);
+  const choose = (limit: number, from: Concrete[], chosen: Concrete[]) => {
     for (const f of from) {
-      if (chosen.length >= o.count) break;
+      if (chosen.length >= count) break;
       if (chosen.includes(f)) continue;
       const ok = chosen.every((c) => {
         const shared = f.ex.filter((e) => c.ex.includes(e)).length;
-        return shared <= Math.floor(overlap * Math.min(f.ex.length, c.ex.length));
+        return shared <= Math.floor(limit * Math.min(f.ex.length, c.ex.length) + 1e-9);
       });
       if (ok) chosen.push(f);
     }
     return chosen;
   };
-  const chosen = choose(o.overlap, concretes, []);
-  let relaxed = false;
-  if (chosen.length < o.count && o.overlap < 1) {
-    const before = chosen.length;
-    choose(1, concretes.filter((f) => f.capped >= (chosen[0]?.capped ?? 0) - 1e-9), chosen);
-    relaxed = chosen.length > before;
+  const chosen = choose(overlap, concretes, []);
+  if (chosen.length < count && overlap < 1) {
+    const best = chosen[0]?.capped ?? 0;
+    const pool = concretes.filter((f) => f.capped >= best - 1e-9);
+    for (let step = Math.floor(overlap * 10) + 1; step <= 10 && chosen.length < count; step++) choose(step / 10, pool, chosen);
   }
+  let sharedMax = 0;
+  for (let i = 1; i < chosen.length; i++) for (let j = 0; j < i; j++) sharedMax = Math.max(sharedMax, sharedShare(chosen[i], chosen[j]));
+  const relaxed = sharedMax > overlap + 1e-9;
 
   const suggestions = chosen.map((f) => {
     const exercises = f.ex;
@@ -169,5 +207,5 @@ export function suggest(o: Options): Result {
     if (wantAerobic && !exercises.some((e) => e.kind === "aerobic")) missing.push(AEROBIC);
     return { exercises, coverage: c, score: f.capped / (depth * nT), missing };
   });
-  return { suggestions, available: available.length, candidates: cands.length, relaxed, truncated };
+  return { suggestions, available: available.length, candidates: cands.length, relaxed, sharedMax, unreachable, truncated: truncatedList || cut };
 }

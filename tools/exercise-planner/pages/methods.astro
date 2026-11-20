@@ -34,7 +34,10 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
     your only targets are chest and triceps) are searched as one, then swapped for each other to make varied lists.
     The planner picks the best few lists that differ enough from each other ("All different" shares no exercises; "Some
     shared" lets a list share up to half its exercises with an earlier one), preferring, among equals, the more intense
-    aerobic activity and the exercises that work more muscles overall. If more than 30 exercises could help, it keeps
+    aerobic activity and the exercises that work more muscles overall. If there aren't enough lists that differ that
+    much, the limit is loosened a step at a time, only lists as good as the best are used, and the page says how much
+    the later suggestions share. A "covered" level above one set (2 or 3) is reached by listing different exercises
+    for the same muscle, never the same exercise twice. If more than 30 exercises could help, it keeps
     the best three for each target plus those that help most overall, and the page says so.
   </p>
 

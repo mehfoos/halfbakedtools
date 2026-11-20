@@ -125,3 +125,62 @@ test("the planner doesn't contradict Table 1A for exercises it lists", () => {
   // Squats, lunges and the leg press: "N/A" indirect for the hamstrings in the table.
   for (const id of ["backSquat", "legPress", "lungeDb"]) assert.ok(!EXERCISES.find((e) => e.id === id)!.indirect.includes("hamstrings"));
 });
+
+test("a deeper target (2 sets) is reachable: two different exercises from the same group", () => {
+  const r = suggest({ ...base, depth: 2, targets: ["chest"], equipment: preset("gym") });
+  const s = r.suggestions[0];
+  assert.equal(s.score, 1);
+  assert.deepEqual(s.missing, []);
+  assert.equal(s.exercises.length, 2);
+  assert.equal(new Set(s.exercises.map((e) => e.id)).size, 2, "the same exercise twice");
+  assert.ok(coverage(s.exercises).chest >= 2);
+});
+
+test("at the default depth, two indirect exercises can add up to one set", () => {
+  const r = suggest({ ...base, targets: ["shoulders"], equipment: preset("gym"), excluded: EXERCISES.filter((e) => e.direct.includes("shoulders")).map((e) => e.id) });
+  assert.equal(r.suggestions[0].score, 1);
+  assert.equal(r.suggestions[0].exercises.length, 2);
+});
+
+test("'All different' never gives near-copies: relaxation is gradual and reported", () => {
+  // Calves with no equipment: very few options, so lists must overlap.
+  const r = suggest({ ...base, maxExercises: 10, count: 6, overlap: 0, targets: ["chest", "lats", "quads", "glutes", "abs"], equipment: preset("gym") });
+  assert.ok(r.suggestions.length >= 2);
+  const first = r.suggestions[0];
+  for (let i = 1; i < r.suggestions.length; i++) {
+    const shared = r.suggestions[i].exercises.filter((e) => first.exercises.includes(e)).length;
+    assert.ok(shared < Math.min(first.exercises.length, r.suggestions[i].exercises.length), `option ${i + 1} is a copy of option 1`);
+  }
+  assert.equal(r.relaxed, r.sharedMax > 0);
+  assert.ok(r.sharedMax <= 1);
+});
+
+test("when strict variety is possible, nothing is relaxed", () => {
+  const r = suggest({ ...base, overlap: 0, targets: ["chest", "lats", "quads"], equipment: preset("gym") });
+  assert.equal(r.relaxed, false);
+  assert.equal(r.sharedMax, 0);
+});
+
+test("invalid settings are brought back into range", () => {
+  const t = { targets: ["chest"] as never, equipment: preset("gym") };
+  for (const depth of [NaN, -1, 0, 1.7, 99, Infinity]) {
+    const r = suggest({ ...base, ...t, depth });
+    assert.ok(r.suggestions.length, `depth ${depth}`);
+    for (const s of r.suggestions) assert.ok(s.score >= 0 && s.score <= 1 && Number.isFinite(s.score), `depth ${depth}: score ${s.score}`);
+  }
+  assert.ok(suggest({ ...base, ...t, maxExercises: NaN, count: NaN, overlap: NaN }).suggestions.length >= 1);
+  assert.ok(suggest({ ...base, ...t, maxExercises: 99, count: 99 }).suggestions.length <= 6);
+});
+
+test("targets no available exercise trains are reported", () => {
+  assert.deepEqual(suggest({ ...base, targets: ["chest", "biceps"], equipment: ["body"] }).unreachable, ["biceps"]);
+  assert.deepEqual([...suggest({ ...base, targets: ["chest", "aerobic"], equipment: [] }).unreachable].sort(), ["aerobic", "chest"]);
+});
+
+test("whole body, deeper targets, is still fast", () => {
+  for (const depth of [2, 3]) {
+    const t = performance.now();
+    suggest({ ...base, depth, maxExercises: 10, count: 6, targets: [...muscles, "aerobic"] as never, equipment: preset("gym") });
+    assert.ok(performance.now() - t < 3000, `depth ${depth}: ${Math.round(performance.now() - t)} ms`);
+  }
+});
