@@ -280,13 +280,16 @@ test("reading order: big lifts, then smaller ones, then holds, then heart and lu
   assert.deepEqual(o, ["benchPress", "curl", "plank", "farmerCarry", "walk", "kbSwing"]);
 });
 
-test("how-to links point to individual ACE exercise-library pages", () => {
+test("how-to links point to individual pages of the chosen exercise libraries", () => {
   const withLink = EXERCISES.filter((e) => e.howTo);
-  assert.ok(withLink.length >= 40);
-  const urls = new Set<string>();
+  assert.ok(withLink.length >= 45);
+  const page: Record<string, RegExp> = {
+    ACE: /^https:\/\/www\.acefitness\.org\/resources\/everyone\/exercise-library\/\d+\/[a-z0-9-]+\/$/,
+    NASM: /^https:\/\/www\.nasm\.org\/resource-center\/exercise-library\/[a-z0-9-]+$/,
+    NSCA: /^https:\/\/www\.nsca\.com\/education\/articles\/kinetic-select\/[a-z0-9-]+\/$/,
+  };
   for (const e of withLink) {
-    assert.match(e.howTo!.url, /^https:\/\/www\.acefitness\.org\/resources\/everyone\/exercise-library\/\d+\/[a-z0-9-]+\/$/, e.id);
+    assert.match(e.howTo!.url, page[e.howTo!.source], e.id);
     assert.ok(e.howTo!.title.length > 0, e.id);
-    urls.add(e.howTo!.url);
   }
 });
