@@ -36,14 +36,16 @@ const policy = import.meta.env.PROD ? CSP : "";
     <div id="work" class="work" hidden>
       <div class="main">
         <p class="crumbline sans small"><a href={home}>All PDF tools</a> › <strong>{task.name}</strong> <span class="summary-note" id="selNote"></span></p>
-        <div id="editor" data-part="marks" hidden>
+        <div id="editor" data-part="marks redact" hidden>
           <div class="bar sans" role="toolbar" aria-label="Editing">
             <button type="button" class="small" id="edBack">◀ All pages</button>
             <button type="button" class="small" id="edPrev" aria-label="Previous page">‹</button>
             <span id="edWhere" class="small"></span>
             <button type="button" class="small" id="edNext" aria-label="Next page">›</button>
-            <button type="button" class="small add" id="edText">＋ Text</button>
-            <label class="button small add" for="stampPicker">＋ Picture</label>
+            <button type="button" class="small add" id="edText" data-part="marks">＋ Text</button>
+            <label class="button small add" for="stampPicker" data-part="marks">＋ Picture</label>
+            <button type="button" class="small add" id="edArea" data-part="redact" aria-pressed="false">▮ Mark areas</button>
+            <span id="areaBar" class="small" data-part="redact" hidden>Drag over what to remove. Press the button again to stop.</span>
             <button type="button" class="small add" id="edRect" data-part="shapes">▭ Rectangle</button>
             <button type="button" class="small add" id="edEllipse" data-part="shapes">◯ Ellipse</button>
             <button type="button" class="small add" id="edLine" data-part="shapes">╱ Line</button>
@@ -70,7 +72,8 @@ const policy = import.meta.env.PROD ? CSP : "";
             <p class="small muted">Your drawing stays in this page. It is not sent anywhere and is not remembered when you leave.</p>
           </div>
           <div id="edStage" class="stage"><canvas></canvas><div id="edLayer" class="layer"></div></div>
-          <p class="small muted sans">Drag an addition to move it; drag a picture's corner square to resize it. With one selected, the arrow keys nudge it and Delete removes it. What you see is the page exactly as it will be saved.</p>
+          <p class="small muted sans" data-part="marks">Drag an addition to move it; drag a picture's corner square to resize it. With one selected, the arrow keys nudge it and Delete removes it. What you see is the page exactly as it will be saved.</p>
+          <p class="small muted sans" data-part="redact">Areas are shown see-through here so you can check what each one covers; they are saved solid black. Drag an area to move it, or its corner square to resize it; with one selected, the arrow keys nudge it and Delete removes it.</p>
         </div>
         <div id="cropper" class="cropper" data-part="crop" hidden>
           <div class="row sans small cropnav">
@@ -127,7 +130,7 @@ const policy = import.meta.env.PROD ? CSP : "";
         <h1 id="h-task" class="side-title">{task.name}</h1>
         <p class="small sans">{task.hint}</p>
 
-        <div id="markProps" class="sans opts props" data-part="marks" hidden>
+        <div id="markProps" class="sans opts props" data-part="marks redact" hidden>
           <p data-for="text"><label for="mText">Text</label><br /><textarea id="mText" rows="3"></textarea></p>
           <p id="mWarn" class="notice small" hidden></p>
           <p data-for="text"><label class="field">Size <input id="mSize" type="number" min="4" max="400" step="1" inputmode="decimal" /> points</label></p>
@@ -140,7 +143,8 @@ const policy = import.meta.env.PROD ? CSP : "";
           <p data-for="shape"><label><input id="mFillOn" type="checkbox" /> Fill</label> <input id="mFill" type="color" aria-label="Fill colour" /></p>
           <p data-for="shape" id="mFlipRow"><label><input id="mFlip" type="checkbox" /> Other diagonal</label></p>
           <p data-for="shape ink"><label class="field">Strength <input id="mOpacity" type="range" min="5" max="100" step="5" /> <span id="mOpacityNote" class="small"></span></label><br /><span class="small muted">Fainter lets more of the page show through.</span></p>
-          <p><label class="field">Turn by <input id="mRotate" type="number" min="-360" max="360" step="1" inputmode="numeric" />°</label> <span class="small muted">clockwise</span></p>
+          <p data-for="redact" class="small">An area to remove<span id="mTerm"></span>.</p>
+          <p data-for="text image shape ink"><label class="field">Turn by <input id="mRotate" type="number" min="-360" max="360" step="1" inputmode="numeric" />°</label> <span class="small muted">clockwise</span></p>
           <p><button type="button" class="small" id="mDelete">Remove this addition</button></p>
         </div>
 
@@ -260,7 +264,7 @@ const policy = import.meta.env.PROD ? CSP : "";
             <p><label class="field">Crop
               <select id="crWhich"><option value="all">every page</option><option value="some">only the pages I choose</option></select></label></p>
             <p id="crPagesRow"><label class="field">Pages <input id="crPages" type="text" placeholder="1-3, 8-" size="12" /></label><br /><span class="small muted">"8-" means page 8 to the end.</span></p>
-            <p class="small muted">The same margins are used on every page chosen, so pages of different sizes lose the same width. <strong>Cropping hides; it does not delete.</strong> Anything outside the box is still stored in the PDF, and some software can show it again. For information that must be gone, wait for the Redact tool.</p>
+            <p class="small muted">The same margins are used on every page chosen, so pages of different sizes lose the same width. <strong>Cropping hides; it does not delete.</strong> Anything outside the box is still stored in the PDF, and some software can show it again. For information that must be gone, use <a href={`${home}redact/`}>Redact PDF</a>.</p>
             <p><button type="button" class="small" id="crReset">Reset margins</button></p>
           </div>
           <details id="optImages" data-part="imagePage">
@@ -280,6 +284,18 @@ const policy = import.meta.env.PROD ? CSP : "";
               <p class="small muted">PDF pages can be between half an inch and 200 inches on a side.</p>
             </div>
           </details>
+          <div id="optRedact" data-part="redact">
+            <p><label for="rdTerms"><strong>Find words to remove</strong></label><br /><textarea id="rdTerms" rows="3" placeholder="One per line: a name, a number, an address…"></textarea></p>
+            <p><label><input id="rdWhole" type="checkbox" /> Whole words only</label><br /><span class="small muted">Off: “Ann” also matches inside “Annual”. Letter case and spacing are ignored either way.</span></p>
+            <p class="row"><button type="button" class="small add" id="rdFind">Find and mark</button> <button type="button" class="small" id="rdClear">Remove all areas</button></p>
+            <p id="rdFound" class="small" aria-live="polite"></p>
+            <p class="small muted">Words are found in the PDF's text. Pages that are pictures (scans) have none: mark them by hand, or run them through OCR PDF first. Where a match starts or ends inside a run of text its edge is estimated, so the area is made a little wider there; check each page before saving.</p>
+            <p><label class="field">Quality of the rebuilt pages <select id="rdDpi"><option value="150">Smaller file (150 dots per inch)</option><option value="200" selected>Normal (200 dots per inch)</option><option value="300">Sharper (300 dots per inch)</option></select></label></p>
+            <p><label><input id="rdOcr" type="checkbox" /> Make the rebuilt pages searchable again</label><br /><span class="small muted">Their text is read back from the picture with text recognition (as in OCR PDF), so it can contain mistakes. The areas are painted before reading, so nothing under them is read.</span></p>
+            <p id="rdOcrLangRow"><label class="field">Language <select id="rdLang">{OCR_LANGS.map((l) => <option value={l.code}>{langLabel(l)}</option>)}</select></label></p>
+            <p><label><input id="rdStrip" type="checkbox" checked /> Also remove comments, links and form fields from the other pages</label><br /><span class="small muted">They can hold the same details. Untick to keep them on pages without areas.</span></p>
+            <p class="small muted">How it works: each page with an area is drawn as a picture inside this browser, the areas are painted solid black on it, and the saved file gets that picture instead of the page. Nothing that was under an area (text, pictures, drawings, hidden layers) is copied. Those pages lose their selectable text (unless you tick the option above), their links and some sharpness, and the file often grows. The saved file does not keep the original's bookmarks, document details (title, author), attachments or scripts. After saving, the file is checked for the words you searched for.</p>
+          </div>
           <div id="optOcr" data-part="ocr">
             <p><label class="field">Language <select id="ocrLang">{OCR_LANGS.map((l) => <option value={l.code}>{langLabel(l)}</option>)}</select></label></p>
             <p><label class="field">Also look for <select id="ocrLang2"><option value="">(no second language)</option>{OCR_LANGS.map((l) => <option value={l.code}>{langLabel(l)}</option>)}</select></label><br /><span class="small muted">For pages that mix two languages, such as Urdu with English. Reading takes longer with two.</span></p>
@@ -445,6 +461,9 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .mark { position: absolute; transform-origin: 0 0; outline: 1px dashed rgba(0, 0, 128, 0.45); cursor: move; box-sizing: border-box; }
     #pdftools .mark:hover, #pdftools .mark:focus-visible { outline: 2px solid var(--link-hover); }
     #pdftools .mark.sel { outline: 2px solid var(--navy); background: rgba(0, 0, 128, 0.06); }
+    #pdftools .mark.area { outline: 1px solid #c00000; }
+    #pdftools .mark.area.sel { outline: 2px solid #c00000; background: transparent; }
+    #pdftools .mark.area.live { background: rgba(0, 0, 0, 0.35); pointer-events: none; }
     #pdftools .grip { position: absolute; right: -7px; bottom: -7px; width: 14px; height: 14px; background: var(--navy); border: 2px solid #fff; cursor: nwse-resize; }
     #pdftools .props { border: 1px solid var(--navy); border-radius: 6px; padding: 10px; margin-bottom: 12px; background: #f6f7fd; }
     #pdftools .props textarea { width: 100%; font: inherit; padding: 4px; box-sizing: border-box; }

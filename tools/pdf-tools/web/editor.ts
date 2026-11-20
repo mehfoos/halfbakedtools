@@ -1,7 +1,7 @@
 // The single-page editor for adding text and pictures ("marks") to a page. Browser-only.
 // What is shown is the real thing: after every change the page is rebuilt as a PDF, exactly as it will be saved,
 // and drawn. The boxes laid over it are only handles for selecting, dragging and resizing.
-import { baseToView, viewToBase, turn, textBox, SIZE_MIN, SIZE_MAX, type Mark, type TextMark, type ShapeMark, type Quarter, type Measurer } from "./marks.ts";
+import { baseToView, viewToBase, turn, textBox, SIZE_MIN, SIZE_MAX, type Mark, type TextMark, type ShapeMark, type RedactMark, type Quarter, type Measurer } from "./marks.ts";
 import type { PageItem } from "./session.ts";
 
 export type EditorHost = {
@@ -33,7 +33,8 @@ export function createEditor(host: EditorHost) {
   const upright = () => (360 - turned()) % 360;                 // stored angle that looks level on the turned page
   const sizeOf = (m: Mark) => (m.type === "text" ? textBox(m, host.font(m)) : { w: m.w, h: Math.max(m.h, m.type === "shape" && m.shape === "line" ? 8 : 0) });
   const q = <T extends HTMLElement = HTMLElement>(id: string) => host.root.querySelector<T>(`#${id}`);
-  const NAMES: Record<string, string> = { text: "Added text", image: "Added picture", ink: "Freehand line", rect: "Rectangle", ellipse: "Ellipse", line: "Line" };
+  const NAMES: Record<string, string> = { text: "Added text", image: "Added picture", ink: "Freehand line", rect: "Rectangle", ellipse: "Ellipse", line: "Line", redact: "Area to remove" };
+  const least = (m: Mark) => (m.type === "redact" ? 2 : 8);    // smallest size a drag can leave, in points (an area may cover one small letter)
 
   function change(next: Mark[], quiet = false) { host.setMarks(index, next, quiet); }
   function update(patch: Partial<TextMark> & Partial<Mark>, quiet = false) {
@@ -67,7 +68,7 @@ export function createEditor(host: EditorHost) {
     layer.replaceChildren(...marks().map((m, k) => {
       const at = baseToView(m.x, m.y, base.w, base.h, T), s = sizeOf(m);
       const box = document.createElement("div");
-      box.className = `mark${k === chosen ? " sel" : ""}`; box.dataset.k = String(k); box.tabIndex = 0;
+      box.className = `mark${m.type === "redact" ? " area" : ""}${k === chosen ? " sel" : ""}`; box.dataset.k = String(k); box.tabIndex = 0;
       box.setAttribute("role", "button");
       box.setAttribute("aria-label", m.type === "text" ? `Added text: ${m.text.slice(0, 40)}` : NAMES[m.type === "shape" ? m.shape : m.type]);
       Object.assign(box.style, { left: `${at.x * z}px`, top: `${at.y * z}px`, width: `${s.w * z}px`, height: `${s.h * z}px`, transform: `rotate(${m.rotate + T}deg)` });
@@ -84,6 +85,8 @@ export function createEditor(host: EditorHost) {
     host.root.querySelectorAll<HTMLElement>("#markProps [data-for]").forEach((e) => (e.hidden = !(e.dataset.for ?? "").split(" ").includes(m.type)));
     const set = (id: string, v: string) => { const e = $<HTMLInputElement>(id); if (document.activeElement !== e) e.value = v; };
     set("mRotate", String(((Math.round(m.rotate + turned()) % 360) + 360) % 360));
+    const del = q("mDelete"); if (del) del.textContent = m.type === "redact" ? "Remove this area" : "Remove this addition";
+    const term = q("mTerm"); if (term) term.textContent = m.type === "redact" && m.term ? `, placed by finding \u201c${m.term}\u201d` : "";
     if (m.type === "shape" || m.type === "ink") {
       set("mStroke", m.color); set("mLine", String(m.width)); set("mOpacity", String(Math.round((m.opacity ?? 1) * 100)));
       const note = q("mOpacityNote"); if (note) note.textContent = `${Math.round((m.opacity ?? 1) * 100)}%`;
@@ -116,6 +119,7 @@ export function createEditor(host: EditorHost) {
     const live = layer.querySelector<HTMLElement>(`.mark[data-k="${k}"]`)!;
     drag = { k, x0: e.clientX, y0: e.clientY, box: live, grip, moved: false };
     live.setPointerCapture(e.pointerId);
+    live.focus({ preventScroll: true });   // so the arrow keys and Delete act on it (the handles were just redrawn)
   });
   layer.addEventListener("pointermove", (e) => {
     if (!drag) return;
@@ -123,7 +127,7 @@ export function createEditor(host: EditorHost) {
     if (Math.abs(dx) + Math.abs(dy) > 2) drag.moved = true;
     if (drag.grip && m.type !== "text") {
       const d = turn(dx, dy, -(m.rotate + turned())), z = cssPerPoint();
-      const w = Math.max(8, m.w + d.dx / z), h = m.type === "image" ? (w * m.h) / m.w : Math.max(8, m.h + d.dy / z);
+      const w = Math.max(least(m), m.w + d.dx / z), h = m.type === "image" ? (w * m.h) / m.w : Math.max(least(m), m.h + d.dy / z);
       drag.box.style.width = `${w * z}px`; drag.box.style.height = `${h * z}px`;
     } else drag.box.style.translate = `${dx}px ${dy}px`;
   });
@@ -133,10 +137,11 @@ export function createEditor(host: EditorHost) {
     if (!m || !d.moved) return;
     const z = cssPerPoint();
     if (d.grip && m.type !== "text") {
-      const t = turn(dx, dy, -(m.rotate + turned())), w = Math.max(8, m.w + t.dx / z);
-      update({ w, h: m.type === "image" ? (w * m.h) / m.w : Math.max(8, m.h + t.dy / z) });
+      const t = turn(dx, dy, -(m.rotate + turned())), w = Math.max(least(m), m.w + t.dx / z);
+      update({ w, h: m.type === "image" ? (w * m.h) / m.w : Math.max(least(m), m.h + t.dy / z) });
     }
     else { const b = turn(dx / z, dy / z, -turned()); update({ x: m.x + b.dx, y: m.y + b.dy }); }
+    requestAnimationFrame(() => layer.querySelector<HTMLElement>(`.mark[data-k="${d.k}"]`)?.focus({ preventScroll: true }));
   };
   layer.addEventListener("pointerup", drop); layer.addEventListener("pointercancel", () => { drag = null; drawHandles(); });
   stage.addEventListener("pointerdown", (e) => { if (e.target === stage || (e.target as Element).tagName === "CANVAS" || e.target === layer) { chosen = -1; typing = false; drawHandles(); showProps(); } });
@@ -151,20 +156,50 @@ export function createEditor(host: EditorHost) {
   function remove() { const k = chosen; chosen = -1; change(marks().filter((_, i) => i !== k)); }
 
   // ----- adding -----
-  $("edText").addEventListener("click", () => {
+  q("edText")?.addEventListener("click", () => {
     const v = view(), at = viewToBase(v.w * 0.12, v.h * 0.12, base.w, base.h, turned());
     const m: TextMark = { type: "text", x: at.x, y: at.y, rotate: upright(), text: "Your text", size: Math.max(8, Math.round(v.w / 40)), color: "#000000", font: "sans", bold: false };
     chosen = marks().length; typing = false; change([...marks(), m]);
     requestAnimationFrame(() => { const t = $<HTMLTextAreaElement>("mText"); t.focus(); t.select(); });
   });
-  const picker = $<HTMLInputElement>("stampPicker");
+  const picker = q<HTMLInputElement>("stampPicker");
   /** Adds a picture to the page being edited, near its top-left, `share` of the page's width wide. */
   async function placePicture(f: File, share = 1 / 3) {
     const pic = await host.addPicture(f); if (!pic) return;
     const v = view(), w = v.w * share, h = (w * pic.height) / pic.width, at = viewToBase(v.w * 0.12, v.h * 0.12, base.w, base.h, turned());
     chosen = marks().length; change([...marks(), { type: "image", x: at.x, y: at.y, rotate: upright(), w, h, src: pic.id }]);
   }
-  picker.addEventListener("change", () => { const f = picker.files?.[0]; picker.value = ""; if (f) placePicture(f); });
+  picker?.addEventListener("change", () => { const f = picker.files?.[0]; picker.value = ""; if (f) placePicture(f); });
+
+  // ----- areas to remove (Redact PDF): drag a rectangle over the page -----
+  let marking = false, area: { x0: number; y0: number; div: HTMLElement } | null = null;
+  const setMarking = (on: boolean) => {
+    const b = q("edArea"); if (!b) return;
+    marking = on; layer.classList.toggle("drawing", on); const bar = q("areaBar"); if (bar) bar.hidden = !on;
+    b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "✓ Stop marking" : "▮ Mark areas";
+    if (on) { chosen = -1; drawHandles(); showProps(); }
+  };
+  q("edArea")?.addEventListener("click", () => setMarking(!marking));
+  layer.addEventListener("pointerdown", (e) => {
+    if (!marking || (e.target as Element).closest(".mark")) return;
+    e.preventDefault(); layer.setPointerCapture(e.pointerId);
+    const r = layer.getBoundingClientRect(), div = document.createElement("div"); div.className = "mark area live";
+    area = { x0: e.clientX - r.left, y0: e.clientY - r.top, div }; layer.append(div);
+  });
+  layer.addEventListener("pointermove", (e) => {
+    if (!area) return;
+    const r = layer.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    Object.assign(area.div.style, { left: `${Math.min(x, area.x0)}px`, top: `${Math.min(y, area.y0)}px`, width: `${Math.abs(x - area.x0)}px`, height: `${Math.abs(y - area.y0)}px` });
+  });
+  const endArea = (e: PointerEvent) => {
+    if (!area) return; const a = area; area = null; a.div.remove();
+    const r = layer.getBoundingClientRect(), z = cssPerPoint(), x1 = e.clientX - r.left, y1 = e.clientY - r.top;
+    if (Math.abs(x1 - a.x0) < 3 || Math.abs(y1 - a.y0) < 3) return;   // a click, not a drag
+    const p = viewToBase(a.x0 / z, a.y0 / z, base.w, base.h, turned()), q2 = viewToBase(x1 / z, y1 / z, base.w, base.h, turned());
+    const m: RedactMark = { type: "redact", x: Math.min(p.x, q2.x), y: Math.min(p.y, q2.y), rotate: 0, w: Math.abs(q2.x - p.x), h: Math.abs(q2.y - p.y) };
+    chosen = marks().length; change([...marks(), m]);
+  };
+  layer.addEventListener("pointerup", endArea); layer.addEventListener("pointercancel", () => { area?.div.remove(); area = null; });
 
   // ----- shapes, highlights and freehand lines -----
   function addShape(shape: ShapeMark["shape"], highlight = false) {
@@ -241,7 +276,7 @@ export function createEditor(host: EditorHost) {
 
   // ----- moving between pages -----
   function open(i: number) { index = i; chosen = -1; typing = false; $("editor").hidden = false; $("gridView").hidden = true; refresh(); }
-  function close() { setDrawing(false); index = -1; chosen = -1; $("editor").hidden = true; $("gridView").hidden = false; props.hidden = true; host.onClose(); }
+  function close() { setDrawing(false); setMarking(false); index = -1; chosen = -1; $("editor").hidden = true; $("gridView").hidden = false; props.hidden = true; host.onClose(); }
   $("edBack").addEventListener("click", close);
   $("edPrev").addEventListener("click", () => { if (index > 0) open(index - 1); });
   $("edNext").addEventListener("click", () => { if (index < host.count() - 1) open(index + 1); });

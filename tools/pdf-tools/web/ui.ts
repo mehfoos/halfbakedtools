@@ -7,7 +7,7 @@ import { PDFDocument } from "@cantoo/pdf-lib";
 import { NO_COMPRESSION, PRESETS, saving, greyInPlace, type CompressOptions, type CompressStats } from "./compress-core.ts";
 import { recompressImages } from "./compress.ts";
 import {
-  emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName,
+  emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName, withMarks,
   serialise, parseSettings, defaultName, clashes, setMarks, usage, SCALE_MIN, SCALE_MAX, DPI_MIN, DPI_MAX,
   type Session, type PageItem, type Edit, type OutputFormat, type SplitMode, type Rotation, type SourceRef,
 } from "./session.ts";
@@ -26,6 +26,7 @@ import { toLines, toBlocks, toMarkdown, toHtml, type Line } from "./structure.ts
 import { comparePages, diffReport, type PageDiff } from "./diff.ts";
 import { looksLikePdfBody, rewrite, repairNote, listPages } from "./repair.ts";
 import { createEditor } from "./editor.ts";
+import type { RedactMark } from "./marks.ts";
 import { createSignPad } from "./signpad.ts";
 import type { Mark, FontKey } from "./marks.ts";
 import { NO_NUMBERS, NO_WATERMARK, OPACITY_MIN, MARGIN_MAX, COUNT_MAX, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
@@ -36,7 +37,7 @@ import { jpegOrientation, orientationToRotation } from "./exif.ts";
 import { NO_IMAGE_LAYOUT, imageLayout, PAGE_MIN, PAGE_MAX, MARGIN_MAX as IMAGE_MARGIN_MAX, type ImageLayout } from "./layout.ts";
 import { NO_CROP, CROP_UNITS, MARGIN_LIMIT, toPoints, fromPoints, isCropped, appliesTo, clampMargins, type CropUnit, type Margins } from "./crop.ts";
 import { taskBySlug, showsPages, type Part } from "./tasks.ts";
-import { openPdf, closePdf, drawPage, pageText, pageItems, pixelsToPoints, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle } from "./render.ts";
+import { openPdf, closePdf, drawPage, pageText, pageItems, pixelsToPoints, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle, type PdfHandle } from "./render.ts";
 
 // The TIFF library is only fetched (from this site) when a TIFF is read or written.
 const utif = async () => { const m = await import("utif2"); return ((m as { default?: typeof m }).default ?? m); };
@@ -289,7 +290,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       const key = `${s.sha256}:${p.page}`;
       if (thumbs.has(key)) img.src = thumbs.get(key)!;
       const added = p.marks?.length ?? 0;
-      const notes = [p.rotate ? `turned ${p.rotate}°` : "", p.scale !== 1 ? `${Math.round(p.scale * 1000) / 10}% size` : "", added ? `${added} addition${added === 1 ? "" : "s"} (not shown in this small preview)` : ""].filter(Boolean).join(", ");
+      const notes = [p.rotate ? `turned ${p.rotate}°` : "", p.scale !== 1 ? `${Math.round(p.scale * 1000) / 10}% size` : "",
+        added ? (can("redact") ? `${added} ${added === 1 ? "area" : "areas"} to remove (not shown in this small preview)` : `${added} addition${added === 1 ? "" : "s"} (not shown in this small preview)`) : ""].filter(Boolean).join(", ");
       const tile = el("li", { className: `tile${sel.has(i) ? " on" : ""}`, draggable: true },
         el("label", {},
           el("span", { className: "thumb" }, ok ? img : el("span", { className: "small" }, "File not added yet")),
@@ -298,6 +300,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
           notes ? el("span", { className: "from small" }, notes) : ""));
       tile.dataset.i = String(i);
       if (ok && can("marks")) { const b = el("button", { type: "button", className: "small edit" }, added ? "Edit additions" : "Add text or picture"); b.dataset.edit = String(i); tile.append(b); }
+      if (ok && can("redact")) { const b = el("button", { type: "button", className: "small edit" }, added ? "Check areas" : "Mark areas"); b.dataset.edit = String(i); tile.append(b); }
       if (ok && !thumbs.has(key)) watcher.observe(tile);
       return tile;
     }));
@@ -400,6 +403,110 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       say(`Saved ${files.length === 1 ? files[0].name : `${files.length} PDFs in ${safeName(session.output.name)}.zip`}. ${lines.join(" ")} Recognised text can contain mistakes: check anything that matters.`);
     });
   }
+  // ---------- Redact PDF ----------
+  const rdTerms = () => (root.querySelector<HTMLTextAreaElement>("#rdTerms")?.value ?? "").split(/\r?\n/).map((t) => t.trim()).filter(Boolean);
+  const rdWhole = () => !!root.querySelector<HTMLInputElement>("#rdWhole")?.checked;
+  const near = (a: RedactMark, b: RedactMark) => Math.abs(a.x - b.x) < 1 && Math.abs(a.y - b.y) < 1 && Math.abs(a.w - b.w) < 1 && Math.abs(a.h - b.h) < 1;
+  root.querySelector("#rdFind")?.addEventListener("click", async () => {
+    const terms = rdTerms(); if (!terms.length) return say("Type a word or phrase to find first, one per line.", "bad");
+    await work("Finding…", async (progress) => {
+      const { findAreas } = await import("./redactui.ts");
+      let added = 0, hit = 0, blank = 0; const pages = [...session.pages];
+      for (const [i, p] of pages.entries()) {
+        if (!has(p)) continue;
+        progress(`Finding: page ${i + 1} of ${pages.length}…`);
+        const r = await findAreas(loaded.get(src(p.src).sha256)!.handle as PdfHandle, p.page, terms, rdWhole());
+        if (!r.text) { blank++; continue; }
+        const fresh = r.marks.filter((m) => !areasOf(p).some((e) => near(e, m)));
+        if (fresh.length) { pages[i] = withMarks(p, [...(p.marks ?? []), ...fresh]); added += fresh.length; hit++; }
+      }
+      if (added) { remember(); session = { ...session, pages }; render(); if (editor?.isOpen()) editor.refresh(); }
+      const scans = blank ? ` ${blank === 1 ? "One page has" : `${blank} pages have`} no text to search (a scan, perhaps): check ${blank === 1 ? "it" : "them"} by hand.` : "";
+      say(added ? `Marked ${added} ${added === 1 ? "place" : "places"} on ${hit} ${hit === 1 ? "page" : "pages"}.${scans} Open each page to check the areas before saving.` : `Nothing new found.${scans}`, added ? "info" : "warn");
+    });
+  });
+  root.querySelector("#rdClear")?.addEventListener("click", () => {
+    if (busy || !session.pages.some((p) => areasOf(p).length)) return;
+    remember(); session = { ...session, pages: session.pages.map((p) => withMarks(p, (p.marks ?? []).filter((m) => m.type !== "redact"))) }; render(); if (editor?.isOpen()) editor.refresh();
+    say("All areas removed. Undo brings them back.");
+  });
+  const rdOcr = root.querySelector<HTMLInputElement>("#rdOcr"), rdLangRow = root.querySelector<HTMLElement>("#rdOcrLangRow");
+  const showLang = () => { if (rdLangRow) rdLangRow.hidden = !rdOcr?.checked; }; rdOcr?.addEventListener("change", showLang); showLang();
+
+  /** Asks before handing over a file the check found words in. */
+  function stillSave(lines: string[], heading = "Some of the words you searched for are still in the redacted file."): Promise<boolean> {
+    return new Promise((done) => {
+      const answer = (ok: boolean) => { ask.hidden = true; ask.replaceChildren(); done(ok); };
+      const yes = el("button", { type: "button", className: "small" }, "Save it anyway");
+      const no = el("button", { type: "button", className: "small primary" }, "Don't save; I'll add areas");
+      yes.addEventListener("click", () => answer(true)); no.addEventListener("click", () => answer(false));
+      ask.replaceChildren(el("p", {}, el("strong", {}, heading)), ...lines.map((l) => el("p", { className: "small" }, l)), el("p", { className: "row" }, no, yes));
+      ask.hidden = false; say(""); ask.scrollIntoView({ block: "nearest", behavior: "smooth" }); no.focus();
+    });
+  }
+  async function saveRedact() {
+    if (busy || !ask.hidden) return;
+    const o = session.output, pages = session.pages, total = pages.filter((p) => areasOf(p).length).length;
+    if (!total) return say("Mark at least one area first: find words, or open a page and drag over what to remove.", "bad");
+    const missing = [...new Set(pages.filter((p) => !has(p)).map((p) => src(p.src).name))];
+    if (missing.length) return say(`Add ${missing.join(", ")} first: some of these pages come from ${missing.length === 1 ? "it" : "them"}.`, "bad");
+    if (!(await consent(outputNames(pages)))) return say("Nothing was saved. Change the file name and try again.");
+    const dpi = Number(root.querySelector<HTMLSelectElement>("#rdDpi")?.value) || 200, read = !!rdOcr?.checked, strip = !!root.querySelector<HTMLInputElement>("#rdStrip")?.checked;
+    const terms = [...new Set([...rdTerms(), ...pages.flatMap((p) => areasOf(p).flatMap((m) => (m.term ? [m.term] : [])))])];
+    let files: { name: string; bytes: Uint8Array }[] = [], issues: string[] = [], hints: string[] = [];
+    // First, on the original pages: every place a searched word occurs should be under an area. On a rebuilt page an
+    // uncovered one would stay visible in the picture, where the check after saving can't read it.
+    if (terms.length) {
+      const open = await work("Checking that every match is covered…", async (progress) => {
+        const ui = await import("./redactui.ts"), exact = new Map<string, number[]>(), loose: string[] = [];
+        for (const [i, p] of pages.entries()) {
+          progress(`Checking page ${i + 1} of ${pages.length}…`);
+          for (const n of await ui.notCovered(loaded.get(src(p.src).sha256)!.handle as PdfHandle, p.page, areasOf(p), terms, rdWhole())) {
+            if (n.exact) exact.set(n.term, [...new Set([...(exact.get(n.term) ?? []), i + 1])]); else loose.push(`\u201c${n.seen}\u201d on page ${i + 1}`);
+          }
+        }
+        return { exact, loose: [...new Set(loose)] };
+      });
+      if (!open) return;
+      const lines = [...open.exact].map(([t, pp]) => `\u201c${t}\u201d on ${pp.length === 1 ? "page" : "pages"} ${listPages(pp)} is not under an area (one was not placed there, or was removed).`);
+      if (lines.length && !(await stillSave(lines, "Some places where the words occur are not covered."))) return say("Nothing was saved. Press \u201cFind and mark\u201d again, or draw areas over them, then save.", "warn");
+      issues.push(...lines); hints.push(...open.loose);
+    }
+    const preSave = issues.length;
+    const ok = await work("Rebuilding pages…", async (progress) => {
+      const ui = await import("./redactui.ts");
+      let engine: Awaited<ReturnType<typeof import("./tess.ts").startRecogniser>> | null = null;
+      if (read) { const { startRecogniser } = await import("./tess.ts"); engine = await startRecogniser(new URL("../tesseract/", new URL(vendor, location.href)).href, chosenLangs(root.querySelector<HTMLSelectElement>("#rdLang")!.value, ""), (share) => progress(`Loading the text-recognition engine… ${Math.round(share * 100)}%`)); }
+      try {
+        let n = 0;
+        const build = makeBuilder(dataMap(), { imageDpi: o.imageDpi, stripOthers: strip, redact: async (p) => {
+          progress(`Rebuilding page ${++n} of ${total}${read ? " and reading it back" : ""}…`);
+          return ui.redactedPage(loaded.get(src(p.src).sha256)!.handle as PdfHandle, p.page, areasOf(p), dpi, engine ? (c) => engine!.read(c) : undefined);
+        } });
+        for (const f of planFiles(pages, o)) files.push({ name: f.name, bytes: await build(f.pages) });
+      } finally { await engine?.stop(); }
+      progress("Checking the saved file for the searched words…");
+      for (const f of files) {
+        const c = await ui.checkSaved(f.bytes, vendor, terms, rdWhole());
+        const byTerm = new Map<string, number[]>(); for (const x of c.pages) byTerm.set(x.term, [...(byTerm.get(x.term) ?? []), x.page]);
+        for (const [t, pp] of byTerm) issues.push(`\u201c${t}\u201d is still in the text of ${pp.length === 1 ? "page" : "pages"} ${listPages(pp)}${files.length > 1 ? ` of ${f.name}` : ""} (an area was not placed there, or was removed).`);
+        const elsewhere = [...new Set(c.objects.map((x) => x.term))].filter((t) => !byTerm.has(t));
+        for (const v of c.variants) hints.push(`\u201c${v.seen}\u201d on page ${v.page}${files.length > 1 ? ` of ${f.name}` : ""}`);
+        hints = [...new Set(hints)];
+        for (const t of elsewhere) issues.push(`\u201c${t}\u201d is still in the file's data${files.length > 1 ? ` (${f.name})` : ""}, outside the page text (${c.objects.filter((x) => x.term === t).slice(0, 3).map((x) => x.where).join("; ")}). If you kept comments or form fields, it may be in one of them.`);
+      }
+      return true;
+    });
+    if (!ok) return;
+    const after = issues.slice(preSave);
+    if (after.length && !(await stillSave(after))) return say("Nothing was saved. Add areas where the words remain, then save again.", "warn");
+    await deliver(files, safeName(o.name));
+    const what = `${total} ${total === 1 ? "page" : "pages"} rebuilt without the marked areas${read ? ", with their text read back" : ""}`;
+    const checked = !terms.length ? "" : issues.length ? ` Saved although some searched words remain: ${issues.join(" ")}` : terms.length === 1 ? " Checked: the searched word is no longer in the saved file." : ` Checked: none of the ${terms.length} searched words is left in the saved file.`;
+    const near = hints.length ? ` Close variants of the searched words are still there: ${hints.slice(0, 6).join(", ")}${hints.length > 6 ? " and more" : ""}. If they should go too, search for them as written and save again.` : "";
+    say(`Saved ${files.length === 1 ? files[0].name : `${files.length} PDFs in ${safeName(o.name)}.zip`}: ${what}.${checked}${near} Look through the pages before you share it.`, issues.length || hints.length ? "warn" : "info");
+  }
+
   async function saveForms() {
     if (busy || !ask.hidden) return;
     const s = session.sources.find((x) => loaded.get(x.sha256)?.data.kind === "pdf"); if (!s) return say("Add a PDF form first.", "bad");
@@ -621,7 +728,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   for (const id of ["mFont", "nFont", "wFont"]) root.querySelector(`#${id}`)?.addEventListener("change", (e) => {
     if ((e.target as HTMLSelectElement).value === "own" && !ownFont) { if (ownBox) ownBox.open = true; root.querySelector<HTMLInputElement>("#ownFile")?.click(); }
   });
-  const editor = can("marks") ? createEditor({
+  const areasOf = (p: PageItem) => (p.marks ?? []).filter((m): m is RedactMark => m.type === "redact");
+  const editor = can("marks") || can("redact") ? createEditor({
     root, say,
     page: (i) => session.pages[i], count: () => session.pages.length,
     baseSize: async (p) => {
@@ -633,6 +741,10 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       return side ? { w: L.pageH, h: L.pageW } : { w: L.pageW, h: L.pageH };
     },
     async draw(p, pxPerPoint) {
+      if (can("redact")) {   // the page with its areas painted see-through; the saved page is built only when saving
+        const { paintedPage } = await import("./redactui.ts");
+        return paintedPage(loaded.get(src(p.src).sha256)!.handle as PdfHandle, p.page, areasOf(p), pxPerPoint, p.rotate, "see-through");
+      }
       const doc = await openPdf(await buildOne(p), vendor);
       try { return await drawPage({ kind: "pdf", doc }, 0, 0, { pxPerPoint, pxPerImagePx: pxPerPoint }); } finally { closePdf(doc); }
     },
@@ -958,6 +1070,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     if (task.slug === "compare") return saveCompare();
     if (task.slug === "fill-forms") return saveForms();
     if (task.slug === "ocr") return saveOcr();
+    if (task.slug === "redact") return saveRedact();
     if (busy || !ask.hidden) return;
     const o = session.output;
     const pages = which === "all" ? session.pages : chosen().map((i) => session.pages[i]);

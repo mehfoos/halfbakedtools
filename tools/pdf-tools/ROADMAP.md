@@ -55,7 +55,7 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | HTML file to PDF | Not planned yet | Needs a layout engine in the browser; converting only its text would misrepresent it. Revisit with a rendering approach that can be verified | Rough by nature; label as such. HTML to PDF from a web address is not possible locally |
 | PDF Forms (fill in) | **Done 2026-11-19** (chunk 10; `web/forms.ts`) | Fills existing fillable fields (text, tick boxes, radio, drop-down, list), optionally flattens. Other alphabets drawn with Noto Sans or the visitor's font (2026-11-19). Follow-ups: a live preview of the page with its fields; creating forms; filling several files; signature fields; border styles other than a full box (underline, dashed, bevelled), which the library also ignores; comb fields in other alphabets (drawn as ordinary text) |
 | OCR PDF | **Done 2026-11-19** (chunk 11; `web/ocr.ts`, `web/tess.ts`, `web/glyphless.ts`, `web/ocrlangs.ts`) | Tesseract (tesseract.js 7, Apache-2.0) served from `vendor/tesseract/`; 40 languages (each 0.4–3 MB, fetched only when chosen; about 67 MB on the site in all), up to two at once; our own glyph-less font for the invisible text, so every script works; right-to-left lines stored in visual order; no-space scripts joined; no browser storage. See `THIRD-PARTY.md`. Follow-ups: Sorani Kurdish (no LSTM model exists); vertical Chinese/Japanese; automatic page-orientation detection; Korean words are split where the engine splits them |
-| Redact PDF | Chunk 12 | Must truly remove content (see "Phase 3: what is left") |
+| Redact PDF | **Done 2026-11-20** | Pages with areas are rebuilt as pictures; find words; check after saving. Follow-ups below |
 | PDF to PDF/A | Chunk 13 | Demanding standard; may only be partly achievable. Don't claim conformance without a validator |
 | Word/PowerPoint/Excel to PDF | On hold (owner) | Branch `office-to-pdf` |
 | PDF to Word/PowerPoint/Excel | Chunk 14 | Rough by nature |
@@ -177,9 +177,11 @@ Test with pdf-lib-generated fixtures in Node where possible; pixel work needs th
 
 ## Phase 3: what is left
 
-- [ ] **Remove or redact existing content** (the owner asked for "remove text"). Must be true removal: rewrite the
-      page's content stream to drop the text-showing operators inside a chosen region, then verify with text
-      extraction that the words are gone. Do not ship a cover-up box as "removal" (see `DECISIONS.md`).
+- [x] **Remove or redact existing content**: Redact PDF (2026-11-20) removes by rebuilding pages with areas as
+      pictures (DECISIONS.md), with a check after saving. Follow-ups: ready-made searches (e-mail addresses, phone
+      numbers, postcodes, card numbers); searching scans by reading them first; keeping the text of a redacted page
+      as text outside the areas (needs exact letter positions and a content rewrite, with a check that nothing
+      under an area survives); screen-reader tags on the pages that are kept (all tasks drop them today).
 - [ ] More scripts for added text: embed a font with `@pdf-lib/fontkit`, served from this site, licence checked.
 - [ ] Resize handles and on-canvas typing for text; touch gestures; keyboard-only editing checked.
 - [ ] Shapes, lines, highlights, tick/cross marks; a freehand signature pad.

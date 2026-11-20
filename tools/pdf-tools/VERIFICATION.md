@@ -357,3 +357,45 @@ descenders were clipped at an automatic size. "Your own font" with no file chose
 Latin-only font the message names each field and the letters it lacks. No requests left the browser.
 Known difference from the blank form: the underlined date field gets a full box once filled, in English too (the library
 ignores border styles).
+
+### Redact PDF (2026-11-20)
+
+Unit tests: a three-part test PDF (name in the page text, the document title, subject and keywords, a comment on
+another page and an attachment) is found by the leftover scan in four or more places before redaction; after it, with
+the other pages stripped, nothing is found, the other page's own text is still there, the rebuilt page holds one
+picture and no fonts, and the title is gone. Without stripping, the comment is kept and reported (directly and inside
+the compressed object stream that holds it). A page with areas can't be saved by any other task. Recognised words
+become an invisible layer on the rebuilt page. Finding text: a phrase split across two pieces is found once, with
+letter case and spacing ignored; a boundary inside a piece is widened by 0.35 of the size, one at the edge of a piece is
+exact; "whole words only" skips "Janet"; a right-to-left piece is covered whole; text running upwards gives a tall,
+narrow area. Areas on one line are joined; settings files keep only well-formed, unturned areas. The looser search for
+warnings finds jane.doe, JANE_DOE and Jane-Doe but not "Janet Doe"; a piece counts as covered when its middle is under
+an area. The leftover scan first missed page text written as hex strings by the PDF library; it now decodes the strings
+page contents show.
+
+Headless Chrome, Redact PDF page, with a three-page ReportLab test file (a standard font and an embedded TrueType font,
+a link, a coloured box, the name twice on page 1 and in capitals on page 3, a phone number):
+- "jane doe" and the phone number found and marked (4 places on 2 pages); an area drawn by dragging over "Dr Smith".
+- Saved file: qpdf finds no errors; pages 1 and 3 are single 200 dpi pictures (JPEG was smaller) with no fonts and no
+  links; page 2 kept its text; the file has no title; the name and number are absent from the text in poppler,
+  PDFium, PDF.js and MuPDF, and from the uncompressed file. The areas render solid black where the editor showed them.
+  24 KB became 85 KB.
+- A page stored turned 90°: rebuilt the same way up and size as before, with its area in place.
+- Comments kept on another page mentioning the name: before handing the file over, the page reported where the name
+  remained and asked; "Save it anyway" saved it and the message repeated why.
+- Text recognition on: first read at the picture's 200 dpi with black areas, the engine read the areas as "||" and
+  garbled the next word ("born" came back as "loon", and as "Joo" at 300 dpi); reading a separate 300 dpi drawing with
+  the areas painted white gave the visible text back cleanly ("Patient:", "born 1 February 1980.").
+- One found area deleted before saving: the page said the name on page 1 was not under an area and asked; "Don't save"
+  saved nothing. The e-mail address jane.doe@example.com, not matched by "jane doe", was pointed out as a close variant.
+- Deleting an area with the Delete key after clicking it did nothing (the editor lost focus when redrawing its
+  handles); fixed for Edit PDF as well, and checked there.
+- No requests left the browser; no page errors.
+
+Layers: a PDF with text in a hidden layer showed that text after being saved by the builder (poppler drew 236 dark
+pixels against 77 for the original). With the layer settings copied, poppler draws 77 on the saved page, and on both
+copies of a page used twice; a unit test checks that the hidden list names the layer each page uses. (Text in a hidden
+layer is still in the file, as in the original, and PDFium's text extraction gives it.)
+
+Not checked: Adobe Acrobat or Apple Preview; very large documents (time and memory); encrypted originals; pages with
+annotations whose appearance carries the text (they are dropped with the page when it has areas).

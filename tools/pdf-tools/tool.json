@@ -86,6 +86,11 @@
       "nav": false
     },
     {
+      "page": "redact",
+      "label": "Redact PDF",
+      "nav": false
+    },
+    {
       "page": "pdf-to-jpg",
       "label": "PDF to JPG",
       "nav": false

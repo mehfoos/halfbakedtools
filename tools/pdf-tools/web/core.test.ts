@@ -1264,3 +1264,40 @@ test("redact: boxes on one line are joined; settings files keep only well-formed
   assert.equal(cleanM({ type: "redact", x: 1, y: 2, rotate: 90, w: 3, h: 4 }, () => false), null, "areas are never turned");
   assert.equal(cleanM({ type: "redact", x: 1, y: 2, rotate: 0, w: 0, h: 4 }, () => false), null);
 });
+test("redact: the looser search for warnings joins the words with any punctuation", async () => {
+  const { variantPattern } = await import("./redact.ts");
+  const v = variantPattern("Jane Doe")!;
+  for (const t of ["jane.doe@example.com", "JANE_DOE", "Jane-Doe", "jane doe"]) { v.lastIndex = 0; assert.ok(v.test(t), t); }
+  v.lastIndex = 0; assert.ok(!v.test("Janet Doe"));
+});
+
+test("build: a document's layer settings are copied with its pages, so hidden layers stay hidden (pages used twice too)", async () => {
+  const doc = await PDFDocument.create(), font = await doc.embedFont(StandardFonts.Helvetica), page = doc.addPage([300, 200]);
+  page.drawText("Visible text", { x: 20, y: 150, size: 16, font });
+  const ocg = doc.context.register(doc.context.obj({ Type: "OCG", Name: PDFString.of("Hidden notes") }));
+  doc.catalog.set(PDFName.of("OCProperties"), doc.context.obj({ OCGs: [ocg], D: { OFF: [ocg], Order: [ocg] } }));
+  page.node.Resources()!.set(PDFName.of("Properties"), doc.context.obj({ oc1: ocg }));
+  const fontKey = (page.node.Resources()!.lookup(PDFName.of("Font")) as unknown as { keys(): PDFName[] }).keys()[0].asString();
+  page.node.addContentStream(doc.context.register(doc.context.flateStream(`/OC /oc1 BDC BT ${fontKey} 16 Tf 20 100 Td (HIDDEN LAYER TEXT) Tj ET EMC`)));
+  const bytes = await doc.save(), data = new Map([["a", { kind: "pdf" as const, bytes }]]);
+  for (const pages of [[0], [0, 0]]) {
+    const out = await PDFDocument.load(await makeBuilder(data, { imageDpi: 96 })(pages.map((i) => ({ src: "a", page: i, rotate: 0 as const, scale: 1 }))));
+    const oc = out.catalog.lookup(PDFName.of("OCProperties")) as unknown as { lookup(n: PDFName): unknown };
+    assert.ok(oc, "the settings are copied");
+    const off = (oc.lookup(PDFName.of("D")) as unknown as { lookup(n: PDFName): { asArray(): unknown[] } }).lookup(PDFName.of("OFF")).asArray().map(String);
+    for (const pg of out.getPages()) {
+      const used = String((pg.node.Resources()!.lookup(PDFName.of("Properties")) as unknown as { get(n: PDFName): unknown }).get(PDFName.of("oc1")));
+      assert.ok(off.includes(used), `page ${pages.length}: its layer is listed as hidden`);
+    }
+  }
+});
+test("redact: a found piece counts as covered when its middle is under an area; the looser search reports what it saw", async () => {
+  const { covered, variantPattern } = await import("./redact.ts");
+  const area = { type: "redact" as const, x: 0, y: 0, rotate: 0 as const, w: 50, h: 20 };
+  assert.ok(covered({ ...area, x: 10, y: 5, w: 20, h: 10 }, [area]));
+  assert.ok(!covered({ ...area, x: 45, y: 5, w: 20, h: 10 }, [area]), "middle outside");
+  const items: TextItem[] = [{ str: "mail jane.doe@example.com now", transform: [10, 0, 0, 10, 0, 0], width: 145, height: 10 }];
+  const f = findQuads(items, {}, ["Jane Doe"], false, (t) => t.length, 0.35, 0.12, variantPattern);
+  assert.equal(f.length, 1); assert.equal(f[0].seen, "jane.doe");
+  assert.equal(findQuads(items, {}, ["Jane Doe"], false, (t) => t.length).length, 0, "the exact search doesn't see it");
+});

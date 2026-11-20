@@ -3,7 +3,7 @@
 // only the page order, rotation and size change.
 import { imageLayout, NO_IMAGE_LAYOUT, type ImageLayout } from "./layout.ts";
 import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
-import { PDFDocument, PDFName, StandardFonts, degrees, rgb, type PDFFont, type PDFPage, type PDFRef } from "@cantoo/pdf-lib";
+import { PDFDocument, PDFName, PDFDict, PDFArray, PDFPage as Page, PDFObjectCopier, StandardFonts, degrees, rgb, type PDFFont, type PDFPage, type PDFRef, type PDFObject } from "@cantoo/pdf-lib";
 import { standardFace, type Face } from "./face.ts";
 import { embedOwnFont, type OwnFont } from "./ownfont.ts";
 import { notoFace, notoLibrary, type NotoLoader, type HanStyle, type ArabicStyle } from "./noto.ts";
@@ -104,6 +104,19 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
     if (!pages.length) throw new Error("There are no pages to save.");
     const out = await PDFDocument.create();
 
+    // Pages are copied as the PDF library's copyPages does, but with the source's layer settings (its "optional
+    // content": which layers exist and which are hidden) copied by the same copier, so the layers the pages refer to
+    // are the ones the settings name. Without the settings a viewer shows every layer, hidden ones included.
+    const layers: PDFDict[] = [];
+    async function copyWithLayers(doc: PDFDocument, indices: number[]): Promise<PDFPage[]> {
+      await doc.flush();
+      const copier = PDFObjectCopier.for(doc.context, out.context), all = doc.getPages();
+      const pages = indices.map((i) => { const node = copier.copy(all[i].node); return Page.of(node, out.context.register(node), out); });
+      const oc = doc.catalog.lookup(PDFName.of("OCProperties"));
+      if (oc instanceof PDFDict) layers.push(copier.copy(oc));
+      return pages;
+    }
+
     // Copy each source's pages in as few batches as possible so shared fonts and images are stored once.
     // A page used twice goes in a second batch: one batch returns the same copy for a repeated page.
     const copies = new Map<PageItem, Awaited<ReturnType<PDFDocument["copyPages"]>>[number]>();
@@ -122,11 +135,13 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       while (rest.length) {
         const batch: PageItem[] = [], later: PageItem[] = [], seen = new Set<number>();
         for (const p of rest) (seen.has(p.page) ? later : (seen.add(p.page), batch)).push(p);
-        const copied = await out.copyPages(doc, batch.map((p) => p.page));
+        const copied = await copyWithLayers(doc, batch.map((p) => p.page));
         batch.forEach((p, i) => copies.set(p, copied[i]));
         rest = later;
       }
     }
+
+    if (layers.length) out.catalog.set(PDFName.of("OCProperties"), mergeLayers(out, layers));
 
     const embedded = new Map<string, Awaited<ReturnType<PDFDocument["embedPng"]>>>();
     const picture = async (id: string) => {
@@ -229,4 +244,17 @@ export async function protect(bytes: Uint8Array, password: string): Promise<Uint
 export async function inspectPdf(bytes: Uint8Array, password?: string): Promise<{ pages: number }> {
   const doc = await PDFDocument.load(bytes, password === undefined ? {} : { password });
   return { pages: doc.getPageCount() };
+}
+
+/**
+ * One set of layer settings from several (one per batch of copied pages): all layers listed; the default view's
+ * hidden and shown lists, layer order and radio-button groups joined; its other settings taken from the first.
+ * Alternative views (/Configs) are dropped, as they would name only some of the layers.
+ */
+function mergeLayers(out: PDFDocument, sets: PDFDict[]): PDFDict {
+  const ctx = out.context, list = (d: PDFDict | undefined, k: string): PDFObject[] => { const v = d?.lookup(PDFName.of(k)); return v instanceof PDFArray ? v.asArray() : []; };
+  const views = sets.map((s) => s.lookup(PDFName.of("D"))).filter((d): d is PDFDict => d instanceof PDFDict);
+  const D = (views[0]?.clone(ctx) ?? ctx.obj({})) as PDFDict;
+  for (const k of ["ON", "OFF", "Order", "RBGroups", "Locked"]) { const all = views.flatMap((v) => list(v, k)); if (all.length) D.set(PDFName.of(k), ctx.obj(all)); }
+  return ctx.obj({ OCGs: sets.flatMap((s) => list(s, "OCGs")), D }) as PDFDict;
 }

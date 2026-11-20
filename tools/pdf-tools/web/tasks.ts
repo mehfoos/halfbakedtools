@@ -7,7 +7,7 @@ export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "forms" | "ocr" | "preview";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "forms" | "ocr" | "preview" | "redact";
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -31,7 +31,7 @@ export type Task = {
 
 /** Whether a task needs the page-by-page view. Tasks that act on whole files (Compress, Split, Protect, ...) show a
  *  simple list of files instead, so nobody scrolls past hundreds of pages they have no reason to look at. */
-export const showsPages = (t: Task): boolean => t.parts.some((p) => p === "select" || p === "move" || p === "turn" || p === "duplicate" || p === "remove" || p === "marks");
+export const showsPages = (t: Task): boolean => t.parts.some((p) => p === "select" || p === "move" || p === "turn" || p === "duplicate" || p === "remove" || p === "marks" || p === "redact");
 
 export const TASKS: Task[] = [
   { slug: "merge", name: "Merge PDF", blurb: "Join several PDFs, or PDFs and images, into one file, in the order you choose.", group: "Organise", accept: "both",
@@ -92,6 +92,9 @@ export const TASKS: Task[] = [
   { slug: "unlock", name: "Unlock PDF", blurb: "Save a copy of a password-protected PDF that opens without the password. You need to know the password.", group: "Security", accept: "pdf",
     pick: "Select PDF files", hint: "You'll be asked for each file's password when you add it. Only unlock files you have the right to change.",
     parts: [], formats: ["pdf"], which: "all", action: "Unlock PDF", perFile: true, suffix: "unlocked", tag: "🔓" },
+  { slug: "redact", name: "Redact PDF", blurb: "Remove names, numbers and other details for good: mark areas or find words, and those pages are rebuilt without them.", group: "Security", accept: "pdf",
+    pick: "Select PDF file", hint: "Find words to remove, or open a page and drag over what to remove. Pages with areas are saved as pictures with the areas painted black, so nothing under them stays in the file.",
+    parts: ["redact"], formats: ["pdf"], which: "all", action: "Redact PDF", suffix: "redacted", tag: "▮" },
   { slug: "protect", name: "Protect PDF", blurb: "Lock a PDF with a password, so it can only be opened by someone who knows it.", group: "Security", accept: "pdf",
     pick: "Select PDF files", hint: "Choose a password. Everyone who opens the saved PDF will have to type it.",
     parts: ["protect"], formats: ["pdf"], which: "all", action: "Protect PDF", perFile: true, suffix: "protected", tag: "🔒" },
@@ -135,7 +138,6 @@ export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "Excel to PDF", tag: "XLS", group: "Convert to PDF" }, { name: "HTML file to PDF", tag: "WEB", group: "Convert to PDF" },
   { name: "PDF to Word", tag: "DOC", group: "Convert from PDF" }, { name: "PDF to PowerPoint", tag: "PPT", group: "Convert from PDF" },
   { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" }, { name: "PDF to PDF/A", tag: "A", group: "Convert from PDF" },
-  { name: "Redact PDF (truly remove content)", tag: "▮", group: "Security" },
 ];
 
 /** Things other PDF sites offer that can't be done without sending files to a server, so this tool won't offer them. */

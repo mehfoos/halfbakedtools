@@ -11,8 +11,8 @@ import { unzlibSync, inflateSync } from "fflate";
 import type { OcrWord } from "./ocr.ts";
 import type { RedactMark } from "./marks.ts";
 
-/** A page rebuilt from its picture: `width` x `height` points (the page as the file shows it); the picture is
- *  `scale` pixels per point. `lines`: words read back from the picture by text recognition, if asked. */
+/** A page rebuilt from its picture: `width` x `height` points (the page as the file shows it). `lines`: words read
+ *  back by text recognition, if asked, positioned in pixels of a drawing at `scale` pixels per point. */
 export type RedactedPage = { image: Uint8Array; png: boolean; width: number; height: number; scale: number; lines?: OcrWord[][] };
 
 /** Page-level entries dropped from the other pages when asked: annotations (comments, highlights, links, form
@@ -37,6 +37,13 @@ export function termPattern(term: string, wholeWords: boolean): RegExp | null {
   return new RegExp(wholeWords ? `(?<![\\p{L}\\p{N}\\p{M}])${body}(?![\\p{L}\\p{N}\\p{M}])` : body, "giu");
 }
 
+/** A looser search, for warnings only: the term's words joined by any punctuation, symbols or spaces ("jane doe"
+ *  also finds "jane.doe" and "Jane_Doe"), and letters with or without accents left as typed. */
+export function variantPattern(term: string): RegExp | null {
+  const parts = term.trim().split(/[\s\p{P}\p{S}]+/u).filter(Boolean); if (!parts.length) return null;
+  return new RegExp(parts.map(escape).join("[\\s\\p{P}\\p{S}]*"), "giu");
+}
+
 /**
  * Where `terms` occur on a page, as quads in the PDF's own coordinates. Items are joined in file order (a line end
  * counts as a space), so a term split across pieces is found. Inside a piece, where a match starts and ends is
@@ -46,13 +53,13 @@ export function termPattern(term: string, wholeWords: boolean): RegExp | null {
  * measures, or 0.25 and 0.95 of the size), widened by `pad` font sizes.
  */
 export function findQuads(items: TextItem[], styles: Record<string, FontStyle>, terms: string[], wholeWords: boolean,
-  measure: (text: string, item: TextItem) => number, slack = 0.35, pad = 0.12): { term: string; quads: Quad[] }[] {
+  measure: (text: string, item: TextItem) => number, slack = 0.35, pad = 0.12, pattern: (term: string) => RegExp | null = (t) => termPattern(t, wholeWords)): { term: string; seen: string; quads: Quad[] }[] {
   let full = ""; const at: { item: number; from: number }[] = [];
   items.forEach((it, k) => { at.push({ item: k, from: full.length }); full += it.str + (it.hasEOL ? " " : ""); });
   const owner = (pos: number) => { let lo = 0, hi = at.length - 1; while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (at[mid].from <= pos) lo = mid; else hi = mid - 1; } return at[lo]; };
-  const out: { term: string; quads: Quad[] }[] = [];
+  const out: { term: string; seen: string; quads: Quad[] }[] = [];
   for (const term of terms) {
-    const re = termPattern(term, wholeWords); if (!re) continue;
+    const re = pattern(term); if (!re) continue;
     for (const m of full.matchAll(re)) {
       if (!m[0].length) continue;
       const start = m.index!, end = start + m[0].length, quads: Quad[] = [];
@@ -61,7 +68,7 @@ export function findQuads(items: TextItem[], styles: Record<string, FontStyle>, 
         const a = Math.max(0, start - at[k].from), b = Math.min(it.str.length, end - at[k].from); if (b <= a) continue;
         quads.push(pieceQuad(it, styles[it.fontName ?? ""] ?? {}, a, b, measure, slack, pad));
       }
-      if (quads.length) out.push({ term, quads });
+      if (quads.length) out.push({ term, seen: m[0], quads });
     }
   }
   return out;
@@ -93,6 +100,12 @@ export function quadToMark(q: Quad, toView: (x: number, y: number) => [number, n
   const x = Math.min(...xs), y = Math.min(...ys);
   return { type: "redact", x, y, rotate: 0, w: Math.max(0.5, Math.max(...xs) - x), h: Math.max(0.5, Math.max(...ys) - y), ...(term ? { term } : {}) };
 }
+
+/** Whether an area covers a found piece: the piece's middle lies inside one of `areas`. */
+export const covered = (piece: RedactMark, areas: RedactMark[]) => {
+  const cx = piece.x + piece.w / 2, cy = piece.y + piece.h / 2;
+  return areas.some((a) => cx >= a.x && cx <= a.x + a.w && cy >= a.y && cy <= a.y + a.h);
+};
 
 /** Joins boxes that overlap or nearly touch on the same line (a term found in several pieces), so the page carries
  *  one box per area rather than a stack of slivers. Boxes are joined only when they overlap vertically by most of
