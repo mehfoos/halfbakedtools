@@ -13,6 +13,32 @@ export function canDo(ex: Exercise, have: ReadonlySet<Equipment>): boolean {
   return ex.needs.every((anyOf) => anyOf.some((e) => have.has(e)));
 }
 
+/** The exercise's name for the equipment the visitor has (A10): the first variant they can do, else the general name. */
+export function nameFor(ex: Exercise, have: ReadonlySet<Equipment>): string {
+  return variantFor(ex, have)?.name ?? ex.name;
+}
+
+function variantFor(ex: Exercise, have: ReadonlySet<Equipment>) {
+  return ex.variants?.find((v) => v.using.some((e) => have.has(e)));
+}
+
+/** For a version a source didn't classify: the plain-words name of the version it did (else undefined). */
+export function studiedVersion(ex: Exercise, have: ReadonlySet<Equipment>): string | undefined {
+  const v = variantFor(ex, have);
+  return ex.studied && v && !v.using.some((e) => ex.studied!.with.includes(e)) ? ex.studied.as : undefined;
+}
+
+/**
+ * Reading order within a suggestion (D6): big lifts first (most muscles worked), then smaller ones, then holds and
+ * carries, then heart-and-lungs activity, then interval-type activity. Ties keep the catalogue order.
+ */
+export function ordered(list: Exercise[]): Exercise[] {
+  const rank = (e: Exercise) => (e.kind === "aerobic" ? 3 : e.kind === "intervals" ? 4 : e.hold ? 2 : 0);
+  const musclesWorked = (e: Exercise) => e.direct.length + e.indirect.length;
+  return list.map((e, i) => ({ e, i })).sort((a, b) =>
+    rank(a.e) - rank(b.e) || musclesWorked(b.e) - musclesWorked(a.e) || a.i - b.i).map((x) => x.e);
+}
+
 /** Fractional sets each muscle gets from one set of the exercise. */
 export function weights(ex: Exercise): Map<Muscle, number> {
   const w = new Map<Muscle, number>();

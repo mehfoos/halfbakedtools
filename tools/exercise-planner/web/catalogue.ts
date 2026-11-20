@@ -109,6 +109,18 @@ export type Exercise = {
    * it counts as a full or half set is still the planner's classification. Checked by planner.test.ts.
    */
   evidence?: Partial<Record<Muscle, string[]>>;
+  /**
+   * Names to show by the equipment the visitor has: the first variant whose `using` includes an equipment item they
+   * ticked. `name` is the fallback and what the exercise is called in the list of exercises to include.
+   */
+  variants?: { using: Equipment[]; name: string }[];
+  /**
+   * Set where a source classified only some versions: the equipment the studied version used and a plain-words name for
+   * it. Other variants are shown as assumed to load the same muscles.
+   */
+  studied?: { with: Equipment[]; as: string };
+  /** A position held or carried, not repeated through a range. Pelland et al. analysed dynamic training only, so these are shown last. */
+  hold?: true;
   /** Muscles that hold a position but don't move a joint through a range: shown, not counted. */
   steadies?: Muscle[];
   /** Compendium rows (aerobic and interval activities), lightest effort first. None is a Compendium estimate (checked 20 Nov 2026). */
@@ -141,9 +153,11 @@ export const EXERCISES: Exercise[] = [
     // Hamstrings not counted: they didn't grow after hip thrust training (Plotkin et al. 2023); same movement.
     direct: ["glutes"], indirect: [] }),
   X({ id: "singleLegRdl", name: "Single-leg Romanian deadlift", kind: "strength", needs: [["body", "dumbbells", "kettlebell"]],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell single-leg Romanian deadlift" }, { using: ["kettlebell"], name: "Kettlebell single-leg Romanian deadlift" }, { using: ["body"], name: "Single-leg Romanian deadlift (bodyweight)" }],
     moves: "hip extension with a nearly straight knee, on one leg (hinging at the hip)",
     direct: ["hamstrings", "glutes"], indirect: [], steadies: ["lowerBack"] }),
   X({ id: "plank", name: "Plank", kind: "strength", needs: [["body"]],
+    hold: true,
     moves: "holds the trunk straight against gravity (no joint movement)",
     direct: ["abs"], indirect: [] }),
   X({ id: "crunch", name: "Crunch", kind: "strength", needs: [["body"]],
@@ -156,6 +170,7 @@ export const EXERCISES: Exercise[] = [
     moves: "elbow extension, and shoulder flexion as you push up (the shoulders extend as you lower; hands on a bench behind you)",
     direct: ["triceps"], indirect: ["chest", "frontDelts"] }),
   X({ id: "calfRaise", name: "Standing calf raise", kind: "strength", needs: [["body", "stairs", "dumbbells", "machines"]],
+    variants: [{ using: ["machines"], name: "Standing calf raise machine" }, { using: ["dumbbells"], name: "Dumbbell standing calf raise" }, { using: ["body", "stairs"], name: "Standing calf raise (bodyweight, off the edge of a step if you have one)" }],
     evidence: { calves: ["kinoshita-2023"] },
     moves: "ankle plantar flexion (rising onto the toes)",
     direct: ["calves"], indirect: [] }),
@@ -176,6 +191,7 @@ export const EXERCISES: Exercise[] = [
 
   // --- Dumbbells and kettlebells ---
   X({ id: "gobletSquat", name: "Goblet squat", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell goblet squat" }, { using: ["kettlebell"], name: "Kettlebell goblet squat" }],
     moves: "knee extension; hip extension, holding one weight at the chest",
     direct: ["quads", "glutes"], indirect: [], steadies: ["upperBack", "abs"] }),
   X({ id: "lungeDb", name: "Dumbbell lunge", kind: "strength", needs: [["dumbbells"]],
@@ -189,30 +205,40 @@ export const EXERCISES: Exercise[] = [
   X({ id: "dbBench", name: "Dumbbell bench press", kind: "strength", needs: [["dumbbells"], ["bench"]],
     moves: "shoulder horizontal adduction; elbow extension",
     direct: ["chest"], indirect: ["triceps", "frontDelts"] }),
-  X({ id: "dbRow", name: "One-arm dumbbell row", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+  X({ id: "dbRow", name: "One-arm row", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+    variants: [{ using: ["dumbbells"], name: "One-arm dumbbell row" }, { using: ["kettlebell"], name: "One-arm kettlebell row" }],
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["lowerBack"] }),
-  X({ id: "dbPress", name: "Dumbbell shoulder press", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+  X({ id: "dbPress", name: "Shoulder press (dumbbell or kettlebell)", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell shoulder press" }, { using: ["kettlebell"], name: "Kettlebell shoulder press" }],
+    studied: { with: ["dumbbells"], as: "dumbbell" },
     sources: { triceps: "Dumbbell Shoulder Press" },
     moves: "shoulder flexion and abduction (pressing overhead); elbow extension",
     direct: ["frontDelts"], indirect: ["triceps", "sideDelts", "upperBack"] }),
-  X({ id: "lateralRaise", name: "Dumbbell lateral raise", kind: "strength", needs: [["dumbbells", "machines"]],
+  X({ id: "lateralRaise", name: "Lateral raise", kind: "strength", needs: [["dumbbells", "machines"]],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell lateral raise" }, { using: ["machines"], name: "Cable or machine lateral raise" }],
     evidence: { sideDelts: ["larsen-2025"] },
     moves: "shoulder abduction (arms out to the sides)",
     direct: ["sideDelts"], indirect: [] }),
   X({ id: "curl", name: "Biceps curl", kind: "strength", needs: [["dumbbells", "barbell", "bands", "machines"]],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell biceps curl" }, { using: ["barbell"], name: "Barbell biceps curl" }, { using: ["bands"], name: "Resistance-band biceps curl" }, { using: ["machines"], name: "Cable or machine biceps curl" }],
     sources: { biceps: "Bicep Curl" },
     moves: "elbow flexion",
     direct: ["biceps"], indirect: [], steadies: ["forearms"] }),
   X({ id: "overheadExt", name: "Overhead triceps extension", kind: "strength", needs: [["dumbbells", "kettlebell", "bands", "machines"]],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell overhead triceps extension" }, { using: ["kettlebell"], name: "Kettlebell overhead triceps extension" }, { using: ["bands"], name: "Resistance-band overhead triceps extension" }, { using: ["machines"], name: "Cable overhead triceps extension" }],
+    studied: { with: ["dumbbells"], as: "dumbbell" },
     sources: { triceps: "Overhead Dumbbell Extensions" },
     moves: "elbow extension with the arm overhead",
     direct: ["triceps"], indirect: [] }),
   X({ id: "rdl", name: "Romanian deadlift", kind: "strength", needs: [["dumbbells", "kettlebell", "barbell"]],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell Romanian deadlift" }, { using: ["kettlebell"], name: "Kettlebell Romanian deadlift" }, { using: ["barbell"], name: "Barbell Romanian deadlift" }],
     evidence: { hamstrings: ["morin-2025"] },
     moves: "hip extension with nearly straight knees (hinging at the hips)",
     direct: ["hamstrings", "glutes"], indirect: [], steadies: ["lowerBack", "forearms", "upperBack"] }),
   X({ id: "farmerCarry", name: "Farmer's carry", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+    hold: true,
+    variants: [{ using: ["dumbbells"], name: "Dumbbell farmer's carry" }, { using: ["kettlebell"], name: "Kettlebell farmer's carry" }],
     moves: "gripping heavy weights while walking (holding, little joint movement)",
     direct: ["forearms"], indirect: [], steadies: ["upperBack", "abs"] }),
   X({ id: "kbSwing", name: "Kettlebell swing", kind: "intervals", needs: [["kettlebell"]],
@@ -227,6 +253,7 @@ export const EXERCISES: Exercise[] = [
     moves: "knee extension; hip extension (squatting to thighs parallel with the floor or lower)",
     direct: ["quads", "glutes"], indirect: [], steadies: ["lowerBack", "abs"] }),
   X({ id: "deadlift", name: "Deadlift", kind: "strength", needs: [["barbell", "kettlebell", "dumbbells"]],
+    variants: [{ using: ["barbell"], name: "Barbell deadlift" }, { using: ["kettlebell"], name: "Kettlebell deadlift" }, { using: ["dumbbells"], name: "Dumbbell deadlift" }],
     moves: "hip extension; knee extension (lifting a weight from the floor)",
     direct: ["glutes", "hamstrings"], indirect: ["quads"], steadies: ["lowerBack", "forearms", "upperBack"] }),
   X({ id: "benchPress", name: "Barbell bench press", kind: "strength", needs: [["barbell"], ["bench"], ["rack"]],
@@ -246,6 +273,7 @@ export const EXERCISES: Exercise[] = [
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["lowerBack", "hamstrings"] }),
   X({ id: "hipThrust", name: "Hip thrust", kind: "strength", needs: [["barbell", "dumbbells"], ["bench", "chair"]],
+    variants: [{ using: ["barbell"], name: "Barbell hip thrust" }, { using: ["dumbbells"], name: "Dumbbell hip thrust" }],
     evidence: { glutes: ["plotkin-2023", "krause-neto-2025"] },
     moves: "hip extension (back on a bench, lifting the hips)",
     // Hamstrings not counted: no meaningful growth after 9 weeks of hip thrust training (Plotkin et al. 2023).
@@ -284,14 +312,17 @@ export const EXERCISES: Exercise[] = [
     sources: { triceps: "Shoulder Press" },
     moves: "shoulder flexion and abduction (pressing overhead); elbow extension",
     direct: ["frontDelts"], indirect: ["triceps", "sideDelts", "upperBack"] }),
-  X({ id: "pushdown", name: "Cable triceps pushdown", kind: "strength", needs: [["machines", "bands"]],
+  X({ id: "pushdown", name: "Triceps pushdown", kind: "strength", needs: [["machines", "bands"]],
+    variants: [{ using: ["machines"], name: "Cable triceps pushdown" }, { using: ["bands"], name: "Resistance-band triceps pushdown" }],
     sources: { triceps: "Tricep Push-Down" },
     moves: "elbow extension",
     direct: ["triceps"], indirect: [] }),
-  X({ id: "facePull", name: "Face pull (cable or band)", kind: "strength", needs: [["machines", "bands"]],
+  X({ id: "facePull", name: "Face pull", kind: "strength", needs: [["machines", "bands"]],
+    variants: [{ using: ["machines"], name: "Cable face pull" }, { using: ["bands"], name: "Resistance-band face pull" }],
     moves: "shoulder horizontal abduction and external rotation; shoulder-blade retraction",
     direct: ["upperBack", "rearDelts"], indirect: [] }),
   X({ id: "shrug", name: "Shrug", kind: "strength", needs: [["dumbbells", "barbell", "machines"]],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell shrug" }, { using: ["barbell"], name: "Barbell shrug" }, { using: ["machines"], name: "Shrug machine" }],
     moves: "shoulder-blade elevation (shoulders up towards the ears), done by the trapezius; the rhomboids retract the shoulder blades instead",
     direct: ["upperBack"], indirect: [], steadies: ["forearms"] }),
   X({ id: "backExtension", name: "Back extension (45° bench or machine)", kind: "strength", needs: [["machines"]],

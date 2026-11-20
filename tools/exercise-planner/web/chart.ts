@@ -25,9 +25,9 @@ export function chartSvg(axes: Axis[], title: string) {
 
 function radarSvg(axes: Axis[], title: string) {
   const n = axes.length, max = scaleMax(axes);
-  const size = 320, pad = 118;
+  const size = 320, pad = 124;
   const cx = size / 2 + pad, cy = size / 2 + 34, r = size / 2 - 10;
-  const W = size + pad * 2, H = size + 72;
+  const W = size + pad * 2, H = size + 76;
   const ang = (i: number) => -Math.PI / 2 + (2 * Math.PI * i) / n;
   const pt = (i: number, v: number) => {
     const rr = (Math.max(0, v) / max) * r;
@@ -38,7 +38,7 @@ function radarSvg(axes: Axis[], title: string) {
   for (let v = 1; v <= max; v++) {
     g += `<polygon points="${poly(axes.map(() => v))}" fill="none" stroke="${GRID}" stroke-width="1"/>`;
     const t = -Math.PI / 2 + Math.PI / n, rr = (v / max) * r;
-    g += `<text x="${(cx + rr * Math.cos(t) + 3).toFixed(1)}" y="${(cy + rr * Math.sin(t) + 3).toFixed(1)}" font-size="10" fill="#8a8670">${v} set${v > 1 ? "s" : ""}</text>`;
+    g += `<text x="${(cx + rr * Math.cos(t) + 3).toFixed(1)}" y="${(cy + rr * Math.sin(t) + 3).toFixed(1)}" font-size="11.5" fill="#8a8670">${v} set${v > 1 ? "s" : ""}</text>`;
   }
   axes.forEach((_, i) => {
     const [x, y] = pt(i, max);
@@ -68,11 +68,11 @@ function radarSvg(axes: Axis[], title: string) {
     const [lx, ly] = pt(i, max * 1.1 + 0.15);
     const cos = Math.cos(ang(i));
     const anchor = Math.abs(cos) < 0.25 ? "middle" : cos > 0 ? "start" : "end";
-    g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="12.5" fill="#111"${a.isTarget ? ' font-weight="700"' : ""}>${esc(a.label)}`
-      + `<tspan x="${lx.toFixed(1)}" dy="14" font-size="12" font-weight="700" fill="${c}">${fmt(a.value)}${mark(a)}</tspan></text>`;
+    g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" font-size="15" fill="#111"${a.isTarget ? ' font-weight="700"' : ""}>${esc(a.label)}`
+      + `<tspan x="${lx.toFixed(1)}" dy="16" font-size="14.5" font-weight="700" fill="${c}">${fmt(a.value)}${mark(a)}</tspan></text>`;
   });
   const legend = targets.some((t) => t !== undefined)
-    ? `<line x1="8" y1="${H - 10}" x2="30" y2="${H - 10}" stroke="${NAVY}" stroke-width="2.6"/><text x="34" y="${H - 6}" font-size="10.5" fill="#444">covered level for your targets (bold)</text>` : "";
+    ? `<line x1="8" y1="${H - 10}" x2="30" y2="${H - 10}" stroke="${NAVY}" stroke-width="2.6"/><text x="34" y="${H - 6}" font-size="12" fill="#444">covered level for your targets (bold)</text>` : "";
   return `<svg class="radar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}" font-family="'Averia Sans Libre', Arial, sans-serif"><title>${esc(title)}</title>${g}${legend}</svg>`;
 }
 
@@ -83,6 +83,7 @@ function barsSvg(axes: Axis[], title: string) {
   for (let v = 0; v <= max; v++) {
     g += `<line x1="${x(v)}" y1="8" x2="${x(v)}" y2="${H - 22}" stroke="${GRID}"/><text x="${x(v)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#8a8670">${v}</text>`;
   }
+  g += `<text x="${x(max) + 10}" y="${H - 8}" font-size="10" fill="#8a8670">sets</text>`;
   axes.forEach((a, i) => {
     const y = 12 + i * rowH, c = colour(a);
     g += `<text x="${left - 8}" y="${y + 15}" text-anchor="end" font-size="12.5"${a.isTarget ? ' font-weight="700"' : ""}>${esc(a.label)}</text>`;

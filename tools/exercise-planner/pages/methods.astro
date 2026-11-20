@@ -41,6 +41,15 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     for the same muscle, never the same exercise twice. If more than 30 exercises could help, it keeps
     the best three for each target plus those that help most overall, and the page says so.
   </p>
+  <p>
+    <strong>Names and order.</strong> Where an exercise can be done with different equipment (a lateral raise with a dumbbell
+    or a cable, a curl with a dumbbell, barbell, band or cable), the list shows the version for the equipment you ticked, and
+    the general name where the version doesn't matter. Every version is counted the same: the muscles come from the movement,
+    not the equipment. Where the study behind a classification used one version only (the Pelland et al. table names the
+    dumbbell shoulder press and the overhead dumbbell extension, for example), the others are marked as assumed to load the same muscles. Within a suggestion, exercises are
+    listed by how many muscle groups they work (most first), then holds and carries (which the studies behind the counting
+    did not analyse), then heart-and-lungs activities. This order is for reading only and doesn't change what is suggested.
+  </p>
 
   <h2>Counting sets: direct and indirect</h2>
   <p>
@@ -216,6 +225,12 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     and strength training, on 3 or more days a week <Fragment set:html={cite("who-2020")} />. The planner doesn't yet
     tailor its suggestions to age.
   </p>
+  <p>
+    The "Major muscle groups (WHO)" button chooses all {MUSCLES.length} muscle groups, without heart and lungs. The WHO names
+    legs, back, abdomen, chest, shoulders and arms as the major muscle groups; every group here belongs to one of those
+    (for example, glutes, quadriceps, hamstrings and calves to legs; forearms to arms). That assignment is the planner's own
+    reading of the WHO's list, and the WHO doesn't say how many sets count as involving a group.
+  </p>
   <details>
     <summary>All {aerobic.length} activities with Compendium values</summary>
     <div class="details-body table-scroll">
@@ -235,7 +250,8 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     The charts show fractional sets per muscle from one set of each exercise in a suggestion, on a linear scale that
     grows to fit the largest value and never cuts values off. The navy line marks the covered level for your target muscles,
     and every value is written next to its point, with ✓ or "short", so colour is never the only signal. With fewer than
-    three target muscles a bar chart is used, as a radar chart needs at least three axes.
+    three target muscles a bar chart is used, as a radar chart needs at least three axes. Each chart has a "Show as table" option with the same numbers, for small screens and screen readers.
+    Heart and lungs is not a muscle, so it is not on the charts; each suggestion states what covers it instead.
   </p>
 
   <h2>What has been checked</h2>

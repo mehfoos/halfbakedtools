@@ -2,13 +2,16 @@
 // planner (pure code in planner.ts) and draws the results. Nothing leaves the browser.
 import { AEROBIC, AEROBIC_LABEL, EQUIPMENT, EXERCISES, MUSCLES, PRESETS, assumedMuscles, isAssumed, isSupported, type Equipment, type Exercise, type Muscle, type Target } from "./catalogue.ts";
 import { caveat } from "@site/lib/caveats.ts";
-import { canDo, intensity, suggest, type Suggestion } from "./planner.ts";
+import { canDo, intensity, nameFor, ordered, studiedVersion, suggest, type Suggestion } from "./planner.ts";
 import { chartSvg, fmt, type Axis } from "./chart.ts";
 
 type State = { targets: Target[]; equipment: Equipment[]; bodyweight: boolean; max: number; count: number; overlap: number; depth: number; excluded: string[] };
 
 const GROUPS: { id: string; label: string; targets: Target[] }[] = [
   { id: "whole", label: "Whole body", targets: [...MUSCLES.map((m) => m.id), AEROBIC] },
+  // The WHO asks for muscle-strengthening that involves "all major muscle groups" (legs, back, abdomen, chest, shoulders
+  // and arms). Every muscle group here belongs to one of those six, so this is all of them; the grouping is the planner's reading.
+  { id: "who", label: "Major muscle groups (WHO)", targets: MUSCLES.map((m) => m.id) },
   { id: "upper", label: "Upper body", targets: ["chest", "frontDelts", "sideDelts", "rearDelts", "triceps", "biceps", "lats", "upperBack"] },
   { id: "lower", label: "Lower body", targets: ["glutes", "quads", "hamstrings", "calves"] },
   { id: "core", label: "Core", targets: ["abs", "lowerBack"] },
@@ -113,6 +116,8 @@ export function start(root: HTMLElement) {
   const update = () => { writeUrl(state); render(); };
 
   root.addEventListener("click", (ev) => {
+    const a = (ev.target as HTMLElement).closest<HTMLAnchorElement>("a[href^='#option-']");
+    if (a) { const d = root.querySelector<HTMLDetailsElement>(`details${a.getAttribute("href")}`); if (d) d.open = true; return; }
     const b = (ev.target as HTMLElement).closest("button");
     if (!b) return;
     if (b.dataset.group) state.targets = b.dataset.group === "clear" ? [] : [...GROUPS.find((g) => g.id === b.dataset.group)!.targets];
@@ -128,8 +133,21 @@ export function start(root: HTMLElement) {
   });
   root.addEventListener("change", () => { readForm(); update(); });
 
+  const haveSet = () => new Set<Equipment>([...state.equipment, ...(state.bodyweight ? ["body" as Equipment] : [])]);
+
   function render() {
-    const have = new Set<Equipment>([...state.equipment, ...(state.bodyweight ? ["body" as Equipment] : [])]);
+    const have = haveSet();
+    // Show which preset and which target group is active (D9).
+    const sameSet = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x) => b.includes(x));
+    for (const b of root.querySelectorAll<HTMLButtonElement>("button[data-group]")) {
+      const g = GROUPS.find((x) => x.id === b.dataset.group);
+      b.setAttribute("aria-pressed", String(!!g && sameSet(state.targets, g.targets)));
+    }
+    for (const b of root.querySelectorAll<HTMLButtonElement>("button[data-preset]")) {
+      const p = PRESETS.find((x) => x.id === b.dataset.preset)!;
+      const on = sameSet(state.equipment, p.equipment.filter((e) => e !== "body")) && (p.id !== "body" || !state.equipment.length) && (!p.equipment.includes("body") || state.bodyweight);
+      b.setAttribute("aria-pressed", String(on && (state.equipment.length > 0 || p.id === "body")));
+    }
     for (const el of root.querySelectorAll<HTMLElement>("[data-avail]")) {
       const ex = EXERCISES.find((e) => e.id === el.dataset.avail)!;
       el.textContent = canDo(ex, have) ? "" : "(needs equipment you haven't ticked)";
@@ -143,33 +161,46 @@ export function start(root: HTMLElement) {
     $("depthCustom").hidden = state.depth === 1;
 
     const out = $("results");
+    const summary = $("resultSummary");
+    summary.textContent = "";
     if (!state.targets.length) { out.innerHTML = `<p class="notice info">Choose at least one muscle group, or heart and lungs, to get suggestions.</p>`; return; }
     if (!have.size) { out.innerHTML = `<p class="notice info">Choose the equipment you have (step 2), or tick <strong>Include bodyweight exercises</strong>.</p>`; return; }
     const r = suggest({ targets: state.targets, equipment: [...have], excluded: state.excluded, maxExercises: state.max, count: state.count, depth: state.depth, overlap: state.overlap });
     if (!r.suggestions.length) {
+      summary.textContent = "No exercises found for these choices.";
       out.innerHTML = `<p class="notice bad">None of the ${r.available} exercises possible with your choices trains ${r.unreachable.length ? esc(list(r.unreachable.map(label))) : "what you chose"}. Tick more equipment${state.bodyweight ? "" : ", include bodyweight exercises"} or put back any exercises you left out.</p>`;
       return;
     }
     const notes: string[] = [];
     if (r.relaxed) notes.push(`There weren't enough lists that differ as much as you asked, so later suggestions share up to ${Math.round(r.sharedMax * 100)}% of their exercises with an earlier one.`);
     const inAll = r.suggestions.length > 1 ? r.suggestions[0].exercises.filter((e) => r.suggestions.every((s) => s.exercises.includes(e))) : [];
-    if (inAll.length) notes.push(`In every suggestion: ${esc(list(inAll.map((e) => e.name)))}.`);
+    if (inAll.length) notes.push(`In every suggestion: ${esc(list(inAll.map((e) => nameFor(e, have))))}.`);
     const unreached = r.unreachable.filter((t) => r.suggestions.every((s) => s.missing.includes(t)));
     if (unreached.length) notes.push(`Nothing you have available trains ${esc(list(unreached.map(label)))}.`);
     if (r.truncated) notes.push(`To keep things quick, the search was limited to the exercises that do most for your targets, so a better list may exist.`);
     if (r.suggestions.length < state.count) notes.push(`Only ${r.suggestions.length} different suggestion${r.suggestions.length > 1 ? "s" : ""} could be found with these settings.`);
-    out.innerHTML = notes.map((n) => `<p class="notice info small">${n}</p>`).join("")
-      + r.suggestions.map((s, i) => card(s, i)).join("");
+    const best = r.suggestions[0];
+    summary.textContent = `${r.suggestions.length} suggestion${r.suggestions.length > 1 ? "s" : ""}; the first covers ${state.targets.length - best.missing.length} of ${state.targets.length} target${state.targets.length > 1 ? "s" : ""}.`;
+    // A comparison table first, then the first option open and the rest collapsed (D1).
+    const table = r.suggestions.length > 1
+      ? `<table class="compare small sans"><caption class="sr-only">The suggestions compared</caption><thead><tr><th scope="col">Option</th><th scope="col">Exercises</th><th scope="col">Targets covered</th><th scope="col">Not covered</th></tr></thead><tbody>${
+        r.suggestions.map((s, i) => `<tr><th scope="row"><a href="#option-${i + 1}">Option ${i + 1}</a></th><td>${s.exercises.length}</td><td>${state.targets.length - s.missing.length} of ${state.targets.length}</td><td>${s.missing.length ? esc(list(s.missing.map(label))) : "none"}</td></tr>`).join("")}</tbody></table>` : "";
+    out.innerHTML = notes.map((n) => `<p class="notice info small">${n}</p>`).join("") + table
+      + r.suggestions.map((s, i) => i === 0 ? card(s, i) : `<details class="option-fold" id="option-${i + 1}"><summary>Option ${i + 1}: ${s.exercises.length} exercise${s.exercises.length > 1 ? "s" : ""}, covers ${state.targets.length - s.missing.length} of ${state.targets.length}</summary>${card(s, i, true)}</details>`).join("");
   }
 
-  function card(s: Suggestion, i: number) {
-    const targets = state.targets;
+  function card(s: Suggestion, i: number, folded = false) {
+    const targets = state.targets, have = haveSet();
     const covered = targets.length - s.missing.length;
     const muscleTargets = targets.filter((t): t is Muscle => t !== AEROBIC);
-    const head = `<h3>Option ${i + 1}: ${s.exercises.length} exercise${s.exercises.length > 1 ? "s" : ""}, covers ${covered} of ${targets.length} target${targets.length > 1 ? "s" : ""}</h3>`;
+    const head = `<h3${folded ? " hidden" : ` id="option-${i + 1}"`}>Option ${i + 1}: ${s.exercises.length} exercise${s.exercises.length > 1 ? "s" : ""}, covers ${covered} of ${targets.length} target${targets.length > 1 ? "s" : ""}</h3>`;
     const missing = s.missing.length
       ? `<p class="notice small">Not covered: ${esc(list(s.missing.map(label)))}. Allow more exercises, tick more equipment, or choose fewer targets.</p>` : "";
-    const rows = s.exercises.map((e) => exerciseRow(e, targets)).join("");
+    const sorted = ordered(s.exercises);
+    const strength = sorted.filter((e) => e.kind === "strength"), other = sorted.filter((e) => e.kind !== "strength");
+    const rows = strength.map((e) => exerciseRow(e, targets, have)).join("");
+    const otherRows = other.length
+      ? `${strength.length ? `<h4 class="small sans">Heart and lungs</h4>` : ""}<ul class="ex-list">${other.map((e) => exerciseRow(e, targets, have)).join("")}</ul>` : "";
     const supported = s.exercises.some((e) => [...e.direct, ...e.indirect].some((m) => isSupported(e, m)))
       ? `<p class="small sans muted">Muscles marked <span aria-hidden="true">†</span> grew in studies that measured muscle size
         after training with that exercise; whether they count as a full or half set is still the planner's classification.
@@ -178,15 +209,24 @@ export function start(root: HTMLElement) {
       ? caveat("assumption", `Muscles marked <span class="assumed" aria-hidden="true">◇</span> are the planner's own classification, made from
         anatomy (which muscle moves which joint), not taken from a study. The study behind the set counting classified only some
         muscles and exercises. <a href="${METHODS}#which-muscles">How each was decided</a>.`) : "";
+    const asTable = (axes: Axis[]) => `<details class="chart-table"><summary>Show as table</summary><table class="small sans"><thead><tr><th scope="col">Muscle group</th><th scope="col">Sets</th><th scope="col">Status</th></tr></thead><tbody>${
+      axes.map((a) => `<tr><th scope="row">${a.isTarget ? `<strong>${esc(a.label)}</strong>` : esc(a.label)}</th><td>${fmt(a.value)}</td><td>${a.isTarget && a.target !== undefined ? (a.value >= a.target - 1e-9 ? "covered" : "short") : ""}</td></tr>`).join("")}</tbody></table></details>`;
     const targetAxes: Axis[] = muscleTargets.map((m) => ({ label: MUSCLE_LABEL[m], value: s.coverage[m], target: state.depth, isTarget: true }));
     const allAxes: Axis[] = MUSCLES.map((m) => ({ label: m.label, value: s.coverage[m.id], target: state.depth, isTarget: muscleTargets.includes(m.id) }));
     const extra = MUSCLES.filter((m) => !muscleTargets.includes(m.id) && s.coverage[m.id] > 0).map((m) => `${m.label} ${fmt(s.coverage[m.id])}`);
+    // Heart and lungs isn't a muscle, so it isn't on the chart: say what covers it (D4).
+    const aeroEx = s.exercises.filter((e) => e.kind === "aerobic");
+    const heart = targets.includes(AEROBIC)
+      ? `<p class="small sans"><strong>${AEROBIC_LABEL}</strong> (not on the chart): ${aeroEx.length
+        ? `covered by ${esc(list(aeroEx.map((e) => `${nameFor(e, have).toLowerCase()}, ${fmt(Math.min(...e.met!.map((r) => r.met)))}${e.met!.length > 1 ? `–${fmt(Math.max(...e.met!.map((r) => r.met)))}` : ""} MET`)))}`
+        : "not covered by this option"}.</p>` : "";
     const charts = muscleTargets.length
       ? `<figure class="chart">${chartSvg(targetAxes, `Option ${i + 1}: fractional sets for your target muscles`)}
-          <figcaption class="small muted sans">Fractional sets each target muscle gets from one set of every exercise in this option. The navy line marks ${fmt(state.depth)} set${state.depth === 1 ? "" : "s"}, the level counted as covered.</figcaption></figure>
+          <figcaption class="small muted sans">Fractional sets each target muscle gets from one set of every exercise in this option. The navy line marks ${fmt(state.depth)} set${state.depth === 1 ? "" : "s"}, the level counted as covered.</figcaption></figure>${asTable(targetAxes)}
+        ${heart}
         <details><summary>Everything this option works <span class="summary-note">${extra.length ? `also ${esc(list(extra))}` : "nothing beyond your targets"}</span></summary>
           <div class="details-body"><figure class="chart">${chartSvg(allAxes, `Option ${i + 1}: fractional sets for all muscle groups`)}
-          <figcaption class="small muted sans">All ${MUSCLES.length} muscle groups. Your targets are in bold; the others are grey.</figcaption></figure></div></details>` : "";
+          <figcaption class="small muted sans">All ${MUSCLES.length} muscle groups. Your targets are in bold; the others are grey.</figcaption></figure>${asTable(allAxes)}</div></details>` : "";
     // Bodyweight-only strength exercises may be far easier than the studies' sets (A11).
     const light = s.exercises.filter((e) => e.kind === "strength" && e.needs.length === 1 && e.needs[0].length === 1 && e.needs[0][0] === "body");
     const bodyNote = light.length
@@ -198,10 +238,10 @@ export function start(root: HTMLElement) {
         moderate-intensity or at least 75–150 minutes of vigorous-intensity aerobic activity (or an equivalent mix), plus
         muscle-strengthening activity at moderate or greater intensity on 2 or more days a week. Moderate usually feels like
         5 or 6 out of 10 for you, vigorous like 7 or 8. <a href="${METHODS}#heart-and-lungs">More, including advice for older adults</a>.</p>` : "";
-    return `<section class="card option">${head}${missing}<ul class="ex-list">${rows}</ul>${assumed}${supported}${bodyNote}${who}${charts}</section>`;
+    return `<section class="card option">${head}${missing}${rows ? `<ul class="ex-list">${rows}</ul>` : ""}${otherRows}${assumed}${supported}${bodyNote}${who}${charts}${muscleTargets.length ? "" : heart}</section>`;
   }
 
-  function exerciseRow(e: Exercise, targets: Target[]) {
+  function exerciseRow(e: Exercise, targets: Target[], have: ReadonlySet<Equipment>) {
     const tag = (m: Muscle) => `${targets.includes(m) ? `<strong>${esc(MUSCLE_LABEL[m])}</strong>` : esc(MUSCLE_LABEL[m])}`
       + (isAssumed(e, m) ? ` <span class="assumed" title="Assumption: the planner's own classification">◇</span><span class="sr-only"> (assumption)</span>`
         : isSupported(e, m) ? ` <span class="supported" title="Supported by studies that measured muscle growth">†</span><span class="sr-only"> (supported by growth studies)</span>` : "");
@@ -217,7 +257,9 @@ export function start(root: HTMLElement) {
         ? ` <span class="muted">Usually done in short bursts with rests, so it isn't counted towards heart and lungs here: the WHO counts rhythmic activity kept up for a sustained period.</span>` : "";
       aero = `<div class="small sans">Effort: ${metText}.${note}</div>`;
     }
-    return `<li><span class="ex-name">${esc(e.name)}</span>
+    const as = studiedVersion(e, have);
+    const studied = as ? ` <span class="small muted sans">(classified from the ${esc(as)} version; this version is assumed to load the same muscles)</span>` : "";
+    return `<li><span class="ex-name">${esc(nameFor(e, have))}</span>${studied}
       <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}</div>${aero}</li>`;
   }
 

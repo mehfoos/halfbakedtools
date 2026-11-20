@@ -242,3 +242,40 @@ test("outcome evidence: cited references exist, and only counted muscles carry i
     assert.ok(!e.direct.includes("hamstrings") && !e.indirect.includes("hamstrings"), id);
   }
 });
+
+// --- Phase 5: equipment-specific names, reading order (20 Nov 2026) ---
+import { nameFor, ordered, studiedVersion } from "./planner.ts";
+
+test("variants cover every choice in the equipment list that decides the name", () => {
+  for (const e of EXERCISES.filter((x) => x.variants)) {
+    const usable = new Set(e.needs.flat());
+    const covered = (item: Equipment) => e.variants!.some((v) => v.using.includes(item));
+    assert.ok(e.needs.some((anyOf) => anyOf.every(covered)), `${e.id}: no equipment list is fully covered by variants`);
+    for (const v of e.variants!) {
+      assert.ok(v.name.length > 0 && v.using.length > 0, `${e.id}: empty variant`);
+      assert.ok(v.using.every((u) => usable.has(u)), `${e.id}: variant uses equipment the exercise doesn't need`);
+    }
+  }
+});
+
+test("exercise names follow the visitor's equipment", () => {
+  const lat = EXERCISES.find((e) => e.id === "lateralRaise")!;
+  assert.equal(nameFor(lat, new Set<Equipment>(["machines"])), "Cable or machine lateral raise");
+  assert.equal(nameFor(lat, new Set<Equipment>(["dumbbells"])), "Dumbbell lateral raise");
+  assert.equal(nameFor(EXERCISES.find((e) => e.id === "pushUp")!, new Set<Equipment>(["body"])), "Push-up");
+  const dbPress = EXERCISES.find((e) => e.id === "dbPress")!;
+  assert.equal(studiedVersion(dbPress, new Set<Equipment>(["dumbbells"])), undefined);
+  assert.equal(studiedVersion(dbPress, new Set<Equipment>(["kettlebell"])), "dumbbell");
+});
+
+test("a suggestion with machines only never names a dumbbell exercise", () => {
+  const have = new Set<Equipment>(["machines", "body"]);
+  const r = suggest({ targets: MUSCLES.map((m) => m.id), equipment: [...have], maxExercises: 10, count: 3, depth: 1, overlap: 1 });
+  for (const s of r.suggestions) for (const e of s.exercises) assert.ok(!/dumbbell|kettlebell|barbell/i.test(nameFor(e, have)), nameFor(e, have));
+});
+
+test("reading order: big lifts, then smaller ones, then holds, then heart and lungs", () => {
+  const pick = (...ids: string[]) => ids.map((id) => EXERCISES.find((e) => e.id === id)!);
+  const o = ordered(pick("walk", "plank", "curl", "benchPress", "farmerCarry", "kbSwing")).map((e) => e.id);
+  assert.deepEqual(o, ["benchPress", "curl", "plank", "farmerCarry", "walk", "kbSwing"]);
+});
