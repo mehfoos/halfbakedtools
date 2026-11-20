@@ -153,3 +153,12 @@ file's unit row or component list. Tests: `pipeline/blend/test_table_checks.py` 
 | KFCDb 9.3 | Column headings and unit row (no documentation archived) | Units match (fatty and amino acids in mg, per 100 g food; saturated fat never exceeds fat). Definitions rest on the headings only |
 | MEXT 8th ed. (2023 supplement) | Documentation chapter 1 (symbols; component identifiers; vitamins) | "0" = below 1/10 of the smallest amount shown (3/10 for iodine and selenium) or not detected: kept as 0. "(0)" = assumed none, not measured: now labelled "z". Two values with a dagger (reduced starch syrup) and three "*" iodine cells are NA |
 | CNF 2026 | User guide (missing values, assumed zero, energy, vitamin A, vitamin D, folate); nutrient names and units | Definitions confirmed. 82 values in the file are coded "assumed zero" but given as an amount; the 48 among the planner's nutrients are now NA (label "zx") |
+
+## Blended table (checked 20 Nov 2026, after commit c5d2a95)
+
+All 438 blended foods: every UK blended value lies within the values of its source records, and plant foods carry
+no vitamin B12, retinol, EPA or DHA. About 120 familiar foods were read against their per-table values, with no errors.
+Energy and protein, fat and carbohydrate don't always add up (18 foods by more than 15%), because each nutrient is
+blended within its own definition. KFCDb's vitamin D zeros for some animal foods (butter, canned mackerel, milk powder)
+are implausible and its documentation isn't archived; they are used as published until the owner decides. Record:
+`pipeline/blend/reviews/2026-11-20-spot-check.md`.
