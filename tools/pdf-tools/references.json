@@ -16,7 +16,13 @@
         "why": "easy-to-get",
         "note": "a utility tool, whose behaviour is checked by its own tests"
       },
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "pdftools_ecma-376-1_5th-edition-2016.zip",
+          "sha256": "9d0bcad9cf06054785b03762fcfadbf6bab7e54a5f9d69434e34b7fd464d4129",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "ofl-1.1",
@@ -192,7 +198,12 @@
         "why": "easy-to-get",
         "note": "a utility tool, whose behaviour is checked by its own tests"
       },
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "pdftools_verapdf-pdfa-2-3-rules.md",
+          "sha256": "f160eac3f6871a5136f784dc147ac4cf23929d834f1805744099b23c617a8d67"
+        }
+      ]
     },
     {
       "id": "icc-2001",
@@ -209,7 +220,12 @@
         "why": "easy-to-get",
         "note": "a utility tool, whose behaviour is checked by its own tests"
       },
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "pdftools_icc-2001-minor-revision.pdf",
+          "sha256": "7cd05639d187c697f04e9bb1711a05b37b044ec70f8bc99d13e85ac4c01defc3"
+        }
+      ]
     },
     {
       "id": "css-color-4",
@@ -226,7 +242,12 @@
         "why": "easy-to-get",
         "note": "a utility tool, whose behaviour is checked by its own tests"
       },
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "pdftools_css-color-4-CRD-20261118.html",
+          "sha256": "8e3c3d158ec87034eeb757615c1c193fa9f415930bcb06f0f4a9a12e1488cad6"
+        }
+      ]
     },
     {
       "id": "xmp-1",
@@ -243,7 +264,12 @@
         "why": "easy-to-get",
         "note": "a utility tool, whose behaviour is checked by its own tests"
       },
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "pdftools_xmp-spec-part1.pdf",
+          "sha256": "e0056b9d5c29d4d21eda1856cf947b54cee3013944638a9871aed7d67a949090"
+        }
+      ]
     }
   ]
 }
