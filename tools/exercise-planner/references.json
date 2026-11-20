@@ -1,5 +1,5 @@
 {
-  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Each needs an archived copy in the source-archive release, given as {\"asset\": \"<file>\"} and listed in sources/archive.json; never commit the file itself (see sources/README.md). Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
+  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Every source has: 'accessed' (ISO date the original was last read and checked; null only for older entries until re-checked), 'ownerCopy' (the owner's private copy: [{\"file\": ..., \"sha256\": ...}], or \"pending\" until it is saved), and either archive entries ({\"asset\": \"<file>\"} in the source-archive release, listed in sources/archive.json) or 'noPublicCopy' ({\"why\": \"not-data\" | \"licence\" | \"easy-to-get\", \"note\": ...}). Which one: principle 3 in docs/PRINCIPLES.md. Never commit the file itself. Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
   "sources": [
     {
       "id": "pelland-2026",
@@ -10,13 +10,15 @@
       "url": "https://doi.org/10.1007/s40279-025-02344-w",
       "licence": "Preprint: CC BY 4.0",
       "usedFor": "Counting sets that train a muscle directly as 1 and indirectly as 0.5 (the 'fractional' method)",
+      "accessed": "2026-11-15",
       "archive": [
         {
           "label": "Archived copy (preprint, version 2)",
           "asset": "pelland-2024-dose-response-preprint-v2.pdf",
           "fetch": "https://sportrxiv.org/index.php/server/preprint/download/460/967/908"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "schoenfeld-2019",
@@ -27,6 +29,7 @@
       "url": "https://doi.org/10.3390/sports7070177",
       "licence": "CC BY 4.0",
       "usedFor": "How much multi-joint exercises (presses, rows, squats) work the arm and leg muscles they don't mainly target",
+      "accessed": "2026-11-15",
       "archive": [
         {
           "asset": "schoenfeld-2019-set-volume-multi-joint.pdf",
@@ -36,7 +39,8 @@
             "https://europepmc.org/articles/PMC6681288?pdf=render"
           ]
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "openstax-ap2e",
@@ -47,6 +51,7 @@
       "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-introduction",
       "licence": "CC BY 4.0 (as stated by OpenStax)",
       "usedFor": "What each muscle does (which joint movement it produces), used to decide which muscles an exercise works",
+      "accessed": null,
       "archive": [
         {
           "label": "Archived copy: 11.3 saved by the site owner (PDF)",
@@ -80,7 +85,8 @@
           "label": "web archive (.mht)",
           "asset": "openstax-ap2e-11-6-owner-saved.mht"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "stokey-2024",
@@ -91,12 +97,17 @@
       "url": "https://doi.org/10.52965/001c.115352",
       "licence": "Free to read; the journal does not state a licence (all rights remain with the authors)",
       "usedFor": "What each part of the deltoid does (front: flexion and medial rotation; side: abduction; rear: extension and lateral rotation)",
-      "archive": [
+      "accessed": null,
+      "archive": [],
+      "noPublicCopy": {
+        "why": "licence",
+        "note": "free to read, but the journal states no licence"
+      },
+      "ownerCopy": [
         {
-          "label": "Copy (PDF, downloaded 20 Nov 2026)",
-          "private": "stokey-2024-deltoid-review.pdf",
+          "file": "stokey-2024-deltoid-review.pdf",
           "sha256": "b943ac0f44689a4ecf91465adb0daf331fa2d01b2c2de287f729dfcd8bb0c7b5",
-          "reason": "free to read, but the journal states no licence",
+          "label": "Copy (PDF, downloaded 20 Nov 2026)",
           "fetch": "https://orthopedicreviews.openmedicalpublishing.org/article/115352.pdf"
         }
       ]
@@ -110,13 +121,15 @@
       "url": "https://doi.org/10.3389/fphys.2025.1542334",
       "licence": "CC BY 4.0",
       "usedFor": "Which exercises have been shown to grow the gluteus maximus (squats to parallel or deeper, the leg press, the hip thrust, bodyweight squat variations)",
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy (PDF)",
           "asset": "krause-neto-2025-gluteus-maximus-meta-analysis.pdf",
           "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2025.1542334/pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "plotkin-2023",
@@ -127,13 +140,15 @@
       "url": "https://doi.org/10.3389/fphys.2023.1279170",
       "licence": "CC BY 4.0",
       "usedFor": "The hip thrust and back squat grew the gluteus maximus similarly; neither grew the hamstrings",
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy (PDF)",
           "asset": "plotkin-2023-hip-thrust-squat.pdf",
           "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1279170/pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "wei-2023",
@@ -144,13 +159,15 @@
       "url": "https://doi.org/10.1038/s41598-023-40319-x",
       "licence": "CC BY 4.0",
       "usedFor": "A bodyweight programme of lunges, Bulgarian split squats and skating squats thickened the gluteus maximus; rectus femoris thickness did not change significantly",
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy (full text, XML from Europe PMC)",
           "asset": "wei-2023.xml",
           "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10439966/fullTextXML"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "morin-2025",
@@ -161,12 +178,18 @@
       "url": "https://doi.org/10.1519/JSC.0000000000005159",
       "licence": "Journal article: publisher's copyright. Preprint: all rights reserved, no reuse allowed (medRxiv)",
       "usedFor": "Stiff-leg deadlift training grew the hamstrings (the Romanian deadlift here)",
-      "archive": [
+      "accessed": null,
+      "archive": [],
+      "noPublicCopy": {
+        "why": "licence",
+        "note": "the preprint is marked all rights reserved and medRxiv blocks automated downloads"
+      },
+      "ownerCopy": [
         {
+          "file": "morin-2024-medrxiv-preprint-v1.pdf",
           "label": "Preprint (PDF)",
-          "private": "morin-2024-medrxiv-preprint-v1.pdf",
-          "reason": "the preprint is marked all rights reserved and medRxiv blocks automated downloads",
-          "fetch": "https://www.medrxiv.org/content/10.1101/2024.12.17.24319207v1.full.pdf"
+          "fetch": "https://www.medrxiv.org/content/10.1101/2024.12.17.24319207v1.full.pdf",
+          "pending": true
         }
       ]
     },
@@ -179,12 +202,17 @@
       "url": "https://doi.org/10.1136/bjsports-2016-096130",
       "licence": "Publisher's copyright; the accepted manuscript is posted for personal use only",
       "usedFor": "45° hip extension training grew all three hamstring muscles (the back extension here)",
-      "archive": [
+      "accessed": null,
+      "archive": [],
+      "noPublicCopy": {
+        "why": "licence",
+        "note": "posted for personal use only, no further distribution"
+      },
+      "ownerCopy": [
         {
-          "label": "Accepted manuscript (PDF)",
-          "private": "bourne-2017-hip-extension-nordic-am.pdf",
+          "file": "bourne-2017-hip-extension-nordic-am.pdf",
           "sha256": "d2158fd92fbb346578772b1b07d2152845a752e99acca5908d7b2c1e549d65cd",
-          "reason": "posted for personal use only, no further distribution",
+          "label": "Accepted manuscript (PDF)",
           "fetch": "https://research-repository.griffith.edu.au/server/api/core/bitstreams/75402dd6-e854-5f52-a9a8-cc3e8d2087e6/content"
         }
       ]
@@ -198,13 +226,15 @@
       "url": "https://doi.org/10.3390/nu8060331",
       "licence": "CC BY 4.0",
       "usedFor": "Latissimus dorsi fibres grew after a programme whose only back exercises were lat pulldowns and seated rows (context only)",
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy (full text, XML from Europe PMC)",
           "asset": "paoli-2016-latissimus-dorsi-fibres.xml",
           "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4924172/fullTextXML"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "kinoshita-2023",
@@ -215,13 +245,15 @@
       "url": "https://doi.org/10.3389/fphys.2023.1272106",
       "licence": "CC BY 4.0",
       "usedFor": "Standing calf raises grew the gastrocnemius and the whole calf; seated calf raises barely grew the gastrocnemius",
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy (PDF)",
           "asset": "kinoshita-2023-standing-seated-calf-raise.pdf",
           "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1272106/pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "kikuchi-2017",
@@ -232,13 +264,15 @@
       "url": "https://doi.org/10.1016/j.jesf.2017.06.003",
       "licence": "CC BY-NC-ND 4.0",
       "usedFor": "Push-ups thickened the pectoralis major and triceps as much as bench pressing at a similar load",
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy (full text, XML from Europe PMC)",
           "asset": "kikuchi-2017.xml",
           "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5812864/fullTextXML"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "larsen-2025",
@@ -249,13 +283,15 @@
       "url": "https://doi.org/10.3389/fphys.2025.1611468",
       "licence": "CC BY 4.0",
       "usedFor": "Lateral raises (the only side-deltoid exercise allowed) grew the side deltoid by 3.3–4.6% in 8 weeks",
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy (full text, XML from Europe PMC)",
           "asset": "larsen-2025.xml",
           "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12277279/fullTextXML"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "who-2020",
@@ -266,6 +302,7 @@
       "url": "https://iris.who.int/handle/10665/336656",
       "licence": "CC BY-NC-SA 3.0 IGO (guidelines); CC BY 4.0 (journal paper)",
       "usedFor": "Weekly aerobic and muscle-strengthening recommendations for adults; moderate and vigorous intensity in METs",
+      "accessed": "2026-11-15",
       "archive": [
         {
           "label": "Archived copy",
@@ -279,7 +316,8 @@
           ],
           "label": "journal paper of the guidelines (Bull et al., Br J Sports Med 2020)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "compendium-2024",
@@ -290,6 +328,7 @@
       "url": "https://pacompendium.com/",
       "licence": "Article: CC BY-NC-ND 4.0. Activity list: free to use and cite, MET values not to be changed (pacompendium.com)",
       "usedFor": "How hard each aerobic activity is, in METs (metabolic equivalents), with the Compendium's activity code",
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy (activity list)",
@@ -332,7 +371,8 @@
           "label": "website page 'sports' (PDF print; estimated values in red)",
           "asset": "compendium-2024-web-sports.pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     }
   ]
 }

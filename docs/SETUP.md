@@ -14,9 +14,11 @@
 
 - **Deploys** run on every push to `main` that touches the site, a tool, the sources or the build config.
   The build runs every test first; a failing test stops the deploy.
-- **Archived sources:** kept in the `source-archive` release, never committed. When an editor adds a reference,
-  they check the file and list it in `sources/archive.json`; the owner attaches it to the release by hand (*Releases*
-  -> *Source archive* -> *Edit*). See `sources/README.md`. The tests fail until every reference has an archived
-  copy (in tools that require one: those with health information; see principle 3 in `PRINCIPLES.md`), and if a
-  reference file is committed.
+- **Sources:** every reference has an access date and an owner's private copy (recorded by file name and checksum
+  only); some also have a public copy in the `source-archive` release, never committed (principle 3 in
+  `PRINCIPLES.md`). An editor checks a public copy and lists it in `sources/archive.json`; the owner attaches it to
+  the release by hand (*Releases* -> *Source archive* -> *Edit*). See `sources/README.md`. The tests fail if a
+  reference is incomplete or a reference file is committed.
+- **Link check** (`link-check.yml`) runs every three months (and on demand from the Actions tab), and opens or
+  updates an issue labelled `link-check` listing links that fail. It changes no files.
 - **Tool data jobs** are named `<slug>-*.yml` and described in the tool's README.

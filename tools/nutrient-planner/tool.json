@@ -4,6 +4,7 @@
   "summary": "Look up any food's vitamins, minerals and amino acids against UK, US or EU daily recommendations for your age and sex (Food Finder), or find a handful of everyday foods that together come close to them, or build your own day (Planner), with charts throughout. Food values come from USDA data, with a beta blend of USDA and UK CoFID values for some foods.",
   "topic": "Food and health",
   "status": "beta",
+  "health": true,
   "added": "2026-11-08",
   "pages": [
     {

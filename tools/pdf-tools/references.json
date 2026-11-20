@@ -1,5 +1,5 @@
 {
-  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Each needs an archived copy in the source-archive release, given as {\"asset\": \"<file>\"} and listed in sources/archive.json; never commit the file itself (see sources/README.md). Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
+  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Every source has: 'accessed' (ISO date the original was last read and checked; null only for older entries until re-checked), 'ownerCopy' (the owner's private copy: [{\"file\": ..., \"sha256\": ...}], or \"pending\" until it is saved), and either archive entries ({\"asset\": \"<file>\"} in the source-archive release, listed in sources/archive.json) or 'noPublicCopy' ({\"why\": \"not-data\" | \"licence\" | \"easy-to-get\", \"note\": ...}). Which one: principle 3 in docs/PRINCIPLES.md. Never commit the file itself. Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
   "sources": [
     {
       "id": "ecma-376",
@@ -10,8 +10,13 @@
       "url": "https://ecma-international.org/publications-and-standards/standards/ecma-376/",
       "licence": "Freely available from Ecma International",
       "usedFor": "The XML schemas each part of the Word, PowerPoint and Excel files this site writes was checked against",
+      "accessed": "2026-11-20",
       "archive": [],
-      "accessed": "2026-11-20"
+      "noPublicCopy": {
+        "why": "easy-to-get",
+        "note": "a utility tool, whose behaviour is checked by its own tests"
+      },
+      "ownerCopy": "pending"
     },
     {
       "id": "ofl-1.1",
@@ -22,11 +27,13 @@
       "url": "https://openfontlicense.org/documents/OFL.txt",
       "licence": "Licence text; may be copied verbatim",
       "usedFor": "The licence of the Noto fonts shipped with this site",
+      "accessed": "2026-11-19",
       "archive": [
         {
           "asset": "pdftools_OFL-1.1.txt"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "ofl-faq",
@@ -37,11 +44,13 @@
       "url": "https://openfontlicense.org/documents/OFL-FAQ.txt",
       "licence": "Copyright SIL Global; verbatim copies may be distributed",
       "usedFor": "That the fonts may be embedded, in full or cut down, in saved PDFs, and served from this site with their licence",
+      "accessed": "2026-11-19",
       "archive": [
         {
           "asset": "pdftools_OFL-FAQ-1.1-update8.txt"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "opentype-os2",
@@ -52,6 +61,7 @@
       "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/os2",
       "licence": "Copyright Microsoft; Microsoft Learn terms of use",
       "usedFor": "Reading a font's embedding permissions (restricted, preview and print, editable, no subsetting, bitmap only) before using it",
+      "accessed": "2026-11-19",
       "archive": [
         {
           "label": "Archived copy (PDF print)",
@@ -61,7 +71,8 @@
           "label": "page as downloaded (HTML)",
           "asset": "pdftools_opentype-spec_os2.html"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "naptha-tessdata",
@@ -72,11 +83,13 @@
       "url": "https://github.com/naptha/tessdata/blob/gh-pages/README.md",
       "licence": "Repository README, quoted as evidence of origin",
       "usedFor": "That the language files used (“4.0.0_best_int”) are the integer version of Tesseract’s tessdata_best models",
+      "accessed": "2026-11-19",
       "archive": [
         {
           "asset": "pdftools_naptha-tessdata_README.md"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "tessdata-best",
@@ -87,6 +100,7 @@
       "url": "https://github.com/tesseract-ocr/tessdata_best",
       "licence": "Apache-2.0",
       "usedFor": "The licence of the OCR language models",
+      "accessed": "2026-11-19",
       "archive": [
         {
           "label": "Archived README",
@@ -96,7 +110,8 @@
           "label": "LICENSE",
           "asset": "pdftools_tessdata_best_LICENSE.txt"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "unicode-18-ch12",
@@ -107,6 +122,7 @@
       "url": "https://www.unicode.org/versions/latest/core-spec/chapter-12/",
       "licence": "Copyright Unicode, Inc.; Unicode Terms of Use",
       "usedFor": "Which old-style Malayalam chillu sequences equal which single chillu letters, when changing OCR text to the modern encoding",
+      "accessed": "2026-11-19",
       "archive": [
         {
           "label": "Archived copy (PDF print)",
@@ -116,7 +132,8 @@
           "label": "page as downloaded (HTML)",
           "asset": "pdftools_unicode-18.0.0_core-spec_chapter-12.html"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "verapdf-rules-2",
@@ -127,8 +144,13 @@
       "url": "https://github.com/veraPDF/veraPDF-validation-profiles/wiki/PDFA-Parts-2-and-3-rules",
       "licence": "CC BY 4.0",
       "usedFor": "The PDF/A-2 requirements this tool follows and checks, by rule number",
+      "accessed": "2026-11-20",
       "archive": [],
-      "accessed": "2026-11-20"
+      "noPublicCopy": {
+        "why": "easy-to-get",
+        "note": "a utility tool, whose behaviour is checked by its own tests"
+      },
+      "ownerCopy": "pending"
     },
     {
       "id": "icc-2001",
@@ -139,8 +161,13 @@
       "url": "https://www.color.org/ICC_Minor_Revision_for_Web.pdf",
       "licence": "Free to use and distribute (ICC notice)",
       "usedFor": "The layout of the sRGB colour profile this site writes into PDF/A files",
+      "accessed": "2026-11-20",
       "archive": [],
-      "accessed": "2026-11-20"
+      "noPublicCopy": {
+        "why": "easy-to-get",
+        "note": "a utility tool, whose behaviour is checked by its own tests"
+      },
+      "ownerCopy": "pending"
     },
     {
       "id": "css-color-4",
@@ -151,8 +178,13 @@
       "url": "https://www.w3.org/TR/2026/CRD-css-color-4-20261118/",
       "licence": "W3C permissive document license",
       "usedFor": "The numbers of sRGB in that profile",
+      "accessed": "2026-11-20",
       "archive": [],
-      "accessed": "2026-11-20"
+      "noPublicCopy": {
+        "why": "easy-to-get",
+        "note": "a utility tool, whose behaviour is checked by its own tests"
+      },
+      "ownerCopy": "pending"
     },
     {
       "id": "xmp-1",
@@ -163,8 +195,13 @@
       "url": "https://github.com/adobe/XMP-Toolkit-SDK/blob/main/docs/XMPSpecificationPart1.pdf",
       "licence": "Copyright Adobe; kept so the cited rules can be traced",
       "usedFor": "How the PDF/A metadata is written",
+      "accessed": "2026-11-20",
       "archive": [],
-      "accessed": "2026-11-20"
+      "noPublicCopy": {
+        "why": "easy-to-get",
+        "note": "a utility tool, whose behaviour is checked by its own tests"
+      },
+      "ownerCopy": "pending"
     }
   ]
 }

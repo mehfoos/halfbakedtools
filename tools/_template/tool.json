@@ -4,6 +4,7 @@
   "summary": "One or two sentences on what the tool does, shown on the home page and in search results.",
   "topic": "Topic used to group tools on the home page",
   "status": "alpha",
+  "health": true,
   "added": "YYYY-MM-DD",
   "pages": [
     { "page": "index", "label": "Tool" },

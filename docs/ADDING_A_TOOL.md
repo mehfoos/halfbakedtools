@@ -8,21 +8,24 @@ automatically.
 
 1. **Copy the template:** `cp -r tools/_template tools/<slug>` (lower-case words joined by hyphens, e.g. `solar-payback`).
 2. **Fill in `tool.json`:** set `slug` to the folder name, then the name, a one- or two-sentence summary, a topic (tools
-   are grouped by topic on the home page), `status` (`alpha`, `beta` or `stable`) and the date added. List every page
+   are grouped by topic on the home page), `status` (`alpha`, `beta` or `stable`) the date added, and `health` (`true` if people may act on its information for their health; this decides which
+   sources need a public copy). List every page
    in `pages/`, starting with `index`. A page marked `"nav": false` is left out of the tab row (for tools with many
    pages reached from their own home page).
 3. **Write the pages** in `pages/`. `index.astro` is served at `/tools/<slug>/`; any other `<name>.astro` at
    `/tools/<slug>/<name>/`. Wrap each page in `ToolLayout`, which adds the breadcrumb, the page tabs and the
-   collapsible reference list. Every tool has a `methods` page covering how it works, what has been checked, and its
-   limitations.
+   collapsible reference list. Every tool has a `methods` page that records the method in full (principle 3a in
+   `docs/PRINCIPLES.md`): inputs and defaults, data and versions, every formula, rule and constant, missing data and
+   assumptions, what has been checked and when, limits, and a dated list of changes.
 4. **Write the code** in `web/`. Keep calculations in pure modules (no DOM) with `*.test.ts` tests beside them; they
    run with `npm test` and must pass before anything deploys.
 5. **Cite everything.** Add each source to `references.json`, in the order the tool first cites it, and cite it in the
-   text with `cite("id")`, which produces a numbered IEEE-style link ([1], [2], …). Each source needs an archived copy
-   (unless the tool sets `"archive": "optional"` in `tool.json`: only for utility tools without health information;
-   such a reference gives `"accessed": "<date>"` instead) in the `source-archive` release, given as `{"asset": "<file>"}`; follow `sources/README.md` (check the file, list
-   it in `sources/archive.json`, the owner attaches it). **Never commit the file itself.** The tests fail if a
-   citation isn't in `references.json`, a reference has no archived copy where one is required, or a reference file is committed.
+   text with `cite("id")`, which produces a numbered IEEE-style link ([1], [2], …). Each source needs `accessed` (the
+   date the original was read and checked), `ownerCopy` (the owner's private copy, by file name and checksum only, or
+   `"pending"`), and either a public copy in the `source-archive` release (`{"asset": "<file>"}`) or `noPublicCopy`
+   saying why not. Which one is decided by principle 3 in `docs/PRINCIPLES.md`; `tools/_template/references.json`
+   shows both kinds. Follow `sources/README.md` for public copies. **Never commit the file itself.** The tests fail if
+   a citation isn't in `references.json`, a reference is missing any of these, or a reference file is committed.
 6. **Record verification** in `VERIFICATION.md`: each value or table, the document and page it was checked against,
    and the date. Until something is checked, say so on the methods page.
 7. **Data:** anything in `data/` (`*.json`, any depth) is published at `/tools/<slug>/data/…`. Scripts that build it

@@ -1,6 +1,6 @@
 ---
-// Collapsible IEEE-style reference list for one tool, with the original link and an archived copy
-// kept in the repository for every entry.
+// Collapsible IEEE-style reference list for one tool: each entry has the original link, the date it was last read,
+// and its public copy or why there isn't one (docs/PRINCIPLES.md, principle 3).
 import { entryHtml, referencesFor, type ReferenceFile } from "../lib/references.ts";
 interface Props { file: ReferenceFile; open?: boolean }
 const { file, open = false } = Astro.props;
@@ -11,7 +11,9 @@ const { sources } = referencesFor(file);
   <div class="details-body">
   <p class="small muted sans">
     Numbered as cited ([1], [2], …); the numbers are the same on every page of this tool. Each entry links to
-    the original and to a copy kept in this site's repository, so the exact version used stays available.
+    the original and gives the date it was last read and checked. Where the tool's results are calculated from a
+    source, and its licence allows, a copy of the exact version used is kept in this site's public archive; the site
+    owner keeps a private copy of every source.
   </p>
   <ol class="ref-list">
     {sources.map((s, i) => (

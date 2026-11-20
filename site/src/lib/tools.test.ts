@@ -1,5 +1,5 @@
 // Checks every tool folder follows the conventions in docs/ADDING_A_TOOL.md, and that every
-// reference has an archived copy.
+// reference follows the three-layer rule (docs/PRINCIPLES.md, principle 3).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
@@ -34,32 +34,54 @@ for (const slug of folders) {
     assert.equal(t.pages[0].page, "index", "the first page must be index");
   });
 
-  // Archived copies are required for tools whose information people act on for their health ("archive" absent or
-  // "required" in tool.json); a utility tool can set "archive": "optional" (docs/PRINCIPLES.md, principle 3).
-  test(`${slug}: every citation is in the reference list, and every reference has an archived copy where the tool needs one`, () => {
+  // Every source: a public reference with an access date, the owner's private copy, and either a public copy in the
+  // source-archive release or a stated reason for not having one (docs/PRINCIPLES.md, principle 3).
+  test(`${slug}: every citation is in the reference list, and every reference follows the three-layer rule`, () => {
     const refsPath = join(dir, "references.json");
     if (!existsSync(refsPath)) return;
-    const refs = json(refsPath).sources as { id: string; archive: { asset?: string; release?: string; private?: string; reason?: string; sha256?: string }[] }[];
+    type Ref = { id: string; url: string; accessed?: string | null; archive: { asset?: string; release?: string }[];
+      noPublicCopy?: { why: string; note: string }; ownerCopy?: { file: string; sha256?: string; pending?: boolean }[] | string };
+    const refs = json(refsPath).sources as Ref[];
     const ids = refs.map((r) => r.id);
     assert.equal(new Set(ids).size, ids.length, "duplicate reference ids");
     const code = walk(dir).filter((f) => /\.(astro|ts)$/.test(f)).map((f) => readFileSync(f, "utf8")).join("\n");
     const cited = new Set([...code.matchAll(/cite\(\s*"([^"]+)"/g)].map((m) => m[1]));
     for (const c of cited) assert.ok(ids.includes(c), `cites unknown reference "${c}"`);
-    if (template) return;
-    const optional = json(join(dir, "tool.json")).archive === "optional";
+    const health = json(join(dir, "tool.json")).health;
+    assert.equal(typeof health, "boolean", 'tool.json needs "health": true or false (does it give health information?)');
     for (const r of refs) {
-      if (!optional) assert.ok(r.archive.length, `${r.id} has no archived copy`);
-      else if (!r.archive.length) assert.match(String((r as { accessed?: string }).accessed), /^\d{4}-\d{2}-\d{2}$/, `${r.id}: a source without an archived copy needs "accessed" (the date it was read)`);
-      for (const a of r.archive) assert.ok(a.asset || a.release || a.private, `${r.id}: archived copies are release files ({"asset": ...}) or private copies ({"private": ...})`);
-      // A private copy (publisher doesn't allow redistribution) says why, and is never also a release file.
-      for (const a of r.archive) if (a.private) {
-        assert.ok(a.reason, `${r.id}: private copy ${a.private} needs a 'reason'`);
-        assert.ok(!registry.has(a.private), `${r.id}: ${a.private} is private, so it must not be in sources/archive.json`);
-        if (a.sha256) assert.match(a.sha256, /^[0-9a-f]{64}$/, `${r.id}: ${a.private} sha256`);
+      assert.match(r.url, /^https:\/\//, `${r.id}: needs an https link to the original`);
+      // Layer 1: when the original was last read and checked. null is allowed only for entries older than this rule,
+      // and only until they are re-checked; a new reference always has a date.
+      assert.ok("accessed" in r, `${r.id}: needs "accessed" (ISO date the original was last read)`);
+      if (r.accessed !== null) assert.match(String(r.accessed), /^\d{4}-\d{2}-\d{2}$/, `${r.id}: "accessed" must be an ISO date`);
+      // Layer 2: the owner's private copy, recorded by file name (and checksum) only.
+      assert.ok(r.ownerCopy === "pending" || Array.isArray(r.ownerCopy) && r.ownerCopy.length,
+        `${r.id}: needs "ownerCopy": [{"file": ..., "sha256": ...}] or "pending"`);
+      if (Array.isArray(r.ownerCopy)) for (const c of r.ownerCopy) {
+        assert.ok(c.file && !/[\/\\]|drive\.google|docs\.google/i.test(c.file), `${r.id}: ownerCopy gives a file name only, never a location`);
+        if (c.sha256) assert.match(c.sha256, /^[0-9a-f]{64}$/, `${r.id}: ${c.file} sha256`);
+        assert.ok(!registry.has(c.file) || !r.noPublicCopy || r.noPublicCopy.why !== "licence",
+          `${r.id}: ${c.file} can't be redistributed, so it must not be in sources/archive.json`);
       }
-      // A release copy must be in the registry; until the workflow has verified it, the page says it isn't available yet.
-      for (const a of r.archive) if (a.asset) assert.ok(registry.has(a.asset), `${r.id}: ${a.asset} is not listed in sources/archive.json`);
+      assert.ok(!JSON.stringify(r).match(/drive\.google|docs\.google/), `${r.id}: never record where the owner's copies are stored`);
+      // Layer 3: a public copy, or the reason there isn't one.
+      for (const a of r.archive) assert.ok(a.asset || a.release, `${r.id}: public copies are release files ({"asset": ...})`);
+      for (const a of r.archive) if (a.asset && !template) assert.ok(registry.has(a.asset), `${r.id}: ${a.asset} is not listed in sources/archive.json`);
+      if (!r.archive.length) {
+        assert.ok(r.noPublicCopy, `${r.id}: has no public copy, so it needs "noPublicCopy": {"why": ..., "note": ...}`);
+        assert.ok(["not-data", "licence", "easy-to-get"].includes(r.noPublicCopy!.why), `${r.id}: noPublicCopy.why`);
+        assert.ok(r.noPublicCopy!.note, `${r.id}: noPublicCopy needs a note`);
+        assert.ok(!(health && r.noPublicCopy!.why === "easy-to-get"),
+          `${r.id}: in a health tool, a source the results depend on needs a public copy even if it is easy to get`);
+      } else assert.ok(!r.noPublicCopy, `${r.id}: has a public copy and a "noPublicCopy" reason; keep one`);
     }
+  });
+
+  // Every tool records its method in full on a methods page (docs/PRINCIPLES.md, principle 3a).
+  test(`${slug}: has a methods page`, () => {
+    const pages = json(join(dir, "tool.json")).pages.map((p: { page: string }) => p.page);
+    assert.ok(pages.includes("methods"), "every tool needs a pages/methods.astro page recording its full method");
   });
 }
 

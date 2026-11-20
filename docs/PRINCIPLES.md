@@ -53,37 +53,82 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
     `stable` = unlikely to change except for data updates.
   - No marketing language.
 
-## 3. Every claim is referenced, and sources behind health information are archived
+## 3. Every claim is referenced, every source is kept, and the sources behind results are public
 
-- **Rule:** each fact traces to a source. For tools whose information people act on for their health (nutrition,
-  exercise, and anything like them), that source is also kept in the `source-archive` release.
-- **Why:** readers must be able to check the work, and where getting it wrong could harm someone they must still be
-  able to check it after an official link moves or a document is revised, so the exact version used has to survive.
-  Utility tools (such as the PDF tools) cite their sources the same way, but an archived copy is optional there:
-  a broken link costs a reader little, and the tool's behaviour is checked by its own tests rather than by the source.
-- **Which tools:** archiving is required unless a tool's `tool.json` says `"archive": "optional"`. A reference in such
-  a tool may have no archived copy; it then gives the date the original was read (`"accessed"`), and the reference
-  list shows only the original link.
+- **Rule:** every fact traces to a source, in three layers (owner's decision, 20 Nov 2026):
+  1. **Reference (every source, public).** IEEE-style citation, link to the original, version or DOI where there is
+     one, what it is used for, its licence, and the date the original was last read and checked (`accessed`).
+  2. **Owner's copy (every source, private).** The owner keeps a copy of every cited document or web page in a
+     private folder. The repository records only the file name and its SHA-256, never where it is stored.
+  3. **Public copy (some sources).** A copy in the `source-archive` release, only when all three answers are yes:
+     - **Does a number or data in a visitor's result come from it?** (values transcribed or files read by a script:
+       food tables, intake values and limits, MET values, effect sizes used in a calculation). If it is cited only
+       for background or a general statement, no.
+     - **Does its licence allow redistribution?**
+     - **Is it in a health tool (`"health": true` in `tool.json`), or hard to obtain again** (blocked or manual
+       downloads, releases that get replaced)?
+
+     Otherwise the reference says why there is no public copy (`noPublicCopy`: `not-data`, `licence` or
+     `easy-to-get`; `easy-to-get` is not allowed in a health tool).
+- **Why:** readers must be able to check the work. The owner's copy means nothing is lost if a link moves, at no
+  cost to the repository. A public copy is kept where a visitor or a future editor may need to check a number
+  without the owner: the data that results are calculated from, above all where an error could harm someone.
 - **In practice:**
   - **Citations:** IEEE style, [1], [2], …, numbered in each tool's `references.json`, in the order first cited.
-  - **Reference list:** collapsible on the tool's pages. Each entry has the original link and a link to the archived
-    copy in the `source-archive` release.
-  - **Archived copies:** kept as files of the repository's `source-archive` release, never committed to the
-    repository, so it stays small however many sources are added. An editor checks each new file is the right one
-    and lists it in `sources/archive.json` with its official address, publisher, licence and the SHA-256 checksum
-    of the copy checked; the owner attaches it to the release by hand; the editor then verifies the release copy
-    (`scripts/archive_release.py --check`) and commits the result, `sources/release-manifest.json`. A file that
-    differs from the checked copy is never accepted.
-  - **Private copies:** a source whose publisher doesn't allow redistribution is not put in the release. The owner
-    keeps a private copy, and the reference lists it as `{"private": ..., "sha256": ..., "reason": ...}`; the
-    reference list says the copy is kept privately and why (see `sources/README.md`).
+  - **Reference list:** collapsible on the tool's pages. Each entry shows the citation, the access date, the link,
+    the public copy (or why there isn't one) and whether the owner keeps a copy, with its checksum.
+  - **Access date:** the date an editor last opened the original and confirmed it still says what we use. Set it
+    when adding a reference and whenever it is re-checked. Older entries without a recorded date show
+    "Access date not recorded" until re-checked; a new reference always has one.
+  - **Owner's copies:** one private folder, with a subfolder per tool and a `shared` subfolder for sources used by
+    more than one tool. Where there is a public copy, the file has the same name as in `sources/archive.json`.
+    Editors may save copies there directly; the owner downloads what an editor can't reach. `references.json`
+    gives `"ownerCopy": [{"file": ..., "sha256": ...}]`, or `"pending"` until it is saved. Never put a link,
+    folder name, account or ID for the private folder in the repository.
+  - **Web pages:** saved as a single file that opens as the full page, with its text, pictures and layout: MHTML
+    (`.mht`: Chrome's or Edge's *Save page as… > Webpage, Single File*, or headless Chrome's page snapshot) or a
+    self-contained HTML file (for example from the SingleFile browser extension). Plain HTML alone misses pictures
+    and styles, and a PDF print can drop or rearrange content.
+  - **Public copies:** files of the repository's `source-archive` release, never committed to the repository. An
+    editor checks each new file is the right one and lists it in `sources/archive.json` with its official address,
+    publisher, licence and the SHA-256 of the copy checked; the owner attaches it to the release by hand; the
+    editor verifies the release copy (`scripts/archive_release.py --check`) and commits
+    `sources/release-manifest.json`. A file that differs from the checked copy is never accepted. Copies already in
+    the release stay there.
+  - **Licence texts that must ship with the work** (font licences, notices of bundled software) are part of the
+    site, not an archive: they stay next to what they cover, as the licence requires.
   - **Further-reading links:** a link that only helps a reader do something (for example an exercise how-to page),
-    and that nothing on the site relies on, is not a reference: it isn't numbered or archived, and its source is named
-    next to the link.
-  - **Blocked downloads:** if a document can't be downloaded automatically, say so and ask the owner to download it.
-    Never substitute a guess, and never work around a site's blocks or terms.
-  - **Tests:** they fail if a citation is missing from the reference list, a reference in a tool that requires
-    archiving has no archived copy, or a new reference file is committed to the repository.
+    and that nothing on the site relies on, is not a reference: it isn't numbered or copied, and its source is
+    named next to the link. It is still included in the link check.
+  - **Link check:** every three months a workflow checks every reference and further-reading link and opens an
+    issue listing those that fail. It never changes files: an editor fixes each one, re-checks the source and
+    updates `accessed`.
+  - **Blocked downloads:** if a document can't be downloaded automatically, say so and ask the owner to download
+    it. Never substitute a guess, and never work around a site's blocks or terms.
+  - **Tests:** they fail if a citation is missing from the reference list; a reference lacks `accessed`,
+    `ownerCopy`, or a public copy or the reason for none; a private location appears in a reference; or a
+    reference file is committed.
+
+## 3a. The method is recorded in full
+
+- **Rule:** every tool has a methods page (`pages/methods.astro`) that records its method in enough detail for
+  someone to reproduce every result by hand. This is in addition to what the tool's own pages show; nothing is
+  removed from them to make room.
+- **Why:** results must be checkable, and a future editor must be able to tell a deliberate rule from a mistake
+  without reading the code.
+- **In practice,** the methods page covers, each point with its source cited:
+  - **Inputs and defaults:** every option, its default and why.
+  - **Data:** each source, its version and file, what is taken from it, and how it is converted (units,
+    definitions, matching).
+  - **Calculations:** every formula, rule, threshold and constant, with worked examples where they help.
+  - **Missing data, assumptions and exclusions:** what is left out or assumed, how NA is treated, and which
+    caveats are shown.
+  - **What has been checked:** against which document, table or page, and when; and what hasn't been checked yet.
+  - **Known limits.**
+  - **Changes:** a short dated list of changes to the method.
+
+  Long pages use collapsible sections. A change to how a tool works updates its methods page in the same commit;
+  the tests fail if a tool has no methods page.
 
 ## 4. Privacy by default
 
@@ -168,6 +213,7 @@ reason.
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-20 | References in three layers: every source has an access date and an owner's private copy (only its file name and checksum are in the repository); a public copy in the release only for sources that numbers in results come from, whose licence allows it, in a health tool or hard to obtain again. Web pages are saved as single-file MHTML or self-contained HTML. Links are checked every three months. Every tool records its full method on its methods page (principle 3a). `"health"` in `tool.json` replaces `"archive": "optional"` | Owner's review of the archive rules: one test that doesn't need rethinking for each new tool, and public copies only where a visitor or future editor may need them |
 | 2026-11-20 | Sources that can't be redistributed are kept privately by the owner and listed as private copies; links that only help a reader (exercise how-to pages) are not references and aren't archived | Owner's decisions while checking the exercise planner's evidence |
 | 2026-11-18 | One style for data caveats: fixed kinds (Alpha, Beta, Not yet checked, Assumption, Estimate, Translated, Borrowed), rendered by `caveat()` / `<Caveat>`; the existing alpha, "not yet checked" and estimate disclaimers converted; generated reports use the same labels | Owner: disclaimers of this nature should look and read the same everywhere |
 | 2026-11-18 | History clean-up: the 39 copies once committed to `sources/` (and `docs/sources/`), the food tables, and deleted OpenStax copies were moved to the release and removed from the repository's history; `main` and `office-to-pdf` were force-pushed and the release tags moved (by a one-off owner-run workflow, then deleted); other clones must be re-cloned | The repository had reached about 180 MB of reference files; clones now stay small |

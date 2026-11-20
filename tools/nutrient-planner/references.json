@@ -1,5 +1,5 @@
 {
-  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Archived copies are in the source-archive release (older ones in the shared sources/ folder), listed in sources/archive.json; never commit the files themselves (see sources/README.md). Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
+  "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Every source has: 'accessed' (ISO date the original was last read and checked; null only for older entries until re-checked), 'ownerCopy' (the owner's private copy: [{\"file\": ..., \"sha256\": ...}], or \"pending\" until it is saved), and either archive entries ({\"asset\": \"<file>\"} in the source-archive release, listed in sources/archive.json) or 'noPublicCopy' ({\"why\": \"not-data\" | \"licence\" | \"easy-to-get\", \"note\": ...}). Which one: principle 3 in docs/PRINCIPLES.md. Never commit the file itself. Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
   "sources": [
     {
       "id": "usda-sr",
@@ -10,12 +10,14 @@
       "url": "https://fdc.nal.usda.gov/",
       "licence": "Public domain (US government work)",
       "usedFor": "Nutrient content of every food",
+      "accessed": null,
       "archive": [
         {
           "label": "Archived copy (data download)",
           "release": "https://github.com/mehfoos/halfbakedtools/releases/download/usda-data-2026-11-08/FoodData_Central_sr_legacy_food_csv_2018-04.zip"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "phe-2016",
@@ -26,11 +28,13 @@
       "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf",
       "licence": "© Crown copyright, Open Government Licence v3.0",
       "usedFor": "UK targets",
+      "accessed": null,
       "archive": [
         {
           "asset": "phe-2016-government-dietary-recommendations.pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "nasem-dri",
@@ -41,6 +45,7 @@
       "url": "https://www.nationalacademies.org/projects/HMD-FNB-18-P-120/resources",
       "licence": "© National Academy of Sciences; copy kept so the checked values can be traced",
       "usedFor": "US targets, and the safety upper limits used for every standard",
+      "accessed": "2026-11-10",
       "archive": [
         {
           "label": "RDA and AI, vitamins and elements",
@@ -72,7 +77,8 @@
           "asset": "nasem-dri-values-summary.pdf",
           "fetch": "https://www.nationalacademies.org/cdn/materials/9fb9fad5-4dc6-4b97-bd02-955b95d05eda"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "dga-2020",
@@ -83,12 +89,14 @@
       "url": "https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf",
       "licence": "Public domain (US government work)",
       "usedFor": "US calorie defaults and saturated fat limit",
+      "accessed": "2026-11-10",
       "archive": [
         {
           "asset": "dga-2020-2025.pdf",
           "fetch": "https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "efsa-2017",
@@ -99,11 +107,13 @@
       "url": "https://doi.org/10.2903/sp.efsa.2017.e15121",
       "licence": "© EFSA; re-use authorised with acknowledgement of the source",
       "usedFor": "EU targets and default body weights",
+      "accessed": null,
       "archive": [
         {
           "asset": "efsa-2017-drv-summary-report.pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "who-2007",
@@ -114,11 +124,13 @@
       "url": "https://iris.who.int/handle/10665/43411",
       "licence": "© World Health Organization; copy kept so the checked values can be traced",
       "usedFor": "Essential amino acid targets (adults)",
+      "accessed": null,
       "archive": [
         {
           "asset": "who-2007-trs-935.pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "eu-1169",
@@ -129,6 +141,7 @@
       "url": "https://eur-lex.europa.eu/eli/reg/2011/1169/oj",
       "licence": "© European Union; re-use authorised with acknowledgement of the source",
       "usedFor": "Food-label categories and reference intakes in the “At a glance” chart; the EU definition of carbohydrate and the EU energy factors used for the blended food values",
+      "accessed": "2026-11-10",
       "archive": [
         {
           "asset": "eu-2011-regulation-1169.pdf",
@@ -142,7 +155,8 @@
           "asset": "eu1169_consolidated_2025-04-01_EN.pdf",
           "label": "Archived copy (consolidated text, 1 Apr 2025)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "highs",
@@ -153,12 +167,14 @@
       "url": "https://doi.org/10.1007/s12532-017-0130-5",
       "licence": "Open access, CC BY 4.0",
       "usedFor": "The optimisation solver",
+      "accessed": "2026-11-10",
       "archive": [
         {
           "asset": "huangfu-hall-2018-highs.pdf",
           "fetch": "https://link.springer.com/content/pdf/10.1007/s12532-017-0130-5.pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "nhs-vitd",
@@ -169,13 +185,15 @@
       "url": "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/",
       "licence": "© Crown copyright, Open Government Licence v3.0",
       "usedFor": "Vitamin D supplement advice",
+      "accessed": "2026-11-10",
       "archive": [
         {
           "asset": "nhs-vitamin-d.pdf",
           "fetch": "https://www.nhs.uk/conditions/vitamins-and-minerals/vitamin-d/",
           "render": true
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "nhs-vegan",
@@ -186,13 +204,15 @@
       "url": "https://www.nhs.uk/live-well/eat-well/how-to-eat-a-balanced-diet/the-vegan-diet/",
       "licence": "© Crown copyright, Open Government Licence v3.0",
       "usedFor": "Vitamin B12 advice",
+      "accessed": "2026-11-10",
       "archive": [
         {
           "asset": "nhs-vegan-diet.pdf",
           "fetch": "https://www.nhs.uk/live-well/eat-well/how-to-eat-a-balanced-diet/the-vegan-diet/",
           "render": true
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "nhs-iodine",
@@ -203,13 +223,15 @@
       "url": "https://www.nhs.uk/conditions/vitamins-and-minerals/iodine/",
       "licence": "© Crown copyright, Open Government Licence v3.0",
       "usedFor": "Iodine advice",
+      "accessed": "2026-11-10",
       "archive": [
         {
           "asset": "nhs-iodine.pdf",
           "fetch": "https://www.nhs.uk/conditions/vitamins-and-minerals/iodine/",
           "render": true
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "nhs-fish",
@@ -220,13 +242,15 @@
       "url": "https://www.nhs.uk/live-well/eat-well/food-types/fish-and-shellfish-nutrition/",
       "licence": "© Crown copyright, Open Government Licence v3.0",
       "usedFor": "Oily fish portion size and weekly limits",
+      "accessed": "2026-11-17",
       "archive": [
         {
           "asset": "nhs-fish-and-shellfish.pdf",
           "fetch": "https://www.nhs.uk/live-well/eat-well/food-types/fish-and-shellfish-nutrition/",
           "render": true
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "nhs-meat",
@@ -237,13 +261,15 @@
       "url": "https://www.nhs.uk/live-well/eat-well/food-types/meat-nutrition/",
       "licence": "© Crown copyright, Open Government Licence v3.0",
       "usedFor": "Red and processed meat advice; liver and vitamin A",
+      "accessed": "2026-11-17",
       "archive": [
         {
           "asset": "nhs-meat-in-your-diet.pdf",
           "fetch": "https://www.nhs.uk/live-well/eat-well/food-types/meat-nutrition/",
           "render": true
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "usda-sr-doc",
@@ -254,6 +280,7 @@
       "url": "https://www.ars.usda.gov/ARSUserFiles/80400525/Data/SR/SR28/sr28_doc.pdf",
       "licence": "Public domain (US government work)",
       "usedFor": "How the food data defines carbohydrate",
+      "accessed": "2026-11-17",
       "archive": [
         {
           "label": "Archived copy (Release 28 guide)",
@@ -269,7 +296,8 @@
           "asset": "usda-sr-legacy-documentation.pdf",
           "fetch": "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "cofid-2021",
@@ -280,6 +308,7 @@
       "url": "https://www.gov.uk/government/publications/composition-of-foods-integrated-dataset-cofid",
       "licence": "© Crown copyright; Open Government Licence v3.0",
       "usedFor": "UK food composition in the beta blended food data",
+      "accessed": "2026-11-18",
       "archive": [
         {
           "asset": "cofid2021_McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021.xlsx",
@@ -289,7 +318,8 @@
           "asset": "cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf",
           "label": "Archived copy (user guide)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "efsa-sodium-2019",
@@ -300,11 +330,13 @@
       "url": "https://doi.org/10.2903/j.efsa.2019.5778",
       "licence": "© 2019 European Food Safety Authority; open access, Creative Commons Attribution-NoDerivs (copy kept unaltered)",
       "usedFor": "EU sodium value",
+      "accessed": null,
       "archive": [
         {
           "asset": "efsa-2019-sodium.pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "sacn-2015",
@@ -315,11 +347,13 @@
       "url": "https://www.gov.uk/government/publications/sacn-carbohydrates-and-health-report",
       "licence": "© Crown copyright 2015; Open Government Licence v3.0",
       "usedFor": "How UK fibre is defined and measured (AOAC); how US total fibre is defined",
+      "accessed": null,
       "archive": [
         {
           "asset": "sacn2015_SACN_Carbohydrates_and_Health.pdf"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "bls-4",
@@ -330,6 +364,7 @@
       "url": "https://doi.org/10.25826/Data20251217-134202-0",
       "licence": "CC BY 4.0; credit the Max Rubner-Institut",
       "usedFor": "German food composition (the BLS food table)",
+      "accessed": "2026-11-18",
       "archive": [
         {
           "asset": "bls4_BLS_4_0_Data_2025_EN.xlsx",
@@ -343,7 +378,8 @@
           "asset": "bls4_BLS_4_0_Documentation_EN.pdf",
           "label": "Archived copy (documentation)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "ciqual-2025",
@@ -354,6 +390,7 @@
       "url": "https://doi.org/10.57745/RDMHWY",
       "licence": "Licence Ouverte / Etalab 2.0",
       "usedFor": "French food composition (the Ciqual food table)",
+      "accessed": "2026-11-18",
       "archive": [
         {
           "asset": "ciqual2025_XML_2025_11_03.zip",
@@ -363,7 +400,8 @@
           "asset": "ciqual2025_Table_Ciqual_2025_doc_FR_2025_11_19.pdf",
           "label": "Archived copy (documentation, French)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "frida-55",
@@ -374,6 +412,7 @@
       "url": "https://doi.org/10.11583/DTU.29500682",
       "licence": "Dataset CC BY 4.0 (DTU National Food Institute)",
       "usedFor": "Danish food composition (the Frida food table)",
+      "accessed": "2026-11-18",
       "archive": [
         {
           "asset": "frida55_Frida_5.5_Dataset.xlsx",
@@ -383,7 +422,8 @@
           "asset": "frida55_Frida5.5_Documentation_English.pdf",
           "label": "Archived copy (documentation)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "fineli-20",
@@ -394,6 +434,7 @@
       "url": "https://fineli.fi/fineli/en/avoin-data",
       "licence": "CC BY 4.0 (THL)",
       "usedFor": "Finnish food composition (the Fineli food table)",
+      "accessed": "2026-11-18",
       "archive": [
         {
           "asset": "fineli20_Fineli_Rel20__74_ravintotekijaa.zip",
@@ -403,7 +444,8 @@
           "asset": "fineli20_Fineli_nutrient_factors.pdf",
           "label": "Archived copy (nutrient factors)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "kfcdb-93",
@@ -414,12 +456,14 @@
       "url": "https://www.nics.go.kr/food/main",
       "licence": "Korea Open Government Licence (KOGL) Type 1; attribution required",
       "usedFor": "Korean food composition (the KFCDb food table)",
+      "accessed": "2026-11-18",
       "archive": [
         {
           "asset": "kfcdb93_StandardFoodCompositionTableEng.xlsx",
           "label": "Archived copy (dataset, English)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "mext-2023",
@@ -430,6 +474,7 @@
       "url": "https://www.mext.go.jp/a_menu/syokuhinseibun/mext_00001.html",
       "licence": "MEXT website terms: free use including commercial, with the source stated",
       "usedFor": "Japanese food composition (the Japan food table); English food-source names",
+      "accessed": "2026-11-18",
       "archive": [
         {
           "asset": "japan_20260327-mxt_kagsei-mext-000029402_02.xlsx",
@@ -447,7 +492,8 @@
           "asset": "japan_1374049_0r10.xlsx",
           "label": "Archived copy (English names of food sources)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "cnf-2026",
@@ -458,12 +504,14 @@
       "url": "https://open.canada.ca/data/en/dataset/1b6139bd-ed7e-4043-bc28-ff00e10f3109",
       "licence": "Open Government Licence - Canada",
       "usedFor": "Canadian food composition (the CNF food table)",
+      "accessed": "2026-11-18",
       "archive": [
         {
           "asset": "cnf2026_cnf_fcen_all-files-data_2026.zip",
           "label": "Archived copy (data files and guides)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     },
     {
       "id": "afcd-3",
@@ -474,12 +522,14 @@
       "url": "https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/australian-food-composition-database-download-excel-files",
       "licence": "FSANZ Data User Licence Agreement (based on CC BY-SA 3.0 Australia); derived files: data/foods/LICENCE-AFCD.md",
       "usedFor": "Australian food composition (the AFCD food table)",
+      "accessed": "2026-11-18",
       "archive": [
         {
           "asset": "afcd3_AFCD_Release_3_December_2025.zip",
           "label": "Archived copy (Release 3 Excel files and guide)"
         }
-      ]
+      ],
+      "ownerCopy": "pending"
     }
   ]
 }

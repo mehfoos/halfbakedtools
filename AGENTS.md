@@ -9,7 +9,7 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
 
 ## Non-negotiables
 
-1. **Accuracy first.** Take values from the primary source (its archived copy in the `source-archive` release), never from memory or a
+1. **Accuracy first.** Take values from the primary source (its copy in the `source-archive` release, or the owner's copy), never from memory or a
    secondary summary. Check each value against that copy, and record the check in the tool's `VERIFICATION.md`
    (document, table, page, date). Label anything unchecked as "Not yet checked" on the site.
 2. **Claim less.** Don't describe a value as checked, a feature as complete or a result as precise unless it is.
@@ -19,21 +19,31 @@ the principles; if the two ever differ, `PRINCIPLES.md` wins and this file shoul
    substitute zero**: zero is a real value and affects limits differently from minimums. Show NA (or an "at least" lower
    bound), say on the page that NA means "no data", not zero, and never show a plain pass when the missing data could
    change the result. Read principle 2 in `docs/PRINCIPLES.md` before touching any calculation that uses data.
-3. **Cite and archive.**
+3. **Cite, keep and (where it matters) publish every source.** Principle 3 in `docs/PRINCIPLES.md` has the full rule.
    - Every fact on the site cites a source with `cite("id")`; the id is listed in the tool's `references.json`.
    - **Never commit reference files** (PDFs, spreadsheets, datasets, zips, saved web pages) to the repository, on
      any branch, even temporarily: they stay in its history for good. The tests fail if you do.
-   - In tools with health information, every reference has an archived copy in the **`source-archive` release**
-     (utility tools whose `tool.json` says `"archive": "optional"` may skip it and give `"accessed": "<date>"`
-     instead; see principle 3). For a new one: find the official copy and check it's the right document and
-     version; list it in `sources/archive.json` with its origin, licence and SHA-256; give it to the owner (or ask
-     them to download it), who attaches it to the release by hand; then run
-     `python3 -I scripts/archive_release.py --check`, commit `sources/release-manifest.json`, and cite it as
-     `{"asset": "<file>"}`. You can't create or change releases yourself. See `sources/README.md`.
-   - If you can't download a document (a blocked site or a paywall), **say so and ask the owner to download and upload
-     it**. Don't work around the block, and don't fall back to a guess.
-   - A document the owner uploads to you: check it the same way, list it in `sources/archive.json`, and ask the
-     owner to attach it to the release. Don't commit it.
+   - Every reference has three layers:
+     1. **`accessed`**: the date you opened the original and confirmed it says what we use (set it again whenever you
+        re-check).
+     2. **`ownerCopy`**: the owner's private copy, `[{"file": ..., "sha256": ...}]`, or `"pending"` until saved. Save
+        the copy to the owner's private folder (subfolder per tool, or `shared`) if you can; otherwise hand the file
+        to the owner. **Record only the file name and checksum: never a link, folder, account or ID** for that folder.
+     3. **A public copy** in the **`source-archive` release** (`{"asset": "<file>"}`) only if numbers or data in a
+        visitor's result come from it, its licence allows redistribution, and the tool is a health tool
+        (`"health": true`) or the source is hard to obtain again. Otherwise give `"noPublicCopy": {"why": "not-data" |
+        "licence" | "easy-to-get", "note": ...}`. For a public copy: check it's the right document and version; list
+        it in `sources/archive.json` with its origin, licence and SHA-256; give it to the owner, who attaches it to
+        the release by hand; then run `python3 -I scripts/archive_release.py --check` and commit
+        `sources/release-manifest.json`. You can't create or change releases yourself. See `sources/README.md`.
+   - **Web pages** are saved as one file that opens as the full page: MHTML (`.mht`) or self-contained HTML (e.g.
+     SingleFile), not a PDF print or bare HTML.
+   - If you can't download a document (a blocked site or a paywall), **say so and ask the owner to download it**.
+     Don't work around the block, and don't fall back to a guess.
+   - A document the owner uploads to you: check it the same way and decide its layers by the same rule. Don't commit it.
+   - **Record the method in full** on the tool's methods page (principle 3a): inputs and defaults, data and versions,
+     every formula, rule and constant, missing data and assumptions, what was checked and when, limits, and changes.
+     Update it in the same commit as any change to how the tool works.
 4. **Privacy.** No cookies, analytics, third-party scripts, fonts or embeds; no sending visitor input anywhere;
    local storage only when the visitor opts in.
 5. **Don't mislead with charts.** Use linear scales, no silent clipping, distinct targets, and never colour alone.
