@@ -17,7 +17,13 @@
           "release": "https://github.com/mehfoos/halfbakedtools/releases/download/usda-data-2026-11-08/FoodData_Central_sr_legacy_food_csv_2018-04.zip"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "FoodData_Central_sr_legacy_food_csv_2018-04.zip",
+          "sha256": "b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "phe-2016",
