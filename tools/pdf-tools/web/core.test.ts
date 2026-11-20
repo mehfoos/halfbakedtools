@@ -1354,3 +1354,92 @@ test("pdfa: a document is given XMP with the PDF/A-2b identification, the sRGB o
   assert.equal(id.asArray().length, 2); assert.equal(id.asArray()[0].asString(), "ab".repeat(16)); assert.equal(id.asArray()[1].asString(), "ab".repeat(16));
   assert.ok(!xmpPacket({ producer: "x", created: when, modified: when }).includes("dc:title"), "no empty title");
 });
+
+// ---------- PDF to PDF/A: reading content, fonts, whole-file checks, conversion ----------
+import { tokens, scanDocument, OPERATORS } from "./pdfascan.ts";
+import { type2Width, readCMap, splitCodes, standardName, unicodeOf, PREDEFINED_CMAPS } from "./pdfafonts.ts";
+import { checkObjects, jpxProblems } from "./pdfachecks.ts";
+import { convertToPdfA, replacementFor, type FontFiles } from "./pdfaconvert.ts";
+import { PDFArray, PDFDict, PDFRef } from "@cantoo/pdf-lib";
+
+const enc = (s: string) => new TextEncoder().encode(s);
+test("pdfa scan: the lexer marks badly written hex strings, tells integers from reals and skips inline image data", () => {
+  const t = [...tokens(enc("<41 4> <4G> 12 1.5 -3 /A#20B BI /W 1 /H 1 ID \x00\xff EI Tj"))];
+  assert.deepEqual(t[0], { k: "str", v: Uint8Array.of(0x41, 0x40), bad: "odd" });
+  assert.equal((t[1] as { bad?: string }).bad, "char");
+  assert.deepEqual(t.slice(2, 5).map((x) => (x as { int: boolean }).int), [true, false, true]);
+  assert.equal((t[5] as { v: string }).v, "A B");
+  assert.equal(t[6].k, "inline"); assert.deepEqual(t[7], { k: "op", v: "Tj" });
+  assert.equal(OPERATORS.size, 73, "ISO 32000-1 Annex A lists 73 operators");
+});
+test("pdfa scan: unknown operators, unknown rendering intents and missing resources are reported; borrowed resources noted", async () => {
+  const doc = await PDFDocument.create(), page = doc.addPage([100, 100]);
+  const form = doc.context.register(doc.context.flateStream(enc("0 0 1 1 re f"), { Type: "XObject", Subtype: "Form", BBox: [0, 0, 1, 1] }));
+  page.node.set(PDFName.of("Resources"), doc.context.obj({ XObject: { F0: form } }));
+  page.node.set(PDFName.of("Contents"), doc.context.register(doc.context.flateStream(enc("/F0 Do /Odd ri 1 2 zz /X9 Do"))));
+  const r = scanDocument(doc.context, [page.node as unknown as PDFDict]);
+  assert.ok(r.problems.some((p) => p.includes("(zz)"))); assert.ok(r.problems.some((p) => p.includes("(Odd)"))); assert.ok(r.problems.some((p) => p.includes("X9")));
+  assert.equal(r.borrowed.size, 1, "the form has no Resources of its own");
+});
+test("pdfa fonts: Type 2 charstring widths, CMaps split codes by their codespace, glyph names", () => {
+  // 100 0 hmoveto: width 100 + nominalWidthX; endchar alone: defaultWidthX
+  assert.equal(type2Width(Uint8Array.of(239, 139, 139, 22), [], [], 500, 0), 600);
+  assert.equal(type2Width(Uint8Array.of(14), [], [], 500, 321), 321);
+  assert.equal(type2Width(Uint8Array.of(139, 139, 5), [], [], 0, 0), undefined, "a drawing operator first: malformed");
+  const cm = readCMap(enc("/WMode 0 def 2 begincodespacerange <00> <80> <8140> <9FFC> endcodespacerange 1 begincidrange <8140> <8142> 633 endcidrange 1 begincidchar <41> 34 endcidchar"));
+  const codes = splitCodes(Uint8Array.of(0x41, 0x81, 0x41, 0x81, 0x42), cm)!;
+  assert.deepEqual(codes.map((c) => [...c]), [[0x41], [0x81, 0x41], [0x81, 0x42]]);
+  assert.deepEqual(codes.map((c) => cm.cid(c)), [34, 634, 635]); assert.equal(cm.wmode, 0); assert.equal(cm.maxCid, 635);
+  assert.equal(splitCodes(Uint8Array.of(0xa0), cm), null, "outside every range");
+  assert.equal(standardName(39), "quoteright"); assert.equal(standardName(96), "quoteleft"); assert.equal(standardName(65), "A"); assert.equal(standardName(200), undefined);
+  assert.equal(unicodeOf("Euro"), 0x20ac); assert.equal(unicodeOf("uni0915"), 0x915); assert.equal(unicodeOf("u1F600"), 0x1f600); assert.equal(unicodeOf("madeup"), undefined);
+  assert.ok(PREDEFINED_CMAPS.has("UniJIS-UCS2-H") && PREDEFINED_CMAPS.size === 61, "the 61 veraPDF lists");
+});
+test("pdfa checks: JPEG 2000 headers, odd hex strings completed, long names, differing spot colours", async () => {
+  const box = (t: string, body: number[]) => { const n = 8 + body.length; return [n >> 24, (n >> 16) & 255, (n >> 8) & 255, n & 255, ...enc(t), ...body]; };
+  const ihdr = (nc: number, bpc: number) => box("ihdr", [0, 0, 0, 1, 0, 0, 0, 1, 0, nc, bpc, 7, 0, 0]);
+  const jp2 = (...b: number[][]) => Uint8Array.from([...box("jP  ", [13, 10, 135, 10]), ...box("jp2h", b.flat())]);
+  assert.deepEqual(jpxProblems(jp2(ihdr(3, 7), box("colr", [1, 0, 0, 0, 0, 0, 16]))), []);
+  assert.equal(jpxProblems(jp2(ihdr(2, 7))).length, 1, "two channels");
+  assert.ok(jpxProblems(jp2(ihdr(3, 7), box("colr", [4, 0, 0]))).some((p) => p.includes("6.2.8.3-3")));
+  assert.ok(jpxProblems(jp2(ihdr(3, 7), box("colr", [1, 0, 0, 0, 0, 0, 19]))).some((p) => p.includes("CIEJab")));
+  assert.ok(jpxProblems(jp2(ihdr(3, 7), box("colr", [1, 0, 0, 0, 0, 0, 16]), box("colr", [2, 0, 0]))).some((p) => p.includes("6.2.8.3-2")));
+  const doc = await PDFDocument.create(), ctx = doc.context;
+  const holder = ctx.obj({ A: PDFHexString.of("414") }); ctx.register(holder);
+  assert.deepEqual(checkObjects(ctx), { problems: [], fixed: 1 });
+  assert.equal((holder.get(PDFName.of("A")) as PDFHexString).asString(), "4140");
+  ctx.register(ctx.obj({ ["N".repeat(128)]: 1 }));
+  const fn = ctx.register(ctx.obj({ FunctionType: 2, Domain: [0, 1], C0: [0], C1: [1], N: 1 })), fn2 = ctx.register(ctx.obj({ FunctionType: 2, Domain: [0, 1], C0: [0], C1: [0.5], N: 1 }));
+  ctx.register(ctx.obj(["Separation", "Gold", "DeviceGray", fn])); ctx.register(ctx.obj(["Separation", "Gold", "DeviceGray", fn2]));
+  const p = checkObjects(ctx).problems;
+  assert.ok(p.some((x) => x.includes("6.1.13-4"))); assert.ok(p.some((x) => x.includes("Gold") && x.includes("6.2.4.4-2")));
+});
+
+const fsFonts: FontFiles = async (fam, style, subset) => new Uint8Array(readFileSync(new URL(`../../../node_modules/@fontsource/${fam}/files/${fam}-${subset}-${style}.woff`, import.meta.url)));
+test("pdfa convert: Helvetica used without embedding gets Arimo; scripts go; the result is marked PDF/A-2b", async () => {
+  const doc = await PDFDocument.create(), page = doc.addPage([200, 100]);
+  page.drawText("Hello, world - 1€", { font: await doc.embedFont(StandardFonts.Helvetica), size: 12, x: 10, y: 50 });
+  doc.catalog.set(PDFName.of("OpenAction"), doc.context.obj({ S: "JavaScript", JS: PDFString.of("app.alert(1)") }));
+  const r = await convertToPdfA(await doc.save(), undefined, fsFonts, new Date(Date.UTC(2026, 10, 20)));
+  assert.deepEqual(r.blockers, []); assert.ok(r.bytes);
+  assert.ok(r.changes.some((c) => c.includes("Arimo"))); assert.ok(r.changes.some((c) => c.includes("actions")));
+  const back = await PDFDocument.load(r.bytes!, { updateMetadata: false });
+  assert.equal(back.catalog.get(PDFName.of("OpenAction")), undefined);
+  const font = back.getPages()[0].node.Resources()!.lookup(PDFName.of("Font"), PDFDict);
+  const f = back.context.lookup(font.values()[0]) as PDFDict, fd = f.lookup(PDFName.of("FontDescriptor"), PDFDict);
+  assert.equal(String(f.get(PDFName.of("Subtype"))), "/TrueType"); assert.ok(fd.get(PDFName.of("FontFile2")) instanceof PDFRef);
+  assert.match(new TextDecoder().decode(r.bytes!.subarray(0, 9)), /^%PDF-1\.7/);
+  assert.equal(replacementFor("Times-BoldItalic")?.style, "700-italic"); assert.equal(replacementFor("ABCDEF+Arial,Bold")?.std, "Helvetica-Bold"); assert.equal(replacementFor("Futura"), null);
+});
+test("pdfa convert: a signed file is refused; resources inherited from the page tree are written on the page", async () => {
+  const doc = await PDFDocument.create(); doc.addPage([100, 100]);
+  const sig = doc.context.register(doc.context.obj({ FT: "Sig", T: PDFString.of("s"), V: doc.context.obj({ Type: "Sig" }) }));
+  doc.catalog.set(PDFName.of("AcroForm"), doc.context.obj({ Fields: [sig] }));
+  assert.ok((await convertToPdfA(await doc.save(), undefined, fsFonts)).blockers.some((b) => b.includes("signed")));
+  const d2 = await PDFDocument.create(), pg = d2.addPage([100, 100]);
+  d2.catalog.Pages().set(PDFName.of("Resources"), d2.context.obj({ ProcSet: ["PDF"] })); pg.node.delete(PDFName.of("Resources"));
+  const r = await convertToPdfA(await d2.save(), undefined, fsFonts);
+  const back = await PDFDocument.load(r.bytes!, { updateMetadata: false });
+  assert.ok(back.getPages()[0].node.get(PDFName.of("Resources")) instanceof PDFRef);
+  void PDFArray;
+});

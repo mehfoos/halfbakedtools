@@ -399,3 +399,39 @@ layer is still in the file, as in the original, and PDFium's text extraction giv
 
 Not checked: Adobe Acrobat or Apple Preview; very large documents (time and memory); encrypted originals; pages with
 annotations whose appearance carries the text (they are dropped with the page when it has areas).
+
+### PDF to PDF/A: the converter that keeps the content (2026-11-20; not on the site yet)
+
+`web/pdfaconvert.ts` with `web/pdfascan.ts` (content streams), `web/pdfafonts.ts` (font programs) and
+`web/pdfachecks.ts` (whole-file checks). Every output below was checked with veraPDF 1.30.4 (`-f 2b`); veraPDF and the
+test files stay on the test machine and are not part of the repository.
+
+- Our 29 test files (pdflatex, xelatex, LibreOffice, Chrome, cairo, ReportLab, PyMuPDF, wkhtmltopdf, img2pdf, files
+  saved by this site's own tasks, encrypted files): 28 converted and all 28 pass. The CMYK picture without a CMYK
+  profile is refused. Word positions (pdfminer) are unchanged in every file; poppler renders differ only where a
+  standard font without embedding was replaced (glyph shapes, same widths) and where a note icon was drawn.
+- veraPDF's own PDF/A-2b test suite (986 files, CC BY 4.0; half are built to fail one rule each): 875 converted, all 875
+  pass. The first run passed 865 of 941 and failed 76; each failing rule was then either fixed or detected and refused
+  (fonts' glyphs, widths and .notdef; CMaps and character collections; TrueType encodings; spot colours; JPEG 2000
+  headers; size limits; badly written hex strings; operators and rendering intents ISO 32000-1 doesn't define;
+  resources a drawing names but doesn't have; metadata on single objects; external streams; halftone transfer
+  functions; push buttons' appearance; actions not on PDF/A's list; signatures). Files built to pass that are refused:
+  4 (a signed file, whose signature conversion would break; a font built on a predefined CMap this tool can't read;
+  two files with overprint mode 1, refused whenever ICC CMYK colour is present rather than checked operator by
+  operator). Two pass files had first failed after conversion, because their objects' metadata relied on extension
+  schemas in the replaced document metadata; object metadata is now removed and reported.
+- 200 PDFs found on the test machine (TeX Live documentation and images, matplotlib, LibreOffice; pdfTeX, Ghostscript
+  8 to 9.56, cairo, Skia, Ipe and others): 184 converted, all 184 pass. Of the 16 refused, 15 use plain CMYK (four of
+  them also draw .notdef glyphs, which veraPDF confirms on the originals) and one has a damaged content stream
+  (qpdf reports a decoding error) that reads as operators no reader defines.
+- Unit tests: the lexer's hex-string, integer and inline-image handling; unknown operators and intents and missing
+  resources reported; Type 2 charstring widths (nominal and default width); CMap codespace splitting and CID ranges;
+  glyph names; JPEG 2000 header checks; an odd hex string completed; a long name and two differing definitions of one
+  spot colour reported; Helvetica without embedding replaced by Arimo with scripts removed; a signed file refused;
+  page-tree resources written on the page.
+- Found while testing: fontkit reads CFF format 1 encodings with the wrong field sizes (CMR10's codes then reached no
+  glyph), so those are read by this site's code; a font descriptor pointing at a missing font file was taken as
+  embedded; a page without Contents was reported as unreadable.
+
+Not checked: Adobe Acrobat's preflight or other validators; files from Microsoft Office, Adobe InDesign or scanners
+(none were on the test machine); right-to-left and CJK files beyond the site's own; very large files.

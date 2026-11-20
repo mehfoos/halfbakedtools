@@ -44,6 +44,24 @@ each file covers, are `web/notofiles.ts` and `web/cjkfiles.ts` (tests check them
   (https://github.com/notofonts/nastaliq)", OFL 1.1, no Reserved Font Name; embedding setting 0, i.e. no restriction;
   checked 2026-11-19).
 
+## Fonts for PDF to PDF/A: Arimo, Tinos, Cousine
+
+When a file uses Helvetica, Times or Courier without embedding them (PDF/A requires every font to be embedded), PDF to
+PDF/A embeds Arimo, Tinos or Cousine in their place, which are drawn to the same widths. Version 5.3.0 of the
+Fontsource npm packages `@fontsource/arimo`, `@fontsource/tinos` and `@fontsource/cousine`, "latin" and "latin-ext"
+files, weights 400 and 700, upright and italic, WOFF format (font versions 1.341, 1.340 and 1.241). Not on the site yet:
+they will be shipped the same way as Noto Sans above, with their licences in `vendor/licenses/`.
+
+- **Licence:** SIL Open Font License 1.1. Copyright lines: "Copyright 2020 The Arimo Project Authors
+  (https://github.com/googlefonts/arimo)", "Copyright 2026 The Tinos Project Authors (https://github.com/googlefonts/tinos)",
+  "Copyright 2026 The Cousine Project Authors (https://github.com/googlefonts/cousine)". No Reserved Font Name (the
+  phrase appears only in the licence's definition); every style's embedding setting (OS/2 fsType) has no restriction.
+  Checked 2026-11-20.
+- **In saved PDFs:** the whole Fontsource file is embedded (it is already a subset made by Google Fonts), which OFL FAQ
+  1.12 allows, as for Noto Sans.
+- **Not used:** PDF.js's Liberation fonts (GPL-2.0 with a font exception, plus a Red Hat licence on top), to keep every
+  embedded font under one simple licence.
+
 ## OCR language models
 
 `vendor/tesseract/lang/<code>.traineddata.gz`, from the npm packages `@tesseract.js-data/<code>` version 1.0.0, folder
