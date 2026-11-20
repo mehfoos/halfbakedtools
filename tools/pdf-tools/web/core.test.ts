@@ -1301,3 +1301,56 @@ test("redact: a found piece counts as covered when its middle is under an area; 
   assert.equal(f.length, 1); assert.equal(f[0].seen, "jane.doe");
   assert.equal(findQuads(items, {}, ["Jane Doe"], false, (t) => t.length).length, 0, "the exact search doesn't see it");
 });
+
+// ---------- PDF/A ----------
+import { srgbProfile, srgbColorants, PCS_D50, CURVE_POINTS } from "./icc.ts";
+import { markPdfA, xmpPacket, OUTPUT_CONDITION } from "./pdfa.ts";
+
+test("icc: the sRGB profile has the ICC version 2.4 header, the nine tags of an RGB display profile, and sRGB's numbers", () => {
+  const p = srgbProfile(), dv = new DataView(p.buffer, p.byteOffset, p.byteLength), sig = (o: number) => String.fromCharCode(...p.subarray(o, o + 4));
+  assert.equal(dv.getUint32(0), p.length, "size");
+  assert.equal(dv.getUint32(8), 0x02400000); assert.equal(sig(12), "mntr"); assert.equal(sig(16), "RGB "); assert.equal(sig(20), "XYZ "); assert.equal(sig(36), "acsp");
+  const s15 = (o: number) => dv.getInt32(o) / 65536;
+  assert.deepEqual([s15(68), s15(72), s15(76)].map((x) => Math.round(x * 1e4) / 1e4), PCS_D50, "PCS illuminant D50");
+  const n = dv.getUint32(128), tags = new Map<string, [number, number]>();
+  for (let i = 0; i < n; i++) { const o = 132 + i * 12; tags.set(sig(o), [dv.getUint32(o + 4), dv.getUint32(o + 8)]); }
+  assert.deepEqual([...tags.keys()].sort(), ["bTRC", "bXYZ", "cprt", "desc", "gTRC", "gXYZ", "rTRC", "rXYZ", "wtpt"]);
+  for (const [, [o, len]] of tags) { assert.equal(o % 4, 0, "tags start on 4-byte boundaries"); assert.ok(o + len <= p.length); }
+  assert.deepEqual(tags.get("rTRC"), tags.get("gTRC"), "one curve shared by the three channels");
+  const [co] = tags.get("rTRC")!; assert.equal(sig(co), "curv"); assert.equal(dv.getUint32(co + 8), CURVE_POINTS);
+  const curve = Array.from({ length: CURVE_POINTS }, (_, i) => dv.getUint16(co + 12 + i * 2));
+  assert.equal(curve[0], 0); assert.equal(curve.at(-1), 65535); assert.ok(curve.every((v, i) => i === 0 || v >= curve[i - 1]), "rising");
+  assert.ok(Math.abs(curve[512] / 65535 - Math.pow((512 / 1023 + 0.055) / 1.055, 2.4)) < 1 / 65535, "the sRGB curve");
+  // the three colorants add up to the adapted white: CSS Color 4's D50 (from its chromaticity, 0.3457, 0.3585)
+  // exactly, and the ICC's rounded D50 (0.9642, 1, 0.8249) to within 3e-4 (Z: 0.82510 against 0.8249)
+  const sum = [0, 1, 2].map((k) => srgbColorants().reduce((s, c) => s + c[k], 0)), cssD50 = [0.3457 / 0.3585, 1, (1 - 0.3457 - 0.3585) / 0.3585];
+  sum.forEach((v, k) => { assert.ok(Math.abs(v - cssD50[k]) < 1e-9, `white ${k}: ${v}`); assert.ok(Math.abs(v - PCS_D50[k]) < 3e-4); });
+  for (const t of ["rXYZ", "gXYZ", "bXYZ"]) { const [o] = tags.get(t)!; assert.equal(sig(o), "XYZ "); }
+  const [wo] = tags.get("wtpt")!; assert.deepEqual([s15(wo + 8), s15(wo + 12), s15(wo + 16)].map((x) => Math.round(x * 1e4) / 1e4), PCS_D50);
+  assert.deepEqual(srgbProfile(), p, "the same bytes every time");
+});
+
+test("pdfa: a document is given XMP with the PDF/A-2b identification, the sRGB output intent, an identifier and a 1.7 header", async () => {
+  const doc = await PDFDocument.create(); doc.addPage([100, 100]);
+  const when = new Date(Date.UTC(2026, 10, 20, 7, 0, 0));
+  markPdfA(doc, { title: "Notes & <plans>", author: "Ada", keywords: "a, b", producer: "Half Baked Tools", created: when, modified: when }, new Uint8Array(16).fill(171));
+  const back = await PDFDocument.load(await doc.save(), { updateMetadata: false });
+  assert.match(new TextDecoder().decode((await doc.save()).subarray(0, 9)), /^%PDF-1\.7/);
+  const md = back.catalog.lookup(PDFName.of("Metadata")) as unknown as { dict: { get(n: PDFName): unknown }; getContents(): Uint8Array };
+  assert.equal(String(md.dict.get(PDFName.of("Type"))), "/Metadata"); assert.equal(String(md.dict.get(PDFName.of("Subtype"))), "/XML");
+  assert.equal(md.dict.get(PDFName.of("Filter")), undefined, "not compressed");
+  const xmp = new TextDecoder().decode(md.getContents());
+  assert.match(xmp, /<pdfaid:part>2<\/pdfaid:part>/); assert.match(xmp, /<pdfaid:conformance>B<\/pdfaid:conformance>/);
+  assert.match(xmp, /<rdf:li xml:lang="x-default">Notes &amp; &lt;plans&gt;<\/rdf:li>/, "escaped");
+  assert.match(xmp, /<xmp:CreateDate>2026-11-20T07:00:00Z<\/xmp:CreateDate>/);
+  assert.match(xmp, /^<\?xpacket begin="﻿" id="W5M0MpCehiHzreSzNTczkc9d"\?>/); assert.match(xmp, /<\?xpacket end="w"\?>$/);
+  assert.equal(back.getTitle(), "Notes & <plans>"); assert.equal(back.getKeywords(), "a, b"); assert.equal(back.getProducer(), "Half Baked Tools");
+  const oi = (back.catalog.lookup(PDFName.of("OutputIntents")) as unknown as { asArray(): unknown[] }).asArray();
+  assert.equal(oi.length, 1);
+  const intent = back.context.lookup(oi[0] as never) as unknown as { get(n: PDFName): unknown; lookup(n: PDFName): { dict: { get(n: PDFName): unknown } } };
+  assert.equal(String(intent.get(PDFName.of("S"))), "/GTS_PDFA1"); assert.equal((intent.get(PDFName.of("OutputConditionIdentifier")) as PDFString).decodeText(), OUTPUT_CONDITION);
+  assert.equal(String(intent.lookup(PDFName.of("DestOutputProfile")).dict.get(PDFName.of("N"))), "3");
+  const id = back.context.trailerInfo.ID as unknown as { asArray(): { asString(): string }[] };
+  assert.equal(id.asArray().length, 2); assert.equal(id.asArray()[0].asString(), "ab".repeat(16)); assert.equal(id.asArray()[1].asString(), "ab".repeat(16));
+  assert.ok(!xmpPacket({ producer: "x", created: when, modified: when }).includes("dc:title"), "no empty title");
+});
