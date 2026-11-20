@@ -93,8 +93,10 @@
       "usedFor": "What each part of the deltoid does (front: flexion and medial rotation; side: abduction; rear: extension and lateral rotation)",
       "archive": [
         {
-          "label": "Archived copy (PDF)",
-          "asset": "stokey-2024-deltoid-review.pdf",
+          "label": "Copy (PDF, downloaded 20 Nov 2026)",
+          "private": "stokey-2024-deltoid-review.pdf",
+          "sha256": "b943ac0f44689a4ecf91465adb0daf331fa2d01b2c2de287f729dfcd8bb0c7b5",
+          "reason": "free to read, but the journal states no licence",
           "fetch": "https://orthopedicreviews.openmedicalpublishing.org/article/115352.pdf"
         }
       ]
@@ -130,6 +132,43 @@
           "label": "Archived copy (PDF)",
           "asset": "plotkin-2023-hip-thrust-squat.pdf",
           "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1279170/pdf"
+        }
+      ]
+    },
+    {
+      "id": "morin-2025",
+      "pre": "T. Morin, V. Doguet, A. Nordez, A. Caillet and L. Lacourpaille,",
+      "title": "Minimal role of hamstring hypertrophy in strength transfer between Nordic hamstring and stiff-leg deadlift: A blinded randomized controlled trial",
+      "style": "quoted",
+      "post": "<i>Journal of Strength and Conditioning Research</i>, vol. 39, no. 9, pp. 924–932, 2025, doi: 10.1519/JSC.0000000000005159. Preprint: medRxiv, Dec. 2024, doi: 10.1101/2024.12.17.24319207.",
+      "url": "https://doi.org/10.1519/JSC.0000000000005159",
+      "licence": "Journal article: publisher's copyright. Preprint: all rights reserved, no reuse allowed (medRxiv)",
+      "usedFor": "Stiff-leg deadlift training grew the hamstrings (the Romanian deadlift here)",
+      "archive": [
+        {
+          "label": "Preprint (PDF)",
+          "private": "morin-2024-medrxiv-preprint-v1.pdf",
+          "reason": "the preprint is marked all rights reserved and medRxiv blocks automated downloads",
+          "fetch": "https://www.medrxiv.org/content/10.1101/2024.12.17.24319207v1.full.pdf"
+        }
+      ]
+    },
+    {
+      "id": "bourne-2017",
+      "pre": "M. N. Bourne et al.,",
+      "title": "Impact of the Nordic hamstring and hip extension exercises on hamstring architecture and morphology: Implications for injury prevention",
+      "style": "quoted",
+      "post": "<i>British Journal of Sports Medicine</i>, vol. 51, no. 5, pp. 469–477, 2017, doi: 10.1136/bjsports-2016-096130. Accepted manuscript: Griffith Research Online, hdl: 10072/372333.",
+      "url": "https://doi.org/10.1136/bjsports-2016-096130",
+      "licence": "Publisher's copyright; the accepted manuscript is posted for personal use only",
+      "usedFor": "45° hip extension training grew all three hamstring muscles (the back extension here)",
+      "archive": [
+        {
+          "label": "Accepted manuscript (PDF)",
+          "private": "bourne-2017-hip-extension-nordic-am.pdf",
+          "sha256": "d2158fd92fbb346578772b1b07d2152845a752e99acca5908d7b2c1e549d65cd",
+          "reason": "posted for personal use only, no further distribution",
+          "fetch": "https://research-repository.griffith.edu.au/server/api/core/bitstreams/75402dd6-e854-5f52-a9a8-cc3e8d2087e6/content"
         }
       ]
     },

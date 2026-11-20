@@ -6,8 +6,13 @@ import releaseManifest from "../../../sources/release-manifest.json";
 import { site } from "../site.config.ts";
 
 // asset: a copy in the "source-archive" release (sources/archive.json);
-// release: a link to another release asset (older USDA snapshots).
-type Archive = { label?: string; asset?: string; release?: string; fetch?: string | string[]; render?: boolean };
+// release: a link to another release asset (older USDA snapshots);
+// private: a copy the site owner keeps privately because the publisher doesn't allow redistribution (owner's decision,
+//   20 Nov 2026): not published; the reference shows why and, once the copy is checked, its SHA-256.
+type Archive = {
+  label?: string; asset?: string; release?: string; fetch?: string | string[]; render?: boolean;
+  private?: string; sha256?: string; reason?: string;
+};
 export type Source = {
   id: string; pre: string; title: string; style: "quoted" | "italic"; post: string; url: string;
   licence: string; usedFor: string; archive: Archive[];
@@ -24,7 +29,7 @@ const ieeeDate = (iso: string) => {
 };
 
 export function archiveLinks(s: Source): ArchiveLink[] {
-  return s.archive.map((a) => {
+  return s.archive.filter((a) => !a.private).map((a) => {
     if (a.release) return { label: a.label ?? "Archived copy", href: a.release };
     const meta = RELEASE[a.asset!];  // present only once the file has been verified in the release
     return { label: a.label ?? "Archived copy", href: site.releaseArchiveUrl + a.asset, sha256: meta?.sha256,
@@ -38,9 +43,11 @@ export function entryHtml(s: Source): string {
   const links = archiveLinks(s);
   const retrieved = links.map((l) => l.retrieved).filter(Boolean).sort()[0];
   const accessed = retrieved ? ` Accessed: ${ieeeDate(retrieved)}.` : "";
-  const archive = links.length
-    ? links.map((l) => `<a href="${esc(l.href)}">${esc(l.label)}</a>`).join(" · ")
-    : `<span class="muted">archived copy not yet available</span>`;
+  const kept = s.archive.filter((a) => a.private).map((a) => `${esc(a.label ?? "Copy")} kept privately by the site owner, not published`
+    + ` (${esc(a.reason ?? "the publisher doesn't allow redistribution")})`
+    + (a.sha256 ? `; SHA-256 <code title="${esc(a.sha256)}">${esc(a.sha256.slice(0, 12))}…</code>` : "; copy not yet checked"));
+  const parts = [...links.map((l) => `<a href="${esc(l.href)}">${esc(l.label)}</a>`), ...kept];
+  const archive = parts.length ? parts.join(" · ") : `<span class="muted">archived copy not yet available</span>`;
   return `${esc(s.pre)} ${title} ${s.post}${accessed} [Online]. Available: <a href="${esc(s.url)}">${esc(s.url)}</a>`
     + `<span class="ref-meta">${archive}. <span class="muted">Used for: ${esc(s.usedFor)}. ${esc(s.licence)}.</span></span>`;
 }

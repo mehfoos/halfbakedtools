@@ -30,6 +30,8 @@ It suggests exercises; it is not a training programme (no loads, repetitions or 
 | 2026-11-20 | New status † ("supported by growth studies", field `evidence`) between Table 1A and ◇: glutes in the back squat, leg press, hip thrust and bodyweight squat | Krause Neto et al. 2025 (systematic review, 12 studies) and Plotkin et al. 2023 (RCT, MRI); supports counting the muscle, not the full-or-half level |
 | 2026-11-20 | Hamstrings no longer counted for the hip thrust or glute bridge; back squat described as to parallel or lower | Plotkin et al. 2023: little to no hamstring growth with hip thrusts or squats; squats to 90° grew the glutes less or not significantly (Kubo 2019, Nakamura 2021, via Krause Neto 2025) |
 | 2026-11-20 | Deadlift, RDL, single-leg RDL, kettlebell swing, lunge, goblet squat, back extension: glutes stay ◇ | No study in the review isolated them (only combined programmes) |
+| 2026-11-20 | Sources the publisher doesn't allow to be redistributed are cited with a private copy kept by the owner (`{"private": ...}` in references.json, with reason and SHA-256), not put in the release; Stokey 2024 moved to private | Owner's decision: most muscle-growth studies are paywalled or "all rights reserved" |
+| 2026-11-20 | Hamstrings † for the Romanian deadlift (Morin et al. 2025: stiff-leg deadlift +7.0% vs control) and the back extension (Bourne et al. 2017: 45° hip extension grew all three hamstrings, MRI); deadlift, single-leg RDL and kettlebell swing stay ◇ | Only exercises tested on their own count as supported |
 | 2026-11-19 | Work on the planner happens on its own branch and touches only `tools/exercise-planner/` | Other sessions are working on other tools at the same time |
 | 2026-11-15 | Muscles that only hold still are listed as "steadied" and not counted, except in hold exercises (plank, carries) | Keeps "direct/indirect" tied to the joint movement, as in Pelland et al.; stated as a limitation |
 | 2026-11-15 | Where Pelland et al. Table 1A classifies an exercise, follow it exactly; otherwise classify by joint movement and mark "by analogy" | Superseded on 2026-11-19 (per-muscle sources, above) |
@@ -44,13 +46,7 @@ It suggests exercises; it is not a training programme (no loads, repetitions or 
 
 ## Possible next steps
 
-- **Hamstrings evidence found but not yet used (20 Nov 2026), pending the owner's decision on sources that can't be
-  redistributed:** Morin et al. 2025 (J Strength Cond Res 39(9):924–932; preprint medRxiv 10.1101/2024.12.17.24319207,
-  "cc_no" licence): 9 weeks of stiff-leg deadlifts (hip flexion 0–90°, knees slightly unlocked) grew the whole
-  hamstrings by 7.0 ± 8.1% vs control (p = 0.044), mostly the semimembranosus; supports the Romanian deadlift.
-  Bourne et al. 2017 (Br J Sports Med 51:469–477; accepted manuscript at Griffith, "no further distribution"): 10 weeks
-  of 45° hip extension increased biceps femoris long head, semitendinosus and semimembranosus volume vs control (MRI);
-  supports the back extension. Crawford et al. 2025 (MSSE, RDL vs Nordic, 6 weeks) not yet read (paywalled).
+- Hamstrings: Crawford et al. 2025 (MSSE; RDL vs Nordic, 6 weeks, ultrasound) not yet read (paywalled).
 
 - Compare each "by analogy" exercise with systematic reviews of muscle activity (EMG), e.g. gluteus maximus
   (Neto et al. 2020, J Sports Sci Med), deadlift variants (Martín-Fuentes et al. 2020, PLOS ONE), core exercises
