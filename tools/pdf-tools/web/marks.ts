@@ -16,8 +16,11 @@ export type ImageMark = { type: "image"; x: number; y: number; rotate: number; w
 export type ShapeMark = { type: "shape"; shape: "rect" | "ellipse" | "line"; x: number; y: number; rotate: number; w: number; h: number; color: string; fill: string; width: number; flip?: boolean; opacity?: number };
 /** A freehand line: each stroke is a flat list u1, v1, u2, v2, ... with every number from 0 to 1, as a share of the box x, y, w, h. */
 export type InkMark = { type: "ink"; x: number; y: number; rotate: number; w: number; h: number; strokes: number[][]; color: string; width: number; opacity?: number };
+/** An area to remove (Redact PDF): x, y, w, h in the base view, never turned (`rotate` is always 0). `term`: the
+ *  searched text that placed it, if any. A page with any of these is rebuilt from a picture of itself (redact.ts). */
+export type RedactMark = { type: "redact"; x: number; y: number; rotate: 0; w: number; h: number; term?: string };
 /** `opacity`: 1 or absent = solid; lower lets the page show through. */
-export type Mark = TextMark | ImageMark | ShapeMark | InkMark;
+export type Mark = TextMark | ImageMark | ShapeMark | InkMark | RedactMark;
 export const WIDTH_MAX = 100;
 export const STROKES_MAX = 200, STROKE_NUMBERS_MAX = 20000;
 
@@ -143,6 +146,10 @@ export function cleanMark(v: unknown, isImageSource: (id: string) => boolean): M
     if ((m.shape !== "rect" && m.shape !== "ellipse" && m.shape !== "line") || !finite(m.w, 0, FAR) || !finite(m.h, 0, FAR) || !hex(m.color)
       || !(m.fill === "" || hex(m.fill)) || !finite(m.width, 0, WIDTH_MAX) || (m.flip !== undefined && typeof m.flip !== "boolean")) return null;
     return { type: "shape", shape: m.shape, x: m.x, y: m.y, rotate: m.rotate, w: m.w, h: m.h, color: m.color, fill: m.fill as string, width: m.width, ...(m.flip ? { flip: true } : {}), ...see };
+  }
+  if (m.type === "redact") {
+    if (m.rotate !== 0 || !finite(m.w, 0.5, FAR) || !finite(m.h, 0.5, FAR) || (m.term !== undefined && (typeof m.term !== "string" || m.term.length > 500))) return null;
+    return { type: "redact", x: m.x, y: m.y, rotate: 0, w: m.w, h: m.h, ...(m.term ? { term: m.term } : {}) };
   }
   if (m.type === "ink") {
     if (!finite(m.w, 0, FAR) || !finite(m.h, 0, FAR) || !hex(m.color) || !finite(m.width, 0.1, WIDTH_MAX)) return null;

@@ -3,20 +3,29 @@
 // only the page order, rotation and size change.
 import { imageLayout, NO_IMAGE_LAYOUT, type ImageLayout } from "./layout.ts";
 import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
-import { PDFDocument, StandardFonts, degrees, rgb, type PDFFont, type PDFPage } from "@cantoo/pdf-lib";
+import { PDFDocument, PDFName, StandardFonts, degrees, rgb, type PDFFont, type PDFPage, type PDFRef } from "@cantoo/pdf-lib";
 import { standardFace, type Face } from "./face.ts";
 import { embedOwnFont, type OwnFont } from "./ownfont.ts";
 import { notoFace, notoLibrary, type NotoLoader, type HanStyle, type ArabicStyle } from "./noto.ts";
 import { placeText, placeImage, placeBox, shapePath, parseColor, unsupported, visibleSize, type FontKey, type Mark, type Quarter } from "./marks.ts";
 import { numberMark, watermarkMarks, type NumberOptions, type WatermarkOptions } from "./stamps.ts";
 import type { PageItem, Rotation } from "./session.ts";
+import { OTHER_PAGE_KEYS, type RedactedPage } from "./redact.ts";
+import { addTextLayer } from "./ocr.ts";
+import { addGlyphlessFont } from "./glyphless.ts";
 
 export type SourceData =
   | { kind: "pdf"; bytes: Uint8Array; password?: string }
   /** `turn`: degrees clockwise the stored pixels must be turned to look right (a photo's orientation note). */
   | { kind: "image"; bytes: Uint8Array; type: "png" | "jpeg"; turn?: Rotation };
 
-export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions; ownFont?: OwnFont; ownBold?: OwnFont; noto?: NotoLoader; han?: HanStyle; arabic?: ArabicStyle };   // ownBold: an optional bold file for the own font
+export type BuildOptions = { imageDpi: number; images?: ImageLayout; crop?: CropOptions; numbers?: NumberOptions; watermark?: WatermarkOptions; ownFont?: OwnFont; ownBold?: OwnFont; noto?: NotoLoader; han?: HanStyle; arabic?: ArabicStyle;
+  /** Redact PDF: draws a page that has areas to remove as a picture with those areas painted (browser: redactui.ts). */
+  redact?: (p: PageItem) => Promise<RedactedPage>;
+  /** Redact PDF: drop comments, links, form fields and other page-level extras (OTHER_PAGE_KEYS) from the pages that
+   *  are copied, before they are copied, so none of it reaches the saved file. */
+  stripOthers?: boolean;
+};   // ownBold: an optional bold file for the own font
 /** For building one page out of a longer document (a preview): its position, and the document's length. */
 export type Place = { index: number; total: number };
 
@@ -83,7 +92,11 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
     const d = data.get(id);
     if (!d || d.kind !== "pdf") throw new Error(`Source ${id} isn't loaded.`);
     let doc = open.get(id);
-    if (!doc) open.set(id, (doc = PDFDocument.load(d.bytes, d.password === undefined ? {} : { password: d.password })));
+    if (!doc) open.set(id, (doc = PDFDocument.load(d.bytes, d.password === undefined ? {} : { password: d.password }).then((loaded) => {
+      // This copy of the source is private to this builder, so its pages can be stripped before anything is copied.
+      if (opts.stripOthers) for (const pg of loaded.getPages()) for (const k of OTHER_PAGE_KEYS) pg.node.delete(PDFName.of(k));
+      return loaded;
+    })));
     return doc;
   };
 
@@ -95,10 +108,13 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
     // A page used twice goes in a second batch: one batch returns the same copy for a repeated page.
     const copies = new Map<PageItem, Awaited<ReturnType<PDFDocument["copyPages"]>>[number]>();
     const bySource = new Map<string, PageItem[]>();
+    // A page with areas to remove is never copied: copying brings its objects into the new file even if the page is
+    // then left out, and they would be saved. It is rebuilt from its picture below.
+    const redacting = (p: PageItem) => !!p.marks?.some((m) => m.type === "redact");
     for (const p of pages) {
       const d = data.get(p.src);
       if (!d) throw new Error("A source file for some pages hasn't been added yet.");
-      if (d.kind === "pdf") bySource.set(p.src, [...(bySource.get(p.src) ?? []), p]);
+      if (d.kind === "pdf" && !redacting(p)) bySource.set(p.src, [...(bySource.get(p.src) ?? []), p]);
     }
     for (const [id, items] of bySource) {
       const doc = await source(id);
@@ -143,16 +159,24 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
             ...(f && !line ? { color: rgb(f.r, f.g, f.b), opacity: op } : {}),
             ...(m.width > 0 ? { borderColor: rgb(c.r, c.g, c.b), borderWidth: m.width, borderOpacity: op, borderLineCap: 1 /* round */ } : {}),
           });
-        } else {
+        } else if (m.type === "image") {
           const at = placeImage(m, box, rotation);
           page.drawImage(await picture(m.src), { x: at.x, y: at.y, width: at.width, height: at.height, rotate: degrees(at.angle), opacity: m.opacity ?? 1 });
         }
       }
     }
+    let glyphless: PDFRef | undefined;
     for (const [i, p] of pages.entries()) {
       const d = data.get(p.src)!;
       let page;
-      if (d.kind === "pdf") page = out.addPage(copies.get(p)!);
+      if (redacting(p)) {
+        if (!opts.redact) throw new Error("Areas to remove can only be saved from Redact PDF.");
+        const r = await opts.redact(p);
+        page = out.addPage([r.width, r.height]);
+        page.drawImage(r.png ? await out.embedPng(r.image) : await out.embedJpg(r.image), { x: 0, y: 0, width: r.width, height: r.height });
+        if (r.lines?.length) addTextLayer(page, (glyphless ??= addGlyphlessFont(out)), r.lines, (x, y) => [x / r.scale, r.height - y / r.scale]);
+      }
+      else if (d.kind === "pdf") page = out.addPage(copies.get(p)!);
       else {
         const img = await picture(p.src);
         const w = (img.width * 72) / opts.imageDpi, h = (img.height * 72) / opts.imageDpi; // PDF units are 1/72 inch
@@ -164,7 +188,8 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
       // turn made in this tool, so they are drawn first and then turn with the page.
       const own = d.kind === "image" ? d.turn ?? 0 : 0;
       if (own) page.setRotation(degrees((page.getRotation().angle + own) % 360));
-      if (p.marks?.length) await drawMarks(page, p.marks);
+      const drawn = p.marks?.filter((m) => m.type !== "redact");   // areas to remove are already painted into the picture
+      if (drawn?.length) await drawMarks(page, drawn);
       // Cropping hides the margins (the page's crop box); it works in the page as the file shows it, so it comes before the turn.
       if (opts.crop && isCropped(opts.crop) && appliesTo(opts.crop, (place?.index ?? 0) + i, place?.total ?? pages.length)) {
         const rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter), b = cropBoxFor(page.getCropBox(), rotation, opts.crop);

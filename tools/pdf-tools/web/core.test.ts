@@ -1176,3 +1176,91 @@ test("forms: text in other alphabets is drawn with Noto Sans or the visitor's fo
   // flattening keeps the drawn text on the page
   const flat = await fillForm(bytes, undefined, values, true, fonts); assert.equal((await listFields(flat.bytes)).length, 0); assert.deepEqual(flat.problems, []);
 });
+
+// ---------- Redact PDF ----------
+import { leftovers, findQuads, quadToMark, mergeMarks, termPattern, type TextItem } from "./redact.ts";
+import { PDFString } from "@cantoo/pdf-lib";
+
+async function secretPdf() {
+  const doc = await PDFDocument.create(), font = await doc.embedFont(StandardFonts.Helvetica);
+  doc.setTitle("Report on Jane Doe"); doc.setSubject("Jane Doe"); doc.setKeywords(["Jane Doe"]);
+  const p1 = doc.addPage([300, 200]); p1.drawText("Patient: Jane Doe", { x: 20, y: 150, size: 14, font }); p1.drawText("Diagnosis follows", { x: 20, y: 120, size: 12, font });
+  const p2 = doc.addPage([300, 200]); p2.drawText("Public appendix", { x: 20, y: 150, size: 14, font });
+  // a comment on page 2 that names her, and an attachment that does
+  const note = doc.context.obj({ Type: "Annot", Subtype: "Text", Rect: [10, 10, 30, 30], Contents: PDFString.of("Call Jane Doe back") });
+  p2.node.set(PDFName.of("Annots"), doc.context.obj([doc.context.register(note)]));
+  await doc.attach(new TextEncoder().encode("Jane Doe, 1 High Street"), "notes.txt", { mimeType: "text/plain" });
+  return doc.save();
+}
+const fakePicture = async () => ({ image: PNG, png: true, width: 300, height: 200, scale: 1 });
+
+test("redact: a page with areas to remove is rebuilt from its picture and nothing of it is copied; other pages lose comments when asked", async () => {
+  const bytes = await secretPdf();
+  assert.ok((await leftovers(bytes, ["Jane Doe"])).length >= 4, "the check finds her in the original: title, page text, comment, attachment");
+  const data = new Map([["a", { kind: "pdf" as const, bytes }]]);
+  const pages = [{ src: "a", page: 0, rotate: 0 as const, scale: 1, marks: [{ type: "redact" as const, x: 70, y: 35, rotate: 0 as const, w: 80, h: 20 }] }, { src: "a", page: 1, rotate: 0 as const, scale: 1 }];
+  let asked = 0;
+  const out = await makeBuilder(data, { imageDpi: 96, stripOthers: true, redact: async (p) => { asked++; assert.equal(p.page, 0); return fakePicture(); } })(pages);
+  assert.equal(asked, 1, "only the page with areas is drawn as a picture");
+  assert.deepEqual(await leftovers(out, ["Jane Doe", "Diagnosis", "notes.txt", "Call"]), [], "no trace of the redacted page, the comment, the attachment or the title");
+  assert.ok((await leftovers(out, ["Public appendix"])).length > 0, "the other page's text is still there");
+  const back = await PDFDocument.load(out);
+  assert.equal(back.getPageCount(), 2);
+  assert.equal(back.getPage(1).node.get(PDFName.of("Annots")), undefined, "comments, links and fields dropped from the other pages");
+  const xo = back.getPage(0).node.Resources()!.lookup(PDFName.of("XObject")) as unknown as { keys(): PDFName[] };
+  assert.equal(xo.keys().length, 1, "the rebuilt page holds just its picture");
+  const f0 = back.getPage(0).node.Resources()!.lookup(PDFName.of("Font")) as unknown as { keys(): PDFName[] } | undefined;
+  assert.equal(f0?.keys().length ?? 0, 0, "and no fonts");
+  assert.equal(back.getTitle(), undefined, "the original's metadata is not carried over");
+  // kept when not asked to strip; the check then finds the comment
+  const kept = await makeBuilder(data, { imageDpi: 96, redact: fakePicture })(pages);
+  const k2 = await leftovers(kept, ["Jane Doe"]);   // the comment, seen directly and inside the compressed object stream that holds it
+  assert.ok(k2.length >= 1 && k2.every((x) => /object \d+/.test(x.where)), "the comment on page 2 stays (and is reported)");
+  // a page with areas can't be saved without the picture step
+  await assert.rejects(makeBuilder(data, { imageDpi: 96 })(pages), /Redact PDF/);
+});
+
+test("redact: text read back from the picture becomes an invisible layer on the rebuilt page", async () => {
+  const data = new Map([["a", { kind: "pdf" as const, bytes: await secretPdf() }]]);
+  const lines = [[{ text: "Patient:", box: { x0: 20, y0: 35, x1: 80, y1: 50 } }, { text: "[gone]", box: { x0: 90, y0: 35, x1: 150, y1: 50 } }]];
+  const out = await makeBuilder(data, { imageDpi: 96, redact: async () => ({ ...(await fakePicture()), lines }) })([{ src: "a", page: 0, rotate: 0, scale: 1, marks: [{ type: "redact", x: 0, y: 0, rotate: 0, w: 10, h: 10 }] }]);
+  assert.ok((await leftovers(out, ["Jane"])).length === 0);
+  const back = await PDFDocument.load(out), fonts = back.getPage(0).node.Resources()!.lookup(PDFName.of("Font")) as unknown as { keys(): PDFName[] };
+  assert.equal(fonts.keys().length, 1, "the glyph-less font of the text layer");
+});
+
+test("redact: finding text gives boxes over the matches, joined across pieces, widened where a piece is split", () => {
+  const measure = (t: string) => t.length;   // stand-in: every letter the same width
+  const items: TextItem[] = [
+    { str: "Patient: Ja", transform: [10, 0, 0, 10, 100, 500], width: 55, height: 10, fontName: "f" },
+    { str: "ne Doe", transform: [10, 0, 0, 10, 155, 500], width: 30, height: 10, fontName: "f", hasEOL: true },
+    { str: "JANE DOE again", transform: [10, 0, 0, 10, 100, 480], width: 70, height: 10, fontName: "f" },
+    { str: "Janet", transform: [10, 0, 0, 10, 100, 460], width: 25, height: 10, fontName: "f" },
+  ];
+  const styles = { f: { ascent: 0.8, descent: -0.2 } };
+  const found = findQuads(items, styles, ["jane   doe"], false, measure);
+  assert.equal(found.length, 2, "case and spacing ignored; split across two pieces still found once");
+  assert.equal(found[0].quads.length, 2);
+  const [q1, q2] = found[0].quads;
+  // starts at "Ja": 9 of 11 letters into the first piece, widened by 0.35 of the size; ends at the piece's edge (exact, plus padding)
+  assert.ok(Math.abs(q1[0][0] - (100 + 45 - 3.5)) < 1e-9 && Math.abs(q1[1][0] - (155 + 1.2)) < 1e-9);
+  assert.ok(Math.abs(q2[0][0] - (155 - 1.2)) < 1e-9 && Math.abs(q2[1][0] - (185 + 1.2)) < 1e-9);
+  assert.ok(Math.abs(q1[0][1] - (500 - 3.2)) < 1e-9 && Math.abs(q1[2][1] - (500 + 9.2)) < 1e-9, "descent to ascent, padded");
+  assert.equal(findQuads(items, styles, ["Jane"], false, measure).length, 3, "inside “Janet” too");
+  assert.equal(findQuads(items, styles, ["Jane"], true, measure).length, 2, "whole words only: not “Janet”");
+  // a right-to-left piece is covered whole; a turned piece gives a turned quad
+  const rtl = findQuads([{ str: "שלום עולם", transform: [10, 0, 0, 10, 50, 50], width: 60, height: 10, dir: "rtl" }], {}, ["עולם"], false, measure)[0].quads[0];
+  assert.ok(rtl[0][0] <= 50 && rtl[1][0] >= 110);
+  const up = findQuads([{ str: "abc", transform: [0, 10, -10, 0, 50, 50], width: 30, height: 10 }], {}, ["abc"], false, measure)[0].quads[0];
+  const m = quadToMark(up, (x, y) => [x, 200 - y]);
+  assert.ok(m.w < 15 && m.h > 30, "text running upwards gives a tall, narrow box");
+  assert.equal(termPattern("  ", false), null);
+});
+
+test("redact: boxes on one line are joined; settings files keep only well-formed areas", () => {
+  const joined = mergeMarks([{ type: "redact", x: 10, y: 10, rotate: 0, w: 20, h: 10, term: "a" }, { type: "redact", x: 31, y: 11, rotate: 0, w: 20, h: 9, term: "a" }, { type: "redact", x: 10, y: 40, rotate: 0, w: 5, h: 5 }]);
+  assert.equal(joined.length, 2); assert.deepEqual({ ...joined[0] }, { type: "redact", x: 10, y: 10, rotate: 0, w: 41, h: 10, term: "a" });
+  assert.deepEqual(cleanM({ type: "redact", x: 1, y: 2, rotate: 0, w: 3, h: 4, term: "x" }, () => false), { type: "redact", x: 1, y: 2, rotate: 0, w: 3, h: 4, term: "x" });
+  assert.equal(cleanM({ type: "redact", x: 1, y: 2, rotate: 90, w: 3, h: 4 }, () => false), null, "areas are never turned");
+  assert.equal(cleanM({ type: "redact", x: 1, y: 2, rotate: 0, w: 0, h: 4 }, () => false), null);
+});
