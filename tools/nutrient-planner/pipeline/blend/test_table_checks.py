@@ -61,6 +61,20 @@ class AfcdZeros(unittest.TestCase):
         self.assertEqual((value(keys, f, "epa"), f["q"]["epa"]), (None, "lor"))
 
 
+class BelowLimit(unittest.TestCase):
+    """An AFCD value below its limit of reporting is NA, but matching compares it as "at most the limit"."""
+
+    def test_agree(self):
+        lim = {"fat": 0.2}
+        self.assertTrue(blend_all.agree(None, 0.1, lim, {}, "fat", 0.4, 0.1))
+        self.assertFalse(blend_all.agree(None, 0.5, lim, {}, "fat", 0.4, 0.1))
+        self.assertIsNone(blend_all.agree(None, 0.1, {}, {}, "fat", 0.4, 0.1))
+        self.assertTrue(blend_all.agree(None, None, lim, lim, "fat", 0.4, 0.1))
+
+    def test_limits_from_the_table(self):
+        self.assertEqual(afcd.LOR["protein"], 0.2)   # Release 3 - Nutrient details, Proximates; afcd.py checks the file
+
+
 class BlsErratum(unittest.TestCase):
     """BLS 4.0 errata, August 2026 (bls4_Erratum_BLS_4_0_DE.pdf)."""
 

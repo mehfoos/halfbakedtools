@@ -61,6 +61,7 @@ TABLES = HERE.parent / "tables"
 sys.path[:0] = [str(TABLES)]
 import common  # noqa: E402
 import common_list as cl  # noqa: E402
+import afcd  # noqa: E402
 
 DATA = common.TOOL / "data/foods"
 KEYS = common.KEYS
@@ -215,8 +216,9 @@ def identity_ok(a: dict, b: dict, reviewed: bool = False) -> bool:
         x, y = u[IX[k]], v[IX[k]]
         if x is not None and y is not None and abs(x - y) > gap and max(x, y) > 3 * max(min(x, y), 1e-9):
             return False
+    ba, bb = below(a), below(b)
     for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.4, 0.10), ("fibre", 4, 0.55)):   # fat: 1.5% and 2% milk differ
-        if u[IX[k]] is not None and v[IX[k]] is not None and not cl.near(u[IX[k]], v[IX[k]], absol, rel):
+        if agree(u[IX[k]], v[IX[k]], ba, bb, k, absol, rel) is False:
             return False
     pa, pb = PREPARED.findall(a["name"].lower()), PREPARED.findall(b["name"].lower())
     if pa != pb:
@@ -228,19 +230,42 @@ def identity_ok(a: dict, b: dict, reviewed: bool = False) -> bool:
     return True
 
 
-def composition_same(u: list, v: list) -> bool:
+def below(rec: dict) -> dict:
+    """{key: limit} for a record's values that are missing because they are below the table's limit of reporting
+    (AFCD "lor"), so they can still be compared: the other record's value must not be above that limit."""
+    if rec["table"] != "afcd":
+        return {}
+    return {k: afcd.LOR[k] for k, q in (rec["f"].get("q") or {}).items() if q == "lor" and k in afcd.LOR}
+
+
+def agree(x, y, bx: dict, by: dict, k: str, absol: float, rel: float) -> bool | None:
+    """True or False where the two values can be compared (a value below a limit counts as up to that limit),
+    None where they can't."""
+    if x is not None and y is not None:
+        return cl.near(x, y, absol, rel)
+    if x is None and k in bx and y is not None:
+        return y <= bx[k]
+    if y is None and k in by and x is not None:
+        return x <= by[k]
+    if x is None and y is None and k in bx and k in by:
+        return True
+    return None
+
+
+def composition_same(u: list, v: list, bu: dict | None = None, bv: dict | None = None) -> bool:
+    bu, bv = bu or {}, bv or {}
     for k, absol, rel in (("protein", 1, 0.2), ("fat", 0.4, 0.10)):   # fat tighter than rule v1: 1% and skim milk differ
-        if u[IX[k]] is None or v[IX[k]] is None or not cl.near(u[IX[k]], v[IX[k]], absol, rel):
+        if not agree(u[IX[k]], v[IX[k]], bu, bv, k, absol, rel):
             return False
     e1, e2 = u[IX["energy"]], v[IX["energy"]]
     if e1 is not None and e2 is not None and not cl.near(e1, e2, 30, 0.3):
         return False
     compared = off = 0
     for k, absol, rel in MINERALS:
-        x, y = u[IX[k]], v[IX[k]]
-        if x is not None and y is not None:
+        same = agree(u[IX[k]], v[IX[k]], bu, bv, k, absol, rel)
+        if same is not None:
             compared += 1
-            off += not cl.near(x, y, absol, rel)
+            off += not same
     return compared >= 3 and off <= 1
 
 
@@ -293,7 +318,7 @@ def groups(recs: list[dict]) -> list[list[int]]:
             if packing(a["name"]) != packing(b["name"]):
                 return False
         return (cl.cats_ok(a["f"]["cat"], b["f"]["cat"]) and states_same(a, b) and cl.facet_ok(a["skin"], b["skin"])
-                and composition_same(a["f"]["v"], b["f"]["v"]))
+                and composition_same(a["f"]["v"], b["f"]["v"], below(a), below(b)))
 
     for key, ids in by_key.items():
         cand = set(ids)

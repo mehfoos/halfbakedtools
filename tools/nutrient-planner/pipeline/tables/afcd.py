@@ -34,6 +34,7 @@ TABLE, TITLE = "afcd", "Australia AFCD Release 3 (FSANZ, 2025)"
 ZIP = "afcd3_AFCD_Release_3_December_2025.zip"
 FOODS_X, PROFILES_X, GROUPS_X = ("AFCD Release 3 - Food Details.xlsx", "AFCD Release 3 - Nutrient profiles.xlsx",
                                  "AFCD Release 3 - Food group information.xlsx")
+DETAILS_X = "AFCD Release 3 - Nutrient details.xlsx"
 KJ = 1 / 4.184
 MG = 0.001
 # planner key -> (column header, factor, definition where it matters). Headers are matched with blanks collapsed.
@@ -93,6 +94,29 @@ NEEDS = {"vitaminD": [["vitD"]], "vitaminD2": [["vitD"]], "vitaminD3": [["vitD"]
          "tryptophan": [["trp"]], "protein": [["protein"]], "fat": [["fat"]], "folate": [["folate"]]}
 
 
+# Limits of reporting per 100 g (Release 3 - Nutrient details, sheets Proximates and Minerals), for the nutrients the
+# blend compares; main() checks them against the archived file. A "lor" value is below these.
+LOR = {"protein": 0.2, "fat": 0.2, "fibre": 0.1, "calcium": 1.0, "iron": 0.2, "magnesium": 5.0, "potassium": 1.0,
+       "sodium": 1.0}
+LOR_NAMES = {"protein": "Protein", "fat": "Fat", "fibre": "Dietary fibre", "calcium": "Calcium (Ca)", "iron": "Iron (Fe)",
+             "magnesium": "Magnesium (Mg)", "potassium": "Potassium (K)", "sodium": "Sodium (Na)"}
+
+
+def check_lor(path) -> None:
+    """Stop if the limits of reporting in LOR differ from the archived Nutrient details file."""
+    got = {}
+    for sheet in ("Proximates", "Minerals"):
+        rows = xlsx_min.read(path)[sheet]
+        h = next(i for i, r in enumerate(rows) if r and r[0] == "Component")
+        li = rows[h].index("Limit/s of reporting per 100 g")
+        for r in rows[h + 1:]:
+            if r and r[0] and li < len(r):
+                got[norm(r[0])] = common.num(r[li])
+    for key, name in LOR_NAMES.items():
+        if got.get(name) != LOR[key]:
+            raise SystemExit(f"AFCD limit of reporting for {name}: file {got.get(name)}, LOR {LOR[key]}")
+
+
 def imputed_zero(sampling: str) -> set[str]:
     """Planner keys that a food's Sampling Details say were imputed zero."""
     named = {k for m in IMPUTED.finditer(sampling or "") for k, p in NAMED.items() if re.search(p, m.group(1))}
@@ -122,8 +146,9 @@ def main() -> int:
     out = fetch.CACHE / "afcd3"
     out.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(zp) as z:
-        for n in (FOODS_X, PROFILES_X, GROUPS_X):
+        for n in (FOODS_X, PROFILES_X, GROUPS_X, DETAILS_X):
             (out / n).write_bytes(z.read(n))
+    check_lor(out / DETAILS_X)
     details = {}
     rows = xlsx_min.read(out / FOODS_X)["Food details"]
     hdr = [norm(h) for h in rows[2]]
