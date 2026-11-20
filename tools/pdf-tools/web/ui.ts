@@ -37,7 +37,7 @@ import { jpegOrientation, orientationToRotation } from "./exif.ts";
 import { NO_IMAGE_LAYOUT, imageLayout, PAGE_MIN, PAGE_MAX, MARGIN_MAX as IMAGE_MARGIN_MAX, type ImageLayout } from "./layout.ts";
 import { NO_CROP, CROP_UNITS, MARGIN_LIMIT, toPoints, fromPoints, isCropped, appliesTo, clampMargins, type CropUnit, type Margins } from "./crop.ts";
 import { taskBySlug, showsPages, type Part } from "./tasks.ts";
-import { openPdf, closePdf, drawPage, pageText, pageItems, pixelsToPoints, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle, type PdfHandle } from "./render.ts";
+import { openPdf, closePdf, drawPage, pageText, pageItems, pagePlaced, pixelsToPoints, pageSize, decodeImage, canvasBlob, NeedsPassword, type Handle, type PdfHandle } from "./render.ts";
 
 // The TIFF library is only fetched (from this site) when a TIFF is read or written.
 const utif = async () => { const m = await import("utif2"); return ((m as { default?: typeof m }).default ?? m); };
@@ -895,7 +895,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const f = $<HTMLSelectElement>("format").value, s = session.output.split;
     const hide = (id: string, off: boolean) => { const e = root.querySelector<HTMLElement>(`#${id}`); if (e) e.hidden = off; };
     hide("optPdf", f !== "pdf"); hide("optEvery", f !== "pdf" || s !== "every"); hide("optRanges", f !== "pdf" || s !== "ranges");
-    hide("optImage", f === "pdf" || f === "txt" || f === "md" || f === "html"); hide("optQuality", f !== "jpeg" && f !== "webp"); hide("optText", f !== "txt");
+    hide("optImage", f === "pdf" || f === "txt" || f === "md" || f === "html" || f === "docx" || f === "xlsx"); hide("optQuality", f !== "jpeg" && f !== "webp" && f !== "pptx"); hide("optText", f !== "txt");
     const c = session.output.compress;
     hide("optWatermark", f !== "pdf"); hide("wFields", !session.output.watermark.on); hide("wOnRow", task.slug === "watermark");
     const wNote = root.querySelector<HTMLElement>("#wOpacityNote"); if (wNote) wNote.textContent = `${Math.round(session.output.watermark.opacity * 100)}%`;
@@ -908,7 +908,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     if (sum) sum.textContent = level === "none" ? "Pictures are kept exactly as they are." : level === "custom" ? "" :
       c.mode === "flatten" ? `Every page is redrawn as one picture at ${c.dpi} dots per inch and ${Math.round(c.quality * 100)}% quality. Text is lost. This can come out larger than the original for pages that are mostly text.` :
       `Pictures are kept at up to ${c.dpi} dots per inch, at ${Math.round(c.quality * 100)}% quality.${level === "extreme" ? " Expect visibly rough pictures." : ""} Text and line drawings are not changed.`;
-    const dpiBox = root.querySelector<HTMLElement>("#optImageDpi"); if (dpiBox) dpiBox.hidden = f === "txt" || f === "md" || f === "html" || !session.sources.some((x) => x.kind === "image");
+    const dpiBox = root.querySelector<HTMLElement>("#optImageDpi"); if (dpiBox) dpiBox.hidden = f === "txt" || f === "md" || f === "html" || f === "docx" || f === "pptx" || f === "xlsx" || !session.sources.some((x) => x.kind === "image");
   }
   $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); if (task.perFile) clearResult(); schedulePreview(); });
   $("savePanel").addEventListener("input", (e) => { if ((e.target as HTMLElement).closest("#optNumbers, #optWatermark")) { readOptions(); showOptions(); schedulePreview(); } });
@@ -1056,7 +1056,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const o = session.output;
     try {
       if (o.format === "pdf") return task.perFile ? session.sources.filter((s) => pages.some((p) => p.src === s.id)).map(perFileName) : planFiles(pages, o).map((f) => f.name);
-      if (o.format === "txt" || o.format === "md" || o.format === "html") return [`${o.name}.${o.format}`];
+      if (o.format === "txt" || o.format === "md" || o.format === "html" || o.format === "docx" || o.format === "pptx" || o.format === "xlsx") return [`${o.name}.${o.format}`];
       const width = String(pages.length).length;
       return pages.map((_, i) => (pages.length === 1 ? `${o.name}.${ext(o.format)}` : `${o.name}-${String(i + 1).padStart(width, "0")}.${ext(o.format)}`));
     } catch { return []; }   // a bad split range etc.: the save itself reports it
@@ -1189,6 +1189,39 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         const blocks = toBlocks(lines);
         download(`${o.name}.${o.format}`, new Blob([o.format === "md" ? toMarkdown(blocks) : toHtml(blocks, o.name)], { type: o.format === "md" ? "text/markdown;charset=utf-8" : "text/html;charset=utf-8" }));
         note = `Saved ${o.name}.${o.format}. Headings, paragraphs and lists are guesses from text size and spacing; check the result.${empty ? ` ${empty} of ${pages.length} pages had no text (scans or pictures).` : ""}`;
+      } else if (o.format === "docx" || o.format === "xlsx" || o.format === "pptx") {
+        const office = await import("./office.ts");
+        const MIME = { docx: "wordprocessingml.document", xlsx: "spreadsheetml.sheet", pptx: "presentationml.presentation" }[o.format];
+        let bytes: Uint8Array, empty = 0;
+        if (o.format === "docx") {
+          const lines: Line[][] = []; let size = { width: 595, height: 842 };
+          for (const [i, p] of pages.entries()) {
+            progress(`Reading text: page ${i + 1} of ${pages.length}…`); const d = await drawable(p);
+            try { lines.push(toLines(await pageItems(d.handle, d.page))); if (i === 0) { const s = await pageSize(d.handle, d.page, 72); size = (d.rotate / 90) % 2 ? { width: s.h, height: s.w } : { width: s.w, height: s.h }; } } finally { d.done(); }
+          }
+          empty = lines.filter((l) => !l.length).length;
+          if (empty === pages.length) throw new Error("No text was found. If these pages are scans or photos, the words are pictures; run OCR PDF first, then convert the result.");
+          bytes = office.toDocx(toBlocks(lines), o.name, size);
+        } else if (o.format === "xlsx") {
+          const sheets: import("./office.ts").Cell[][][] = [];
+          for (const [i, p] of pages.entries()) { progress(`Reading text: page ${i + 1} of ${pages.length}…`); const d = await drawable(p); try { sheets.push(office.toRows(await pagePlaced(d.handle, d.page, d.rotate))); } finally { d.done(); } }
+          empty = sheets.filter((s) => !s.length).length;
+          if (empty === pages.length) throw new Error("No text was found. If these pages are scans or photos, the words are pictures; run OCR PDF first, then convert the result.");
+          bytes = office.toXlsx(sheets, o.name);
+        } else {
+          const pics = [];
+          for (const [i, p] of pages.entries()) {
+            progress(`Drawing page ${i + 1} of ${pages.length}…`);
+            const d = await drawable(p), pxPerPoint = (o.dpi / 72) * p.scale;
+            let c: HTMLCanvasElement;
+            try { c = await drawPage(d.handle, d.page, d.rotate, { pxPerPoint, pxPerImagePx: pxPerPoint * (72 / o.imageDpi) }); } finally { d.done(); }
+            pics.push({ bytes: new Uint8Array(await (await canvasBlob(c, "image/jpeg", o.quality)).arrayBuffer()), png: false, width: c.width / pxPerPoint, height: c.height / pxPerPoint });
+          }
+          bytes = office.toPptx(pics, o.name);
+        }
+        download(`${o.name}.${o.format}`, new Blob([bytes as BlobPart], { type: `application/vnd.openxmlformats-officedocument.${MIME}` }));
+        note = `Saved ${o.name}.${o.format}.` + (o.format === "docx" ? " Headings, paragraphs and lists are guesses from text size and spacing; check the result." : o.format === "xlsx" ? " Rows and columns are guesses from where the words sit, one sheet per page; check the result, especially numbers." : " Each slide is a picture of its page.") +
+          (empty ? ` ${empty} of ${pages.length} pages had no text (scans or pictures).` : "");
       } else if (o.format === "txt") {
         const texts: string[] = [];
         for (const [i, p] of pages.entries()) { progress(`Reading text: page ${i + 1} of ${pages.length}…`); const d = await drawable(p); try { texts.push(await pageText(d.handle, d.page)); } finally { d.done(); } }

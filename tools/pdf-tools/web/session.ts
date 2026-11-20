@@ -18,7 +18,7 @@ export type SourceRef = { id: string; name: string; size: number; sha256: string
 /** One output page: page `page` (from 0) of source `src`, turned by `rotate` degrees clockwise on top of
  *  any rotation already in the file, and resized with its contents by `scale` (1 = unchanged). */
 export type PageItem = { src: string; page: number; rotate: Rotation; scale: number; marks?: Mark[] };
-export type OutputFormat = "pdf" | "png" | "jpeg" | "webp" | "bmp" | "tiff" | "txt" | "md" | "html";
+export type OutputFormat = "pdf" | "png" | "jpeg" | "webp" | "bmp" | "tiff" | "txt" | "md" | "html" | "docx" | "pptx" | "xlsx";
 export type SplitMode = "none" | "every" | "ranges" | "each";
 export type Output = {
   name: string;          // file name without extension
@@ -232,7 +232,7 @@ export function parseSettings(text: string): Session {
   const d = DEFAULT_OUTPUT;
   const output: Output = {
     name: typeof o.name === "string" ? safeName(o.name) : d.name,
-    format: (["pdf", "png", "jpeg", "webp", "bmp", "tiff", "txt", "md", "html"] as const).find((f) => f === o.format) ?? d.format,
+    format: (["pdf", "png", "jpeg", "webp", "bmp", "tiff", "txt", "md", "html", "docx", "pptx", "xlsx"] as const).find((f) => f === o.format) ?? d.format,
     split: (["none", "every", "ranges", "each"] as const).find((f) => f === o.split) ?? d.split,
     every: int(o.every, 1) ? (o.every as number) : d.every,
     ranges: typeof o.ranges === "string" ? o.ranges : d.ranges,

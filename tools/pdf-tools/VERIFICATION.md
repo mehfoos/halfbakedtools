@@ -447,3 +447,35 @@ The page itself (headless Chrome, preview build):
 - Rebuilding outside the browser (`picturesToPdfA` with JPEG, RGB PNG, RGBA PNG, grey PNG and a line of recognised
   text with ö and €): all four pass veraPDF, and the text is extracted.
 - Fonts and the text-recognition engine came from this site; no requests to other sites; no page errors.
+
+### PDF to Word, PowerPoint and Excel (2026-11-20)
+
+`web/office.ts`. Test files: ReportLab (a ruled table with right-aligned numbers and a total, a landscape table, a
+two-page report with headings and a bullet list), a LibreOffice Calc sheet exported to PDF, pdflatex, xelatex,
+LibreOffice Writer, wkhtmltopdf, Chrome, and this site's own Latin, Cyrillic, Arabic, Hebrew, Devanagari and CJK texts.
+
+- Every XML part of all 33 files (11 PDFs × 3 formats) and of the files saved from the page validates against the
+  ECMA-376 5th edition Part 4 (transitional) XML schemas with lxml; the packaging parts ([Content_Types].xml, the
+  relationship parts, core properties) were not schema-checked. Excel's own files put `xml:space` on cell text,
+  which the schema doesn't allow; this site leaves it out.
+- All 36 files open in python-docx, openpyxl and python-pptx and convert to PDF in LibreOffice 24.2 (headless).
+- Excel: the ReportLab table comes back exactly (4 columns, numbers as numbers, "1,234.50" as text), the landscape
+  table too (6 columns, "-2%" as text), the LibreOffice sheet with five columns and its numbers, except its header,
+  where "Transport Total" is one piece of text in the PDF across two columns and lands in one cell. Arabic lines come back as
+  the PDF stores them, and Arabic words drawn as separate pieces are put back in reading order (unit test). Prose pages come back as one cell per line.
+- Word: headings, paragraphs and the three bullet items are found in the ReportLab report (the bullets were first
+  taken for headings, because the bullet glyph is drawn larger than the text; lines now take their size from their
+  words, which also fixes PDF to Markdown and HTML); the second page starts on a new page; landscape PDFs give
+  landscape pages; a Hebrew paragraph is marked right to left (unit test). In the site's mixed-script text, lines in
+  different scripts close together are joined into one paragraph (as in PDF to Markdown), which starts in Latin and so
+  runs left to right.
+- PowerPoint: one slide per page, the slide the first page's size (A4 portrait: 7,560,310 × 10,692,000 EMU), a
+  landscape page fitted inside it; pictures as JPEG at the chosen detail and quality.
+- In the page (headless Chrome): all three save their file with the right name; the picture options show only for
+  PowerPoint; a scanned PDF gives "No text was found ... run OCR PDF first"; no requests to other sites; no errors.
+- Unit tests: XML text cleaning, plain numbers, right-to-left detection, columns from aligned gaps with a heading
+  over right-aligned numbers, an empty row for a big gap, right-to-left words put back in order, the parts each file
+  needs, PowerPoint's 56-inch slide limit, and a larger bullet not making a heading.
+
+Not checked: Microsoft Word, Excel or PowerPoint themselves (not available here); Google Docs, Sheets or Slides;
+tables with merged cells or wrapped text; many-column financial statements.

@@ -58,7 +58,7 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | Redact PDF | **Done 2026-11-20** | Pages with areas are rebuilt as pictures; find words; check after saving. Follow-ups below |
 | PDF to PDF/A | **Done 2026-11-20** (chunk 13; `web/pdfaconvert.ts`, `pdfascan.ts`, `pdfafonts.ts`, `pdfachecks.ts`) | PDF/A-2b only. Keeps the content where every change is one the standard requires, otherwise refuses with reasons or (by choice) rebuilds the pages as pictures, optionally read back by OCR. veraPDF passed every file it converted in three test sets. Follow-ups: a CMYK profile (needs a licensed, archivable one) so CMYK files can keep their content; predefined CJK CMaps (PDF.js ships Adobe's CMap files); overprint checked operator by operator instead of refusing whenever ICC CMYK is present; keeping bookmarks and links on rebuilt pages; PDF/A-1b, -2u, -3b |
 | Word/PowerPoint/Excel to PDF | On hold (owner) | Branch `office-to-pdf` |
-| PDF to Word/PowerPoint/Excel | Chunk 14 | Rough by nature |
+| PDF to Word/PowerPoint/Excel | **Done 2026-11-20** (chunk 14; `web/office.ts`) | Rough by nature, and said so. Word: guessed headings, paragraphs, lists; PowerPoint: pages as pictures; Excel: rows and columns guessed from aligned gaps. Follow-ups: pictures and tables in Word; editable text on slides; ruled tables (from drawn lines) and headings stored as one run across columns in Excel; checking in Microsoft Office itself |
 | Workflows | Later | The all-in-one workspace plus the settings file cover part of this |
 | AI Summarizer, Translate PDF, Scan to PDF (phone to browser) | Not possible locally | Listed on the home page with the reason |
 
@@ -88,7 +88,7 @@ follow the pages); check on real phones, Firefox and Safari; keyboard-only pagin
 | 1 | Skeleton, no-upload enforcement, merge, reorder, duplicate, remove, rotate, resize page with contents, split, extract, PDF → images (PNG, JPEG, WebP, TIFF, BMP) and text, images → PDF, settings file | **Done 2026-11-16** (alpha) |
 | 2 | Compression with options and size preview; resize images inside scanned PDFs independently of page size; named paper sizes | **Compression done 2026-11-16** (`web/compress-core.ts`, `web/compress.ts`); it also covers shrinking scan pictures without changing page size. Named paper sizes still wait for a source |
 | 3 | Edit page content: add text and images, move/resize/rotate them, remove or redact content | **Adding done 2026-11-16** (`web/marks.ts`, `web/editor.ts`; text and pictures, move, resize pictures, rotate, font/size/colour/bold). Removing or changing existing content not started |
-| 4 | Text and HTML ↔ PDF; Word, PowerPoint, Excel (and OpenDocument) ↔ PDF; PDF → SVG | Office → PDF **on hold by the owner (2026-11-16)**, work kept on branch `office-to-pdf`; rest not started |
+| 4 | Text and HTML ↔ PDF; Word, PowerPoint, Excel (and OpenDocument) ↔ PDF; PDF → SVG | PDF → Word, PowerPoint, Excel done (chunk 14). Office → PDF **on hold by the owner (2026-11-16)**, work kept on branch `office-to-pdf`; rest not started |
 | 5 | Task-first interface in the style of ilovepdf.com, in this site's theme | **Done 2026-11-16** |
 
 Owner requirements not yet met are exactly phases 2 to 4. Nothing in phase 1 is known to be broken; the unchecked

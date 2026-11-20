@@ -7,6 +7,7 @@ export type Item = { str: string; x: number; y: number; size: number; eol?: bool
 export type Line = { text: string; y: number; size: number };
 export type Block = { kind: "h"; level: 1 | 2 | 3; text: string } | { kind: "p"; text: string } | { kind: "li"; text: string };
 
+const BULLET_ONLY = /^\s*[•◦▪▫●○■□‣⁃·]\s*$/;
 /** Items (in file order) to lines: a new line starts at an end-of-line mark or when the baseline moves. */
 export function toLines(items: Item[]): Line[] {
   const lines: Line[] = []; let cur: { parts: string[]; y: number; size: number } | null = null;
@@ -14,7 +15,7 @@ export function toLines(items: Item[]): Line[] {
   for (const it of items) {
     if (cur && Math.abs(it.y - cur.y) > Math.max(it.size, cur.size) * 0.5) flush();
     if (!cur) cur = { parts: [], y: it.y, size: 0 };
-    cur.parts.push(it.str); if (it.str.trim()) cur.size = Math.max(cur.size, it.size);
+    cur.parts.push(it.str); if (it.str.trim() && !BULLET_ONLY.test(it.str)) cur.size = Math.max(cur.size, it.size);   // a bullet is often drawn larger
     if (it.eol) flush();
   }
   flush(); return lines;

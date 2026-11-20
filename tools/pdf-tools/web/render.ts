@@ -1,6 +1,7 @@
 // Browser-only: opens PDFs and images for display, and draws pages onto a canvas.
 // Uses PDF.js (Mozilla's PDF reader, the one built into Firefox), bundled with this site.
 import type { Item } from "./structure.ts";
+import type { Placed } from "./office.ts";
 import * as pdfjs from "pdfjs-dist";
 import workerSource from "pdfjs-dist/build/pdf.worker.min.mjs?raw";
 import type { Rotation } from "./session.ts";
@@ -99,6 +100,19 @@ export async function pageItems(h: Handle, page: number): Promise<Item[]> {
   if (h.kind === "image") return [];
   const content = await (await h.doc.getPage(page + 1)).getTextContent();
   return content.items.flatMap((i) => "str" in i && "transform" in i ? [{ str: i.str, x: i.transform[4], y: i.transform[5], size: i.height || Math.hypot(i.transform[2], i.transform[3]), eol: i.hasEOL }] : []);
+}
+
+/** Text pieces placed as the page is seen (its stored rotation plus `rotate`): x to the right and y (the baseline)
+ *  downwards from the top-left corner, in points; for PDF to Excel. */
+export async function pagePlaced(h: Handle, page: number, rotate: Rotation): Promise<Placed[]> {
+  if (h.kind === "image") return [];
+  const p = await h.doc.getPage(page + 1), vp = p.getViewport({ scale: 1, rotation: (p.rotate + rotate) % 360 });
+  const content = await p.getTextContent();
+  return content.items.flatMap((i) => {
+    if (!("str" in i) || !("transform" in i)) return [];
+    const t = pdfjs.Util.transform(vp.transform, i.transform);
+    return [{ str: i.str, x: t[4], y: t[5], w: i.width, size: Math.hypot(t[2], t[3]) }];
+  });
 }
 
 /** Opens an image file the browser can decode itself (PNG, JPEG, WebP, GIF, BMP, SVG...). */

@@ -142,6 +142,21 @@
       "nav": false
     },
     {
+      "page": "pdf-to-word",
+      "label": "PDF to Word",
+      "nav": false
+    },
+    {
+      "page": "pdf-to-powerpoint",
+      "label": "PDF to PowerPoint",
+      "nav": false
+    },
+    {
+      "page": "pdf-to-excel",
+      "label": "PDF to Excel",
+      "nav": false
+    },
+    {
       "page": "pdf-to-pdfa",
       "label": "PDF to PDF/A",
       "nav": false

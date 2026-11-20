@@ -2,6 +2,18 @@
   "_comment": "This tool's references, in citation order: the tool's pages number them [1], [2], ... in this order (IEEE style). Each needs an archived copy in the source-archive release, given as {\"asset\": \"<file>\"} and listed in sources/archive.json; never commit the file itself (see sources/README.md). Title style: 'quoted' for articles, web pages and parts of books; 'italic' for books, reports and datasets.",
   "sources": [
     {
+      "id": "ecma-376",
+      "pre": "Ecma International,",
+      "title": "Office Open XML File Formats",
+      "style": "italic",
+      "post": "Standard ECMA-376, 5th ed., Part 4: Transitional Migration Features, with its XML schemas, Dec. 2016.",
+      "url": "https://ecma-international.org/publications-and-standards/standards/ecma-376/",
+      "licence": "Freely available from Ecma International",
+      "usedFor": "The XML schemas each part of the Word, PowerPoint and Excel files this site writes was checked against",
+      "archive": [],
+      "accessed": "2026-11-20"
+    },
+    {
       "id": "ofl-1.1",
       "pre": "SIL International,",
       "title": "SIL Open Font License, Version 1.1",

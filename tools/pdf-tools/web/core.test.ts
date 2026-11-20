@@ -1443,3 +1443,46 @@ test("pdfa convert: a signed file is refused; resources inherited from the page 
   assert.ok(back.getPages()[0].node.get(PDFName.of("Resources")) instanceof PDFRef);
   void PDFArray;
 });
+
+// ---------- PDF to Word, PowerPoint and Excel ----------
+import { xmlText, isRtl as officeRtl, cellValue, toRows, toDocx, toXlsx, toPptx, type Placed } from "./office.ts";
+import { unzipSync, strFromU8 } from "fflate";
+test("office: XML text drops characters XML can't hold; plain numbers only become numbers; right-to-left detection", () => {
+  assert.equal(xmlText("a<b & \u0001c\uD800"), "a&lt;b &amp; c");
+  assert.deepEqual(["12", "-5.25", "−3", "0.5", "007", "1,234.50", "12%", "1e5", "1234567890123456"].map(cellValue), [12, -5.25, -3, 0.5, "007", "1,234.50", "12%", "1e5", "1234567890123456"]);
+  assert.equal(officeRtl("שלום world"), true); assert.equal(officeRtl("Total: مرحبا"), false); assert.equal(officeRtl("25 دينار"), true);
+});
+test("office: toRows finds columns from gaps that run down the page, keeps phrases together, leaves a row for a big gap", () => {
+  const w = (s: string) => s.length * 5;   // 10 pt text, about 5 pt a character
+  const at = (str: string, x: number, y: number, right = false): Placed => ({ str, x: right ? x - w(str) : x, y, w: w(str), size: 10 });
+  const items = [at("Sales by month", 60, 40),
+    at("Month", 50, 60), at("Rent", 180, 60, true), at("Food", 260, 60, true),
+    ...["January", "February", "March"].flatMap((m, k) => [at(m, 50, 74 + 14 * k), at("950", 180, 74 + 14 * k, true), at(["226.87", "1,352.75", "99"][k], 260, 74 + 14 * k, true)]),
+    at("Figures are rounded and may not add up.", 50, 160)];
+  const rows = toRows(items);
+  assert.deepEqual(rows[1], ["Month", "Rent", "Food"]);
+  assert.deepEqual(rows[2], ["January", 950, 226.87]); assert.deepEqual(rows[3], ["February", 950, "1,352.75"]);
+  assert.deepEqual(rows[5], [], "a gap of more than two lines");
+  assert.deepEqual(rows[6], ["Figures are rounded and may not add up."]);
+  assert.equal(rows[0].filter(Boolean).length, 1, "the title stays one cell");
+  // right-to-left words, read left to right, are put back in reading order
+  // (seen: "25" at the left, "دينار" a space to its right; read right to left: "دينار 25")
+  assert.deepEqual(toRows([at("دينار", 100, 50), at("25", 86, 50)]), [["دينار 25"]]);
+});
+test("office: Word, Excel and PowerPoint files have the parts Office needs", () => {
+  const docx = unzipSync(toDocx([[{ kind: "h", level: 1, text: "Title" }, { kind: "p", text: "A & B" }], [{ kind: "li", text: "שלום" }]], "t", { width: 842, height: 595 }));
+  for (const k of ["[Content_Types].xml", "_rels/.rels", "word/document.xml", "word/styles.xml", "word/numbering.xml", "word/_rels/document.xml.rels"]) assert.ok(docx[k], k);
+  const doc = strFromU8(docx["word/document.xml"]);
+  assert.match(doc, /Heading1/); assert.match(doc, /A &amp; B/); assert.match(doc, /<w:pageBreakBefore\/><w:bidi\/>/); assert.match(doc, /w:orient="landscape"/);
+  const xlsx = unzipSync(toXlsx([[["a", 1]], []], "t"));
+  assert.match(strFromU8(xlsx["xl/worksheets/sheet1.xml"]), /<c r="A1" t="inlineStr"><is><t>a<\/t><\/is><\/c><c r="B1"><v>1<\/v><\/c>/);
+  assert.match(strFromU8(xlsx["xl/workbook.xml"]), /name="Page 2"/);
+  const pptx = unzipSync(toPptx([{ bytes: Uint8Array.of(1), png: false, width: 6000, height: 300 }], "t"));
+  assert.ok(pptx["ppt/media/image1.jpeg"] && pptx["ppt/theme/theme1.xml"] && pptx["ppt/slides/slide1.xml"]);
+  const size = strFromU8(pptx["ppt/presentation.xml"]).match(/<p:sldSz cx="(\d+)" cy="(\d+)"/)!;
+  assert.equal(Number(size[1]), 4032 * 12700, "slides are at most 56 inches wide"); assert.equal(Number(size[2]), Math.round(300 * (4032 / 6000) * 12700));
+});
+test("structure: a bullet drawn larger than its text doesn't make the line a heading", () => {
+  const lines = toLines([{ str: "•", x: 50, y: 700, size: 15 }, { str: " Costs fell.", x: 60, y: 700, size: 10, eol: true }, { str: "Body text here.", x: 50, y: 680, size: 10 }]);
+  assert.deepEqual(toBlocks([lines])[0].map((b) => b.kind), ["li", "p"]);
+});

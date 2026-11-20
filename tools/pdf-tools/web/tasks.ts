@@ -108,6 +108,15 @@ export const TASKS: Task[] = [
   { slug: "extract-images", name: "Extract pictures", blurb: "Save the pictures stored inside a PDF as separate files: JPEGs exactly as stored, other pictures as PNG.", group: "Convert from PDF", accept: "pdf",
     pick: "Select PDF files", hint: "This finds pictures stored in the PDF, not drawings made of lines or text. Several pictures are saved together as one .zip file.",
     parts: ["extractPics"], formats: ["pdf"], which: "all", action: "Extract pictures", suffix: "pictures", tag: "▣" },
+  { slug: "pdf-to-word", name: "PDF to Word", blurb: "Turn a PDF's text into a Word document (.docx), with headings, paragraphs and bullet lists guessed from text size and spacing.", group: "Convert from PDF", accept: "pdf",
+    pick: "Select PDF files", hint: "A rough conversion: a PDF stores positioned text, not a document. You get the text to edit, not the look: pictures, tables, columns, fonts, bold and italic are not kept. Scanned pages have no text.",
+    parts: [], formats: ["docx"], which: "all", action: "Convert to Word", suffix: "word", tag: "DOC", selectAll: true },
+  { slug: "pdf-to-powerpoint", name: "PDF to PowerPoint", blurb: "Turn each page of a PDF into a PowerPoint slide (.pptx) that looks the same.", group: "Convert from PDF", accept: "pdf",
+    pick: "Select PDF files", hint: "Each slide holds a picture of its page, so it looks exactly like the PDF but its text can't be edited.",
+    parts: [], formats: ["pptx"], which: "all", action: "Convert to PowerPoint", suffix: "slides", tag: "PPT", selectAll: true },
+  { slug: "pdf-to-excel", name: "PDF to Excel", blurb: "Put the text of each PDF page into an Excel sheet (.xlsx), in rows and columns guessed from where the words sit, so tables can be worked on.", group: "Convert from PDF", accept: "pdf",
+    pick: "Select PDF files", hint: "A rough conversion that works best for simple tables: columns are guessed from the gaps between words. Merged cells, formulas and formatting are not recovered. Scanned pages have no text.",
+    parts: [], formats: ["xlsx"], which: "all", action: "Convert to Excel", suffix: "tables", tag: "XLS", selectAll: true },
   { slug: "pdf-to-pdfa", name: "PDF to PDF/A", blurb: "Make a copy of a PDF for long-term archiving, in the PDF/A-2b standard: fonts embedded, colours defined, no scripts or links to other files.", group: "Convert from PDF", accept: "pdf",
     pick: "Select PDF files", hint: "Each PDF is converted on its own. What was changed, or why a file couldn't be converted, is listed after saving.",
     parts: ["pdfa"], formats: ["pdf"], which: "all", action: "Convert to PDF/A", perFile: true, suffix: "pdfa", tag: "A" },
@@ -139,8 +148,6 @@ export const WORKSPACE: Task = {
 export const NOT_BUILT: { name: string; tag: string; group: Group }[] = [
   { name: "Word to PDF", tag: "DOC", group: "Convert to PDF" }, { name: "PowerPoint to PDF", tag: "PPT", group: "Convert to PDF" },
   { name: "Excel to PDF", tag: "XLS", group: "Convert to PDF" }, { name: "HTML file to PDF", tag: "WEB", group: "Convert to PDF" },
-  { name: "PDF to Word", tag: "DOC", group: "Convert from PDF" }, { name: "PDF to PowerPoint", tag: "PPT", group: "Convert from PDF" },
-  { name: "PDF to Excel", tag: "XLS", group: "Convert from PDF" },
 ];
 
 /** Things other PDF sites offer that can't be done without sending files to a server, so this tool won't offer them. */
