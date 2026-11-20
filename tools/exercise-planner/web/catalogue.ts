@@ -1,21 +1,31 @@
 // The exercise catalogue: muscle groups, equipment and exercises.
 //
 // How muscles are assigned (see the methods page for the sources):
-// - Each exercise is described by the joint movements it loads ("moves": e.g. elbow extension).
-// - A muscle counts as DIRECT (1 set) when it is a prime mover of the movement the exercise is chosen for,
-//   and INDIRECT (0.5 set) when it is a prime mover of a secondary movement in the same exercise
-//   (e.g. the triceps straightening the elbow in a bench press). This is the "fractional" counting method of
-//   Pelland et al. (2026), and the direct/indirect split follows Schoenfeld et al. (2019).
+// - Counting: a set counts as 1 set for a muscle trained DIRECTLY and 0.5 for one trained INDIRECTLY: the
+//   "fractional" method of Pelland et al. (2026).
+// - Where Pelland et al. classified an exercise for a muscle (Table 1A of the archived preprint, transcribed in
+//   pelland-table-1a.ts), the planner follows it exactly, and `sources` names the table entry. That table covers only
+//   the quadriceps, rectus femoris, hamstrings, pectoralis major, anterior deltoid, trapezius, triceps and biceps,
+//   and only dynamic exercises; the authors call their classification "not wholly objective".
+// - Every other muscle assignment is the planner's own ASSUMPTION, made from anatomy: each exercise is described by
+//   the joint movements it loads ("moves"); a muscle producing the main movement counts as direct, one producing a
+//   secondary movement as indirect. Which muscle produces which movement is from OpenStax Anatomy and Physiology 2e,
+//   ch. 11; for the three parts of the deltoid, from Stokey et al. 2024 (front: flexion and medial rotation; side:
+//   abduction; rear: extension and lateral rotation). These are labelled "Assumption" on the site until outcome
+//   evidence replaces them. Neither anatomy source names the muscles of horizontal abduction (face pull, band
+//   pull-apart): counting the rear deltoid there is the planner's own reading, as extension in the horizontal plane.
 // - Muscles that only hold a position (e.g. the trunk muscles in a squat) are listed as "steadies" and not counted,
-//   except in exercises whose whole purpose is the hold (plank, farmer's carry), where the held muscles are direct.
-// - Which muscle produces which movement is from OpenStax Anatomy and Physiology 2e, ch. 11.
-//
+//   except in exercises whose whole purpose is the hold (plank, farmer's carry), where the held muscles are direct
+//   (also an assumption: holds were outside Pelland et al.'s analysis).
+
 // MET values (aerobic intensity) are copied unchanged from the 2024 Adult Compendium of Physical Activities,
 // with the Compendium's activity code, as its authors ask.
 
 export const MUSCLES = [
   { id: "chest", label: "Chest", detail: "pectoralis major" },
-  { id: "shoulders", label: "Shoulders", detail: "deltoids" },
+  { id: "frontDelts", label: "Front shoulders", detail: "front (anterior) deltoid" },
+  { id: "sideDelts", label: "Side shoulders", detail: "side (lateral) deltoid" },
+  { id: "rearDelts", label: "Rear shoulders", detail: "rear (posterior) deltoid" },
   { id: "triceps", label: "Triceps", detail: "triceps brachii (back of upper arm)" },
   { id: "biceps", label: "Biceps", detail: "elbow flexors: biceps brachii, brachialis, brachioradialis" },
   { id: "forearms", label: "Forearms and grip", detail: "wrist and finger flexors" },
@@ -72,18 +82,56 @@ export type MetRow = { code: string; met: number; label: string };
 export type Exercise = {
   id: string;
   name: string;
-  kind: "strength" | "aerobic";
+  /**
+   * "aerobic": continuous, rhythmic activity, which counts towards heart and lungs. "intervals": high-effort work
+   * usually done in short bursts with rests (kettlebell swings, burpees); its Compendium value is shown, but it doesn't
+   * count towards heart and lungs, because the WHO defines aerobic activity as large muscles moving rhythmically "for a
+   * sustained period of time" and anaerobic activity as "brief intense bursts" (WHO 2020 glossary; owner's decision,
+   * 20 Nov 2026).
+   */
+  kind: "strength" | "aerobic" | "intervals";
   /** Equipment needed: every inner list must be satisfied by at least one item in it. Empty = nothing needed. */
   needs: Equipment[][];
   /** Joint movements the exercise loads, in plain words. */
   moves: string;
   direct: Muscle[];
   indirect: Muscle[];
-  /** Name as classified in Pelland et al. (2026) Table 1 (Table 1A in the preprint), where that table covers this exercise. */
-  listed?: string;
+  /**
+   * Where a muscle's classification here comes from Pelland et al. (2026), Table 1A of the archived preprint
+   * (Table 1 in the published article): the exercise name exactly as printed there, under the same muscle and in
+   * the same column (direct or indirect). Every other muscle in `direct` or `indirect` is the planner's own
+   * classification from anatomy (an assumption), and is labelled as such on the site. Checked by planner.test.ts.
+   */
+  sources?: Partial<Record<Muscle, string>>;
+  /**
+   * Muscles whose counting here is supported by studies that measured muscle growth (MRI or ultrasound) after
+   * training with this exercise: reference ids from references.json. This supports counting the muscle at all; whether
+   * it counts as a full or half set is still the planner's classification. Checked by planner.test.ts.
+   */
+  evidence?: Partial<Record<Muscle, string[]>>;
+  /**
+   * Names to show by the equipment the visitor has: the first variant whose `using` includes an equipment item they
+   * ticked. `name` is the fallback and what the exercise is called in the list of exercises to include.
+   */
+  variants?: { using: Equipment[]; name: string }[];
+  /**
+   * Set where a source classified only some versions: the equipment the studied version used and a plain-words name for
+   * it. Other variants are shown as assumed to load the same muscles.
+   */
+  studied?: { with: Equipment[]; as: string };
+  /**
+   * A page showing how to do the exercise (checked 20 Nov 2026): the American Council on Exercise (ACE) exercise library
+   * first; where it has no suitable page, the National Academy of Sports Medicine (NASM) exercise library or the National
+   * Strength and Conditioning Association (NSCA). For technique only: no classification or number comes from it, so it
+   * isn't a reference and isn't archived. The page may show another version (equipment or stance) of the same movement;
+   * its title says which.
+   */
+  howTo?: { source: "ACE" | "NASM" | "NSCA"; title: string; url: string };
+  /** A position held or carried, not repeated through a range. Pelland et al. analysed dynamic training only, so these are shown last. */
+  hold?: true;
   /** Muscles that hold a position but don't move a joint through a range: shown, not counted. */
   steadies?: Muscle[];
-  /** Compendium rows for aerobic activities, lightest effort first. */
+  /** Compendium rows (aerobic and interval activities), lightest effort first. None is a Compendium estimate (checked 20 Nov 2026). */
   met?: MetRow[];
 };
 
@@ -92,165 +140,248 @@ const X = (e: Exercise) => e;
 export const EXERCISES: Exercise[] = [
   // --- Bodyweight ---
   X({ id: "pushUp", name: "Push-up", kind: "strength", needs: [["body"]],
+    howTo: { source: "ACE", title: "Push-up", url: "https://www.acefitness.org/resources/everyone/exercise-library/41/push-up/" },
+    evidence: { chest: ["kikuchi-2017"], triceps: ["kikuchi-2017"] },
     moves: "shoulder horizontal adduction (arms together across the chest); elbow extension",
-    direct: ["chest"], indirect: ["triceps", "shoulders"], steadies: ["abs"] }),
+    direct: ["chest"], indirect: ["triceps", "frontDelts"], steadies: ["abs"] }),
   X({ id: "pullUp", name: "Pull-up", kind: "strength", needs: [["pullupBar"]],
+    howTo: { source: "ACE", title: "Pull-ups", url: "https://www.acefitness.org/resources/everyone/exercise-library/191/pull-ups/" },
     moves: "shoulder adduction and extension (elbows down and back); elbow flexion",
     direct: ["lats"], indirect: ["biceps", "upperBack"], steadies: ["forearms"] }),
   X({ id: "invertedRow", name: "Inverted row (under a bar or sturdy table)", kind: "strength", needs: [["pullupBar", "table", "rack", "machines"]],
     moves: "shoulder extension and shoulder-blade retraction (pulling the chest to the bar); elbow flexion",
-    direct: ["lats"], indirect: ["upperBack", "biceps"], steadies: ["forearms", "glutes"] }),
+    direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["forearms", "glutes"] }),
   X({ id: "squatBw", name: "Bodyweight squat", kind: "strength", needs: [["body"]],
+    howTo: { source: "ACE", title: "Bodyweight Squat", url: "https://www.acefitness.org/resources/everyone/exercise-library/135/bodyweight-squat/" },
     moves: "knee extension; hip extension",
     direct: ["quads", "glutes"], indirect: [] }),
-  X({ id: "lunge", name: "Lunge (reverse or forward)", kind: "strength", needs: [["body", "dumbbells", "kettlebell"]],
-    listed: "Dumbbell lunge",
+  X({ id: "lunge", name: "Bodyweight lunge (reverse or forward)", kind: "strength", needs: [["body"]],
+    howTo: { source: "ACE", title: "Forward Lunge", url: "https://www.acefitness.org/resources/everyone/exercise-library/94/forward-lunge/" },
+    evidence: { glutes: ["wei-2023", "krause-neto-2025"] },
     moves: "knee extension; hip extension, one leg at a time",
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "gluteBridge", name: "Glute bridge", kind: "strength", needs: [["body"]],
+    howTo: { source: "ACE", title: "Glute Bridge", url: "https://www.acefitness.org/resources/everyone/exercise-library/49/glute-bridge/" },
     moves: "hip extension (lifting the hips from the floor)",
-    direct: ["glutes"], indirect: ["hamstrings"] }),
+    // Hamstrings not counted: they didn't grow after hip thrust training (Plotkin et al. 2023); same movement.
+    direct: ["glutes"], indirect: [] }),
   X({ id: "singleLegRdl", name: "Single-leg Romanian deadlift", kind: "strength", needs: [["body", "dumbbells", "kettlebell"]],
+    howTo: { source: "ACE", title: "Single-leg Romanian Deadlift", url: "https://www.acefitness.org/resources/everyone/exercise-library/329/single-leg-romanian-deadlift/" },
+    variants: [{ using: ["dumbbells"], name: "Dumbbell single-leg Romanian deadlift" }, { using: ["kettlebell"], name: "Kettlebell single-leg Romanian deadlift" }, { using: ["body"], name: "Single-leg Romanian deadlift (bodyweight)" }],
     moves: "hip extension with a nearly straight knee, on one leg (hinging at the hip)",
     direct: ["hamstrings", "glutes"], indirect: [], steadies: ["lowerBack"] }),
   X({ id: "plank", name: "Plank", kind: "strength", needs: [["body"]],
+    howTo: { source: "ACE", title: "Front Plank", url: "https://www.acefitness.org/resources/everyone/exercise-library/32/front-plank/" },
+    hold: true,
     moves: "holds the trunk straight against gravity (no joint movement)",
     direct: ["abs"], indirect: [] }),
   X({ id: "crunch", name: "Crunch", kind: "strength", needs: [["body"]],
+    howTo: { source: "ACE", title: "Crunch", url: "https://www.acefitness.org/resources/everyone/exercise-library/52/crunch/" },
     moves: "trunk flexion (curling the ribs towards the hips)",
     direct: ["abs"], indirect: [] }),
-  X({ id: "hangingKneeRaise", name: "Hanging knee raise", kind: "strength", needs: [["pullupBar"]],
-    moves: "hip flexion and trunk flexion while hanging",
+  X({ id: "hangingKneeRaise", name: "Hanging knee raise, curling the pelvis up", kind: "strength", needs: [["pullupBar"]],
+    moves: "hip flexion (by the iliopsoas) with trunk flexion (by the abs): curl the pelvis up towards the ribs as the knees rise",
     direct: ["abs"], indirect: [], steadies: ["forearms"] }),
   X({ id: "benchDip", name: "Bench dip", kind: "strength", needs: [["chair", "bench"]],
-    moves: "elbow extension; shoulder extension (hands on a bench behind you)",
-    direct: ["triceps"], indirect: ["chest", "shoulders"] }),
+    howTo: { source: "NASM", title: "Bench Dips", url: "https://www.nasm.org/resource-center/exercise-library/bench-dips" },
+    moves: "elbow extension, and shoulder flexion as you push up (the shoulders extend as you lower; hands on a bench behind you)",
+    direct: ["triceps"], indirect: ["chest", "frontDelts"] }),
   X({ id: "calfRaise", name: "Standing calf raise", kind: "strength", needs: [["body", "stairs", "dumbbells", "machines"]],
+    howTo: { source: "ACE", title: "Standing Calf Raises - Wall", url: "https://www.acefitness.org/resources/everyone/exercise-library/73/standing-calf-raises-wall/" },
+    variants: [{ using: ["machines"], name: "Standing calf raise machine" }, { using: ["dumbbells"], name: "Dumbbell standing calf raise" }, { using: ["body", "stairs"], name: "Standing calf raise (bodyweight, off the edge of a step if you have one)" }],
+    evidence: { calves: ["kinoshita-2023"] },
     moves: "ankle plantar flexion (rising onto the toes)",
     direct: ["calves"], indirect: [] }),
   X({ id: "superman", name: "Back extension on the floor (superman)", kind: "strength", needs: [["body"]],
+    howTo: { source: "ACE", title: "Supermans", url: "https://www.acefitness.org/resources/everyone/exercise-library/9/supermans/" },
     moves: "spine extension; hip extension (lifting chest and legs from the floor, face down)",
-    direct: ["lowerBack"], indirect: ["glutes"] }),
+    direct: ["lowerBack"], indirect: ["glutes", "hamstrings"] }),
   X({ id: "pikePushUp", name: "Pike push-up", kind: "strength", needs: [["body"]],
-    moves: "shoulder flexion (pressing overhead with hips raised); elbow extension",
-    direct: ["shoulders"], indirect: ["triceps", "upperBack"] }),
+    howTo: { source: "NASM", title: "Pike Push-Up", url: "https://www.nasm.org/resource-center/exercise-library/pike-push-up" },
+    moves: "shoulder flexion and abduction (pressing overhead with hips raised); elbow extension",
+    direct: ["frontDelts"], indirect: ["triceps", "sideDelts", "upperBack"] }),
 
   // --- Bands ---
   X({ id: "bandRow", name: "Resistance-band row", kind: "strength", needs: [["bands"]],
+    howTo: { source: "ACE", title: "Standing Row (cable)", url: "https://www.acefitness.org/resources/everyone/exercise-library/335/standing-row/" },
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
-    direct: ["lats"], indirect: ["upperBack", "biceps"] }),
+    direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"] }),
   X({ id: "bandPullApart", name: "Band pull-apart", kind: "strength", needs: [["bands"]],
     moves: "shoulder horizontal abduction (arms apart) and shoulder-blade retraction",
-    direct: ["upperBack"], indirect: ["shoulders"] }),
+    direct: ["upperBack"], indirect: ["rearDelts"] }),
 
   // --- Dumbbells and kettlebells ---
   X({ id: "gobletSquat", name: "Goblet squat", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+    howTo: { source: "ACE", title: "Goblet Squat", url: "https://www.acefitness.org/resources/everyone/exercise-library/362/goblet-squat/" },
+    variants: [{ using: ["dumbbells"], name: "Dumbbell goblet squat" }, { using: ["kettlebell"], name: "Kettlebell goblet squat" }],
     moves: "knee extension; hip extension, holding one weight at the chest",
     direct: ["quads", "glutes"], indirect: [], steadies: ["upperBack", "abs"] }),
+  X({ id: "lungeDb", name: "Dumbbell lunge", kind: "strength", needs: [["dumbbells"]],
+    howTo: { source: "ACE", title: "Lunge (dumbbells)", url: "https://www.acefitness.org/resources/everyone/exercise-library/363/lunge/" },
+    sources: { quads: "Dumbbell Lunge" },
+    moves: "knee extension; hip extension, one leg at a time, holding dumbbells",
+    direct: ["quads", "glutes"], indirect: [] }),
+  X({ id: "dbFly", name: "Flat dumbbell fly", kind: "strength", needs: [["dumbbells"], ["bench"]],
+    howTo: { source: "ACE", title: "Lying Chest Fly", url: "https://www.acefitness.org/resources/everyone/exercise-library/21/lying-chest-fly/" },
+    sources: { chest: "Flat Dumbbell Fly" },
+    moves: "shoulder horizontal adduction with nearly straight elbows, lying on a bench",
+    direct: ["chest"], indirect: [] }),
   X({ id: "dbBench", name: "Dumbbell bench press", kind: "strength", needs: [["dumbbells"], ["bench"]],
-    listed: "Bench press (dumbbell variant)",
+    howTo: { source: "ACE", title: "Chest Press (dumbbells)", url: "https://www.acefitness.org/resources/everyone/exercise-library/19/chest-press/" },
     moves: "shoulder horizontal adduction; elbow extension",
-    direct: ["chest"], indirect: ["triceps", "shoulders"] }),
-  X({ id: "dbRow", name: "One-arm dumbbell row", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+    direct: ["chest"], indirect: ["triceps", "frontDelts"] }),
+  X({ id: "dbRow", name: "One-arm row", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+    howTo: { source: "ACE", title: "Single-arm Row", url: "https://www.acefitness.org/resources/everyone/exercise-library/126/single-arm-row/" },
+    variants: [{ using: ["dumbbells"], name: "One-arm dumbbell row" }, { using: ["kettlebell"], name: "One-arm kettlebell row" }],
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
-    direct: ["lats"], indirect: ["upperBack", "biceps"], steadies: ["lowerBack"] }),
-  X({ id: "dbPress", name: "Dumbbell shoulder press", kind: "strength", needs: [["dumbbells", "kettlebell"]],
-    listed: "Dumbbell shoulder press",
+    direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["lowerBack"] }),
+  X({ id: "dbPress", name: "Shoulder press (dumbbell or kettlebell)", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+    howTo: { source: "ACE", title: "Seated Overhead Press", url: "https://www.acefitness.org/resources/everyone/exercise-library/45/seated-overhead-press/" },
+    variants: [{ using: ["dumbbells"], name: "Dumbbell shoulder press" }, { using: ["kettlebell"], name: "Kettlebell shoulder press" }],
+    studied: { with: ["dumbbells"], as: "dumbbell" },
+    sources: { triceps: "Dumbbell Shoulder Press" },
     moves: "shoulder flexion and abduction (pressing overhead); elbow extension",
-    direct: ["shoulders"], indirect: ["triceps", "upperBack"] }),
-  X({ id: "lateralRaise", name: "Dumbbell lateral raise", kind: "strength", needs: [["dumbbells", "machines"]],
+    direct: ["frontDelts"], indirect: ["triceps", "sideDelts", "upperBack"] }),
+  X({ id: "lateralRaise", name: "Lateral raise", kind: "strength", needs: [["dumbbells", "machines"]],
+    howTo: { source: "ACE", title: "Lateral Raise", url: "https://www.acefitness.org/resources/everyone/exercise-library/26/lateral-raise/" },
+    variants: [{ using: ["dumbbells"], name: "Dumbbell lateral raise" }, { using: ["machines"], name: "Cable or machine lateral raise" }],
+    evidence: { sideDelts: ["larsen-2025"] },
     moves: "shoulder abduction (arms out to the sides)",
-    direct: ["shoulders"], indirect: [] }),
+    direct: ["sideDelts"], indirect: [] }),
   X({ id: "curl", name: "Biceps curl", kind: "strength", needs: [["dumbbells", "barbell", "bands", "machines"]],
-    listed: "Biceps curl; dumbbell biceps curl; machine curl",
+    howTo: { source: "ACE", title: "Seated Biceps Curl", url: "https://www.acefitness.org/resources/everyone/exercise-library/44/seated-biceps-curl/" },
+    variants: [{ using: ["dumbbells"], name: "Dumbbell biceps curl" }, { using: ["barbell"], name: "Barbell biceps curl" }, { using: ["bands"], name: "Resistance-band biceps curl" }, { using: ["machines"], name: "Cable or machine biceps curl" }],
+    sources: { biceps: "Bicep Curl" },
     moves: "elbow flexion",
     direct: ["biceps"], indirect: [], steadies: ["forearms"] }),
   X({ id: "overheadExt", name: "Overhead triceps extension", kind: "strength", needs: [["dumbbells", "kettlebell", "bands", "machines"]],
-    listed: "Overhead dumbbell extensions; cable overhead extension",
+    howTo: { source: "ACE", title: "Triceps Extension", url: "https://www.acefitness.org/resources/everyone/exercise-library/74/triceps-extension/" },
+    variants: [{ using: ["dumbbells"], name: "Dumbbell overhead triceps extension" }, { using: ["kettlebell"], name: "Kettlebell overhead triceps extension" }, { using: ["bands"], name: "Resistance-band overhead triceps extension" }, { using: ["machines"], name: "Cable overhead triceps extension" }],
+    studied: { with: ["dumbbells"], as: "dumbbell" },
+    sources: { triceps: "Overhead Dumbbell Extensions" },
     moves: "elbow extension with the arm overhead",
     direct: ["triceps"], indirect: [] }),
   X({ id: "rdl", name: "Romanian deadlift", kind: "strength", needs: [["dumbbells", "kettlebell", "barbell"]],
+    howTo: { source: "ACE", title: "Romanian Deadlift", url: "https://www.acefitness.org/resources/everyone/exercise-library/317/romanian-deadlift/" },
+    variants: [{ using: ["dumbbells"], name: "Dumbbell Romanian deadlift" }, { using: ["kettlebell"], name: "Kettlebell Romanian deadlift" }, { using: ["barbell"], name: "Barbell Romanian deadlift" }],
+    evidence: { hamstrings: ["morin-2025"] },
     moves: "hip extension with nearly straight knees (hinging at the hips)",
     direct: ["hamstrings", "glutes"], indirect: [], steadies: ["lowerBack", "forearms", "upperBack"] }),
   X({ id: "farmerCarry", name: "Farmer's carry", kind: "strength", needs: [["dumbbells", "kettlebell"]],
+    howTo: { source: "ACE", title: "Farmer's Carry", url: "https://www.acefitness.org/resources/everyone/exercise-library/359/farmer-s-carry/" },
+    hold: true,
+    variants: [{ using: ["dumbbells"], name: "Dumbbell farmer's carry" }, { using: ["kettlebell"], name: "Kettlebell farmer's carry" }],
     moves: "gripping heavy weights while walking (holding, little joint movement)",
     direct: ["forearms"], indirect: [], steadies: ["upperBack", "abs"] }),
-  X({ id: "kbSwing", name: "Kettlebell swing", kind: "aerobic", needs: [["kettlebell"]],
+  X({ id: "kbSwing", name: "Kettlebell swing", kind: "intervals", needs: [["kettlebell"]],
+    howTo: { source: "ACE", title: "Swing", url: "https://www.acefitness.org/resources/everyone/exercise-library/391/swing/" },
     moves: "fast, repeated hip extension (hinging and snapping the hips forward)",
     direct: ["glutes", "hamstrings"], indirect: [], steadies: ["lowerBack", "forearms"],
     met: [{ code: "02058", met: 9.8, label: "Kettle bell swings" }] }),
 
   // --- Barbell ---
   X({ id: "backSquat", name: "Barbell back squat", kind: "strength", needs: [["barbell"], ["rack"]],
-    listed: "Back squat",
-    moves: "knee extension; hip extension",
+    howTo: { source: "ACE", title: "Back Squat", url: "https://www.acefitness.org/resources/everyone/exercise-library/11/back-squat/" },
+    sources: { quads: "Back Squat" },
+    evidence: { glutes: ["krause-neto-2025", "plotkin-2023"] },
+    moves: "knee extension; hip extension (squatting to thighs parallel with the floor or lower)",
     direct: ["quads", "glutes"], indirect: [], steadies: ["lowerBack", "abs"] }),
   X({ id: "deadlift", name: "Deadlift", kind: "strength", needs: [["barbell", "kettlebell", "dumbbells"]],
+    howTo: { source: "ACE", title: "Deadlift", url: "https://www.acefitness.org/resources/everyone/exercise-library/6/deadlift/" },
+    variants: [{ using: ["barbell"], name: "Barbell deadlift" }, { using: ["kettlebell"], name: "Kettlebell deadlift" }, { using: ["dumbbells"], name: "Dumbbell deadlift" }],
     moves: "hip extension; knee extension (lifting a weight from the floor)",
     direct: ["glutes", "hamstrings"], indirect: ["quads"], steadies: ["lowerBack", "forearms", "upperBack"] }),
   X({ id: "benchPress", name: "Barbell bench press", kind: "strength", needs: [["barbell"], ["bench"], ["rack"]],
-    listed: "Bench press",
+    howTo: { source: "ACE", title: "Chest Press (barbell)", url: "https://www.acefitness.org/resources/everyone/exercise-library/5/chest-press/" },
+    sources: { chest: "Bench Press", frontDelts: "Bench Press", triceps: "Flat Bench Press" },
     moves: "shoulder horizontal adduction; elbow extension",
-    direct: ["chest"], indirect: ["triceps", "shoulders"] }),
+    direct: ["chest"], indirect: ["triceps", "frontDelts"] }),
   X({ id: "ohp", name: "Barbell overhead press", kind: "strength", needs: [["barbell"]],
-    listed: "Barbell shoulder press",
-    moves: "shoulder flexion (pressing overhead); elbow extension",
-    direct: ["shoulders"], indirect: ["triceps", "upperBack"], steadies: ["abs"] }),
+    howTo: { source: "ACE", title: "Standing Shoulder Press", url: "https://www.acefitness.org/resources/everyone/exercise-library/71/standing-shoulder-press/" },
+    sources: { frontDelts: "Barbell Shoulder Press", triceps: "Shoulder Press" },
+    moves: "shoulder flexion and abduction (pressing overhead); elbow extension",
+    direct: ["frontDelts"], indirect: ["triceps", "sideDelts", "upperBack"], steadies: ["abs"] }),
+  X({ id: "frontRaise", name: "Barbell front raise", kind: "strength", needs: [["barbell"]],
+    howTo: { source: "ACE", title: "Front Raise (dumbbells)", url: "https://www.acefitness.org/resources/everyone/exercise-library/54/front-raise/" },
+    sources: { frontDelts: "Barbell Shoulder Front Raise" },
+    moves: "shoulder flexion (raising straight arms in front to shoulder height)",
+    direct: ["frontDelts"], indirect: [] }),
   X({ id: "bbRow", name: "Barbell bent-over row", kind: "strength", needs: [["barbell"]],
-    listed: "Bent-over barbell row",
+    howTo: { source: "ACE", title: "Bent-over Row", url: "https://www.acefitness.org/resources/everyone/exercise-library/12/bent-over-row/" },
+    sources: { biceps: "Bent-Over Barbell Row" },
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
-    direct: ["lats"], indirect: ["upperBack", "biceps"], steadies: ["lowerBack", "hamstrings"] }),
+    direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["lowerBack", "hamstrings"] }),
   X({ id: "hipThrust", name: "Hip thrust", kind: "strength", needs: [["barbell", "dumbbells"], ["bench", "chair"]],
+    howTo: { source: "ACE", title: "Elevated Glute Bridge (dumbbells)", url: "https://www.acefitness.org/resources/everyone/exercise-library/367/elevated-glute-bridge/" },
+    variants: [{ using: ["barbell"], name: "Barbell hip thrust" }, { using: ["dumbbells"], name: "Dumbbell hip thrust" }],
+    evidence: { glutes: ["plotkin-2023", "krause-neto-2025"] },
     moves: "hip extension (back on a bench, lifting the hips)",
-    direct: ["glutes"], indirect: ["hamstrings"] }),
+    // Hamstrings not counted: no meaningful growth after 9 weeks of hip thrust training (Plotkin et al. 2023).
+    direct: ["glutes"], indirect: [] }),
 
   // --- Machines and cables ---
   X({ id: "legPress", name: "Leg press", kind: "strength", needs: [["machines"]],
-    listed: "Leg press",
+    howTo: { source: "ACE", title: "Seated Leg Press", url: "https://www.acefitness.org/resources/everyone/exercise-library/154/seated-leg-press/" },
+    sources: { quads: "Leg Press" },
+    evidence: { glutes: ["krause-neto-2025"] },
     moves: "knee extension; hip extension",
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "legExtension", name: "Leg extension", kind: "strength", needs: [["machines"]],
-    listed: "Leg extension",
+    howTo: { source: "ACE", title: "Seated Leg Extension", url: "https://www.acefitness.org/resources/everyone/exercise-library/183/seated-leg-extension/" },
+    sources: { quads: "Leg Extension" },
     moves: "knee extension",
     direct: ["quads"], indirect: [] }),
   X({ id: "legCurl", name: "Leg curl", kind: "strength", needs: [["machines"]],
-    listed: "Leg curl",
+    howTo: { source: "ACE", title: "Lying Hamstrings Curl", url: "https://www.acefitness.org/resources/everyone/exercise-library/153/lying-hamstrings-curl/" },
+    sources: { hamstrings: "Leg Curl" },
     moves: "knee flexion",
     direct: ["hamstrings"], indirect: ["calves"] }),
   X({ id: "latPulldown", name: "Lat pulldown", kind: "strength", needs: [["machines"]],
-    listed: "Lat pulldown",
+    howTo: { source: "ACE", title: "Seated Lat Pulldown", url: "https://www.acefitness.org/resources/everyone/exercise-library/158/seated-lat-pulldown/" },
+    sources: { biceps: "Lat Pulldown", upperBack: "Lat Pulldown" },
     moves: "shoulder adduction and extension (elbows down); elbow flexion",
     direct: ["lats"], indirect: ["biceps", "upperBack"] }),
   X({ id: "cableRow", name: "Seated cable row", kind: "strength", needs: [["machines"]],
-    listed: "Seated row",
+    howTo: { source: "ACE", title: "Seated Row", url: "https://www.acefitness.org/resources/everyone/exercise-library/48/seated-row/" },
+    sources: { biceps: "Seated Row", upperBack: "Seated Row" },
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
-    direct: ["lats"], indirect: ["upperBack", "biceps"] }),
+    direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"] }),
   X({ id: "chestPress", name: "Chest press machine", kind: "strength", needs: [["machines"]],
-    listed: "Chest press; machine press",
+    howTo: { source: "ACE", title: "Seated Chest Press", url: "https://www.acefitness.org/resources/everyone/exercise-library/188/seated-chest-press/" },
+    sources: { frontDelts: "Chest Press", triceps: "Machine Press" },
     moves: "shoulder horizontal adduction; elbow extension",
-    direct: ["chest"], indirect: ["triceps", "shoulders"] }),
+    direct: ["chest"], indirect: ["triceps", "frontDelts"] }),
   X({ id: "pecFly", name: "Chest fly (machine or cable)", kind: "strength", needs: [["machines"]],
-    listed: "Flat dumbbell fly (machine or cable variant)",
+    howTo: { source: "ACE", title: "Standing Chest Fly (cable)", url: "https://www.acefitness.org/resources/everyone/exercise-library/160/standing-chest-fly/" },
     moves: "shoulder horizontal adduction with nearly straight elbows",
-    direct: ["chest"], indirect: ["shoulders"] }),
+    direct: ["chest"], indirect: [] }),
   X({ id: "shoulderPressMachine", name: "Shoulder press machine", kind: "strength", needs: [["machines"]],
-    listed: "Machine press (shoulder variant)",
+    howTo: { source: "ACE", title: "Seated Shoulder Press", url: "https://www.acefitness.org/resources/everyone/exercise-library/186/seated-shoulder-press/" },
+    sources: { triceps: "Shoulder Press" },
     moves: "shoulder flexion and abduction (pressing overhead); elbow extension",
-    direct: ["shoulders"], indirect: ["triceps", "upperBack"] }),
-  X({ id: "pushdown", name: "Cable triceps pushdown", kind: "strength", needs: [["machines", "bands"]],
-    listed: "Triceps push-down",
+    direct: ["frontDelts"], indirect: ["triceps", "sideDelts", "upperBack"] }),
+  X({ id: "pushdown", name: "Triceps pushdown", kind: "strength", needs: [["machines", "bands"]],
+    howTo: { source: "ACE", title: "Triceps Pushdowns", url: "https://www.acefitness.org/resources/everyone/exercise-library/185/triceps-pushdowns/" },
+    variants: [{ using: ["machines"], name: "Cable triceps pushdown" }, { using: ["bands"], name: "Resistance-band triceps pushdown" }],
+    sources: { triceps: "Tricep Push-Down" },
     moves: "elbow extension",
     direct: ["triceps"], indirect: [] }),
-  X({ id: "facePull", name: "Face pull (cable or band)", kind: "strength", needs: [["machines", "bands"]],
+  X({ id: "facePull", name: "Face pull", kind: "strength", needs: [["machines", "bands"]],
+    howTo: { source: "NSCA", title: "Face Pull (Machine), from the NSCA's Exercise Technique Manual", url: "https://www.nsca.com/education/articles/kinetic-select/face-pull-machine/" },
+    variants: [{ using: ["machines"], name: "Cable face pull" }, { using: ["bands"], name: "Resistance-band face pull" }],
     moves: "shoulder horizontal abduction and external rotation; shoulder-blade retraction",
-    direct: ["upperBack", "shoulders"], indirect: [] }),
+    direct: ["upperBack", "rearDelts"], indirect: [] }),
   X({ id: "shrug", name: "Shrug", kind: "strength", needs: [["dumbbells", "barbell", "machines"]],
-    moves: "shoulder-blade elevation (shoulders up towards the ears)",
+    howTo: { source: "ACE", title: "Standing Shrug", url: "https://www.acefitness.org/resources/everyone/exercise-library/75/standing-shrug/" },
+    variants: [{ using: ["dumbbells"], name: "Dumbbell shrug" }, { using: ["barbell"], name: "Barbell shrug" }, { using: ["machines"], name: "Shrug machine" }],
+    moves: "shoulder-blade elevation (shoulders up towards the ears), done by the trapezius; the rhomboids retract the shoulder blades instead",
     direct: ["upperBack"], indirect: [], steadies: ["forearms"] }),
   X({ id: "backExtension", name: "Back extension (45° bench or machine)", kind: "strength", needs: [["machines"]],
+    evidence: { hamstrings: ["bourne-2017"] },
     moves: "spine extension; hip extension",
     direct: ["lowerBack"], indirect: ["glutes", "hamstrings"] }),
   X({ id: "cableCrunch", name: "Cable crunch", kind: "strength", needs: [["machines"]],
+    howTo: { source: "ACE", title: "Standing Crunch (cable)", url: "https://www.acefitness.org/resources/everyone/exercise-library/331/standing-crunch/" },
     moves: "trunk flexion against a cable",
     direct: ["abs"], indirect: [] }),
 
@@ -286,7 +417,18 @@ export const EXERCISES: Exercise[] = [
     moves: "swimming", direct: [], indirect: [],
     met: [{ code: "18240", met: 5.8, label: "Swimming laps, freestyle, slow, recreational" },
       { code: "18230", met: 9.8, label: "Swimming laps, freestyle, fast, vigorous effort" }] }),
-  X({ id: "burpee", name: "Burpees, jumping jacks and similar", kind: "aerobic", needs: [["body"]],
+  X({ id: "burpee", name: "Burpees, jumping jacks and similar", kind: "intervals", needs: [["body"]],
+    howTo: { source: "NASM", title: "Squat Thrust Burpees", url: "https://www.nasm.org/resource-center/exercise-library/squat-thrust-burpees" },
     moves: "fast whole-body calisthenics", direct: [], indirect: [],
     met: [{ code: "02020", met: 7.5, label: "Calisthenics (e.g., pushups, sit ups, pull-ups, jumping jacks, burpees, battling ropes), vigorous effort" }] }),
 ];
+
+/** True when counting muscle `m` in `e` is supported by studies that measured muscle growth (`evidence`). */
+export const isSupported = (e: Exercise, m: Muscle) => !e.sources?.[m] && !!e.evidence?.[m]?.length;
+
+/** True when the planner's classification of muscle `m` in `e` is its own assumption: neither from Pelland et al.'s
+ * table nor supported by studies that measured muscle growth. */
+export const isAssumed = (e: Exercise, m: Muscle) => !e.sources?.[m] && !e.evidence?.[m]?.length;
+
+/** Counted muscles (direct and indirect) whose classification is the planner's own assumption. */
+export const assumedMuscles = (e: Exercise) => [...e.direct, ...e.indirect].filter((m) => isAssumed(e, m));

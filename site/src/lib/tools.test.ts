@@ -39,7 +39,7 @@ for (const slug of folders) {
   test(`${slug}: every citation is in the reference list, and every reference has an archived copy where the tool needs one`, () => {
     const refsPath = join(dir, "references.json");
     if (!existsSync(refsPath)) return;
-    const refs = json(refsPath).sources as { id: string; archive: { asset?: string; release?: string }[] }[];
+    const refs = json(refsPath).sources as { id: string; archive: { asset?: string; release?: string; private?: string; reason?: string; sha256?: string }[] }[];
     const ids = refs.map((r) => r.id);
     assert.equal(new Set(ids).size, ids.length, "duplicate reference ids");
     const code = walk(dir).filter((f) => /\.(astro|ts)$/.test(f)).map((f) => readFileSync(f, "utf8")).join("\n");
@@ -50,7 +50,13 @@ for (const slug of folders) {
     for (const r of refs) {
       if (!optional) assert.ok(r.archive.length, `${r.id} has no archived copy`);
       else if (!r.archive.length) assert.match(String((r as { accessed?: string }).accessed), /^\d{4}-\d{2}-\d{2}$/, `${r.id}: a source without an archived copy needs "accessed" (the date it was read)`);
-      for (const a of r.archive) assert.ok(a.asset || a.release, `${r.id}: archived copies are release files ({"asset": ...})`);
+      for (const a of r.archive) assert.ok(a.asset || a.release || a.private, `${r.id}: archived copies are release files ({"asset": ...}) or private copies ({"private": ...})`);
+      // A private copy (publisher doesn't allow redistribution) says why, and is never also a release file.
+      for (const a of r.archive) if (a.private) {
+        assert.ok(a.reason, `${r.id}: private copy ${a.private} needs a 'reason'`);
+        assert.ok(!registry.has(a.private), `${r.id}: ${a.private} is private, so it must not be in sources/archive.json`);
+        if (a.sha256) assert.match(a.sha256, /^[0-9a-f]{64}$/, `${r.id}: ${a.private} sha256`);
+      }
       // A release copy must be in the registry; until the workflow has verified it, the page says it isn't available yet.
       for (const a of r.archive) if (a.asset) assert.ok(registry.has(a.asset), `${r.id}: ${a.asset} is not listed in sources/archive.json`);
     }

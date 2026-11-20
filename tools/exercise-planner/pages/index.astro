@@ -23,12 +23,15 @@ const base = import.meta.env.BASE_URL;
 
     <section class="panel" aria-labelledby="h-equip">
       <h2 id="h-equip">2. What equipment do you have? <span class="summary-note" id="equipNote"></span></h2>
+      <label class="check sans"><input type="checkbox" id="bodyweight" /> <span>Include bodyweight exercises <span class="muted small">(push-ups, squats and so on, no equipment)</span></span></label>
       <p class="preset-row sans" id="presetButtons"></p>
       <details>
         <summary>Choose individual items</summary>
         <div class="details-body check-columns" id="equipmentBoxes"></div>
       </details>
     </section>
+
+    <p class="sans small jump"><a href="#h-results">Jump to the suggestions ↓</a></p>
 
     <section class="panel" aria-labelledby="h-options">
       <h2 id="h-options" class="sr-only">Options</h2>
@@ -67,15 +70,17 @@ const base = import.meta.env.BASE_URL;
 
     <section class="panel" aria-labelledby="h-results">
       <h2 id="h-results">3. Suggestions</h2>
+      <p class="small sans" id="resultSummary" role="status"></p>
       <p class="small sans">
         Each muscle gets <strong>1 set</strong> from a set of an exercise that trains it directly, and <strong>½ set</strong>
-        from one that trains it indirectly, a counting method that best predicted muscle growth in a 2026 analysis of
-        training studies <Fragment set:html={cite("pelland-2026")} />. The WHO recommends muscle-strengthening activities that
+        from one that trains it indirectly: the counting method with the strongest evidence in a 2026 analysis of training
+        studies <Fragment set:html={cite("pelland-2026")} />. The WHO recommends muscle-strengthening activities that
         involve all major muscle groups on 2 or more days a week, and 150–300 minutes of moderate or 75–150 minutes of vigorous
         aerobic activity a week, for adults <Fragment set:html={cite("who-2020")} />. Aerobic effort is in METs (multiples of the
         energy used sitting at rest) from the Compendium of Physical Activities <Fragment set:html={cite("compendium-2024")} />.
+        Every list counts <strong>one set</strong> of each exercise; how many sets you do, and on how many days, is up to you.
       </p>
-      <div id="results" aria-live="polite"></div>
+      <div id="results"></div>
     </section>
   </div>
 
@@ -96,6 +101,15 @@ const base = import.meta.env.BASE_URL;
     #planner figure.chart { margin: 8px 0; }
     #planner svg.radar { width: 100%; max-width: 520px; height: auto; display: block; }
     #planner .badge { font-family: var(--sans); font-size: 0.75rem; font-weight: 700; padding: 1px 6px; border-radius: 3px; background: var(--warn-soft); }
+    #planner button[aria-pressed="true"] { background: var(--navy); color: #fff; }
+    #planner .compare { border-collapse: collapse; margin: 8px 0; }
+    #planner .compare th, #planner .compare td { text-align: left; padding: 3px 12px 3px 0; border-bottom: 1px solid #d6d2b8; }
+    #planner .option-fold { margin: 12px 0; }
+    #planner .option-fold > summary { font-weight: 700; }
+    #planner .chart-table table { border-collapse: collapse; }
+    #planner .chart-table th, #planner .chart-table td { text-align: left; padding: 2px 14px 2px 0; }
+    #planner h4 { margin: 12px 0 2px; }
+    #planner .jump { margin: 4px 0 12px; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   </style>
   <script>

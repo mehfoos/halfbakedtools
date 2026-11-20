@@ -27,6 +27,12 @@ Adding a new archived copy:
 5. **Cite it** in the tool's `references.json` with `{"asset": "<file name>"}`. The reference list links to the
    release copy once it is verified, and says "archived copy not yet available" until then.
 
+**Copies that can't be redistributed** (paywalled articles, or copies marked "all rights reserved" or "no further
+distribution"; owner's decision, 20 Nov 2026) are not put in the release. The owner keeps them privately (for example in
+Google Drive), and the tool's `references.json` lists them as `{"private": "<file name>", "sha256": "...", "reason":
+"..."}`; they are not listed in `archive.json`. The reference list says the copy is kept privately and why, and shows
+its checksum.
+
 The *Archive sources to release* workflow (owner-run, from the Actions tab) was used once, in Nov 2026, to fill the
 release with the files collected until then, including the copies that used to be committed to this folder; their
 history was then removed from the repository. It can re-check everything, but is not needed for new files.

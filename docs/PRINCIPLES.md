@@ -74,6 +74,12 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
     of the copy checked; the owner attaches it to the release by hand; the editor then verifies the release copy
     (`scripts/archive_release.py --check`) and commits the result, `sources/release-manifest.json`. A file that
     differs from the checked copy is never accepted.
+  - **Private copies:** a source whose publisher doesn't allow redistribution is not put in the release. The owner
+    keeps a private copy, and the reference lists it as `{"private": ..., "sha256": ..., "reason": ...}`; the
+    reference list says the copy is kept privately and why (see `sources/README.md`).
+  - **Further-reading links:** a link that only helps a reader do something (for example an exercise how-to page),
+    and that nothing on the site relies on, is not a reference: it isn't numbered or archived, and its source is named
+    next to the link.
   - **Blocked downloads:** if a document can't be downloaded automatically, say so and ask the owner to download it.
     Never substitute a guess, and never work around a site's blocks or terms.
   - **Tests:** they fail if a citation is missing from the reference list, a reference in a tool that requires
@@ -162,6 +168,7 @@ reason.
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-20 | Sources that can't be redistributed are kept privately by the owner and listed as private copies; links that only help a reader (exercise how-to pages) are not references and aren't archived | Owner's decisions while checking the exercise planner's evidence |
 | 2026-11-18 | One style for data caveats: fixed kinds (Alpha, Beta, Not yet checked, Assumption, Estimate, Translated, Borrowed), rendered by `caveat()` / `<Caveat>`; the existing alpha, "not yet checked" and estimate disclaimers converted; generated reports use the same labels | Owner: disclaimers of this nature should look and read the same everywhere |
 | 2026-11-18 | History clean-up: the 39 copies once committed to `sources/` (and `docs/sources/`), the food tables, and deleted OpenStax copies were moved to the release and removed from the repository's history; `main` and `office-to-pdf` were force-pushed and the release tags moved (by a one-off owner-run workflow, then deleted); other clones must be re-cloned | The repository had reached about 180 MB of reference files; clones now stay small |
 | 2026-11-20 | Archived copies are required for tools with health information and optional for utility tools (`"archive": "optional"` in `tool.json`); the PDF tools' four PDF/A references are cited without archived copies | The archive rule exists so people can check information that could harm them if wrong; for utility tools it costs the owner uploads for little benefit |

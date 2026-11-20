@@ -2,13 +2,17 @@
 import ToolLayout from "@site/layouts/ToolLayout.astro";
 import { referencesFor } from "@site/lib/references.ts";
 import references from "../references.json";
-import { EXERCISES, EQUIPMENT, MUSCLES } from "../web/catalogue.ts";
+import Caveat from "@site/components/Caveat.astro";
+import { EXERCISES, EQUIPMENT, MUSCLES, isAssumed, isSupported, type Exercise, type Muscle } from "../web/catalogue.ts";
 const { cite } = referencesFor(references as Parameters<typeof referencesFor>[0]);
 const muscle = Object.fromEntries(MUSCLES.map((m) => [m.id, m.label]));
 const equip = Object.fromEntries(EQUIPMENT.map((e) => [e.id, e.label]));
 const needs = (n: string[][]) => n.length ? n.map((g) => g.map((e) => equip[e]).join(" or ")).join("; plus ") : "nothing";
 const strength = EXERCISES.filter((e) => e.direct.length);
+const cell = (e: Exercise, ms: Muscle[]) => ms.map((m) => muscle[m] + (isAssumed(e, m) ? " ◇" : isSupported(e, m) ? " †" : "")).join(", ") || "–";
+const sourced = (e: Exercise) => Object.entries(e.sources ?? {}).map(([m, n]) => `${muscle[m]}: "${n}"`).join("; ");
 const aerobic = EXERCISES.filter((e) => e.met?.length);
+const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "light");
 ---
 <ToolLayout slug="exercise-planner" page="methods">
   <h1>Methods and sources</h1>
@@ -16,7 +20,7 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
 
   <h2>How suggestions are found</h2>
   <p>
-    You choose targets (any of 13 muscle groups, and heart and lungs) and the equipment you have. The planner keeps
+    You choose targets (any of {MUSCLES.length} muscle groups, and heart and lungs) and the equipment you have. The planner keeps
     the exercises your equipment allows and that help at least one target, then tries every combination of up to the
     number of exercises you allow. It ranks them by:
   </p>
@@ -31,8 +35,30 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
     your only targets are chest and triceps) are searched as one, then swapped for each other to make varied lists.
     The planner picks the best few lists that differ enough from each other ("All different" shares no exercises; "Some
     shared" lets a list share up to half its exercises with an earlier one), preferring, among equals, the more intense
-    aerobic activity and the exercises that work more muscles overall. If more than 30 exercises could help, it keeps
+    aerobic activity and the exercises that work more muscles overall. If there aren't enough lists that differ that
+    much, the limit is loosened a step at a time, only lists as good as the best are used, and the page says how much
+    the later suggestions share. A "covered" level above one set (2 or 3) is reached by listing different exercises
+    for the same muscle, never the same exercise twice. If more than 30 exercises could help, it keeps
     the best three for each target plus those that help most overall, and the page says so.
+  </p>
+  <p>
+    <strong>Names and order.</strong> Where an exercise can be done with different equipment (a lateral raise with a dumbbell
+    or a cable, a curl with a dumbbell, barbell, band or cable), the list shows the version for the equipment you ticked, and
+    the general name where the version doesn't matter. Every version is counted the same: the muscles come from the movement,
+    not the equipment. Where the study behind a classification used one version only (the Pelland et al. table names the
+    dumbbell shoulder press and the overhead dumbbell extension, for example), the others are marked as assumed to load the same muscles. Within a suggestion, exercises are
+    listed by how many muscle groups they work (most first), then holds and carries (which the studies behind the counting
+    did not analyse), then heart-and-lungs activities. This order is for reading only and doesn't change what is suggested.
+  </p>
+  <p>
+    <strong>How-to links.</strong> Where the American Council on Exercise (ACE) free exercise library has a page for an
+    exercise, the suggestion links to it ("How to do it") for technique: starting position, movement and common faults. Where
+    it doesn't, the link goes to the National Academy of Sports Medicine (NASM) exercise library (bench dip, pike push-up,
+    burpee) or to the National Strength and Conditioning Association's excerpt from its exercise technique manual (face
+    pull). Nothing the planner shows is taken from those pages, so they are not in the reference list and no copy is
+    archived. Some pages show another version of the same movement (a barbell instead of dumbbells, standing instead of
+    kneeling); the source and page title are shown so you can tell. The inverted row, band pull-apart, 45° back extension
+    and hanging knee raise have no link yet: no page from these or similar organisations gave step-by-step instructions for them.
   </p>
 
   <h2>Counting sets: direct and indirect</h2>
@@ -41,8 +67,8 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
     <strong>½ set</strong> for a muscle it trains <em>indirectly</em>. This is the "fractional" method of Pelland and
     colleagues, whose meta-regressions of resistance-training studies classified each set as direct (the measured muscle
     was likely the primary force generator) or indirect (the muscle was likely meaningfully trained but as a helper, or
-    synergist), and found that counting indirect sets as half a set gave the strongest evidence for predicting muscle growth
-    <Fragment set:html={cite("pelland-2026")} />.
+    synergist), and found that the relative evidence for this "fractional" counting was the strongest of the methods they
+    compared, for both muscle growth and strength <Fragment set:html={cite("pelland-2026")} />.
   </p>
   <p>
     An earlier review by Schoenfeld and colleagues found that multi-joint exercises such as presses, rows and squats
@@ -52,43 +78,130 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
     The planner follows the later, larger analysis and counts half.
   </p>
 
-  <h2>Which muscles each exercise works</h2>
+  <h2 id="which-muscles">Which muscles each exercise works</h2>
   <p>
-    <strong>Exercises classified in the analysis.</strong> Pelland and colleagues list how they classified common exercises
-    for the quadriceps, hamstrings, chest, front of the shoulders, trapezius, triceps and biceps (Table 1 of the published
-    article; Table 1A of the archived preprint) <Fragment set:html={cite("pelland-2026")} />. Where an exercise appears there, the planner follows it: for
-    example the bench press trains the chest directly and the triceps and front shoulders indirectly; rows and pulldowns
-    train the biceps and trapezius indirectly; squats, lunges and the leg press don't count for the hamstrings.
+    <strong>From the study.</strong> Pelland and colleagues list how they classified the exercises in the studies they
+    analysed, for these muscles only: the quadriceps, the rectus femoris (one of the four quadriceps muscles), the
+    hamstrings, the chest, the front of the shoulders (anterior deltoid), the trapezius, the triceps and the biceps
+    (Table 1 of the published article; Table 1A of the archived preprint) <Fragment set:html={cite("pelland-2026")} />.
+    Where that table classifies an exercise for one of those muscles, the planner follows it exactly. For example, the
+    bench press trains the chest directly and the front shoulders and triceps indirectly; the lat pulldown and seated row
+    train the biceps and trapezius indirectly; squats, lunges and the leg press don't count for the hamstrings. The
+    authors note that their classification "was not wholly objective".
   </p>
   <p>
-    <strong>Everything else, by analogy.</strong> The other exercises, and the muscles that table doesn't cover (lats,
-    glutes, lower back, abs, calves, forearms), are classified by the planner from anatomy. Each exercise is described by
-    the joint movements it loads (for example, knee and hip extension in a squat), and the muscles that produce those
-    movements come from an open anatomy textbook <Fragment set:html={cite("openstax-ap2e")} />: for example the gluteus
-    maximus extends the hip, the hamstrings bend the knee and extend the hip, the erector spinae is the main extensor of
-    the spine, the latissimus dorsi pulls the upper arm down and back, and the gastrocnemius and soleus point the foot.
-    A muscle producing the exercise's main movement counts as direct; one producing a secondary movement counts as indirect.
-    These exercises are marked <span class="tag">by analogy</span> in the planner. This is a judgement, made openly, not a
-    measurement.
+    <strong>The planner's own classification.</strong> Every other assignment is the planner's own, made from anatomy.
+    That includes all of the lats, glutes, lower back, abs, calves and forearms, which the table doesn't cover, and the
+    covered muscles in exercises it doesn't list. Each exercise is described by the joint movements it loads (for
+    example, knee and hip extension in a squat), and the muscles that produce those movements come from an open anatomy
+    textbook <Fragment set:html={cite("openstax-ap2e")} />: for example the gluteus maximus extends the hip, the hamstrings
+    bend the knee and extend the hip, the erector spinae is the main extensor of the spine, the latissimus dorsi pulls the
+    upper arm down and back, and the gastrocnemius and soleus point the foot. A muscle producing the exercise's main
+    movement counts as direct; one producing a secondary movement counts as indirect.
   </p>
+  <p>
+    <strong>Shoulders in three parts.</strong> The deltoid is split into front, side and rear, because its parts do
+    different jobs: the front part flexes and turns the arm inwards, the side part raises it out to the side, and the rear
+    part extends it and turns it outwards <Fragment set:html={cite("stokey-2024")} />. One "shoulders" group would
+    call the shoulders covered by a face pull alone, which mainly works the rear. Only the front part is in Pelland and
+    colleagues' table. Neither anatomy source says which muscles move the arm backwards at shoulder height (horizontal
+    abduction, as in a face pull or band pull-apart); counting the rear deltoid there is the planner's own reading.
+  </p>
+  <Caveat kind="assumption">These assignments are marked ◇ in the planner and in the table below. They are a
+    judgement made openly, not a measurement, and the counting method itself was only tested on the muscles and the kind
+    of exercises in the study. Where studies that measured muscle growth support one, it is marked † instead
+    (<a href="#growth-evidence">see below</a>).</Caveat>
+  <h3 id="growth-evidence">Evidence from studies that measured muscle growth</h3>
+  <p>
+    The planner's own classifications are being compared, one muscle group at a time, with training studies that measured
+    muscle size (by MRI or ultrasound) before and after, which say more than studies of muscle activity (EMG) alone. Where
+    such studies show that a muscle grows with an exercise, it is marked † instead of ◇. That supports counting the muscle;
+    whether it counts as a full or half set remains the planner's judgement.
+  </p>
+  <p>
+    A study counts here if it trained people for several weeks, measured the muscle's size at rest before and after (MRI,
+    ultrasound or biopsy), and either trained that exercise on its own or compared it with a control group or another
+    exercise. Studies that only measured muscle activity, or muscle thickness during a contraction, or that trained
+    several exercises together for the same muscle, are not enough on their own; nor are studies of patients (for
+    example with back pain) applied to healthy adults.
+  </p>
+  <ul>
+    <li><strong>Glutes</strong> (checked 20 November 2026). A 2025 systematic review of 12 training studies found that
+      the gluteus maximus grew with back squats to parallel or deeper, the leg press, the hip thrust and progressive
+      bodyweight leg exercises <Fragment set:html={cite("krause-neto-2025")} />. In a randomised trial, 9 weeks of hip
+      thrusts or back squats (equal sets) grew the gluteus maximus similarly <Fragment set:html={cite("plotkin-2023")} />.
+      The bodyweight study's programme was mostly lunges, Bulgarian split squats and skating squats; it thickened the
+      gluteus maximus as much as barbell squats did <Fragment set:html={cite("wei-2023")} />, so the planner's bodyweight
+      lunge is marked †, but its plain bodyweight squat is not.
+      Squats to only 90° of knee bend grew it less, or not significantly, in the studies reviewed, so the planner's squat is
+      to parallel or lower. No study isolated the deadlift, Romanian deadlift, kettlebell swing, dumbbell lunge, goblet
+      squat or back extension, so those stay marked ◇. In the bodyweight study the rectus femoris (part of the
+      quadriceps) didn't thicken significantly, so it gives no support for the quadriceps.</li>
+    <li><strong>Hamstrings in hip thrusts.</strong> The hamstrings showed little to no growth with either the hip thrust
+      or the back squat <Fragment set:html={cite("plotkin-2023")} />, so the planner no longer counts them for the hip
+      thrust or the glute bridge (the same movement without a weight). For squats this matches Pelland and colleagues'
+      table.</li>
+    <li><strong>Hamstrings</strong> (checked 20 November 2026). In a randomised trial, 9 weeks of stiff-leg deadlifts
+      (bending at the hips with the knees only slightly unlocked, as in the planner's Romanian deadlift) grew the
+      hamstrings by about 7% more than in a control group, mostly the semimembranosus
+      <Fragment set:html={cite("morin-2025")} />. In another, 10 weeks of 45° hip extensions (the planner's back extension)
+      grew all three hamstring muscles, measured by MRI <Fragment set:html={cite("bourne-2017")} />. The leg curl is already
+      in Pelland and colleagues' table. The conventional deadlift, single-leg Romanian deadlift and kettlebell swing weren't
+      tested on their own, so their hamstrings stay marked ◇. Both studies' copies can't be redistributed, so the site
+      owner keeps them privately (see the reference list).</li>
+    <li><strong>Lats</strong> (checked 20 November 2026). No training study found has measured lat growth after one
+      exercise on its own, so the lats stay marked ◇ in every exercise. The nearest: after 8 weeks of a programme whose
+      only back exercises were lat pulldowns and seated rows, latissimus dorsi muscle fibres (from biopsies) grew by about
+      22% <Fragment set:html={cite("paoli-2016")} />. That fits the planner's classification but can't separate the two
+      exercises.</li>
+    <li><strong>Calves</strong> (checked 20 November 2026). In a 12-week trial measured by MRI, standing calf raises grew
+      the gastrocnemius by about 9–12% and the whole calf by about 6%, while seated calf raises (knees bent) barely grew
+      the gastrocnemius <Fragment set:html={cite("kinoshita-2023")} />. The planner's calf raise is the standing version.
+      The study used weights (70% of the most each person could lift once); a bodyweight calf raise may be easier than
+      that. The leg curl's half set for the calves stays ◇.</li>
+    <li><strong>Abs, lower back and forearms</strong> (checked 20 November 2026). No study meeting the standard above was
+      found for the crunch, cable crunch, hanging knee raise, plank, back extension (for the lower back), floor back
+      extension or farmer's carry. What exists measures muscle activity, muscle thickness during a contraction, programmes
+      for people with back pain, or several exercises together. These classifications, including counting holds such as
+      the plank and farmer's carry, stay marked ◇.</li>
+    <li><strong>Chest and triceps in push-ups</strong> (checked 20 November 2026). In a randomised trial, 8 weeks of
+      push-ups (adjusted, for example on the knees, to match a bench press at 40% of the most each person could lift once,
+      done to failure) thickened the pectoralis major and triceps as much as bench pressing did
+      <Fragment set:html={cite("kikuchi-2017")} />. The push-up's front-shoulder credit stays ◇ (not measured).</li>
+    <li><strong>Side shoulders in lateral raises</strong> (checked 20 November 2026). In trained lifters, 8 weeks of
+      dumbbell or cable lateral raises, the only side-deltoid exercise they were allowed, grew the side deltoid by 3.3–4.6%,
+      with no difference between the two <Fragment set:html={cite("larsen-2025")} />. There was no control group. The side
+      and rear shoulders' credits in presses and rows stay ◇.</li>
+    <li><strong>Not supported yet.</strong> No study meeting the standard was found for the other ◇ credits of these
+      muscles: chest in the dumbbell bench press, machine chest press and pec fly; triceps and front shoulders in dips and
+      the pike push-up; front shoulders in dumbbell and machine shoulder presses; biceps, upper back and rear shoulders in
+      pull-ups and rows; the trapezius in shrugs, face pulls and band pull-aparts; and the quadriceps and hamstrings in
+      bodyweight and goblet squats, lunges, deadlifts, single-leg Romanian deadlifts and kettlebell swings. A study of
+      one-arm dumbbell rows found some biceps growth near the shoulder only; it isn't open access and only its summary was
+      read, so it isn't used.</li>
+  </ul>
   <p>
     Muscles that only hold the body still (such as the trunk muscles in a squat) are listed as "steadied" and not counted,
-    except in exercises whose whole purpose is the hold, such as the plank or the farmer's carry.
+    except in exercises whose whole purpose is the hold, such as the plank or the farmer's carry. Counting those is also
+    the planner's assumption: the analysis only included exercises that move through a range (lifting and lowering).
   </p>
 
   <details>
     <summary>All {strength.length} exercises and their muscles</summary>
     <div class="details-body table-scroll">
+      <p class="small">◇ = the planner's own classification (an assumption); † = the planner's classification, supported by
+        studies that measured muscle growth (<a href="#growth-evidence">which</a>). The last column gives the exercise name exactly as
+        printed in the study's table, for each muscle taken from it.</p>
       <table>
-        <thead><tr><th>Exercise</th><th>Needs</th><th>Direct (1 set)</th><th>Indirect (½ set)</th><th>Basis</th></tr></thead>
+        <thead><tr><th>Exercise</th><th>Needs</th><th>Direct (1 set)</th><th>Indirect (½ set)</th><th>From Pelland et al., Table 1A</th></tr></thead>
         <tbody>
           {strength.map((e) => (
             <tr>
               <td>{e.name}<br /><span class="muted small">{e.moves}</span></td>
               <td class="small">{needs(e.needs)}</td>
-              <td>{e.direct.map((m) => muscle[m]).join(", ")}</td>
-              <td>{e.indirect.map((m) => muscle[m]).join(", ") || "–"}</td>
-              <td class="small">{e.listed ? <>Pelland et al., Table 1 ("{e.listed}")</> : "By analogy (anatomy)"}</td>
+              <td>{cell(e, e.direct)}</td>
+              <td>{cell(e, e.indirect)}</td>
+              <td class="small">{sourced(e) || "None"}</td>
             </tr>
           ))}
         </tbody>
@@ -96,23 +209,46 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
     </div>
   </details>
 
-  <h2>Heart and lungs</h2>
+  <h2 id="heart-and-lungs">Heart and lungs</h2>
   <p>
-    Aerobic activities are rated by their MET value (metabolic equivalent: how many times the energy used sitting at rest),
+    Only continuous, rhythmic activities count towards heart and lungs: walking, running, cycling, rowing, the
+    cross-trainer, skipping, stair climbing and swimming. The WHO defines aerobic activity as the body's large muscles
+    moving rhythmically for a sustained period, and anaerobic activity as brief, intense bursts such as weightlifting and
+    sprints <Fragment set:html={cite("who-2020")} />. Kettlebell swings and burpees have high MET values but are usually
+    done in short bursts with rests, so the planner shows their values and doesn't count them.
+  </p>
+  <p>
+    Activities are rated by their MET value (metabolic equivalent: how many times the energy used sitting at rest),
     copied unchanged, with activity codes, from the 2024 Adult Compendium of Physical Activities, which compiles measured
-    energy costs for adults aged 19 to 59 <Fragment set:html={cite("compendium-2024")} />. The WHO defines moderate intensity
-    as 3 to under 6 METs and vigorous intensity as 6 METs or more, and recommends that adults do 150–300 minutes of
-    moderate or 75–150 minutes of vigorous aerobic activity a week (or a mix), plus muscle-strengthening activities
-    involving all major muscle groups on 2 or more days a week <Fragment set:html={cite("who-2020")} />.
+    energy costs for adults aged 19 to 59 and is meant for adults without a disability or a significant health condition
+    affecting energy use <Fragment set:html={cite("compendium-2024")} />. The Compendium still contains 207 estimated values
+    and marks them in red on its website; none of the values used here is one of them (checked 20 November 2026). People
+    aged 60 and over have a separate Older Adult Compendium, with values on a different resting baseline, which this
+    planner doesn't use <Fragment set:html={cite("compendium-2024")} />.
+  </p>
+  <p>
+    The WHO defines moderate intensity as 3 to under 6 METs (usually 5 or 6 on a personal scale of 0 to 10) and vigorous
+    intensity as 6 METs or more (usually 7 or 8). For adults aged 18 to 64 it recommends at least 150–300 minutes of
+    moderate-intensity or at least 75–150 minutes of vigorous-intensity aerobic activity a week (or an equivalent mix),
+    plus muscle-strengthening activities at moderate or greater intensity involving all major muscle groups on 2 or more
+    days a week. For people aged 65 and over it adds varied multicomponent activity that emphasises functional balance
+    and strength training, on 3 or more days a week <Fragment set:html={cite("who-2020")} />. The planner doesn't yet
+    tailor its suggestions to age.
+  </p>
+  <p>
+    The "Major muscle groups (WHO)" button chooses all {MUSCLES.length} muscle groups, without heart and lungs. The WHO names
+    legs, back, abdomen, chest, shoulders and arms as the major muscle groups; every group here belongs to one of those
+    (for example, glutes, quadriceps, hamstrings and calves to legs; forearms to arms). That assignment is the planner's own
+    reading of the WHO's list, and the WHO doesn't say how many sets count as involving a group.
   </p>
   <details>
-    <summary>All {aerobic.length} aerobic activities and their Compendium values</summary>
+    <summary>All {aerobic.length} activities with Compendium values</summary>
     <div class="details-body table-scroll">
       <table>
-        <thead><tr><th>Activity</th><th>Code</th><th class="num">MET</th><th>Compendium description</th></tr></thead>
+        <thead><tr><th>Activity</th><th>Code</th><th class="num">MET</th><th>WHO intensity</th><th>Counts for heart and lungs</th><th>Compendium description</th></tr></thead>
         <tbody>
           {aerobic.flatMap((e) => e.met!.map((r, i) => (
-            <tr><td>{i === 0 ? e.name : ""}</td><td>{r.code}</td><td class="num">{r.met.toFixed(1)}</td><td class="small">{r.label}</td></tr>
+            <tr><td>{i === 0 ? e.name : ""}</td><td>{r.code}</td><td class="num">{r.met.toFixed(1)}</td><td>{band(r.met)}</td><td>{i === 0 ? (e.kind === "aerobic" ? "yes" : "no (short bursts)") : ""}</td><td class="small">{r.label}</td></tr>
           )))}
         </tbody>
       </table>
@@ -124,31 +260,39 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
     The charts show fractional sets per muscle from one set of each exercise in a suggestion, on a linear scale that
     grows to fit the largest value and never cuts values off. The navy line marks the covered level for your target muscles,
     and every value is written next to its point, with ✓ or "short", so colour is never the only signal. With fewer than
-    three target muscles a bar chart is used, as a radar chart needs at least three axes.
+    three target muscles a bar chart is used, as a radar chart needs at least three axes. Each chart has a "Show as table" option with the same numbers, for small screens and screen readers.
+    Heart and lungs is not a muscle, so it is not on the charts; each suggestion states what covers it instead.
   </p>
 
   <h2>What has been checked</h2>
-  <ul class="prose">
-    <li><strong>Checked</strong> (15 Nov 2026) against the archived copies: every MET value, code and description; the
-      fractional counting method and Table 1A classifications; the WHO recommendations and intensity definitions; the
-      muscle actions used from the anatomy textbook. Details are in the repository's
-      <code>tools/exercise-planner/VERIFICATION.md</code>.</li>
-    <li><strong>Not yet checked</strong> against muscle-activity (EMG) studies: the exercises classified by analogy.
-      Systematic reviews of muscle activity exist for several of them (for example squats, deadlifts and core exercises)
-      and are the next thing to compare against.</li>
-  </ul>
+  <p>
+    Checked line by line against the archived copies: every MET value, code and description; the fractional counting
+    method and every classification taken from Table 1A; the WHO recommendations and intensity definitions; and the
+    muscle actions used from the anatomy textbook. Details, with dates, are in the repository's
+    <code>tools/exercise-planner/VERIFICATION.md</code>.
+  </p>
+  <Caveat kind="unverified">Every one of the planner's own classifications has been compared with studies that
+    measured muscle growth (<a href="#growth-evidence">above</a>, searched 20 November 2026). Those still marked ◇ have
+    no such study yet and rest on anatomy alone; they will be rechecked as new studies appear.</Caveat>
 
-  <h2>Limitations</h2>
+  <h2 id="limitations">Limitations</h2>
   <ul class="prose">
     <li>The suggestions are lists of exercises, not a training programme: they don't say how heavy, how many repetitions,
       how many sets or how often. Do any new exercise with good technique, starting light.</li>
-    <li>Thirteen muscle groups is a simplification. Within a group, different exercises stress different parts (for
+    <li>"Quadriceps" combines four muscles. The study's table classifies squats, lunges and the leg press as direct for
+      three of them but only indirect for the rectus femoris <Fragment set:html={cite("pelland-2026")} />; the planner
+      counts them as direct for the group.</li>
+    <li>{MUSCLES.length} muscle groups is a simplification. Within a group, different exercises stress different parts (for
       example, the upper and lower chest).</li>
     <li>Direct and indirect are two broad categories. Real exercises sit on a continuum, and technique, grip and range of
       motion change which muscles work hardest.</li>
-    <li>The analysis behind the counting method pooled studies lasting about 10 weeks on average, in participants with an
-      average age of about 25 <Fragment set:html={cite("pelland-2026")} />. It may apply less well to older people or very
-      experienced lifters.</li>
+    <li>The analysis behind the counting method pooled studies lasting about 10 weeks on average, in healthy participants
+      with an average age of about 25 and none over 70, training with lifting and lowering movements
+      <Fragment set:html={cite("pelland-2026")} />. It may apply less well to older people, very experienced lifters, or
+      holds such as the plank.</li>
+    <li>The studies controlled how heavy each set was and how close to failure it went. A set of a bodyweight exercise,
+      such as a bodyweight squat, may be much easier than that for a trained person, so counting it as a full set can
+      overstate the work.</li>
     <li>MET values are averages for adults aged 19 to 59; your own effort depends on your fitness and pace
       <Fragment set:html={cite("compendium-2024")} />.</li>
     <li>Muscles that only hold the body still aren't counted, although they are under tension and some authors suggest

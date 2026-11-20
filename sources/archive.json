@@ -314,6 +314,148 @@
       "checked": "2026-11-18"
     },
     {
+      "file": "compendium-2024-adult-activity-list-2025-02.pdf",
+      "title": "2024 Adult Compendium of Physical Activities: activity list (PDF uploaded to pacompendium.com in February 2025)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/wp-content/uploads/2025/02/1_2024-adult-compendium_1_2024.pdf",
+      "sha256": "ac30234b8f8f813837e282773cfcb3e0fe062334777c2f7b3213429c4fbc251c",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' and read (all 17 rows the exercise planner uses match the archived 2024 copy); attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-bicycling.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'bicycling' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/bicycling/",
+      "originalName": "(web page)",
+      "sha256": "117a8927e66c871f006c0f5a799f946668b779743e79d59ccac01b13a78c6830",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-bicycling.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'bicycling' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/bicycling/",
+      "originalName": "(web page)",
+      "sha256": "5392abd07e31776cda6c240ca894b5827dac86eead1b62164aedc95bbfea2eb5",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-conditioning-exercise.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'conditioning-exercise' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/conditioning-exercise/",
+      "originalName": "(web page)",
+      "sha256": "8f845c4671017b5feaafb9baf629b30aa88afc14ab257ec4b9c9796da678ebd9",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-conditioning-exercise.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'conditioning-exercise' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/conditioning-exercise/",
+      "originalName": "(web page)",
+      "sha256": "e8bfb4eb17ab7e95349d564b5d31f22b470ec39fb2f2c5d7c1a321e277014a8e",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-running.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'running' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/running/",
+      "originalName": "(web page)",
+      "sha256": "16531b49ae472f4e6b659d435c79623a85a5af1bde1c4c113e242de0777d35ce",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-running.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'running' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/running/",
+      "originalName": "(web page)",
+      "sha256": "5d6825627d5a40bbea56b63cc48e5cefccbfe2d83f7c5467b880aef580704d22",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-sports.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'sports' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/sports/",
+      "originalName": "(web page)",
+      "sha256": "43f3786a30a24fe1f5f275e0cea6a4cf3ff9d0358f0e6f3ee379069b422f02e4",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-sports.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'sports' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/sports/",
+      "originalName": "(web page)",
+      "sha256": "2fa0d50399fd29ecc20e7a3d6806c0e2fe6e57b90f33022bced503a52d22738c",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-walking.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'walking' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/walking/",
+      "originalName": "(web page)",
+      "sha256": "3d8faab3c1878d3371f61ffa89086394356e71ee23704058b35e0264fa9d5c00",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-walking.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'walking' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/walking/",
+      "originalName": "(web page)",
+      "sha256": "b7457dc8babdd554cbfc9963a904a482ad9ccac0231828a84a7d61cd9231f624",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-water-activities.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'water-activities' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/water-activities/",
+      "originalName": "(web page)",
+      "sha256": "edad56d6ba9c40d2e3593d226e5a1d7554967793b7df2d2aa9ff980c91723e68",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-water-activities.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'water-activities' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/water-activities/",
+      "originalName": "(web page)",
+      "sha256": "f413764a69abd9bd68a81604938350f7d047b016950c107c6ff742ab23189195",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
       "file": "dga-2020-2025.pdf",
       "title": "Dietary Guidelines for Americans, 2020–2025",
       "publisher": "U.S. Department of Agriculture and U.S. Department of Health and Human Services",
@@ -378,6 +520,50 @@
       "manual": "Moved from the repository's sources/ folder in Nov 2026 (the history clean-up); first archived there 2026-11-10.",
       "retrieved": "2026-11-10",
       "checked": "2026-11-18"
+    },
+    {
+      "file": "kikuchi-2017.xml",
+      "title": "Low-load bench press and push-up induce similar muscle hypertrophy and strength gain (Journal of Exercise Science & Fitness, 2017): full text (JATS XML)",
+      "publisher": "N. Kikuchi and K. Nakazato, Journal of Exercise Science & Fitness (Elsevier), via Europe PMC",
+      "licence": "CC BY-NC-ND 4.0",
+      "origin": "https://doi.org/10.1016/j.jesf.2017.06.003",
+      "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5812864/fullTextXML",
+      "sha256": "139bfd46d1a868928b9589348acd206137c65772ddd5310b7783cd4592e96f6c",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "kinoshita-2023-standing-seated-calf-raise.pdf",
+      "title": "Triceps surae muscle hypertrophy is greater after standing versus seated calf-raise training (Frontiers in Physiology, 2023)",
+      "publisher": "M. Kinoshita et al., Frontiers in Physiology (Frontiers Media)",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.3389/fphys.2023.1272106",
+      "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1272106/pdf",
+      "sha256": "dae197d8b9e9d63ac1da4210ca14c430a94c3d7bf784602cfdc08af312fd80ac",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "krause-neto-2025-gluteus-maximus-meta-analysis.pdf",
+      "title": "The impact of resistance training on gluteus maximus hypertrophy: a systematic review and meta-analysis (Frontiers in Physiology, 2025)",
+      "publisher": "W. Krause Neto et al., Frontiers in Physiology (Frontiers Media)",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.3389/fphys.2025.1542334",
+      "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2025.1542334/pdf",
+      "sha256": "7de04db71dc7d99e7c9d2e6f1709e7171ba53f0bf37d9e83b46530ce10990c6d",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "larsen-2025.xml",
+      "title": "Dumbbell versus cable lateral raises for lateral deltoid hypertrophy: an experimental study (Frontiers in Physiology, 2025): full text (JATS XML)",
+      "publisher": "S. Larsen et al., Frontiers in Physiology (Frontiers Media), via Europe PMC",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.3389/fphys.2025.1611468",
+      "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12277279/fullTextXML",
+      "sha256": "23df94ceea1b084f620a84ef85a07dc63230e608c86474e47b4425384a8a51ef",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
     },
     {
       "file": "nasem-dri-cdrr.pdf",
@@ -644,6 +830,17 @@
       "checked": "2026-11-18"
     },
     {
+      "file": "paoli-2016-latissimus-dorsi-fibres.xml",
+      "title": "Protein supplementation does not further increase latissimus dorsi muscle fiber hypertrophy after eight weeks of resistance training in novice subjects (Nutrients, 2016): full text (JATS XML)",
+      "publisher": "A. Paoli et al., Nutrients (MDPI), via Europe PMC",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.3390/nu8060331",
+      "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4924172/fullTextXML",
+      "sha256": "a67c7f9b96d7cc539ba97dd55a69ae0f69fa263289a01a44ec63e465888eec58",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
+    },
+    {
       "file": "pelland-2024-dose-response-preprint-v2.pdf",
       "title": "The resistance training dose response: Meta-regressions exploring the effects of weekly volume and frequency on muscle hypertrophy and strength gains",
       "publisher": "J. C. Pelland, J. F. Remmert, Z. P. Robinson, S. R. Hinson and M. C. Zourdos",
@@ -664,6 +861,17 @@
       "manual": "Moved from the repository's sources/ folder in Nov 2026 (the history clean-up); first archived there before Nov 2026: uploaded by the site owner.",
       "retrieved": null,
       "checked": "2026-11-18"
+    },
+    {
+      "file": "plotkin-2023-hip-thrust-squat.pdf",
+      "title": "Hip thrust and back squat training elicit similar gluteus muscle hypertrophy and transfer similarly to the deadlift (Frontiers in Physiology, 2023)",
+      "publisher": "D. L. Plotkin et al., Frontiers in Physiology (Frontiers Media)",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.3389/fphys.2023.1279170",
+      "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1279170/pdf",
+      "sha256": "f8cada55d0fe8ba2b37b932e0e34e6c24413d2d9c4d6ef02756bcaea149561b1",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
     },
     {
       "file": "schoenfeld-2019-set-volume-multi-joint.pdf",
@@ -697,6 +905,17 @@
       "manual": "Moved from the repository's sources/ folder in Nov 2026 (the history clean-up); first archived there 2026-11-17.",
       "retrieved": "2026-11-17",
       "checked": "2026-11-18"
+    },
+    {
+      "file": "wei-2023.xml",
+      "title": "Effects of progressive body-weight versus barbell back squat training on strength, hypertrophy and body fat among sedentary young women (Scientific Reports, 2023): full text (JATS XML)",
+      "publisher": "W. Wei et al., Scientific Reports (Springer Nature), via Europe PMC",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.1038/s41598-023-40319-x",
+      "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10439966/fullTextXML",
+      "sha256": "d3073594f07eae0a15fba14ceab3792bc8066c1e67620212ef5a5f7887bbb886",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
     },
     {
       "file": "who-2007-trs-935.pdf",
