@@ -1,4 +1,4 @@
-// The beta Blended table: its values follow the chosen standard, a missing value never becomes zero, and switching
+// The alpha Blended table: its values follow the chosen standard, a missing value never becomes zero, and switching
 // back restores the file's values exactly.
 import { test } from "node:test";
 import assert from "node:assert/strict";

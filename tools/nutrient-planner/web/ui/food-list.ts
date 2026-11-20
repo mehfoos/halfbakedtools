@@ -21,7 +21,7 @@ export type SingleMode = {
   picked: () => Pick | null; pickedName: () => string | null; onPick: (p: Pick) => void;
 };
 
-/** How each source is named after a food in Food Finder's list: the table's short tag, or "blended, beta". */
+/** How each source is named after a food in Food Finder's list: the table's short tag, or "blended, alpha". */
 export const sourceLabel = (app: App, src: Source) => app.tables.find((t) => t.id === src)?.tag ?? src;
 
 const PRESET_TEXT: Record<Base, string> = { common: "common foods", all: "all foods except US-fortified products", none: "nothing" };
@@ -73,7 +73,7 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
   const foodsOf = new Map<string, PlannerFood[]>();   // category or group id -> its foods
 
   const tags = (f: PlannerFood) => `${f.common ? ' <span class="tag">common</span>' : ""}${f.fortified ? ' <span class="tag">US-fortified</span>' : ""}`;
-  // Single mode: one entry per source of the food, e.g. "Eggs (USDA)", "Eggs (blended, beta)", "Eggs (CoFID)".
+  // Single mode: one entry per source of the food, e.g. "Eggs (USDA)", "Eggs (blended, alpha)", "Eggs (CoFID)".
   const pickBoxes = (f: PlannerFood, label: string, path = "") =>
     single!.sources(f).map((src) =>
       `<label class="item"><input type="radio" name="pick" data-food="${esc(f.id)}" data-src="${src}" /> <span>${esc(label)} (${esc(sourceLabel(app, src))})${tags(f)}${path ? ` <span class="path">${esc(path)}</span>` : ""}</span></label>`).join("");
@@ -157,7 +157,7 @@ export function setupFoodList(app: App, onToggle: () => void, onChange: () => vo
     if (!f?.blend) return;
     const box = document.createElement("div");
     box.className = "food-sources blend-notes sans";
-    box.innerHTML = caveat("beta", "Blended values: the median of the independent food tables that give it, under the definition your standard uses, matched and combined by automated steps without manual human verification.") + blendFoodHtml(app, f, true);
+    box.innerHTML = caveat("alpha", "Blended values: the median of the independent food tables that give it, under the definition your standard uses, matched and combined by automated steps without manual human verification.") + blendFoodHtml(app, f, true);
     if (holder.tagName === "LI") holder.append(box); else holder.after(box);
     t.setAttribute("aria-expanded", "true");
   });

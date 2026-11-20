@@ -10,7 +10,7 @@ import { caveat, KINDS, type CaveatKind } from "../../../../site/src/lib/caveats
 export function dataCaveat(app: App) {
   const t = app.table();
   const from = !t ? "food composition tables"
-    : app.tableId() === "blend" ? `the beta blend of the food tables (${app.tables.filter((x) => x.id !== "blend").map((x) => `${esc(x.tag)} ${x.refs[0] ? cite(x.refs[0]) : ""}`).join(", ")})`
+    : app.tableId() === "blend" ? `the alpha blend of the food tables (${app.tables.filter((x) => x.id !== "blend").map((x) => `${esc(x.tag)} ${x.refs[0] ? cite(x.refs[0]) : ""}`).join(", ")})`
     : `${esc(t.title)} ${t.refs[0] ? cite(t.refs[0]) : ""}`;
   const est = caveat("estimate", `Results use average food composition from ${from}, so real foods vary with brand, variety and cooking. Nutrients the table doesn't give are shown as not available, never as zero. They also don't yet allow for how well the body absorbs each nutrient (for example, iron from plants is absorbed less well than iron from meat).`);
   // A table other than USDA: say where its definitions differ, because the targets may define a nutrient another way.
@@ -63,7 +63,7 @@ export function labelNotes(app: App, items: Item[]) {
 }
 
 /**
- * For blended foods in a day (beta source only): where each value came from, its range across the tables, the
+ * For blended foods in a day (alpha source only): where each value came from, its range across the tables, the
  * definition used under the chosen standard, and its caveats, each in the site's one caveat style.
  */
 /** One blended food: its sources, the match, and each nutrient's median, range, per-table values and caveats. */
@@ -102,5 +102,5 @@ export function blendFoodHtml(app: App, f: PlannerFood, open = false) {
 export function blendNotes(app: App, items: Item[]) {
   const foods = [...new Map(items.filter((i) => i.food.blend).map((i) => [i.food.id, i.food])).values()];
   if (!app.blend || !foods.length) return "";
-  return `<div class="blend-notes sans">${caveat("beta", `${foods.length === 1 ? "One food in this day uses" : `${foods.length} foods in this day use`} blended values (the median of the independent food tables that give it, under the definition your standard uses), matched and combined by automated steps without manual human verification. Open a food to see each value's range, sources and caveats.`)}${foods.map((f) => blendFoodHtml(app, f)).join("")}</div>`;
+  return `<div class="blend-notes sans">${caveat("alpha", `${foods.length === 1 ? "One food in this day uses" : `${foods.length} foods in this day use`} blended values (the median of the independent food tables that give it, under the definition your standard uses), matched and combined by automated steps without manual human verification. Open a food to see each value's range, sources and caveats.`)}${foods.map((f) => blendFoodHtml(app, f)).join("")}</div>`;
 }

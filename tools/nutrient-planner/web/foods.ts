@@ -10,7 +10,7 @@ export type PlannerFood = Food & {
   q?: Record<string, string> | null;   // what the table gave where a value is missing or isn't a plain value ("trace")
   noteRef?: string | null;   // the reference a food's note rests on
   fortified?: boolean | null; // a US product with nutrients added; not part of the "Everything" preset
-  blend?: BlendFood | null;   // set while the beta blended source is in use and this food is blended
+  blend?: BlendFood | null;   // set while the alpha blended source is in use and this food is blended
   basePer100g?: Record<string, number>;   // the file's own values, kept while the blend's values for a standard are applied
 };
 export type FoodsData = {
@@ -85,9 +85,9 @@ export type FoodIndex = {
   foods: Record<string, [string, string, string, string, string, string, number][]>;
 };
 
-// ---- The beta Blended table (pipeline/blend/blend_all.py): its foods' values differ per target standard.
+// ---- The alpha Blended table (pipeline/blend/blend_all.py): its foods' values differ per target standard.
 // Each overlaid food has values per target standard, because the standards define some nutrients differently.
-/** A table id (tables.json); "blend" is the beta Blended table. */
+/** A table id (tables.json); "blend" is the alpha Blended table. */
 export type Source = string;
 type StdRows<T> = Record<string, T>;
 export type BlendFood = {

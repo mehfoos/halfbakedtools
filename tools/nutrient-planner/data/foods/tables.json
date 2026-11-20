@@ -2,8 +2,8 @@
  "tables": [
   {
    "id": "blend",
-   "tag": "blended, beta",
-   "title": "Blended (beta)",
+   "tag": "blended, alpha",
+   "title": "Blended (alpha)",
    "country": "the same foods combined across the ten food tables",
    "basic": "foods-blend.json",
    "more": "foods-blend-more.json",

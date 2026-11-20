@@ -44,7 +44,7 @@ const basisLists = (s: typeof uk) => {
   <h2>In brief</h2>
   <ul class="prose">
     <li><strong>Food values</strong> come from ten national food composition tables, each offered on its own and on an equal footing: the US (USDA SR Legacy) <Fragment set:html={cite("usda-sr")} />, the UK (CoFID) <Fragment set:html={cite("cofid-2021")} />, Germany (BLS 4.0) <Fragment set:html={cite("bls-4")} />, France (Ciqual 2025) <Fragment set:html={cite("ciqual-2025")} />, Denmark (Frida 5.5) <Fragment set:html={cite("frida-55")} />, Finland (Fineli) <Fragment set:html={cite("fineli-20")} />, South Korea (KFCDb 9.3) <Fragment set:html={cite("kfcdb-93")} />, Japan (MEXT, 8th edition) <Fragment set:html={cite("mext-2023")} />, Canada (CNF 2026) <Fragment set:html={cite("cnf-2026")} /> and Australia (AFCD Release 3) <Fragment set:html={cite("afcd-3")} />. Each value is the table's own, as published, with the table's own label where it says a value is estimated, calculated from a recipe, borrowed, a trace or below a limit.</li>
-    <li><strong>The Blended table</strong>, a beta, is used until you pick another table: foods found to be the same food in at least two independent tables, each value the median of those tables. The matching is automated, without manual human verification.</li>
+    <li><strong>The Blended table</strong>, an alpha (an early version), is used until you pick another table: foods found to be the same food in at least two independent tables, each value the median of those tables. The matching is automated, without manual human verification.</li>
     <li><strong>Targets</strong> come from the official UK, US or EU recommended intakes for your age and sex; safety limits are the US tolerable upper intake levels in every standard.</li>
     <li><strong>Food Finder</strong> shows one food, in the amount you choose, against the same targets, charts and notes as the Planner.</li>
     <li><strong>Suggestions</strong> (Planner) are found by an optimiser running in your browser that gets as close as it can to every target without going over an upper limit or outside your calorie range.</li>
@@ -66,7 +66,7 @@ const basisLists = (s: typeof uk) => {
           <tr><td>Pregnancy or breastfeeding</td><td>Neither</td><td>Uses the source's values for that life stage, and leaves out the foods the NHS says to avoid then.</td></tr>
           <tr><td>Diet</td><td>No restriction</td><td>Vegetarian hides meat and fish; vegan also hides dairy, eggs and honey.</td></tr>
           <tr><td>Calorie range</td><td>The standard's energy estimate for your age and sex, ±10%</td><td>300 to 6,000 kcal. UK: PHE estimated average requirement <Fragment set:html={cite("phe-2016")} />; US: the <em>Dietary Guidelines</em> sedentary estimate <Fragment set:html={cite("dga-2020")} />; EU: EFSA average requirement at the lowest activity level its table gives (sedentary for adults and under-10s, moderately active for 10–17) <Fragment set:html={cite("efsa-2017")} />. These are low-activity estimates; raise the range if you are more active.</td></tr>
-          <tr><td>Food table</td><td>Blended, a beta</td><td>Any of the ten tables, or Blended.</td></tr>
+          <tr><td>Food table</td><td>Blended, an alpha</td><td>Any of the ten tables, or Blended.</td></tr>
           <tr><td>Food list (Planner)</td><td>Common foods</td><td>Common foods or All foods; any food can be switched on or off by hand.</td></tr>
           <tr><td>Ingredients (Planner)</td><td>Up to 6</td><td>1 to 15 foods per suggestion.</td></tr>
           <tr><td>Options (Planner)</td><td>3</td><td>1 to 50 different suggestions.</td></tr>
@@ -163,7 +163,7 @@ const basisLists = (s: typeof uk) => {
       <details>
         <summary>The Blended table</summary>
         <div class="details-body">
-          <Caveat kind="beta">The matching is automated, without manual human verification.</Caveat>
+          <Caveat kind="alpha">An early version: the matching is automated, without manual human verification, and errors found in the food tables are still being corrected.</Caveat>
           <p>
             The Blended table holds the common foods found to be the same food in at least two independent tables,
             under stricter rules than the Common list: the same food words (only origin or farming may differ), the same
@@ -270,7 +270,7 @@ const basisLists = (s: typeof uk) => {
       </p>
       <p>
         Every food of every table is listed, with its table in brackets, including the Blended table's foods, marked
-        "blended, beta". Amounts start at one unit (an egg, a slice, a banana, weighed as USDA publishes the portion: 50 g,
+        "blended, alpha". Amounts start at one unit (an egg, a slice, a banana, weighed as USDA publishes the portion: 50 g,
         32 g and 118 g <Fragment set:html={cite("usda-sr")} />) or 100 g, and can be changed. A food's value for a nutrient
         is its value per 100 g × the amount ÷ 100.
       </p>
@@ -375,7 +375,7 @@ const basisLists = (s: typeof uk) => {
         <li><strong>Zeros.</strong> A zero a table says it assumed rather than measured (BLS "logical zero", CNF "assumed zero", MEXT "(0)", AFCD "imputed zero", Frida "natural zero, not analysed") is kept as 0 and labelled. The AFCD also writes 0 for results below its limit of reporting <Fragment set:html={cite("afcd-3")} />, so any other AFCD zero is missing, labelled "below the limit of reporting". 48 CNF values coded "assumed zero" but given as an amount contradict themselves and are missing.</li>
         <li><strong>BLS errata.</strong> The BLS 4.0 errata (August 2026) apply until BLS 4.1 <Fragment set:html={cite("bls-4")} />: their corrected values are used (skimmed milk retinol 2.4 µg, not 414 µg; low-fat milk iodine 9.5 µg; almond calcium 254 mg; and four more); values the errata say are wrong but not yet corrected are missing (retinol, iodine or calcium of 157 recipes made with those foods; fat, energy and fatty acids of raw anchovy and 16 foods made from it); zero amino acids in foods with protein are missing, because the errata found such zeros to be errors and are reviewing every amino acid.</li>
         <li><strong>Not assessed.</strong> Free sugars (UK limit 5% of energy), because the tables don't separate free from other sugars; any target too few of the chosen foods give a value for (see "The optimiser").</li>
-        <li><strong>Caveats shown</strong> with values and results, in one style across the site: Beta (the Blended table and the Common list), Assumption (a definition that differs from the one your standard's targets use), Estimate, Borrowed (a value a table took from another), and Translated (Japanese food names, translated by this site from MEXT's English names and a glossary).</li>
+        <li><strong>Caveats shown</strong> with values and results, in one style across the site: Alpha (the Blended table), Beta (the Common list), Assumption (a definition that differs from the one your standard's targets use), Estimate, Borrowed (a value a table took from another), and Translated (Japanese food names, translated by this site from MEXT's English names and a glossary).</li>
       </ul>
     </div>
   </details>
@@ -441,6 +441,7 @@ const basisLists = (s: typeof uk) => {
 
   <h2>Changes</h2>
   <ul class="prose small">
+    <li><strong>20 Nov 2026:</strong> the Blended table relabelled as an alpha, an early version, because the checks below found errors in the tables it is built from. The corrections flow into it: for example, BLS false-zero amino acids no longer enter blended values, and disagreements between tables (two values five-fold apart, which give no blended value) fell from 826 to 623, most of them caused by AFCD zeros that were below its limit of reporting.</li>
     <li><strong>20 Nov 2026:</strong> the eight newer tables checked against their documentation and files. Corrections: AFCD zeros that may be below the limit of reporting are now missing (11,345 values; 5,475 zeros FSANZ says it imputed stay 0, labelled); BLS errata applied (7 corrected values, 282 values missing, energy of 411 foods recalculated, 1,921 zero amino acids missing); Ciqual vitamin A recognised as retinol activity equivalents (retinol + beta-carotene ÷ 12), not retinol equivalents, and folate read for 908 foods that give it only as dietary folate equivalents; Frida carbohydrate recognised as by difference minus fibre; assumed zeros labelled in BLS, Frida and MEXT; 48 contradictory CNF values missing. The Blended table has 426 foods (was 440): records whose protein or fat is now missing no longer pass the composition check.</li>
     <li><strong>20 Nov 2026:</strong> this page rewritten to record the full method: inputs and defaults, the ten tables generated from their files, worked-out values, formulas with a worked example, the optimiser's constants, missing-data rules, and what has and hasn't been checked. No calculation changed.</li>
     <li><strong>19 Nov 2026:</strong> The Blended table, a beta, rebuilt from all ten tables and made the default table, after two independent reviews; Common foods derived from the tables (same food in at least two independent tables) instead of hand-picked; two presets, Common foods and All foods.</li>
