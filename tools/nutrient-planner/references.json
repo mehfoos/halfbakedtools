@@ -20,8 +20,7 @@
       "ownerCopy": [
         {
           "file": "FoodData_Central_sr_legacy_food_csv_2018-04.zip",
-          "sha256": "b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0",
-          "pending": true
+          "sha256": "b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0"
         }
       ]
     },
@@ -135,8 +134,7 @@
       "ownerCopy": [
         {
           "file": "dga-2020-2025.pdf",
-          "sha256": "ceea04ce1a7c13a95a170f3548ed3926ad6dd49599bd730fb58bc9c02711d16e",
-          "pending": true
+          "sha256": "ceea04ce1a7c13a95a170f3548ed3926ad6dd49599bd730fb58bc9c02711d16e"
         }
       ]
     },
@@ -180,8 +178,7 @@
       "ownerCopy": [
         {
           "file": "who-2007-trs-935.pdf",
-          "sha256": "ad109adebecbace501da1b6d4672821009b4e45ad76b95647bc87017901e89b0",
-          "pending": true
+          "sha256": "ad109adebecbace501da1b6d4672821009b4e45ad76b95647bc87017901e89b0"
         }
       ]
     },
@@ -423,8 +420,7 @@
       "ownerCopy": [
         {
           "file": "cofid2021_McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021.xlsx",
-          "sha256": "436e9445ef2adb2a75f3d7edd51302de3adad25385f9795fc94ba58bd030e97d",
-          "pending": true
+          "sha256": "436e9445ef2adb2a75f3d7edd51302de3adad25385f9795fc94ba58bd030e97d"
         },
         {
           "file": "cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf",
@@ -450,8 +446,7 @@
       "ownerCopy": [
         {
           "file": "efsa-2019-sodium.pdf",
-          "sha256": "8b4032645f109b26f1f7ead3ef3bddf8095b30dd3a3056daffe6317b877123eb",
-          "pending": true
+          "sha256": "8b4032645f109b26f1f7ead3ef3bddf8095b30dd3a3056daffe6317b877123eb"
         }
       ]
     },
@@ -504,8 +499,7 @@
       "ownerCopy": [
         {
           "file": "bls4_BLS_4_0_Data_2025_EN.xlsx",
-          "sha256": "89b7d248bd49e22e33103db47138e87b038b7c16d5367bf887c015f08d6ddfc7",
-          "pending": true
+          "sha256": "89b7d248bd49e22e33103db47138e87b038b7c16d5367bf887c015f08d6ddfc7"
         },
         {
           "file": "bls4_BLS_4_0_Components_DE_EN.xlsx",
@@ -544,8 +538,7 @@
         },
         {
           "file": "ciqual2025_Table_Ciqual_2025_doc_FR_2025_11_19.pdf",
-          "sha256": "b95704eb6bb775e73e6f5824eca8bebed1634bb3b3d9631dae1987828e5a95d5",
-          "pending": true
+          "sha256": "b95704eb6bb775e73e6f5824eca8bebed1634bb3b3d9631dae1987828e5a95d5"
         }
       ]
     },
@@ -572,8 +565,7 @@
       "ownerCopy": [
         {
           "file": "frida55_Frida_5.5_Dataset.xlsx",
-          "sha256": "6b1952a35df3c0d4d7b2699ae0a3e377add42b231108309329b40256ef600e5e",
-          "pending": true
+          "sha256": "6b1952a35df3c0d4d7b2699ae0a3e377add42b231108309329b40256ef600e5e"
         },
         {
           "file": "frida55_Frida5.5_Documentation_English.pdf",
@@ -701,8 +693,7 @@
       "ownerCopy": [
         {
           "file": "cnf2026_cnf_fcen_all-files-data_2026.zip",
-          "sha256": "f5faad8977ee6bbdd9d69c8649077cacd87d8658ad200509a4047db1e29edcdd",
-          "pending": true
+          "sha256": "f5faad8977ee6bbdd9d69c8649077cacd87d8658ad200509a4047db1e29edcdd"
         }
       ]
     },
@@ -725,8 +716,7 @@
       "ownerCopy": [
         {
           "file": "afcd3_AFCD_Release_3_December_2025.zip",
-          "sha256": "ee25b09cb8bc0cb5f268a5fc09f36e7b48d738cdf918897b2886d8a5438351b3",
-          "pending": true
+          "sha256": "ee25b09cb8bc0cb5f268a5fc09f36e7b48d738cdf918897b2886d8a5438351b3"
         }
       ]
     }

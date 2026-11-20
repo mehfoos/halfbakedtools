@@ -99,8 +99,7 @@
       "ownerCopy": [
         {
           "file": "openstax-ap2e-11-3-owner-saved.pdf",
-          "sha256": "373a7488ec43270ce332effd4c22cc9617af87bbc09ed050808d03f44d5794bd",
-          "pending": true
+          "sha256": "373a7488ec43270ce332effd4c22cc9617af87bbc09ed050808d03f44d5794bd"
         },
         {
           "file": "openstax-ap2e-11-3-owner-saved.mht",
@@ -108,8 +107,7 @@
         },
         {
           "file": "openstax-ap2e-11-4-owner-saved.pdf",
-          "sha256": "62a4d71a18b1219168e45e9024a8cb5db453b6690008c3427af5cc23b5af616b",
-          "pending": true
+          "sha256": "62a4d71a18b1219168e45e9024a8cb5db453b6690008c3427af5cc23b5af616b"
         },
         {
           "file": "openstax-ap2e-11-4-owner-saved.mht",
@@ -117,8 +115,7 @@
         },
         {
           "file": "openstax-ap2e-11-5-owner-saved.pdf",
-          "sha256": "c82584f3e47d82ce3b07011470cbe55637080ba786b7a2436c3aeb2a18f76ab7",
-          "pending": true
+          "sha256": "c82584f3e47d82ce3b07011470cbe55637080ba786b7a2436c3aeb2a18f76ab7"
         },
         {
           "file": "openstax-ap2e-11-5-owner-saved.mht",
@@ -126,8 +123,7 @@
         },
         {
           "file": "openstax-ap2e-11-6-owner-saved.pdf",
-          "sha256": "ca8e45dbc5fdde823c4deb97485d3790dd9ac6a5130a0ad26c24a90748d6de30",
-          "pending": true
+          "sha256": "ca8e45dbc5fdde823c4deb97485d3790dd9ac6a5130a0ad26c24a90748d6de30"
         },
         {
           "file": "openstax-ap2e-11-6-owner-saved.mht",
@@ -203,7 +199,7 @@
       "ownerCopy": [
         {
           "file": "plotkin-2023-hip-thrust-squat.pdf",
-          "pending": true
+          "sha256": "f8cada55d0fe8ba2b37b932e0e34e6c24413d2d9c4d6ef02756bcaea149561b1"
         }
       ]
     },
@@ -227,7 +223,7 @@
       "ownerCopy": [
         {
           "file": "wei-2023.xml",
-          "pending": true
+          "sha256": "d3073594f07eae0a15fba14ceab3792bc8066c1e67620212ef5a5f7887bbb886"
         }
       ]
     },
@@ -299,7 +295,7 @@
       "ownerCopy": [
         {
           "file": "paoli-2016-latissimus-dorsi-fibres.xml",
-          "pending": true
+          "sha256": "a67c7f9b96d7cc539ba97dd55a69ae0f69fa263289a01a44ec63e465888eec58"
         }
       ]
     },
@@ -323,7 +319,7 @@
       "ownerCopy": [
         {
           "file": "kinoshita-2023-standing-seated-calf-raise.pdf",
-          "pending": true
+          "sha256": "dae197d8b9e9d63ac1da4210ca14c430a94c3d7bf784602cfdc08af312fd80ac"
         }
       ]
     },
@@ -347,7 +343,7 @@
       "ownerCopy": [
         {
           "file": "kikuchi-2017.xml",
-          "pending": true
+          "sha256": "139bfd46d1a868928b9589348acd206137c65772ddd5310b7783cd4592e96f6c"
         }
       ]
     },
@@ -371,7 +367,7 @@
       "ownerCopy": [
         {
           "file": "larsen-2025.xml",
-          "pending": true
+          "sha256": "23df94ceea1b084f620a84ef85a07dc63230e608c86474e47b4425384a8a51ef"
         }
       ]
     },
@@ -402,8 +398,7 @@
       "ownerCopy": [
         {
           "file": "who-2020-guidelines-physical-activity-sedentary-behaviour.pdf",
-          "sha256": "50b66c44e7083cc3752849f301ae1d60d9360d511e34c0c948b39bdf6e13dc88",
-          "pending": true
+          "sha256": "50b66c44e7083cc3752849f301ae1d60d9360d511e34c0c948b39bdf6e13dc88"
         },
         {
           "file": "bull-2020-who-physical-activity-guidelines.pdf",
@@ -475,7 +470,7 @@
         },
         {
           "file": "compendium-2024-adult-activity-list-2025-02.pdf",
-          "pending": true
+          "sha256": "ac30234b8f8f813837e282773cfcb3e0fe062334777c2f7b3213429c4fbc251c"
         },
         {
           "file": "compendium-2024-web-bicycling.pdf",
