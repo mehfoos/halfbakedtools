@@ -181,7 +181,12 @@ export function start(root: HTMLElement) {
         <details><summary>Everything this option works <span class="summary-note">${extra.length ? `also ${esc(list(extra))}` : "nothing beyond your targets"}</span></summary>
           <div class="details-body"><figure class="chart">${chartSvg(allAxes, `Option ${i + 1}: fractional sets for all muscle groups`)}
           <figcaption class="small muted sans">All 13 muscle groups. Your targets are in bold; the others are grey.</figcaption></figure></div></details>` : "";
-    return `<section class="card option">${head}${missing}<ul class="ex-list">${rows}</ul>${assumed}${charts}</section>`;
+    const who = targets.includes(AEROBIC) && s.exercises.some((e) => e.kind === "aerobic")
+      ? `<p class="small sans">For adults aged 18 to 64, the WHO recommends <strong>at least</strong> 150–300 minutes a week of
+        moderate-intensity or at least 75–150 minutes of vigorous-intensity aerobic activity (or an equivalent mix), plus
+        muscle-strengthening activity at moderate or greater intensity on 2 or more days a week. Moderate usually feels like
+        5 or 6 out of 10 for you, vigorous like 7 or 8. <a href="${METHODS}#heart-and-lungs">More, including advice for older adults</a>.</p>` : "";
+    return `<section class="card option">${head}${missing}<ul class="ex-list">${rows}</ul>${assumed}${who}${charts}</section>`;
   }
 
   function exerciseRow(e: Exercise, targets: Target[]) {
@@ -193,10 +198,11 @@ export function start(root: HTMLElement) {
     if (e.steadies?.length) parts.push(`<span class="muted">steadied, not counted: ${e.steadies.map((m) => esc(MUSCLE_LABEL[m])).join(", ")}</span>`);
     let aero = "";
     if (e.met?.length) {
-      const bands = [...new Set(e.met.map((r) => intensity(r.met)))];
-      const metText = e.met.map((r) => `${fmt(r.met)} MET <span class="muted">(${esc(r.label)}; code ${r.code})</span>`).join("; ");
-      const who = bands.map((b) => b === "vigorous" ? "75–150 minutes a week at vigorous intensity" : b === "moderate" ? "150–300 minutes a week at moderate intensity" : "").filter(Boolean);
-      aero = `<div class="small sans">Effort: ${metText}. ${targets.includes(AEROBIC) && who.length ? `On its own, about ${esc(who.join(" or "))} meets the WHO aerobic recommendation for adults.` : ""}</div>`;
+      // Each Compendium row with its own WHO band (moderate 3 to under 6 METs, vigorous 6 or more).
+      const metText = e.met.map((r) => `${fmt(r.met)} MET, ${intensity(r.met)} <span class="muted">(${esc(r.label)}; code ${r.code})</span>`).join("; ");
+      const note = e.kind === "intervals"
+        ? ` <span class="muted">Usually done in short bursts with rests, so it isn't counted towards heart and lungs here: the WHO counts rhythmic activity kept up for a sustained period.</span>` : "";
+      aero = `<div class="small sans">Effort: ${metText}.${note}</div>`;
     }
     return `<li><span class="ex-name">${esc(e.name)}</span>
       <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}</div>${aero}</li>`;

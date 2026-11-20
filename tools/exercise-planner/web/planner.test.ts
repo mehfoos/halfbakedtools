@@ -17,7 +17,8 @@ test("catalogue: ids unique, muscles and equipment known, no muscle both direct 
     for (const g of e.needs) { assert.ok(g.length); for (const q of g) assert.ok(equipment.has(q), `${e.id}: ${q}`); }
     assert.ok(!e.direct.some((m) => e.indirect.includes(m)), `${e.id}: overlap`);
     if (e.kind === "strength") assert.ok(e.direct.length, `${e.id}: no direct muscle`);
-    if (e.kind === "aerobic") assert.ok(e.met?.length, `${e.id}: aerobic without a MET value`);
+    if (e.kind !== "strength") assert.ok(e.met?.length, `${e.id}: ${e.kind} without a MET value`);
+    if (e.kind === "intervals") assert.ok(e.direct.length || e.id === "burpee", `${e.id}: no direct muscle`);
     for (const r of e.met ?? []) assert.match(r.code, /^\d{5}$/);
   }
 });
@@ -183,4 +184,22 @@ test("whole body, deeper targets, is still fast", () => {
     suggest({ ...base, depth, maxExercises: 10, count: 6, targets: [...muscles, "aerobic"] as never, equipment: preset("gym") });
     assert.ok(performance.now() - t < 3000, `depth ${depth}: ${Math.round(performance.now() - t)} ms`);
   }
+});
+
+test("only continuous, rhythmic activities cover heart and lungs", () => {
+  const counted = EXERCISES.filter((e) => e.kind === "aerobic").map((e) => e.id).sort();
+  assert.deepEqual(counted, ["cycle", "elliptical", "row", "run", "skip", "stairs", "swim", "walk"]);
+  for (const id of ["kbSwing", "burpee"]) assert.equal(EXERCISES.find((e) => e.id === id)!.kind, "intervals");
+  const r = suggest({ ...base, targets: ["aerobic"], equipment: ["body", "kettlebell"] });
+  assert.equal(r.suggestions.length, 0);
+  assert.deepEqual(r.unreachable, ["aerobic"]);
+  const g = suggest({ ...base, maxExercises: 10, targets: [...muscles, "aerobic"] as never, equipment: preset("gym") });
+  for (const s of g.suggestions) assert.ok(s.exercises.some((e) => e.kind === "aerobic") && !s.missing.includes("aerobic"));
+});
+
+test("MET values match the Compendium's measured (not estimated) rows used", () => {
+  // Checked against pacompendium.com on 20 Nov 2026: none of these codes is marked as an estimate (red).
+  const rows = EXERCISES.flatMap((e) => e.met ?? []);
+  assert.equal(rows.length, 17);
+  assert.equal(new Set(rows.map((r) => r.code)).size, 17);
 });

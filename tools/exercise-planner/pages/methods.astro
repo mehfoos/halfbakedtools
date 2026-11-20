@@ -12,6 +12,7 @@ const strength = EXERCISES.filter((e) => e.direct.length);
 const cell = (e: Exercise, ms: Muscle[]) => ms.map((m) => muscle[m] + (isAssumed(e, m) ? " ◇" : "")).join(", ") || "–";
 const sourced = (e: Exercise) => Object.entries(e.sources ?? {}).map(([m, n]) => `${muscle[m]}: "${n}"`).join("; ");
 const aerobic = EXERCISES.filter((e) => e.met?.length);
+const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "light");
 ---
 <ToolLayout slug="exercise-planner" page="methods">
   <h1>Methods and sources</h1>
@@ -110,23 +111,40 @@ const aerobic = EXERCISES.filter((e) => e.met?.length);
     </div>
   </details>
 
-  <h2>Heart and lungs</h2>
+  <h2 id="heart-and-lungs">Heart and lungs</h2>
   <p>
-    Aerobic activities are rated by their MET value (metabolic equivalent: how many times the energy used sitting at rest),
+    Only continuous, rhythmic activities count towards heart and lungs: walking, running, cycling, rowing, the
+    cross-trainer, skipping, stair climbing and swimming. The WHO defines aerobic activity as the body's large muscles
+    moving rhythmically for a sustained period, and anaerobic activity as brief, intense bursts such as weightlifting and
+    sprints <Fragment set:html={cite("who-2020")} />. Kettlebell swings and burpees have high MET values but are usually
+    done in short bursts with rests, so the planner shows their values and doesn't count them.
+  </p>
+  <p>
+    Activities are rated by their MET value (metabolic equivalent: how many times the energy used sitting at rest),
     copied unchanged, with activity codes, from the 2024 Adult Compendium of Physical Activities, which compiles measured
-    energy costs for adults aged 19 to 59 <Fragment set:html={cite("compendium-2024")} />. The WHO defines moderate intensity
-    as 3 to under 6 METs and vigorous intensity as 6 METs or more, and recommends that adults do 150–300 minutes of
-    moderate or 75–150 minutes of vigorous aerobic activity a week (or a mix), plus muscle-strengthening activities
-    involving all major muscle groups on 2 or more days a week <Fragment set:html={cite("who-2020")} />.
+    energy costs for adults aged 19 to 59 and is meant for adults without a disability or a significant health condition
+    affecting energy use <Fragment set:html={cite("compendium-2024")} />. The Compendium still contains 207 estimated values
+    and marks them in red on its website; none of the values used here is one of them (checked 20 November 2026). People
+    aged 60 and over have a separate Older Adult Compendium, with values on a different resting baseline, which this
+    planner doesn't use <Fragment set:html={cite("compendium-2024")} />.
+  </p>
+  <p>
+    The WHO defines moderate intensity as 3 to under 6 METs (usually 5 or 6 on a personal scale of 0 to 10) and vigorous
+    intensity as 6 METs or more (usually 7 or 8). For adults aged 18 to 64 it recommends at least 150–300 minutes of
+    moderate-intensity or at least 75–150 minutes of vigorous-intensity aerobic activity a week (or an equivalent mix),
+    plus muscle-strengthening activities at moderate or greater intensity involving all major muscle groups on 2 or more
+    days a week. For people aged 65 and over it adds varied multicomponent activity that emphasises functional balance
+    and strength training, on 3 or more days a week <Fragment set:html={cite("who-2020")} />. The planner doesn't yet
+    tailor its suggestions to age.
   </p>
   <details>
-    <summary>All {aerobic.length} aerobic activities and their Compendium values</summary>
+    <summary>All {aerobic.length} activities with Compendium values</summary>
     <div class="details-body table-scroll">
       <table>
-        <thead><tr><th>Activity</th><th>Code</th><th class="num">MET</th><th>Compendium description</th></tr></thead>
+        <thead><tr><th>Activity</th><th>Code</th><th class="num">MET</th><th>WHO intensity</th><th>Counts for heart and lungs</th><th>Compendium description</th></tr></thead>
         <tbody>
           {aerobic.flatMap((e) => e.met!.map((r, i) => (
-            <tr><td>{i === 0 ? e.name : ""}</td><td>{r.code}</td><td class="num">{r.met.toFixed(1)}</td><td class="small">{r.label}</td></tr>
+            <tr><td>{i === 0 ? e.name : ""}</td><td>{r.code}</td><td class="num">{r.met.toFixed(1)}</td><td>{band(r.met)}</td><td>{i === 0 ? (e.kind === "aerobic" ? "yes" : "no (short bursts)") : ""}</td><td class="small">{r.label}</td></tr>
           )))}
         </tbody>
       </table>

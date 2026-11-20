@@ -77,7 +77,14 @@ export type MetRow = { code: string; met: number; label: string };
 export type Exercise = {
   id: string;
   name: string;
-  kind: "strength" | "aerobic";
+  /**
+   * "aerobic": continuous, rhythmic activity, which counts towards heart and lungs. "intervals": high-effort work
+   * usually done in short bursts with rests (kettlebell swings, burpees); its Compendium value is shown, but it doesn't
+   * count towards heart and lungs, because the WHO defines aerobic activity as large muscles moving rhythmically "for a
+   * sustained period of time" and anaerobic activity as "brief intense bursts" (WHO 2020 glossary; owner's decision,
+   * 20 Nov 2026).
+   */
+  kind: "strength" | "aerobic" | "intervals";
   /** Equipment needed: every inner list must be satisfied by at least one item in it. Empty = nothing needed. */
   needs: Equipment[][];
   /** Joint movements the exercise loads, in plain words. */
@@ -93,7 +100,7 @@ export type Exercise = {
   sources?: Partial<Record<Muscle, string>>;
   /** Muscles that hold a position but don't move a joint through a range: shown, not counted. */
   steadies?: Muscle[];
-  /** Compendium rows for aerobic activities, lightest effort first. */
+  /** Compendium rows (aerobic and interval activities), lightest effort first. None is a Compendium estimate (checked 20 Nov 2026). */
   met?: MetRow[];
 };
 
@@ -191,7 +198,7 @@ export const EXERCISES: Exercise[] = [
   X({ id: "farmerCarry", name: "Farmer's carry", kind: "strength", needs: [["dumbbells", "kettlebell"]],
     moves: "gripping heavy weights while walking (holding, little joint movement)",
     direct: ["forearms"], indirect: [], steadies: ["upperBack", "abs"] }),
-  X({ id: "kbSwing", name: "Kettlebell swing", kind: "aerobic", needs: [["kettlebell"]],
+  X({ id: "kbSwing", name: "Kettlebell swing", kind: "intervals", needs: [["kettlebell"]],
     moves: "fast, repeated hip extension (hinging and snapping the hips forward)",
     direct: ["glutes", "hamstrings"], indirect: [], steadies: ["lowerBack", "forearms"],
     met: [{ code: "02058", met: 9.8, label: "Kettle bell swings" }] }),
@@ -301,7 +308,7 @@ export const EXERCISES: Exercise[] = [
     moves: "swimming", direct: [], indirect: [],
     met: [{ code: "18240", met: 5.8, label: "Swimming laps, freestyle, slow, recreational" },
       { code: "18230", met: 9.8, label: "Swimming laps, freestyle, fast, vigorous effort" }] }),
-  X({ id: "burpee", name: "Burpees, jumping jacks and similar", kind: "aerobic", needs: [["body"]],
+  X({ id: "burpee", name: "Burpees, jumping jacks and similar", kind: "intervals", needs: [["body"]],
     moves: "fast whole-body calisthenics", direct: [], indirect: [],
     met: [{ code: "02020", met: 7.5, label: "Calisthenics (e.g., pushups, sit ups, pull-ups, jumping jacks, burpees, battling ropes), vigorous effort" }] }),
 ];
