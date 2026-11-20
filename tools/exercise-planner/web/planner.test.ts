@@ -279,3 +279,14 @@ test("reading order: big lifts, then smaller ones, then holds, then heart and lu
   const o = ordered(pick("walk", "plank", "curl", "benchPress", "farmerCarry", "kbSwing")).map((e) => e.id);
   assert.deepEqual(o, ["benchPress", "curl", "plank", "farmerCarry", "walk", "kbSwing"]);
 });
+
+test("how-to links point to individual ACE exercise-library pages", () => {
+  const withLink = EXERCISES.filter((e) => e.howTo);
+  assert.ok(withLink.length >= 40);
+  const urls = new Set<string>();
+  for (const e of withLink) {
+    assert.match(e.howTo!.url, /^https:\/\/www\.acefitness\.org\/resources\/everyone\/exercise-library\/\d+\/[a-z0-9-]+\/$/, e.id);
+    assert.ok(e.howTo!.title.length > 0, e.id);
+    urls.add(e.howTo!.url);
+  }
+});

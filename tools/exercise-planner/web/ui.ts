@@ -260,7 +260,7 @@ export function start(root: HTMLElement) {
     const as = studiedVersion(e, have);
     const studied = as ? ` <span class="small muted sans">(classified from the ${esc(as)} version; this version is assumed to load the same muscles)</span>` : "";
     return `<li><span class="ex-name">${esc(nameFor(e, have))}</span>${studied}
-      <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}</div>${aero}</li>`;
+      <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}${e.howTo ? ` · <a href="${esc(e.howTo.url)}" rel="noopener" target="_blank">How to do it<span class="sr-only"> (opens in a new tab)</span></a> <span class="muted">(ACE: ${esc(e.howTo.title)})</span>` : ""}</div>${aero}</li>`;
   }
 
   paint();
