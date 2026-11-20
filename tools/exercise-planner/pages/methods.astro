@@ -20,7 +20,7 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
 
   <h2>How suggestions are found</h2>
   <p>
-    You choose targets (any of 13 muscle groups, and heart and lungs) and the equipment you have. The planner keeps
+    You choose targets (any of {MUSCLES.length} muscle groups, and heart and lungs) and the equipment you have. The planner keeps
     the exercises your equipment allows and that help at least one target, then tries every combination of up to the
     number of exercises you allow. It ranks them by:
   </p>
@@ -79,6 +79,14 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     bend the knee and extend the hip, the erector spinae is the main extensor of the spine, the latissimus dorsi pulls the
     upper arm down and back, and the gastrocnemius and soleus point the foot. A muscle producing the exercise's main
     movement counts as direct; one producing a secondary movement counts as indirect.
+  </p>
+  <p>
+    <strong>Shoulders in three parts.</strong> The deltoid is split into front, side and rear, because its parts do
+    different jobs: the front part flexes and turns the arm inwards, the side part raises it out to the side, and the rear
+    part extends it and turns it outwards <Fragment set:html={cite("stokey-2024")} />. One "shoulders" group would
+    call the shoulders covered by a face pull alone, which mainly works the rear. Only the front part is in Pelland and
+    colleagues' table. Neither anatomy source says which muscles move the arm backwards at shoulder height (horizontal
+    abduction, as in a face pull or band pull-apart); counting the rear deltoid there is the planner's own reading.
   </p>
   <Caveat kind="assumption">These assignments are marked ◇ in the planner and in the table below. They are a
     judgement made openly, not a measurement, and the counting method itself was only tested on the muscles and the kind
@@ -170,14 +178,14 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     exercises themselves. Studies that measured muscle growth after training (not just muscle activity during it) are the
     next thing to compare against.</Caveat>
 
-  <h2>Limitations</h2>
+  <h2 id="limitations">Limitations</h2>
   <ul class="prose">
     <li>The suggestions are lists of exercises, not a training programme: they don't say how heavy, how many repetitions,
       how many sets or how often. Do any new exercise with good technique, starting light.</li>
     <li>"Quadriceps" combines four muscles. The study's table classifies squats, lunges and the leg press as direct for
       three of them but only indirect for the rectus femoris <Fragment set:html={cite("pelland-2026")} />; the planner
       counts them as direct for the group.</li>
-    <li>Thirteen muscle groups is a simplification. Within a group, different exercises stress different parts (for
+    <li>{MUSCLES.length} muscle groups is a simplification. Within a group, different exercises stress different parts (for
       example, the upper and lower chest).</li>
     <li>Direct and indirect are two broad categories. Real exercises sit on a continuum, and technique, grip and range of
       motion change which muscles work hardest.</li>

@@ -9,7 +9,7 @@ type State = { targets: Target[]; equipment: Equipment[]; bodyweight: boolean; m
 
 const GROUPS: { id: string; label: string; targets: Target[] }[] = [
   { id: "whole", label: "Whole body", targets: [...MUSCLES.map((m) => m.id), AEROBIC] },
-  { id: "upper", label: "Upper body", targets: ["chest", "shoulders", "triceps", "biceps", "lats", "upperBack"] },
+  { id: "upper", label: "Upper body", targets: ["chest", "frontDelts", "sideDelts", "rearDelts", "triceps", "biceps", "lats", "upperBack"] },
   { id: "lower", label: "Lower body", targets: ["glutes", "quads", "hamstrings", "calves"] },
   { id: "core", label: "Core", targets: ["abs", "lowerBack"] },
   { id: "aerobic", label: AEROBIC_LABEL, targets: [AEROBIC] },
@@ -39,7 +39,9 @@ function readUrl(): State {
     return q.has(key) && Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d;
   };
   return {
-    targets: ids("t", [...MUSCLES.map((m) => m.id), AEROBIC], DEFAULTS.targets),
+    // "shoulders" was one group until 20 Nov 2026; old links choose all three parts.
+    targets: [...new Set(ids("t", [...MUSCLES.map((m) => m.id), AEROBIC, "shoulders"], DEFAULTS.targets)
+      .flatMap((t) => (t === ("shoulders" as Target) ? (["frontDelts", "sideDelts", "rearDelts"] as Target[]) : [t])))],
     equipment: ids("e", EQUIPMENT.filter((e) => e.id !== "body").map((e) => e.id), DEFAULTS.equipment),
     bodyweight: q.get("bw") !== "0",
     max: num("max", 1, 10, DEFAULTS.max), count: num("n", 1, 6, DEFAULTS.count),
@@ -180,13 +182,19 @@ export function start(root: HTMLElement) {
           <figcaption class="small muted sans">Fractional sets each target muscle gets from one set of every exercise in this option. The navy line marks ${fmt(state.depth)} set${state.depth === 1 ? "" : "s"}, the level counted as covered.</figcaption></figure>
         <details><summary>Everything this option works <span class="summary-note">${extra.length ? `also ${esc(list(extra))}` : "nothing beyond your targets"}</span></summary>
           <div class="details-body"><figure class="chart">${chartSvg(allAxes, `Option ${i + 1}: fractional sets for all muscle groups`)}
-          <figcaption class="small muted sans">All 13 muscle groups. Your targets are in bold; the others are grey.</figcaption></figure></div></details>` : "";
+          <figcaption class="small muted sans">All ${MUSCLES.length} muscle groups. Your targets are in bold; the others are grey.</figcaption></figure></div></details>` : "";
+    // Bodyweight-only strength exercises may be far easier than the studies' sets (A11).
+    const light = s.exercises.filter((e) => e.kind === "strength" && e.needs.length === 1 && e.needs[0].length === 1 && e.needs[0][0] === "body");
+    const bodyNote = light.length
+      ? `<p class="small sans muted">The studies behind the set counts controlled how heavy each set was and how close to failure it went.
+        A set of ${esc(list(light.map((e) => e.name.toLowerCase())))} may be much easier than that if you are trained, so it may count for less than shown.
+        <a href="${METHODS}#limitations">Limitations</a>.</p>` : "";
     const who = targets.includes(AEROBIC) && s.exercises.some((e) => e.kind === "aerobic")
       ? `<p class="small sans">For adults aged 18 to 64, the WHO recommends <strong>at least</strong> 150–300 minutes a week of
         moderate-intensity or at least 75–150 minutes of vigorous-intensity aerobic activity (or an equivalent mix), plus
         muscle-strengthening activity at moderate or greater intensity on 2 or more days a week. Moderate usually feels like
         5 or 6 out of 10 for you, vigorous like 7 or 8. <a href="${METHODS}#heart-and-lungs">More, including advice for older adults</a>.</p>` : "";
-    return `<section class="card option">${head}${missing}<ul class="ex-list">${rows}</ul>${assumed}${who}${charts}</section>`;
+    return `<section class="card option">${head}${missing}<ul class="ex-list">${rows}</ul>${assumed}${bodyNote}${who}${charts}</section>`;
   }
 
   function exerciseRow(e: Exercise, targets: Target[]) {

@@ -16,7 +16,7 @@ export const TABLE_1A: Partial<Record<Muscle, { table: string; direct: string[];
   },
   hamstrings: { table: "Hamstrings or Posterior Thigh", direct: ["Leg Curl"], indirect: [] },
   chest: { table: "Pectoralis Major", direct: ["Bench Press", "Flat Dumbbell Fly"], indirect: [] },
-  shoulders: {
+  frontDelts: {
     table: "Anterior Deltoid",
     direct: ["Barbell Shoulder Press", "Barbell Shoulder Front Raise"],
     indirect: ["Bench Press", "Chest Press", "Barbell Close Grip Press On Bench"],

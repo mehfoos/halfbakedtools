@@ -314,6 +314,148 @@
       "checked": "2026-11-18"
     },
     {
+      "file": "compendium-2024-adult-activity-list-2025-02.pdf",
+      "title": "2024 Adult Compendium of Physical Activities: activity list (PDF uploaded to pacompendium.com in February 2025)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/wp-content/uploads/2025/02/1_2024-adult-compendium_1_2024.pdf",
+      "sha256": "ac30234b8f8f813837e282773cfcb3e0fe062334777c2f7b3213429c4fbc251c",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' and read (all 17 rows the exercise planner uses match the archived 2024 copy); attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-bicycling.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'bicycling' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/bicycling/",
+      "originalName": "(web page)",
+      "sha256": "117a8927e66c871f006c0f5a799f946668b779743e79d59ccac01b13a78c6830",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-bicycling.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'bicycling' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/bicycling/",
+      "originalName": "(web page)",
+      "sha256": "5392abd07e31776cda6c240ca894b5827dac86eead1b62164aedc95bbfea2eb5",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-conditioning-exercise.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'conditioning-exercise' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/conditioning-exercise/",
+      "originalName": "(web page)",
+      "sha256": "8f845c4671017b5feaafb9baf629b30aa88afc14ab257ec4b9c9796da678ebd9",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-conditioning-exercise.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'conditioning-exercise' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/conditioning-exercise/",
+      "originalName": "(web page)",
+      "sha256": "e8bfb4eb17ab7e95349d564b5d31f22b470ec39fb2f2c5d7c1a321e277014a8e",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-running.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'running' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/running/",
+      "originalName": "(web page)",
+      "sha256": "16531b49ae472f4e6b659d435c79623a85a5af1bde1c4c113e242de0777d35ce",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-running.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'running' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/running/",
+      "originalName": "(web page)",
+      "sha256": "5d6825627d5a40bbea56b63cc48e5cefccbfe2d83f7c5467b880aef580704d22",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-sports.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'sports' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/sports/",
+      "originalName": "(web page)",
+      "sha256": "43f3786a30a24fe1f5f275e0cea6a4cf3ff9d0358f0e6f3ee379069b422f02e4",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-sports.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'sports' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/sports/",
+      "originalName": "(web page)",
+      "sha256": "2fa0d50399fd29ecc20e7a3d6806c0e2fe6e57b90f33022bced503a52d22738c",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-walking.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'walking' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/walking/",
+      "originalName": "(web page)",
+      "sha256": "3d8faab3c1878d3371f61ffa89086394356e71ee23704058b35e0264fa9d5c00",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-walking.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'walking' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/walking/",
+      "originalName": "(web page)",
+      "sha256": "b7457dc8babdd554cbfc9963a904a482ad9ccac0231828a84a7d61cd9231f624",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-water-activities.html",
+      "title": "2024 Adult Compendium of Physical Activities website, 'water-activities' page: raw HTML of the page",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/water-activities/",
+      "originalName": "(web page)",
+      "sha256": "edad56d6ba9c40d2e3593d226e5a1d7554967793b7df2d2aa9ff980c91723e68",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
+      "file": "compendium-2024-web-water-activities.pdf",
+      "title": "2024 Adult Compendium of Physical Activities website, 'water-activities' page: PDF print of the page (estimated values in red)",
+      "publisher": "Compendium of Physical Activities (S. D. Herrmann et al.)",
+      "licence": "Free to use and cite; MET values not to be changed (pacompendium.com)",
+      "origin": "https://pacompendium.com/water-activities/",
+      "originalName": "(web page)",
+      "sha256": "f413764a69abd9bd68a81604938350f7d047b016950c107c6ff742ab23189195",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' (raw HTML with curl, PDF print with headless Chrome) and read; it shows which values are estimates (codes in red). Attach by hand.",
+      "checked": "2026-11-20"
+    },
+    {
       "file": "dga-2020-2025.pdf",
       "title": "Dietary Guidelines for Americans, 2020–2025",
       "publisher": "U.S. Department of Agriculture and U.S. Department of Health and Human Services",
@@ -675,6 +817,16 @@
       "manual": "Moved from the repository's sources/ folder in Nov 2026 (the history clean-up); first archived there 2026-11-15.",
       "retrieved": "2026-11-15",
       "checked": "2026-11-18"
+    },
+    {
+      "file": "stokey-2024-deltoid-review.pdf",
+      "title": "Anatomy and Deficiency of the Deltoid Muscle: A Review of Literature (Orthopedic Reviews, vol. 16, 2024)",
+      "publisher": "P. J. Stokey et al., Orthopedic Reviews (Open Medical Publishing)",
+      "licence": "Free to read; the journal does not state a licence (all rights remain with the authors). Kept only so the cited statements can be traced.",
+      "origin": "https://orthopedicreviews.openmedicalpublishing.org/article/115352.pdf",
+      "sha256": "b943ac0f44689a4ecf91465adb0daf331fa2d01b2c2de287f729dfcd8bb0c7b5",
+      "manual": "Downloaded by the editor on 2026-11-20 from the address in 'origin' and read; attach by hand.",
+      "checked": "2026-11-20"
     },
     {
       "file": "usda-sr-legacy-documentation.pdf",

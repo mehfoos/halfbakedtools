@@ -83,6 +83,23 @@
       ]
     },
     {
+      "id": "stokey-2024",
+      "pre": "P. J. Stokey, S. Kaur, A. Lee, K. Behrens and N. Ebraheim,",
+      "title": "Anatomy and deficiency of the deltoid muscle: A review of literature",
+      "style": "quoted",
+      "post": "<i>Orthopedic Reviews</i>, vol. 16, Mar. 2024, doi: 10.52965/001c.115352.",
+      "url": "https://doi.org/10.52965/001c.115352",
+      "licence": "Free to read; the journal does not state a licence (all rights remain with the authors)",
+      "usedFor": "What each part of the deltoid does (front: flexion and medial rotation; side: abduction; rear: extension and lateral rotation)",
+      "archive": [
+        {
+          "label": "Archived copy (PDF)",
+          "asset": "stokey-2024-deltoid-review.pdf",
+          "fetch": "https://orthopedicreviews.openmedicalpublishing.org/article/115352.pdf"
+        }
+      ]
+    },
+    {
       "id": "who-2020",
       "pre": "World Health Organization,",
       "title": "WHO Guidelines on Physical Activity and Sedentary Behaviour",
@@ -128,6 +145,34 @@
             "https://rcastoragev2.blob.core.windows.net/21bf8ca80a76a05a52608ccd69dff716/main.PMC10818145.pdf"
           ],
           "optional": true
+        },
+        {
+          "label": "activity list, February 2025 upload (same values)",
+          "asset": "compendium-2024-adult-activity-list-2025-02.pdf"
+        },
+        {
+          "label": "website page 'bicycling' (PDF print; estimated values in red)",
+          "asset": "compendium-2024-web-bicycling.pdf"
+        },
+        {
+          "label": "website page 'conditioning-exercise' (PDF print; estimated values in red)",
+          "asset": "compendium-2024-web-conditioning-exercise.pdf"
+        },
+        {
+          "label": "website page 'running' (PDF print; estimated values in red)",
+          "asset": "compendium-2024-web-running.pdf"
+        },
+        {
+          "label": "website page 'walking' (PDF print; estimated values in red)",
+          "asset": "compendium-2024-web-walking.pdf"
+        },
+        {
+          "label": "website page 'water-activities' (PDF print; estimated values in red)",
+          "asset": "compendium-2024-web-water-activities.pdf"
+        },
+        {
+          "label": "website page 'sports' (PDF print; estimated values in red)",
+          "asset": "compendium-2024-web-sports.pdf"
         }
       ]
     }

@@ -27,7 +27,7 @@ test("every muscle can be trained directly with a full gym and with no equipment
   for (const p of ["gym", "body"]) {
     const have = new Set(preset(p));
     for (const m of muscles) {
-      if (p === "body" && ["forearms", "biceps", "upperBack"].includes(m)) continue; // need something to hold or pull
+      if (p === "body" && ["forearms", "biceps", "upperBack", "sideDelts", "rearDelts"].includes(m)) continue; // need something to hold or pull
       assert.ok(EXERCISES.some((e) => canDo(e, have) && e.direct.includes(m)), `${p}: ${m}`);
     }
   }
@@ -138,7 +138,7 @@ test("a deeper target (2 sets) is reachable: two different exercises from the sa
 });
 
 test("at the default depth, two indirect exercises can add up to one set", () => {
-  const r = suggest({ ...base, targets: ["shoulders"], equipment: preset("gym"), excluded: EXERCISES.filter((e) => e.direct.includes("shoulders")).map((e) => e.id) });
+  const r = suggest({ ...base, targets: ["frontDelts"], equipment: preset("gym"), excluded: EXERCISES.filter((e) => e.direct.includes("frontDelts")).map((e) => e.id) });
   assert.equal(r.suggestions[0].score, 1);
   assert.equal(r.suggestions[0].exercises.length, 2);
 });
@@ -193,8 +193,11 @@ test("only continuous, rhythmic activities cover heart and lungs", () => {
   const r = suggest({ ...base, targets: ["aerobic"], equipment: ["body", "kettlebell"] });
   assert.equal(r.suggestions.length, 0);
   assert.deepEqual(r.unreachable, ["aerobic"]);
-  const g = suggest({ ...base, maxExercises: 10, targets: [...muscles, "aerobic"] as never, equipment: preset("gym") });
-  for (const s of g.suggestions) assert.ok(s.exercises.some((e) => e.kind === "aerobic") && !s.missing.includes("aerobic"));
+  const g = suggest({ ...base, targets: ["glutes", "hamstrings", "aerobic"], equipment: preset("gym") });
+  for (const s of g.suggestions) {
+    assert.ok(!s.missing.includes("aerobic"));
+    assert.ok(s.exercises.some((e) => e.kind === "aerobic"), "covered by a continuous activity, not kettlebell swings");
+  }
 });
 
 test("MET values match the Compendium's measured (not estimated) rows used", () => {
@@ -202,4 +205,15 @@ test("MET values match the Compendium's measured (not estimated) rows used", () 
   const rows = EXERCISES.flatMap((e) => e.met ?? []);
   assert.equal(rows.length, 17);
   assert.equal(new Set(rows.map((r) => r.code)).size, 17);
+});
+
+test("shoulders are three groups: a face pull alone doesn't cover the front or side", () => {
+  const face = EXERCISES.find((e) => e.id === "facePull")!;
+  assert.ok(face.direct.includes("rearDelts") && !face.direct.includes("frontDelts") && !face.indirect.includes("sideDelts"));
+  const r = suggest({ ...base, maxExercises: 1, targets: ["frontDelts", "sideDelts", "rearDelts"], equipment: preset("machines") });
+  assert.ok(r.suggestions[0].missing.length >= 1);
+  const full = suggest({ ...base, targets: ["frontDelts", "sideDelts", "rearDelts"], equipment: preset("gym") });
+  assert.deepEqual(full.suggestions[0].missing, []);
+  // Table 1A's anterior-deltoid row is credited to the front shoulders only.
+  for (const e of EXERCISES) for (const m of Object.keys(e.sources ?? {})) assert.ok(!["sideDelts", "rearDelts"].includes(m), e.id);
 });
