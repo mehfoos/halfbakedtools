@@ -18,7 +18,12 @@
           "fetch": "https://sportrxiv.org/index.php/server/preprint/download/460/967/908"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "pelland-2024-dose-response-preprint-v2.pdf",
+          "sha256": "219064b8fb4198fb4eb5690b9cfb36a3a4ef66375263f8a8dddb7ea5f33efb5d"
+        }
+      ]
     },
     {
       "id": "schoenfeld-2019",
@@ -40,7 +45,12 @@
           ]
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "schoenfeld-2019-set-volume-multi-joint.pdf",
+          "sha256": "e5fdd58cf4e1a7b4bd6406a0a7af1c4e048f092d578f1a4fde3ff8600c4784bb"
+        }
+      ]
     },
     {
       "id": "openstax-ap2e",
@@ -51,7 +61,7 @@
       "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-introduction",
       "licence": "CC BY 4.0 (as stated by OpenStax)",
       "usedFor": "What each muscle does (which joint movement it produces), used to decide which muscles an exercise works",
-      "accessed": null,
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy: 11.3 saved by the site owner (PDF)",
@@ -86,7 +96,44 @@
           "asset": "openstax-ap2e-11-6-owner-saved.mht"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "openstax-ap2e-11-3-owner-saved.pdf",
+          "sha256": "373a7488ec43270ce332effd4c22cc9617af87bbc09ed050808d03f44d5794bd",
+          "pending": true
+        },
+        {
+          "file": "openstax-ap2e-11-3-owner-saved.mht",
+          "sha256": "f896a6b250d71c0f3db66640ae20d8f9563c013c0157759c04b4eebbfda82726"
+        },
+        {
+          "file": "openstax-ap2e-11-4-owner-saved.pdf",
+          "sha256": "62a4d71a18b1219168e45e9024a8cb5db453b6690008c3427af5cc23b5af616b",
+          "pending": true
+        },
+        {
+          "file": "openstax-ap2e-11-4-owner-saved.mht",
+          "sha256": "a6b4a71f32639dfe3bf4386f95a75df6b2c28bf13ee80bd48b4bab66af589b35"
+        },
+        {
+          "file": "openstax-ap2e-11-5-owner-saved.pdf",
+          "sha256": "c82584f3e47d82ce3b07011470cbe55637080ba786b7a2436c3aeb2a18f76ab7",
+          "pending": true
+        },
+        {
+          "file": "openstax-ap2e-11-5-owner-saved.mht",
+          "sha256": "f2992cc624171e8de9daeadc5e4faa921a5294712996d270b5aac13dba1272c6"
+        },
+        {
+          "file": "openstax-ap2e-11-6-owner-saved.pdf",
+          "sha256": "ca8e45dbc5fdde823c4deb97485d3790dd9ac6a5130a0ad26c24a90748d6de30",
+          "pending": true
+        },
+        {
+          "file": "openstax-ap2e-11-6-owner-saved.mht",
+          "sha256": "89d7f903de94a51faa0335c30334d85e2433d9b0628a85852893db34c457ce37"
+        }
+      ]
     },
     {
       "id": "stokey-2024",
@@ -97,7 +144,7 @@
       "url": "https://doi.org/10.52965/001c.115352",
       "licence": "Free to read; the journal does not state a licence (all rights remain with the authors)",
       "usedFor": "What each part of the deltoid does (front: flexion and medial rotation; side: abduction; rear: extension and lateral rotation)",
-      "accessed": null,
+      "accessed": "2026-11-20",
       "archive": [],
       "noPublicCopy": {
         "why": "licence",
@@ -129,7 +176,12 @@
           "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2025.1542334/pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "krause-neto-2025-gluteus-maximus-meta-analysis.pdf",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "plotkin-2023",
@@ -148,7 +200,12 @@
           "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1279170/pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "plotkin-2023-hip-thrust-squat.pdf",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "wei-2023",
@@ -167,7 +224,12 @@
           "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC10439966/fullTextXML"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "wei-2023.xml",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "morin-2025",
@@ -178,7 +240,7 @@
       "url": "https://doi.org/10.1519/JSC.0000000000005159",
       "licence": "Journal article: publisher's copyright. Preprint: all rights reserved, no reuse allowed (medRxiv)",
       "usedFor": "Stiff-leg deadlift training grew the hamstrings (the Romanian deadlift here)",
-      "accessed": null,
+      "accessed": "2026-11-20",
       "archive": [],
       "noPublicCopy": {
         "why": "licence",
@@ -202,7 +264,7 @@
       "url": "https://doi.org/10.1136/bjsports-2016-096130",
       "licence": "Publisher's copyright; the accepted manuscript is posted for personal use only",
       "usedFor": "45° hip extension training grew all three hamstring muscles (the back extension here)",
-      "accessed": null,
+      "accessed": "2026-11-20",
       "archive": [],
       "noPublicCopy": {
         "why": "licence",
@@ -234,7 +296,12 @@
           "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC4924172/fullTextXML"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "paoli-2016-latissimus-dorsi-fibres.xml",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "kinoshita-2023",
@@ -253,7 +320,12 @@
           "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1272106/pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "kinoshita-2023-standing-seated-calf-raise.pdf",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "kikuchi-2017",
@@ -272,7 +344,12 @@
           "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5812864/fullTextXML"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "kikuchi-2017.xml",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "larsen-2025",
@@ -291,7 +368,12 @@
           "fetch": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12277279/fullTextXML"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "larsen-2025.xml",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "who-2020",
@@ -317,7 +399,17 @@
           "label": "journal paper of the guidelines (Bull et al., Br J Sports Med 2020)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "who-2020-guidelines-physical-activity-sedentary-behaviour.pdf",
+          "sha256": "50b66c44e7083cc3752849f301ae1d60d9360d511e34c0c948b39bdf6e13dc88",
+          "pending": true
+        },
+        {
+          "file": "bull-2020-who-physical-activity-guidelines.pdf",
+          "sha256": "9affb04af502267d10a232a192ea7e65b7248bea84130967f3fa3679732345ce"
+        }
+      ]
     },
     {
       "id": "compendium-2024",
@@ -372,7 +464,44 @@
           "asset": "compendium-2024-web-sports.pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "compendium-2024-adult-activity-list.pdf",
+          "sha256": "5319ed1ff07a1e005173b7fa0f9c5c32ae6369d70e788ac8ff99f475b81bffa8"
+        },
+        {
+          "file": "herrmann-2024-adult-compendium.pdf",
+          "sha256": "f420abacffb7a2ef14f13b9ac1b3d6b6912233b092ac27e657b5517c7ed505f5"
+        },
+        {
+          "file": "compendium-2024-adult-activity-list-2025-02.pdf",
+          "pending": true
+        },
+        {
+          "file": "compendium-2024-web-bicycling.pdf",
+          "pending": true
+        },
+        {
+          "file": "compendium-2024-web-conditioning-exercise.pdf",
+          "pending": true
+        },
+        {
+          "file": "compendium-2024-web-running.pdf",
+          "pending": true
+        },
+        {
+          "file": "compendium-2024-web-walking.pdf",
+          "pending": true
+        },
+        {
+          "file": "compendium-2024-web-water-activities.pdf",
+          "pending": true
+        },
+        {
+          "file": "compendium-2024-web-sports.pdf",
+          "pending": true
+        }
+      ]
     }
   ]
 }

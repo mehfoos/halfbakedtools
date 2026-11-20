@@ -10,7 +10,7 @@
       "url": "https://fdc.nal.usda.gov/",
       "licence": "Public domain (US government work)",
       "usedFor": "Nutrient content of every food",
-      "accessed": null,
+      "accessed": "2026-11-20",
       "archive": [
         {
           "label": "Archived copy (data download)",
@@ -28,13 +28,18 @@
       "url": "https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/618167/government_dietary_recommendations.pdf",
       "licence": "© Crown copyright, Open Government Licence v3.0",
       "usedFor": "UK targets",
-      "accessed": null,
+      "accessed": "2026-11-20",
       "archive": [
         {
           "asset": "phe-2016-government-dietary-recommendations.pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "phe-2016-government-dietary-recommendations.pdf",
+          "sha256": "ba28add5cc79e4064ec9bf556eb1540800a967e886698bf3eee63cba49c4a778"
+        }
+      ]
     },
     {
       "id": "nasem-dri",
@@ -78,7 +83,32 @@
           "fetch": "https://www.nationalacademies.org/cdn/materials/9fb9fad5-4dc6-4b97-bd02-955b95d05eda"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "nasem-dri-rda-ai-vitamins-elements.pdf",
+          "sha256": "5e10fff417499a7ef5db69fcd244dc11c07118d9322e17f8bc0303fa0dc556ac"
+        },
+        {
+          "file": "nasem-dri-rda-ai-water-macronutrients.pdf",
+          "sha256": "f6b689361a525055229c156e79db74b06adb7500c652501b55682a07805b6e50"
+        },
+        {
+          "file": "nasem-dri-ul-vitamins-elements.pdf",
+          "sha256": "858ef674224dc2e227c23933a026cdcc17d2cef6e7576c645500c8a879b08f7f"
+        },
+        {
+          "file": "nasem-dri-macronutrients-summary.pdf",
+          "sha256": "64d11aa435ddcb43dcc5e27f11fc42f781c3c51337c9189f006c7364a8e5a989"
+        },
+        {
+          "file": "nasem-dri-cdrr.pdf",
+          "sha256": "8b2725f6adf9030aad92034f477bec5161c16cb1d8a065dc0094b2bf5a1b5c0d"
+        },
+        {
+          "file": "nasem-dri-values-summary.pdf",
+          "sha256": "303e37625ff2a7531e6f63d3f3017f133458855c957e15564a2a38a098052db2"
+        }
+      ]
     },
     {
       "id": "dga-2020",
@@ -96,7 +126,13 @@
           "fetch": "https://www.dietaryguidelines.gov/sites/default/files/2020-12/Dietary_Guidelines_for_Americans_2020-2025.pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "dga-2020-2025.pdf",
+          "sha256": "ceea04ce1a7c13a95a170f3548ed3926ad6dd49599bd730fb58bc9c02711d16e",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "efsa-2017",
@@ -113,7 +149,12 @@
           "asset": "efsa-2017-drv-summary-report.pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "efsa-2017-drv-summary-report.pdf",
+          "sha256": "0231c27d944b9d9ec209d9b6c8d42b9a969df6054f0e30ff7e945bb77d532c48"
+        }
+      ]
     },
     {
       "id": "who-2007",
@@ -124,13 +165,19 @@
       "url": "https://iris.who.int/handle/10665/43411",
       "licence": "© World Health Organization; copy kept so the checked values can be traced",
       "usedFor": "Essential amino acid targets (adults)",
-      "accessed": null,
+      "accessed": "2026-11-20",
       "archive": [
         {
           "asset": "who-2007-trs-935.pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "who-2007-trs-935.pdf",
+          "sha256": "ad109adebecbace501da1b6d4672821009b4e45ad76b95647bc87017901e89b0",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "eu-1169",
@@ -156,7 +203,16 @@
           "label": "Archived copy (consolidated text, 1 Apr 2025)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "eu-2011-regulation-1169.pdf",
+          "sha256": "a291b1e5777d47033085b74dac7b1f5fc9903b1875fd079a99678858f25269d5"
+        },
+        {
+          "file": "eu1169_consolidated_2025-04-01_EN.pdf",
+          "sha256": "6cdf4190d6fa4a99d2e7d3124611724ec4cf69159563f88b35dc3c50dd416c63"
+        }
+      ]
     },
     {
       "id": "highs",
@@ -174,7 +230,12 @@
           "fetch": "https://link.springer.com/content/pdf/10.1007/s12532-017-0130-5.pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "huangfu-hall-2018-highs.pdf",
+          "sha256": "6d1d210df96363aaaffaca752aeb6b395465f4f27c426f89f5891ddeccb28985"
+        }
+      ]
     },
     {
       "id": "nhs-vitd",
@@ -193,7 +254,12 @@
           "render": true
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "nhs-vitamin-d.pdf",
+          "sha256": "a14edd6b845823e2150e04669ee3280cfbb9a23f33722e9de6b48bd2a1bb3656"
+        }
+      ]
     },
     {
       "id": "nhs-vegan",
@@ -212,7 +278,12 @@
           "render": true
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "nhs-vegan-diet.pdf",
+          "sha256": "a9ebfc0f6e15993ab8f9ccee5fe737dbcbccf70be1f2bc9d62e993717e4b4f5e"
+        }
+      ]
     },
     {
       "id": "nhs-iodine",
@@ -231,7 +302,12 @@
           "render": true
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "nhs-iodine.pdf",
+          "sha256": "77e3b0fd4eabc6e7f9a8854ec656fbc6f8fe3348f4b285a38459df61b344bed4"
+        }
+      ]
     },
     {
       "id": "nhs-fish",
@@ -250,7 +326,12 @@
           "render": true
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "nhs-fish-and-shellfish.pdf",
+          "sha256": "8f51ad6d17263598abd8b01942d0e9968a327512cd063f20c32c7475a8ff96c7"
+        }
+      ]
     },
     {
       "id": "nhs-meat",
@@ -269,7 +350,12 @@
           "render": true
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "nhs-meat-in-your-diet.pdf",
+          "sha256": "36478a94f805bc3a276e97284444eec18c518f74ff3b3de35b211681e36b0814"
+        }
+      ]
     },
     {
       "id": "usda-sr-doc",
@@ -297,7 +383,16 @@
           "fetch": "https://www.ars.usda.gov/Arsuserfiles/80400525/Data/SR-Legacy/SR-Legacy_Doc.Pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "usda-sr28-documentation.pdf",
+          "sha256": "6ee9d1b3d838c7bc66ab8df422b0498956300d4d0aec2b4f8b132184d72427c2"
+        },
+        {
+          "file": "usda-sr-legacy-documentation.pdf",
+          "sha256": "fdc33442adb5707d448676e92b54f9adeaad63b6df267b683b5fe728307391cf"
+        }
+      ]
     },
     {
       "id": "cofid-2021",
@@ -319,7 +414,17 @@
           "label": "Archived copy (user guide)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "cofid2021_McCance_Widdowsons_Composition_of_Foods_Integrated_Dataset_2021.xlsx",
+          "sha256": "436e9445ef2adb2a75f3d7edd51302de3adad25385f9795fc94ba58bd030e97d",
+          "pending": true
+        },
+        {
+          "file": "cofid2021_McCance_and_Widdowsons_Composition_of_Foods_integrated_dataset_2021_user_guide.pdf",
+          "sha256": "cbac83af403531f1db260a15de058ceca1c1bae6707a8748ee3788fee7f945ec"
+        }
+      ]
     },
     {
       "id": "efsa-sodium-2019",
@@ -336,7 +441,13 @@
           "asset": "efsa-2019-sodium.pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "efsa-2019-sodium.pdf",
+          "sha256": "8b4032645f109b26f1f7ead3ef3bddf8095b30dd3a3056daffe6317b877123eb",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "sacn-2015",
@@ -347,13 +458,18 @@
       "url": "https://www.gov.uk/government/publications/sacn-carbohydrates-and-health-report",
       "licence": "© Crown copyright 2015; Open Government Licence v3.0",
       "usedFor": "How UK fibre is defined and measured (AOAC); how US total fibre is defined",
-      "accessed": null,
+      "accessed": "2026-11-20",
       "archive": [
         {
           "asset": "sacn2015_SACN_Carbohydrates_and_Health.pdf"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "sacn2015_SACN_Carbohydrates_and_Health.pdf",
+          "sha256": "e97aff6779ef99615e09043b43bfcc0e211df1d623db28e801fa2efc430ae1a7"
+        }
+      ]
     },
     {
       "id": "bls-4",
@@ -379,7 +495,21 @@
           "label": "Archived copy (documentation)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "bls4_BLS_4_0_Data_2025_EN.xlsx",
+          "sha256": "89b7d248bd49e22e33103db47138e87b038b7c16d5367bf887c015f08d6ddfc7",
+          "pending": true
+        },
+        {
+          "file": "bls4_BLS_4_0_Components_DE_EN.xlsx",
+          "sha256": "359aefcd2086f45e62ff3dbd0c8536306e594a5806ac325d8bf86f484561bdf4"
+        },
+        {
+          "file": "bls4_BLS_4_0_Documentation_EN.pdf",
+          "sha256": "c3a7c0d44d4a7638da935de75a37e06e78409f9306262e6fe060a9371adaeee6"
+        }
+      ]
     },
     {
       "id": "ciqual-2025",
@@ -401,7 +531,17 @@
           "label": "Archived copy (documentation, French)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "ciqual2025_XML_2025_11_03.zip",
+          "sha256": "1a5fb5d2b873cb140ba82b6c2e1e155eefda509dc1799ae0b41e2b85bc8e05d4"
+        },
+        {
+          "file": "ciqual2025_Table_Ciqual_2025_doc_FR_2025_11_19.pdf",
+          "sha256": "b95704eb6bb775e73e6f5824eca8bebed1634bb3b3d9631dae1987828e5a95d5",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "frida-55",
@@ -423,7 +563,17 @@
           "label": "Archived copy (documentation)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "frida55_Frida_5.5_Dataset.xlsx",
+          "sha256": "6b1952a35df3c0d4d7b2699ae0a3e377add42b231108309329b40256ef600e5e",
+          "pending": true
+        },
+        {
+          "file": "frida55_Frida5.5_Documentation_English.pdf",
+          "sha256": "9bddd4bffff553484e7f7e4874904cc4beaa32596314548965bc3a803dd6b694"
+        }
+      ]
     },
     {
       "id": "fineli-20",
@@ -445,7 +595,16 @@
           "label": "Archived copy (nutrient factors)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "fineli20_Fineli_Rel20__74_ravintotekijaa.zip",
+          "sha256": "e7e6bd8d4b9261d751229e763dad436b297d36d48fe853faf49e1fd2a116d262"
+        },
+        {
+          "file": "fineli20_Fineli_nutrient_factors.pdf",
+          "sha256": "75abe29cdaa79d8eb9a9d85ceeb539345300bdd1f666ffb8a78a1c1a30f2e6c6"
+        }
+      ]
     },
     {
       "id": "kfcdb-93",
@@ -463,7 +622,12 @@
           "label": "Archived copy (dataset, English)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "kfcdb93_StandardFoodCompositionTableEng.xlsx",
+          "sha256": "4ec31824eba6299b570ec9ea1aebb6a6f6e90237aa6ad2f86af8eb1d31b165d8"
+        }
+      ]
     },
     {
       "id": "mext-2023",
@@ -493,7 +657,24 @@
           "label": "Archived copy (English names of food sources)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "japan_20260327-mxt_kagsei-mext-000029402_02.xlsx",
+          "sha256": "0d5a77077dd6cd91cbc2e6e317b8b218a38728c409eed452f1c10635a0d3099c"
+        },
+        {
+          "file": "japan_20260327-mxt_kagsei-mext-000029402_04.xlsx",
+          "sha256": "8786e8581e03ae25e2ecd770c48a8d1060e61ae6f7464cf1607614dcde543bc4"
+        },
+        {
+          "file": "japan_20260327-mxt_kagsei-mext-000029402_09.xlsx",
+          "sha256": "435ab7125d3de26fba968de952b463b71d011c6b0f50e8966112293c521fd5fd"
+        },
+        {
+          "file": "japan_1374049_0r10.xlsx",
+          "sha256": "c72e78e30ea096315603f945f9b1f8d0581588b14dff44aed765474e3aa51efe"
+        }
+      ]
     },
     {
       "id": "cnf-2026",
@@ -511,7 +692,13 @@
           "label": "Archived copy (data files and guides)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "cnf2026_cnf_fcen_all-files-data_2026.zip",
+          "sha256": "f5faad8977ee6bbdd9d69c8649077cacd87d8658ad200509a4047db1e29edcdd",
+          "pending": true
+        }
+      ]
     },
     {
       "id": "afcd-3",
@@ -529,7 +716,13 @@
           "label": "Archived copy (Release 3 Excel files and guide)"
         }
       ],
-      "ownerCopy": "pending"
+      "ownerCopy": [
+        {
+          "file": "afcd3_AFCD_Release_3_December_2025.zip",
+          "sha256": "ee25b09cb8bc0cb5f268a5fc09f36e7b48d738cdf918897b2886d8a5438351b3",
+          "pending": true
+        }
+      ]
     }
   ]
 }

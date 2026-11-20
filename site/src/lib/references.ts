@@ -58,9 +58,11 @@ export function entryHtml(s: Source): string {
   if (links.length) copies.push(links.join(" · "));
   else if (s.archive.length) copies.push(`<span class="muted">Public copy not yet available</span>`);
   if (s.noPublicCopy) copies.push(`${NO_PUBLIC[s.noPublicCopy.why]} (${esc(s.noPublicCopy.note)})`);
-  const kept = Array.isArray(s.ownerCopy) ? s.ownerCopy.filter((c) => !c.pending) : [];
-  if (kept.length) copies.push("The site owner also keeps a private copy" + (kept.some((c) => c.sha256)
-    ? ` (SHA-256 ${kept.filter((c) => c.sha256).map((c) => `<code title="${esc(c.sha256!)}">${esc(c.sha256!.slice(0, 12))}…</code>`).join(", ")})`
+  // The owner's copy is mentioned only once every file of it is saved. Its checksum is shown only where there is no
+  // public copy, since a public copy's checksum is already listed with the release.
+  const owner = Array.isArray(s.ownerCopy) && s.ownerCopy.every((c) => !c.pending) ? s.ownerCopy : [];
+  if (owner.length) copies.push("The site owner also keeps a private copy" + (!s.archive.length && owner.some((c) => c.sha256)
+    ? ` (SHA-256 ${owner.filter((c) => c.sha256).map((c) => `<code title="${esc(c.sha256!)}">${esc(c.sha256!.slice(0, 12))}…</code>`).join(", ")})`
     : ""));
   const meta = [
     s.accessed ? "" : `<span class="muted">Access date not recorded.</span>`,
