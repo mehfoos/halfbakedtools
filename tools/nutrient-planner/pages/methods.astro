@@ -1,83 +1,212 @@
 ---
 import ToolLayout from "@site/layouts/ToolLayout.astro";
 import { referencesFor } from "@site/lib/references.ts";
+import Caveat from "@site/components/Caveat.astro";
 import references from "../references.json";
 import uk from "../data/targets/uk.json";
 import us from "../data/targets/us.json";
 import eu from "../data/targets/eu.json";
-import meta from "../data/meta.json";
+import tableList from "../data/foods/tables.json";
 const { cite } = referencesFor(references as Parameters<typeof referencesFor>[0]);
 const standards = [uk, us, eu];
+
+// Everything below about the food tables is worked out from the published files at build time, so it can't drift
+// from the data: each table's definitions, its counts, and how many of its foods give a value for each nutrient.
+type FoodFile = {
+  generated?: string; source?: string; files?: Record<string, string | null>; definitions?: Record<string, string>;
+  labels?: Record<string, string>; keys: string[]; nutrients: { key: string; label: string; unit: string }[];
+  foods: { common?: boolean; v: (number | null)[] }[];
+};
+const files = import.meta.glob<FoodFile>("../data/foods/foods*.json", { eager: true, import: "default" });
+const tables = tableList.tables.map((t) => ({ ...t, data: files[`../data/foods/${t.basic}`] }));
+const single = tables.filter((t) => t.id !== "blend" && t.data);
+const nutrientList = single[0].data.nutrients;
+const coverage = (t: (typeof single)[number], key: string) => {
+  const i = t.data.keys.indexOf(key);
+  if (i < 0 || !t.data.foods.length) return 0;
+  return Math.round((100 * t.data.foods.filter((f) => typeof f.v[i] === "number").length) / t.data.foods.length);
+};
+const commonCount = (t: (typeof single)[number]) => t.data.foods.filter((f) => f.common).length;
+
+// Which targets depend on body weight or on energy, read from the target files.
+const basisLists = (s: typeof uk) => {
+  const out: Record<string, Set<string>> = { perKg: new Set(), pctEnergy: new Set(), perMJ: new Set() };
+  for (const p of s.profiles) for (const [k, spec] of Object.entries(p.targets as Record<string, { min?: { basis: string }; max?: { basis: string } }>))
+    for (const b of [spec.min, spec.max]) if (b && b.basis in out) out[b.basis].add(k);
+  const label = (k: string) => nutrientList.find((n) => n.key === k)?.label ?? k;
+  return Object.fromEntries(Object.entries(out).map(([b, v]) => [b, [...v].map(label).join(", ")]));
+};
 ---
 <ToolLayout slug="nutrient-planner" page="methods">
   <h1>Methods and sources</h1>
-  <p class="lede">How Food Finder and the Planner work, where their numbers come from, and what they can't tell you.</p>
+  <p class="lede">How Food Finder and the Planner work, where their numbers come from, what has been checked, and what they can't tell you.</p>
 
   <h2>In brief</h2>
   <ul class="prose">
-    <li><strong>Food values</strong> come from national food composition tables, each offered on its own and on an equal footing: the US (USDA SR Legacy) <Fragment set:html={cite("usda-sr")} />, the UK (CoFID) <Fragment set:html={cite("cofid-2021")} />, Germany (BLS 4.0) <Fragment set:html={cite("bls-4")} />, France (Ciqual 2025) <Fragment set:html={cite("ciqual-2025")} />, Denmark (Frida 5.5) <Fragment set:html={cite("frida-55")} />, Finland (Fineli) <Fragment set:html={cite("fineli-20")} />, South Korea (KFCDb 9.3) <Fragment set:html={cite("kfcdb-93")} />, Japan (MEXT, 8th edition) <Fragment set:html={cite("mext-2023")} />, Canada (CNF 2026) <Fragment set:html={cite("cnf-2026")} /> and Australia (AFCD Release 3) <Fragment set:html={cite("afcd-3")} />. Where a table says a value is estimated, calculated from a recipe, borrowed from another food or table, a trace or below a limit, that is kept with the value. Japanese food names are translated by this site and marked as such. Each value is the table's own, as published; a nutrient a table doesn't give is shown as not available, never as zero, and where a table defines a nutrient differently from the targets (for example vitamin A or energy factors), the page says so. Food Finder lists every food of every table; the Planner lists each table's basic foods (no dishes, sweets, fried or coated foods, offal or raw meat), because it suggests foods. The Planner uses the Blended table, a beta, until you pick another table: the common foods found to be the same food in at least two independent tables, under stricter rules than the Common list (the same food words, preparation and packing, with protein, fat, energy and minerals agreeing; colour or variety must not differ; for USDA and CoFID, the earlier reviewed decisions are kept). Values are combined only within one definition: for each nutrient, the definition your standard's targets use is chosen when any table gives it (for example retinol equivalents for UK and EU vitamin A, retinol activity equivalents for US), otherwise the most common one, marked as an assumption. Each value is the median of the independent tables that give it, with the range, each table's value and any caveats shown; values a table took from another table, or nearly identical ones, count once; a value only one table gives fills the gap and is marked. The matching and blending are automated, without manual human verification. </li>
-    <li><strong>Targets</strong> come from the official UK, US or EU recommended intakes for your age and sex.</li>
-    <li><strong>Food Finder</strong> shows one food, in the amount you choose, against the same targets, charts and notes as the Planner. Targets set as a share of energy (fat, saturates, carbohydrate) are worked out for the middle of your daily calorie range, because one food is only part of a day.</li>
-    <li><strong>Suggestions</strong> (Planner) are found by an optimiser running in your browser that gets as close as it can to every target without going over an upper limit.</li>
+    <li><strong>Food values</strong> come from ten national food composition tables, each offered on its own and on an equal footing: the US (USDA SR Legacy) <Fragment set:html={cite("usda-sr")} />, the UK (CoFID) <Fragment set:html={cite("cofid-2021")} />, Germany (BLS 4.0) <Fragment set:html={cite("bls-4")} />, France (Ciqual 2025) <Fragment set:html={cite("ciqual-2025")} />, Denmark (Frida 5.5) <Fragment set:html={cite("frida-55")} />, Finland (Fineli) <Fragment set:html={cite("fineli-20")} />, South Korea (KFCDb 9.3) <Fragment set:html={cite("kfcdb-93")} />, Japan (MEXT, 8th edition) <Fragment set:html={cite("mext-2023")} />, Canada (CNF 2026) <Fragment set:html={cite("cnf-2026")} /> and Australia (AFCD Release 3) <Fragment set:html={cite("afcd-3")} />. Each value is the table's own, as published, with the table's own label where it says a value is estimated, calculated from a recipe, borrowed, a trace or below a limit.</li>
+    <li><strong>The Blended table</strong>, a beta, is used until you pick another table: foods found to be the same food in at least two independent tables, each value the median of those tables. The matching is automated, without manual human verification.</li>
+    <li><strong>Targets</strong> come from the official UK, US or EU recommended intakes for your age and sex; safety limits are the US tolerable upper intake levels in every standard.</li>
+    <li><strong>Food Finder</strong> shows one food, in the amount you choose, against the same targets, charts and notes as the Planner.</li>
+    <li><strong>Suggestions</strong> (Planner) are found by an optimiser running in your browser that gets as close as it can to every target without going over an upper limit or outside your calorie range.</li>
     <li><strong>Missing data stays missing</strong>: it is shown as NA (no data), never counted as zero.</li>
   </ul>
-  <p class="small muted">Open a section below for the details. The limitations are listed at the end.</p>
+  <p class="small muted">Open a section below for the details. What has been checked, the limitations and the changes are at the end.</p>
 
   <details>
-    <summary>Food composition data <span class="summary-note">where the food values come from</span></summary>
+    <summary>Inputs and defaults <span class="summary-note">every option and where it starts</span></summary>
     <div class="details-body">
-      <details>
-        <summary>Which foods are included</summary>
-        <div class="details-body">
-        <p>
-          Each food table's foods are listed as published. The Planner uses each table's basic foods: no dishes, sweets,
-          fried or coated foods, offal or raw meat. Its default list, <strong>Common foods</strong>, holds the basic foods
-          found as the same food in at least two independent tables, leaving out raw foods people don't normally eat
-          raw. Two records count as the same food when their names describe the same food and preparation and their
-          protein, fat and energy agree within set tolerances. Records whose values a table says come from another
-          table, or that are nearly identical to another table's values, don't count as independent: for example, most
-          Canadian (CNF) values are taken from the USDA table. The matching is automated, without manual human
-          verification, and is a beta; it chooses foods only, and the values are always the table's own. <strong>All foods</strong>
-          switches on every basic food. US products with added nutrients (enriched or fortified) are marked
-          "US-fortified" and aren't included in All foods, because the UK versions may differ. Choosing vegetarian hides meat and
-          fish; choosing vegan also hides dairy, eggs and honey. The rules, the list of matches and a report live in the repository's
-          <code>tools/nutrient-planner/</code> folder so anyone can check them.
-        </p>
-        </div>
-      </details>
-      <details>
-        <summary>The one adjusted value: carbohydrate</summary>
-        <div class="details-body">
-        <p>
-          One value is adjusted. USDA lists "Carbohydrate, by difference": what is left of a
-          food after water, protein, fat, ash and alcohol, which includes fibre <Fragment set:html={cite("usda-sr-doc")} />. Dietary targets and food labels count
-          carbohydrate without fibre, so the planner subtracts each food's fibre from it. A food with no fibre value
-          (mostly meat, fish and oils) keeps USDA's figure.
-        </p>
-        </div>
-      </details>
-      <details>
-        <summary>Other national food tables <span class="summary-note">in preparation</span></summary>
-        <div class="details-body">
-          <p>
-            Food composition differs from country to country, and no single table covers every nutrient. Tables
-            published by national food and health agencies (for example in the UK, France, Germany, the Nordic
-            countries, Japan and Korea) are being checked so that a later version of the planner can offer them as
-            alternatives. Each will be cited and archived like the USDA data, and each value will say how its source
-            describes it (measured, calculated from a recipe, estimated, or borrowed from a similar food). Until then,
-            only the USDA data is used.
-          </p>
-        </div>
-      </details>
-      <p class="muted small">
-        Current snapshot: {meta.foodsLastUpdated ? `built ${meta.foodsLastUpdated}, ${meta.foodCount} foods` : "not built yet"}.
-        The snapshot is stored in the repository so the site keeps working even if the USDA servers change, and is refreshed every three months.
-      </p>
+      <p>Both pages start from the same defaults. A setting is kept in the page address, so a link reproduces the result.</p>
+      <div class="table-scroll"><table>
+        <thead><tr><th>Option</th><th>Default</th><th>Range and notes</th></tr></thead>
+        <tbody>
+          <tr><td>Sex</td><td>Female</td><td>Female or male; chooses the row of each standard's tables.</td></tr>
+          <tr><td>Age</td><td>35</td><td>1 to 110 whole years; chooses the age band, or the exact year where the source gives one (for example EFSA protein and energy for children).</td></tr>
+          <tr><td>Body weight</td><td>EFSA reference body weight for your age and sex <Fragment set:html={cite("efsa-2017")} /></td><td>10 to 300 kg. Used only for targets set per kilogram (listed under "How targets are worked out"). Reference weights (EFSA 2017, Table 17): 18 and over, 68.1 kg male and 58.5 kg female; children by band (1–3: 12.2 / 11.5; 4–6: 19.2 / 18.7; 7–10: 29.0 / 28.4; 11–14: 44.0 / 45.1; 15–17: 64.1 / 56.4). Used for every standard, so the three standards are compared for the same person.</td></tr>
+          <tr><td>Standard</td><td>UK</td><td>UK, US or EU recommendations (see "Recommended intakes").</td></tr>
+          <tr><td>Pregnancy or breastfeeding</td><td>Neither</td><td>Uses the source's values for that life stage, and leaves out the foods the NHS says to avoid then.</td></tr>
+          <tr><td>Diet</td><td>No restriction</td><td>Vegetarian hides meat and fish; vegan also hides dairy, eggs and honey.</td></tr>
+          <tr><td>Calorie range</td><td>The standard's energy estimate for your age and sex, ±10%</td><td>300 to 6,000 kcal. UK: PHE estimated average requirement <Fragment set:html={cite("phe-2016")} />; US: the <em>Dietary Guidelines</em> sedentary estimate <Fragment set:html={cite("dga-2020")} />; EU: EFSA average requirement at the lowest activity level its table gives (sedentary for adults and under-10s, moderately active for 10–17) <Fragment set:html={cite("efsa-2017")} />. These are low-activity estimates; raise the range if you are more active.</td></tr>
+          <tr><td>Food table</td><td>Blended, a beta</td><td>Any of the ten tables, or Blended.</td></tr>
+          <tr><td>Food list (Planner)</td><td>Common foods</td><td>Common foods or All foods; any food can be switched on or off by hand.</td></tr>
+          <tr><td>Ingredients (Planner)</td><td>Up to 6</td><td>1 to 15 foods per suggestion.</td></tr>
+          <tr><td>Options (Planner)</td><td>3</td><td>1 to 50 different suggestions.</td></tr>
+          <tr><td>Vitamin D from food (Planner)</td><td>Off</td><td>When off, suggestions don't try to reach the vitamin D target (see "Vitamin D and oily fish").</td></tr>
+          <tr><td>Other standards on the charts</td><td>On</td><td>Draws the other two standards' targets for the same person as thin outlines.</td></tr>
+          <tr><td>Your own targets</td><td>None</td><td>A target you type replaces the standard's, as a fixed amount.</td></tr>
+          <tr><td>Amount (Food Finder)</td><td>One unit (an egg, a slice, a banana) or 100 g</td><td>Can be changed.</td></tr>
+        </tbody>
+      </table></div>
     </div>
   </details>
 
   <details>
-    <summary>Recommended intakes <span class="summary-note">UK, US and EU targets, and how they were checked</span></summary>
+    <summary>Food composition data <span class="summary-note">the ten tables, their definitions, and what each gives</span></summary>
+    <div class="details-body">
+      <details>
+        <summary>The tables used</summary>
+        <div class="details-body">
+          <p>Each table is converted from an archived copy of its published file, listed with its checksum in the references. "Planner list" is its basic foods (see "Which foods are included"); "Common" is how many of those are common foods.</p>
+          <div class="table-scroll"><table>
+            <thead><tr><th>Table</th><th>Country</th><th>File used</th><th>Licence</th><th>Foods</th><th>Planner list</th><th>Common</th><th>Built</th></tr></thead>
+            <tbody>
+              {single.map((t) => (
+                <tr><td>{t.title}</td><td>{t.country}</td><td><code>{Object.values(t.data.files ?? {}).filter(Boolean).join(", ")}</code></td><td>{t.licence}</td><td>{t.foods.toLocaleString("en-GB")}</td><td>{t.basicFoods.toLocaleString("en-GB")}</td><td>{commonCount(t).toLocaleString("en-GB")}</td><td>{t.generated}</td></tr>
+              ))}
+            </tbody>
+          </table></div>
+          {tables.filter((t) => t.notice).map((t) => <p class="small muted">{t.title}: {t.notice} (<a href={t.noticeUrl}>licence</a>).</p>)}
+          <p class="small">The tables are not refreshed automatically: their formats change between releases, so a new release is checked by hand before it is used.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How each table defines its nutrients</summary>
+        <div class="details-body">
+          <p>
+            Tables measure some nutrients differently: energy uses different conversion factors, vitamin A is given as
+            retinol equivalents or retinol activity equivalents, folate as total folate or dietary folate equivalents, and
+            carbohydrate as available carbohydrate or "by difference". USDA's definitions are those of the SR Legacy
+            documentation <Fragment set:html={cite("usda-sr-doc")} />. Where another table's definition differs, it is listed
+            below, as recorded in the table's file, and shown with its values as an assumption.
+          </p>
+          {single.filter((t) => t.data.definitions && Object.keys(t.data.definitions).length).map((t) => (
+            <details>
+              <summary>{t.title}</summary>
+              <div class="details-body">
+                <ul class="prose small">
+                  {Object.entries(t.data.definitions!).map(([k, v]) => <li><strong>{nutrientList.find((n) => n.key === k)?.label ?? k}:</strong> {v}</li>)}
+                </ul>
+                {t.data.labels && Object.keys(t.data.labels).length > 0 && <>
+                  <p class="small">Labels this table puts on values, kept with each value:</p>
+                  <ul class="prose small muted">{Object.entries(t.data.labels).map(([, v]) => <li>{v}</li>)}</ul>
+                </>}
+              </div>
+            </details>
+          ))}
+        </div>
+      </details>
+      <details>
+        <summary>Values worked out by this site</summary>
+        <div class="details-body">
+          <p>Only these values are calculated rather than read from a table, and each only when every part is known (a missing part is never taken as zero):</p>
+          <ul class="prose">
+            <li><strong>Carbohydrate (USDA, CNF and KFCDb).</strong> These tables give "carbohydrate by difference", which includes fibre <Fragment set:html={cite("usda-sr-doc")} />. Targets and food labels count carbohydrate without fibre, so the food's fibre is subtracted (not below 0). A food with no fibre value keeps the table's figure. The other tables give available carbohydrate, which already excludes fibre.</li>
+            <li><strong>Salt</strong> = sodium (mg) × 2.5 ÷ 1,000, in grams, as on food labels <Fragment set:html={cite("eu-1169")} />.</li>
+            <li><strong>Niacin equivalents</strong> = preformed niacin (mg) + tryptophan (g) × 1,000 ÷ 60, where the table doesn't give niacin equivalents itself.</li>
+            <li><strong>Methionine + cysteine</strong> and <strong>phenylalanine + tyrosine</strong>: the sum of the two, as the WHO amino acid requirements are set <Fragment set:html={cite("who-2007")} />.</li>
+            <li><strong>EPA + DHA</strong> = (EPA + DHA, g) × 1,000, in mg.</li>
+            <li><strong>Energy (AFCD)</strong>: kcal = kJ ÷ 4.184.</li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary>Which foods are included</summary>
+        <div class="details-body">
+        <p>
+          Food Finder lists every food of every table, with its table in brackets, for example "(USDA)" or "(CoFID)". The
+          Planner lists each table's <strong>basic foods</strong>, because it suggests foods: no dishes, cakes, sweets,
+          drinks (except plant drinks), fried, coated or salted foods, offal or raw meat, and no values weighed with
+          inedible parts. Its default list, <strong>Common foods</strong>, holds the basic foods found as the same food in
+          at least two independent tables, leaving out raw foods people don't normally eat raw. Two records count as the
+          same food when their names describe the same food and preparation (after synonyms) and their protein, fat and
+          energy agree within set tolerances. Records whose values a table says come from another table, or that are
+          nearly identical to another table's values (of 8 or more values both give, 70% within 2%; or their protein, fat,
+          minerals and water-soluble vitamins within 1%), don't count as independent: for example, most Canadian (CNF) values are taken from the USDA table. The matching is automated,
+          without manual human verification, and is a beta; it chooses foods only, and the values are always the
+          table's own. <strong>All foods</strong> switches on every basic food. US products with added nutrients (enriched
+          or fortified) are marked "US-fortified" and aren't included in All foods, because the UK versions may differ.
+          The rules, the list of matches and a report live in the repository's <code>tools/nutrient-planner/</code>
+          folder so anyone can check them.
+        </p>
+        </div>
+      </details>
+      <details>
+        <summary>The Blended table</summary>
+        <div class="details-body">
+          <Caveat kind="beta">The matching is automated, without manual human verification.</Caveat>
+          <p>
+            The Blended table holds the common foods found to be the same food in at least two independent tables,
+            under stricter rules than the Common list: the same food words (only origin or farming may differ), the same
+            preparation, packing, skin and salt, no fortified products or mixtures, colour or variety must not differ,
+            and the composition must agree: protein within 1 g or 20%, fat within 0.4 g or 10%, fibre within 4 g or 55%,
+            energy within 30%, and at least three of sodium, calcium, potassium, iron and magnesium compared, with at
+            most one outside its tolerance. Every two records in a group must pass (not just each record with one other).
+            For USDA and CoFID, the earlier reviewed decisions are kept. Pairs found wrong in the reviews are listed, with
+            the reason, so they are never grouped.
+          </p>
+          <p>
+            Values are combined only within one definition. For each nutrient, the definition your standard's targets
+            use is chosen when any table gives it (for example retinol equivalents for UK and EU vitamin A, retinol
+            activity equivalents for US), otherwise the most common one, marked as an assumption. Each value is the
+            median of the independent tables that give it (with two tables, their mean), with the range, each table's
+            value and any caveats shown. Values a table took from another table, or nearly identical ones, count once. A
+            value only one table gives fills the gap and is marked. Values more than two-fold apart are flagged; where
+            only two tables give a value and they are more than five-fold apart, no value is given. Plant foods are
+            given no EPA, DHA or retinol. For a day with blended foods, each nutrient also shows the lowest and highest
+            possible total (every blended food at its lowest or highest value): these are bounds, not a likely error,
+            and the result uses the median.
+          </p>
+          <p class="small muted">Blended: {tables.find((t) => t.id === "blend")?.foods} foods, built {tables.find((t) => t.id === "blend")?.generated}. The rules and two independent reviews are in <code>tools/nutrient-planner/pipeline/blend/</code>.</p>
+        </div>
+      </details>
+      <details>
+        <summary>How many foods give each nutrient</summary>
+        <div class="details-body">
+          <p>The share of each table's Planner list that gives a value for each nutrient. A low share means most foods show NA for it, and a day's total for it can only be "at least" the known part.</p>
+          <div class="table-scroll"><table class="small">
+            <thead><tr><th>Nutrient</th>{single.map((t) => <th>{t.tag}</th>)}</tr></thead>
+            <tbody>
+              {nutrientList.map((n) => (
+                <tr><td>{n.label} ({n.unit})</td>{single.map((t) => <td>{coverage(t, n.key)}%</td>)}</tr>
+              ))}
+            </tbody>
+          </table></div>
+        </div>
+      </details>
+    </div>
+  </details>
+
+  <details>
+    <summary>Recommended intakes <span class="summary-note">UK, US and EU targets, how they are worked out, and how they were checked</span></summary>
     <div class="details-body">
       {standards.map((s) => (
         <details>
@@ -93,9 +222,35 @@ const standards = [uk, us, eu];
               {s.sources.map((src) => <li>{src.role ? `${src.role}: ` : ""}{src.title} <Fragment set:html={cite(src.id)} /></li>)}
             </ul>
             <ul class="prose muted small">{s.notes.map((n) => <li>{n}</li>)}</ul>
+            <p class="small">
+              {(() => { const b = basisLists(s); return <>
+                <strong>Per kg of body weight:</strong> {b.perKg || "none"}. <strong>As a share of energy:</strong> {b.pctEnergy || "none"}.
+                {b.perMJ && <> <strong>Per MJ of energy:</strong> {b.perMJ}.</>} All others are fixed daily amounts.
+              </>; })()}
+            </p>
           </div>
         </details>
       ))}
+      <details>
+        <summary>How targets are worked out</summary>
+        <div class="details-body">
+          <ul class="prose">
+            <li><strong>Choosing the values.</strong> The row for your sex and the age band that contains your age (or the exact year, where the source sets one), and the life-stage row if you chose pregnancy or breastfeeding.</li>
+            <li><strong>Per kg of body weight:</strong> amount (g a day) = value (mg per kg) × weight (kg) ÷ 1,000.</li>
+            <li><strong>Share of energy:</strong> amount (g) = calories × percentage ÷ 100 ÷ energy per gram, with 9 kcal/g for fat, saturated fat and the fatty acids, 4 kcal/g for carbohydrate and protein, and 3.75 kcal/g for carbohydrate under the UK standard, as PHE converts it <Fragment set:html={cite("phe-2016")} />.</li>
+            <li><strong>Per MJ of energy</strong> (EU thiamin and niacin): amount = value × calories × 0.004184 (1 kcal = 0.004184 MJ).</li>
+            <li><strong>Which calories.</strong> The targets table and Food Finder show energy-tied targets at the middle of your calorie range. The Planner judges each suggested day against its own calories, which stay inside your range; a day you build is judged against its own calories once it reaches your range, and against the middle of the range until then.</li>
+            <li><strong>Upper limits</strong> are the US tolerable upper intake levels <Fragment set:html={cite("nasem-dri")} /> in every standard, because the UK and EU tables used here don't give a complete set; the UK and EU's own limits are used where they give one (for example UK fat and saturated fat, EU sodium <Fragment set:html={cite("efsa-sodium-2019")} />).</li>
+            <li><strong>Amino acids</strong> use the WHO safe level of intake per kg of body weight for adults: the average requirement (Table 23) plus 24% (section 8.4) <Fragment set:html={cite("who-2007")} />.</li>
+          </ul>
+          <p>
+            <strong>Worked example</strong> (UK, woman aged 35, defaults): energy estimate 2,000 kcal, so the range is
+            1,800 to 2,200 kcal and its middle 2,000 kcal. Fat at most 35% of energy: 2,000 × 35 ÷ 100 ÷ 9 = 77.8 g
+            (for a suggested day of 1,850 kcal, 71.9 g). Lysine at least 37.2 mg per kg at the reference weight of
+            58.5 kg: 37.2 × 58.5 ÷ 1,000 = 2.18 g. Protein at least 45 g (a fixed amount in the UK tables).
+          </p>
+        </div>
+      </details>
       <p>
         The charts can also show the other two standards' targets for the same person (same age, sex, weight and
         calories) as thin coloured outlines, so you can see where the UK, US and EU agree and where they differ.
@@ -110,40 +265,59 @@ const standards = [uk, us, eu];
       <p>
         Food Finder is built from the Planner's own parts: the same food list, targets, charts, notes and references, so a
         change to the Planner shows there too. The differences are that you pick one food, and the details about you
-        start from the Planner's defaults (female, 35, UK recommendations) until you open "About you" and change them.
+        start from the defaults above until you open "About you" and change them.
       </p>
       <p>
-        Every food of every food table is listed, with its table in brackets, for example "(USDA)" or "(CoFID)",
-        including the beta Blended table's foods, marked "blended, beta" (the median of the independent tables, with
-        the range shown). Amounts start at one unit (an egg, a slice,
-        a banana, weighed as USDA publishes the portion <Fragment set:html={cite("usda-sr")} />) or 100 g, as in the
-        Planner's "Build my own", and can be changed.
+        Every food of every table is listed, with its table in brackets, including the Blended table's foods, marked
+        "blended, beta". Amounts start at one unit (an egg, a slice, a banana, weighed as USDA publishes the portion: 50 g,
+        32 g and 118 g <Fragment set:html={cite("usda-sr")} />) or 100 g, and can be changed. A food's value for a nutrient
+        is its value per 100 g × the amount ÷ 100.
       </p>
       <p>
-        Every row is a share of a day's target. Targets that the source sets as a share of energy (fat, saturated fat and
-        carbohydrate; EU thiamin and niacin) are worked out for the middle of your daily calorie range, as the targets
-        table shows them, not for the food's own calories: measured against its own calories, almost any fatty food
-        would read as "over the limit". The Planner measures each suggested day against that day's own calories, which
-        its suggestions keep inside your range. A day you build yourself is measured the same way once it reaches your
-        calorie range; until then, while it is only part of a day, it uses the middle of the range, as Food Finder does.
+        Every row is a share of a day's target. Targets set as a share of energy are worked out for the middle of your
+        daily calorie range, not for the food's own calories: measured against its own calories, almost any fatty food
+        would read as "over the limit".
       </p>
     </div>
   </details>
 
   <details>
-    <summary>How the planner chooses foods <span class="summary-note">the optimiser, variety between options, time limits</span></summary>
+    <summary>How the planner chooses foods <span class="summary-note">the optimiser, amounts, variety, time limits</span></summary>
     <div class="details-body">
       <details>
         <summary>The optimiser</summary>
         <div class="details-body">
         <p>
           The planner solves a mixed-integer programme with the HiGHS solver <Fragment set:html={cite("highs")} />, running in your browser.
-          It chooses at most your chosen number of ingredients and an amount of each, in practical steps
-          (10 g, half an egg, a slice of bread; an egg, a slice or a banana weighs what USDA publishes for that food's portion <Fragment set:html={cite("usda-sr")} />: 50 g, 32 g and 118 g), to minimise the total <em>relative</em> shortfall across all
-          minimum targets, so being 20% short of iron counts the same as being 20% short of protein. Upper limits
-          (salt, saturated fat, tolerable upper intake levels) and your calorie range are never exceeded.
-          Targets that the source sets as a share of energy (fat, saturated fat and carbohydrate as a percentage of energy; EU thiamin and niacin per unit of energy) are measured against each plan's own calories, not a fixed calorie figure.
+          It chooses at most your chosen number of ingredients and an amount of each, in whole steps, to minimise the total
+          <em>relative</em> shortfall across all minimum targets: each target's shortfall divided by the target, so being
+          20% short of iron (0.2) counts the same as being 20% short of protein. Upper limits (salt, saturated fat,
+          tolerable upper intake levels) and your calorie range are never exceeded: they are constraints, not costs.
+          For targets set as a share of energy, the constraint is written against the plan's own calories (nutrient −
+          share × energy ≥ 0), and the shortfall is weighted by the target at the middle of the range, because the
+          objective must stay linear.
         </p>
+        <p>
+          A target is planned for only when at least a quarter of the chosen foods give a value for it; otherwise it is
+          reported but not planned for. Suggestions are planned from known values only.
+        </p>
+        </div>
+      </details>
+      <details>
+        <summary>Amounts and daily limits per food</summary>
+        <div class="details-body">
+          <p>Each food has a step (the amounts go up in) and a most per day, by kind of food:</p>
+          <ul class="prose small">
+            <li>Herbs and spices: 1 g steps, up to 5 g. Oils: 5 g, up to 40 g. Nuts: 5 g, up to 60 g (nut butters 50 g).</li>
+            <li>Meat and fish: 10 g, up to 300 g (liver 100 g). Oily fish: 10 g, up to 140 g, shared by all oily fish in the day.</li>
+            <li>Dairy: cheese 5 g, up to 100 g; milk and buttermilk 50 g, up to 800 g; yoghurt 10 g, up to 500 g; eggs 10 g, up to 200 g; butter and cream 5 g, up to 40 g; dried, powdered or condensed 5 g, up to 40 g; other dairy 10 g, up to 200 g.</li>
+            <li>Plant drinks: 50 g, up to 800 g.</li>
+            <li>Fruit: 10 g, up to 400 g; juice 50 g, up to 250 g; dried fruit 5 g, up to 80 g. Vegetables: 10 g, up to 400 g; dried vegetables and seaweed 5 g, up to 30 g. Fruit or vegetable powders: 5 g, up to 30 g.</li>
+            <li>Pulses: 10 g, up to 400 g; tofu and tempeh up to 300 g; dry or raw up to 150 g.</li>
+            <li>Grains: 10 g, up to 500 g; bread, rolls and similar up to 300 g; dry or uncooked up to 150 g; breadcrumbs, stuffing, croutons and crackers 5 g, up to 60 g. Breakfast cereals: 10 g, up to 100 g.</li>
+            <li>Anything else: 10 g, up to 200 g. A few common foods come in units instead: half an egg (50 g each), a slice of bread (32 g), a banana (118 g).</li>
+            <li><strong>Children</strong> (under 18): each food's most per day, and the oily fish cap, are scaled by the middle of the calorie range ÷ 2,000 kcal (if that is below 1), rounded down to whole steps and never below one step. This is a rule of thumb, not an official figure.</li>
+          </ul>
         </div>
       </details>
       <details>
@@ -162,28 +336,44 @@ const standards = [uk, us, eu];
         <summary>Preferences and time limits</summary>
         <div class="details-body">
         <p>
-          Among combinations that meet the targets equally well, the planner prefers the one with less food, so
-          suggestions tend to sit near the bottom of your calorie range. It also has a mild preference for familiar
-          foods: each food from outside the common list counts slightly against a combination, by no more in total
-          than 1% of one target, so common foods are chosen unless another food does a noticeably better job.
-          If a search over a long food list runs out of time, the common foods are searched as well and the better
-          result is shown.
-          Each search is limited to 5 seconds. If that limit is reached, the best combination found so far is shown and
-          marked as such.
+          Among combinations that meet the targets equally well, the planner prefers less food and fewer ingredients
+          (tie-breakers of 0.000001 per gram and 0.0001 per food, far smaller than any real shortfall), so suggestions
+          tend to sit near the bottom of your calorie range. It also has a mild preference for familiar foods: each food
+          from outside the common list adds 0.01 ÷ the number of ingredients, so all of them together cost no more than
+          1% of one target, and common foods are chosen unless another food does a noticeably better job.
+          Each search is limited to 5 seconds, and stops once it is within 0.1% (or 0.003) of the best possible result.
+          If the time limit is reached, the best combination found so far is shown and marked as such; for a long food
+          list, the common foods are then searched as well and the better result is shown.
         </p>
         </div>
       </details>
       <details>
-        <summary>Vitamin D and oily fish</summary>
+        <summary>Vitamin D, oily fish and foods to avoid</summary>
         <div class="details-body">
         <p>
-          Two things are deliberately not left to the optimiser. Vitamin D: few foods contain much, so suggestions don't try
-          to reach the vitamin D target unless you tick the box for it; the result still shows how much the day provides and
-          the NHS advice on supplements <Fragment set:html={cite("nhs-vitd")} />. Oily fish: suggestions include at most one
-          portion (140 g) a day in total, and the NHS weekly limits are shown alongside <Fragment set:html={cite("nhs-fish")} />.
+          Vitamin D: few foods contain much, so suggestions don't try to reach the vitamin D target unless you tick the
+          box for it; the result still shows how much the day provides and the NHS advice on supplements
+          <Fragment set:html={cite("nhs-vitd")} />. Oily fish (the fish the NHS lists as oily: herring, pilchards, salmon,
+          sardines, sprats, trout, mackerel; not tuna): suggestions include at most one portion (140 g) a day in total,
+          and the NHS weekly limits are shown alongside <Fragment set:html={cite("nhs-fish")} />. Liver and liver products
+          are left out of suggestions in pregnancy <Fragment set:html={cite("nhs-meat")} />, and shark, swordfish and
+          marlin in pregnancy and under 16 <Fragment set:html={cite("nhs-fish")} />; a day you build yourself shows a warning instead.
         </p>
         </div>
       </details>
+    </div>
+  </details>
+
+  <details>
+    <summary>Missing data, assumptions and caveats <span class="summary-note">NA, "at least", "unclear"</span></summary>
+    <div class="details-body">
+      <ul class="prose">
+        <li><strong>NA, never zero.</strong> Where a food has no value for a nutrient, it is not counted as zero. A day's amount is shown as "NA" (no data) if no food in it has a value, or as "at least" the known total if some do.</li>
+        <li><strong>Results.</strong> Met: at least 99.5% of the target. Short: 66% to 99.5%. Low: below 66%. Over: more than the limit (by over 0.1%). When some foods have no value, a result that the missing data could change is "unclear" rather than short or within the limit; a target already met, or a limit already exceeded, by the known values stays so, because missing values can only add to them.</li>
+        <li><strong>Codes kept.</strong> Where a table gives a code instead of a number (for example CoFID "Tr", trace, and "N", present but no reliable amount), the value is missing and the code is shown with it.</li>
+        <li><strong>Not assessed.</strong> Free sugars (UK limit 5% of energy), because the tables don't separate free from other sugars; any target too few of the chosen foods give a value for (see "The optimiser").</li>
+        <li><strong>Caveats shown</strong> with values and results, in one style across the site: Beta (the Blended table and the Common list), Assumption (a definition that differs from the one your standard's targets use), Estimate, Borrowed (a value a table took from another), and Translated (Japanese food names, translated by this site from MEXT's English names and a glossary).</li>
+      </ul>
     </div>
   </details>
 
@@ -208,16 +398,49 @@ const standards = [uk, us, eu];
     </div>
   </details>
 
+  <h2>What has been checked</h2>
+  <div class="table-scroll"><table>
+    <thead><tr><th>What</th><th>Checked against</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td>UK targets</td><td>PHE (2016) <em>Government Dietary Recommendations</em>, Tables 1–6</td><td>9 Nov 2026</td></tr>
+      <tr><td>EU targets</td><td>EFSA (2017) summary report, Tables 1, 2, 3, 5, 7, 9, 11, 17; EU sodium: EFSA (2019), Table 12</td><td>9 and 17 Nov 2026</td></tr>
+      <tr><td>US targets and calories</td><td>National Academies DRI summary tables; <em>Dietary Guidelines</em> Appendix 2</td><td>10 Nov 2026</td></tr>
+      <tr><td>Upper limits; amino acids; food-label reference intakes</td><td>DRI tolerable upper intake levels; WHO (2007) Table 23 and section 8.4; Regulation 1169/2011 Annex XIII</td><td>10 Nov 2026</td></tr>
+      <tr><td>Unit weights (egg, slice of bread, banana)</td><td>USDA SR Legacy <code>food_portion.csv</code>; bread corrected from 36 g to 32 g</td><td>18 Nov 2026</td></tr>
+      <tr><td>CoFID definitions and sample values</td><td>CoFID 2021 user guide; four foods' values against the spreadsheet</td><td>18 Nov 2026</td></tr>
+      <tr><td>Nutrient definitions by standard (which definition each standard's targets use)</td><td>PHE, NASEM, EFSA, SACN and Regulation 1169/2011, archived copies <Fragment set:html={cite("sacn-2015")} /></td><td>18 Nov 2026</td></tr>
+      <tr><td>Blended table</td><td>Two independent reviews by separate agents: 406 of 556 groups, then all 505; medians correct; wrong and doubtful groups fixed by tested rules</td><td>19 Nov 2026</td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>Not yet checked:</strong></p>
+  <ul class="prose">
+    <li>The conversions of the other eight tables (BLS, Ciqual, Frida, Fineli, KFCDb, MEXT, CNF and AFCD) have not been checked against each table's own documentation or spot-checked against its published values. Their definitions are recorded from the documentation when the converter was written.</li>
+    <li>The matching behind the Common list and the Blended table has been checked by automated reviews only, without manual human verification.</li>
+    <li>The Japanese food names translated by this site.</li>
+  </ul>
+  <p class="small muted">The full log, with every correction, is in <code>tools/nutrient-planner/VERIFICATION.md</code>.</p>
+
   <h2>Limitations</h2>
   <p>The results are estimates. Please treat them as a starting point for thinking about your food, not as a precise measurement.</p>
   <ul class="prose">
     <li><strong>Borrowed safety limits.</strong> The UK and EU tables used here don't give a complete set of upper limits, so the US tolerable upper intake levels <Fragment set:html={cite("nasem-dri")} /> are used for safety checks in every standard.</li>
-    <li><strong>US food data, UK shops.</strong> Fortification differs between countries (for example US milk usually has added vitamin D; UK milk doesn't), and brands differ. Fortified products should be checked against their labels.</li>
-    <li><strong>Iodine and some other nutrients</strong> are missing from most USDA records, so they are listed as "not checked" rather than guessed. Where a food has no value for a nutrient, it is not counted as zero: the amount is shown as "NA" (no data) if no food in the day has a value, or as "at least" the known total if some do, and the result is marked "unclear" rather than a pass when the missing data could change it. Suggestions are planned from known values only. EPA + DHA and niacin equivalents are only calculated for a food when every part is known.</li>
+    <li><strong>Other countries' foods.</strong> Each table describes foods as sold where it was made. Fortification differs between countries (for example US milk usually has added vitamin D; UK milk doesn't), and brands differ. Fortified products should be checked against their labels.</li>
+    <li><strong>Gaps in the tables.</strong> Some nutrients, such as iodine, vitamin K and choline, are missing from many records in some tables (see "How many foods give each nutrient"), so they are reported as NA or "at least" rather than guessed.</li>
+    <li><strong>Different definitions.</strong> A table that defines a nutrient differently from your standard (for example vitamin A or energy factors) is used as published and marked as an assumption; its value can differ from the standard's definition, for example plant vitamin A counted as retinol activity equivalents is up to half the retinol-equivalent figure.</li>
     <li><strong>Absorption isn't modelled yet.</strong> Iron from plants is absorbed less well than iron from meat, ALA omega-3 converts poorly to EPA and DHA, and phytates reduce zinc absorption. These are planned refinements.</li>
-    <li><strong>Amino acid targets</strong> use the WHO safe intake per kg of body weight for adults (the average requirement plus 24%) <Fragment set:html={cite("who-2007")} />, and are applied to adults only. WHO found too little evidence to set separate values for older people.</li>
+    <li><strong>Amino acid targets</strong> apply to adults only. WHO found too little evidence to set separate values for older people <Fragment set:html={cite("who-2007")} />.</li>
     <li><strong>Children.</strong> Targets for children come from the same official tables, but the suggested amounts are adult portion limits scaled down by calories, which is a rule of thumb. The planner is not designed for children under 5.</li>
     <li><strong>Reference values are for healthy populations.</strong> If you have a medical condition, are pregnant, or are planning food for a child, check with a doctor, midwife or registered dietitian.</li>
+  </ul>
+
+  <h2>Changes</h2>
+  <ul class="prose small">
+    <li><strong>20 Nov 2026:</strong> this page rewritten to record the full method: inputs and defaults, the ten tables generated from their files, worked-out values, formulas with a worked example, the optimiser's constants, missing-data rules, and what has and hasn't been checked. No calculation changed.</li>
+    <li><strong>19 Nov 2026:</strong> The Blended table, a beta, rebuilt from all ten tables and made the default table, after two independent reviews; Common foods derived from the tables (same food in at least two independent tables) instead of hand-picked; two presets, Common foods and All foods.</li>
+    <li><strong>18 Nov 2026:</strong> eight more tables added on an equal footing (BLS, Ciqual, Frida, Fineli, KFCDb, MEXT, CNF, AFCD) after CoFID; raw foods people don't normally eat raw left out of the default lists; slice of bread corrected to 32 g.</li>
+    <li><strong>17 Nov 2026:</strong> carbohydrate excludes fibre; energy-share targets follow each plan's own calories; US saturated fat limit added; EU calories and sodium from EFSA; vitamin D no longer steers suggestions unless asked; oily fish capped at 140 g a day; NHS foods to avoid in pregnancy and for children left out of suggestions; US-fortified products flagged.</li>
+    <li><strong>10 Nov 2026:</strong> amino acids raised from the average requirement to the WHO safe level (+24%); US calories from the <em>Dietary Guidelines</em> tables.</li>
+    <li><strong>9 Nov 2026:</strong> UK and EU values checked line by line; corrections to UK fibre (4–6), EU fat (1–3), EU vitamin E, copper, magnesium, iron and protein for children; EFSA reference body weights.</li>
   </ul>
 
 </ToolLayout>

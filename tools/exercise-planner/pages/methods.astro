@@ -13,10 +13,28 @@ const cell = (e: Exercise, ms: Muscle[]) => ms.map((m) => muscle[m] + (isAssumed
 const sourced = (e: Exercise) => Object.entries(e.sources ?? {}).map(([m, n]) => `${muscle[m]}: "${n}"`).join("; ");
 const aerobic = EXERCISES.filter((e) => e.met?.length);
 const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "light");
+import { PRESETS } from "../web/catalogue.ts";
+const presetText = PRESETS.map((p) => `${p.label} (${p.equipment.map((e) => equip[e]).join(", ")})`).join("; ");
 ---
 <ToolLayout slug="exercise-planner" page="methods">
   <h1>Methods and sources</h1>
   <p class="lede">How the exercise planner works, where its numbers come from, what has been checked, and what it can't tell you.</p>
+
+  <h2>Inputs and defaults</h2>
+  <p>Every setting is kept in the page address, so a link reproduces the result.</p>
+  <div class="table-scroll"><table>
+    <thead><tr><th>Option</th><th>Default</th><th>Range and notes</th></tr></thead>
+    <tbody>
+      <tr><td>Targets</td><td>None</td><td>Any of the {MUSCLES.length} muscle groups, and heart and lungs. "Major muscle groups (WHO)" chooses all muscle groups (see "Heart and lungs"). Nothing is chosen when the page opens, so the visitor picks.</td></tr>
+      <tr><td>Equipment</td><td>None</td><td>Any of the {EQUIPMENT.length - 1} kinds of equipment, or a preset: {presetText}.</td></tr>
+      <tr><td>Include bodyweight exercises</td><td>On</td><td>A separate option, so a preset such as "Machines only" doesn't silently remove push-ups and squats.</td></tr>
+      <tr><td>Most exercises in a suggestion</td><td>10</td><td>1 to 10.</td></tr>
+      <tr><td>Number of suggestions</td><td>3</td><td>1 to 6.</td></tr>
+      <tr><td>How different the suggestions are</td><td>Some shared</td><td>All different (no exercise shared), Some shared (up to half), or Any.</td></tr>
+      <tr><td>Covered level</td><td>1 set</td><td>½, 1, 2 or 3 sets for each target muscle (1 set: one direct exercise, or two indirect ones).</td></tr>
+      <tr><td>Exercises left out</td><td>None</td><td>Any exercise can be left out of every suggestion.</td></tr>
+    </tbody>
+  </table></div>
 
   <h2>How suggestions are found</h2>
   <p>
@@ -40,6 +58,19 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     the later suggestions share. A "covered" level above one set (2 or 3) is reached by listing different exercises
     for the same muscle, never the same exercise twice. If more than 30 exercises could help, it keeps
     the best three for each target plus those that help most overall, and the page says so.
+  </p>
+  <p>
+    <strong>The score.</strong> For each target muscle, the sets from one set of each exercise (1 per direct, ½ per
+    indirect) are added up and capped at the covered level; heart and lungs counts as the covered level when any aerobic
+    activity is in the list. The sum is the score, so 3 targets at a covered level of 1 give at most 3. An exercise is
+    only added if it raises the score.
+    Ties are broken by the fewest exercises, then by the sets on the targets capped at twice the covered level. Within
+    lists of equal rank, the one with the highest-MET aerobic activity comes first (100 points per MET), then the one
+    working the most sets on all muscles. The search stops after 400,000 steps and, if it does, the page says so.
+  </p>
+  <p>
+    <strong>Example.</strong> Targets chest and triceps, covered level 1: the bench press gives chest 1 and triceps ½
+    (score 1.5 of 2); adding a triceps pushdown gives triceps 1½, capped at 1 (score 2 of 2: both covered).
   </p>
   <p>
     <strong>Names and order.</strong> Where an exercise can be done with different equipment (a lateral raise with a dumbbell
@@ -300,5 +331,13 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
       the work for, say, the lower back in a deadlift.</li>
     <li>"Covered" means "trained by the list at least once", the planner's own threshold for building lists. It is not a
       recommended dose.</li>
+  </ul>
+
+  <h2>Changes</h2>
+  <ul class="prose small">
+    <li><strong>20 Nov 2026:</strong> shoulders split into front, side and rear (15 muscle groups); only continuous, rhythmic activities count for heart and lungs (kettlebell swings and burpees shown, not counted); a † mark for classifications supported by muscle-growth studies (glutes, hamstrings, calves, push-up chest and triceps, lateral raise side deltoid); hamstrings no longer counted for the hip thrust or glute bridge; exercise names follow the equipment ticked; how-to links added; the WHO and Compendium wording matched to the sources; inputs, the score and a dated list of changes added to this page.</li>
+    <li><strong>19 Nov 2026:</strong> where Table 1A classifies an exercise, it is followed for every muscle in its row; sources recorded per muscle; the same group of exercises can be used for different members, so 2 or 3 sets can be reached; the shared-exercise limit loosens 10% at a time; bodyweight exercises a separate option; nothing chosen when the page opens.</li>
+    <li><strong>16 Nov 2026:</strong> the WHO 2020 guidelines cited from the WHO document itself.</li>
+    <li><strong>15 Nov 2026:</strong> first version, released as alpha: fractional set counting from Pelland et al.; every combination of up to 10 exercises searched; aerobic intensity from the 2024 Adult Compendium with the WHO bands.</li>
   </ul>
 </ToolLayout>

@@ -3,13 +3,24 @@ import ToolLayout from "@site/layouts/ToolLayout.astro";
 import { referencesFor } from "@site/lib/references.ts";
 import references from "../references.json";
 const { cite } = referencesFor(references);
+// Principle 3a (docs/PRINCIPLES.md): record the method in enough detail for someone to reproduce every result by hand.
+// Keep every section below; use <details> for long ones. Where a list or number comes from the tool's code or data,
+// read it from there at build time (see the nutrient planner's methods page), so this page can't drift from it.
 ---
 <ToolLayout slug="TEMPLATE" page="methods">
   <h1>Methods and sources</h1>
+  <h2>Inputs and defaults</h2>
+  <p>Every option, where it starts, its range, and why it starts there.</p>
+  <h2>Data</h2>
+  <p>Each source, its version and file, what is taken from it, and how it is converted (units, definitions, matching) <Fragment set:html={cite("example-2020")} />.</p>
   <h2>How it works</h2>
-  <p>Explain the method, citing every source <Fragment set:html={cite("example-2020")} />.</p>
+  <p>Every formula, rule, threshold and constant, with a worked example.</p>
+  <h2>Missing data, assumptions and exclusions</h2>
+  <p>What is left out or assumed, how missing values are shown (never as zero), and which caveats appear.</p>
   <h2>What has been checked</h2>
-  <p>Say which values have been checked against the original documents, and which haven't yet.</p>
+  <p>Against which document, table or page, and when; and what hasn't been checked yet.</p>
   <h2>Limitations</h2>
   <ul class="prose"><li>What the tool can't tell you.</li></ul>
+  <h2>Changes</h2>
+  <ul class="prose small"><li><strong>Date:</strong> what changed in the method.</li></ul>
 </ToolLayout>

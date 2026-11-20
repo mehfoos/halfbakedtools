@@ -78,6 +78,39 @@ const { cite } = referencesFor(references);
     <li><strong>The settings file.</strong> It lists each file you added (name, size and a SHA-256 checksum, which is a fingerprint of the file's contents) and every page of your arrangement (which file and page it came from, its rotation and its size), plus your save options. It contains no document content and no passwords. When you load it and add the files again, they are matched by fingerprint, so a renamed copy still matches and a changed file doesn't.</li>
   </ul>
 
+  <h2>Inputs and defaults</h2>
+  <p>Where each option starts. Every setting can be changed before saving, and a settings file (Save settings file) records them.</p>
+  <details>
+    <summary>Defaults for each task</summary>
+    <div class="details-body table-scroll">
+      <table>
+        <thead><tr><th>Task</th><th>Starts at</th><th>Range</th></tr></thead>
+        <tbody>
+          <tr><td>Every task</td><td>File name: the original's name plus a word for the task (for example "report-merged"), so the original isn't replaced</td><td></td></tr>
+          <tr><td>Rotate, Resize, PDF to JPG and other pictures</td><td>Every page selected</td><td>Remove, Extract, Merge and Organise start with none selected</td></tr>
+          <tr><td>Split PDF</td><td>One PDF per page; "every few pages" starts at 1</td><td>Or a new PDF every few pages, or at the pages you type</td></tr>
+          <tr><td>Resize pages</td><td>100%</td><td>10% to 1,000%</td></tr>
+          <tr><td>PDF to JPG and other pictures</td><td>150 dots per inch; JPEG and WebP quality 85%; PDF to JPG saves JPEG, PDF to image saves PNG</td><td>36 to 600 dots per inch; quality 10% to 100%</td></tr>
+          <tr><td>Images to PDF</td><td>A page the size of each picture, its direction following the picture's shape, no margin, measured in millimetres; each picture is sized at 96 dots per inch (960 pixels wide makes a page 10 inches wide)</td><td>Or a page size you type (starting at 210 × 297 mm), always upright or always sideways, any margin; 36 to 600 dots per inch</td></tr>
+          <tr><td>Compress PDF</td><td>Recommended: pictures kept at up to 150 dots per inch, at 65% JPEG quality</td><td>Light 200 dpi, 80%; Strong 100 dpi, 50%; Extreme 72 dpi, 30%; Maximum: whole pages become pictures at 72 dpi, 30%; Custom 36 to 600 dpi, 10% to 100%, optionally grey</td></tr>
+          <tr><td>Page numbers</td><td>Bottom centre, style "1", first number 1, from page 1, 11 points, 28 points (about 1 cm) from the edge, Helvetica, black</td><td>Six positions; styles "1", "1 / 5", "Page 1", "Page 1 of 5"; 4 to 400 points</td></tr>
+          <tr><td>Watermark</td><td>"CONFIDENTIAL", once in the middle, diagonal rising (45°), strength 30%, 48 points, Helvetica bold, grey</td><td>Repeated across the page; level, falling or up the page; strength 5% to 100%</td></tr>
+          <tr><td>Edit PDF</td><td>Text "Your text" in black Helvetica, sized at about a fortieth of the page's width (at least 8 points); highlight yellow, 40% strength; shapes red, 2-point line, no fill; pen medium (3 points)</td><td>Text 4 to 400 points; line 0 to 100 points; strength 5% to 100%</td></tr>
+          <tr><td>Sign PDF</td><td>Dark blue ink, medium pen</td><td>Black ink; thin or thick pen</td></tr>
+          <tr><td>Crop PDF</td><td>No margins, in millimetres, every page</td><td>Inches or points; only the pages you type</td></tr>
+          <tr><td>Extract pictures</td><td>Skip pictures smaller than 32 pixels on either side</td><td>1 to 2,000 pixels</td></tr>
+          <tr><td>OCR PDF</td><td>English, no second language, 300 dots per inch, pages that already have text skipped</td><td>40 languages, one or two; 200 or 400 dots per inch</td></tr>
+          <tr><td>Redact PDF</td><td>Whole words only off; rebuilt pages at 200 dots per inch; text recognition off; comments, links and form fields removed from the other pages</td><td>150 or 300 dots per inch</td></tr>
+          <tr><td>PDF to PDF/A</td><td>A file that can't be converted with its content is refused, with the reasons</td><td>Or its pages rebuilt as pictures at 200 dots per inch (150 or 300), optionally read back with text recognition</td></tr>
+          <tr><td>Fill in forms</td><td>Values stay editable; font automatic (Helvetica for Western European text, Noto Sans for other alphabets)</td><td>Make values permanent; always Noto Sans, or your own font</td></tr>
+          <tr><td>Text to PDF</td><td>Courier, 11 points, a 210 × 297 mm page with 20 mm margins, lines 1.3 times the text size apart, a tab as four spaces, file name "text"</td><td>4 to 72 points; any page size and margin</td></tr>
+          <tr><td>Protect PDF</td><td>AES with a 256-bit key; one password</td><td></td></tr>
+          <tr><td>Noto Sans styles</td><td>Chinese characters: Japanese with kana, Korean with Hangul, otherwise Simplified Chinese. Arabic script: Nastaliq for Urdu, Naskh otherwise</td><td>Either can be fixed instead</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
   <h2>Software used</h2>
   <p>These open-source libraries are bundled into the site and served from it; nothing is loaded from another site.</p>
   <div class="table-scroll"><table>
@@ -90,7 +123,9 @@ const { cite } = referencesFor(references);
   <h2>What has been checked</h2>
   <ul class="prose">
     <li><strong>Checked by automated tests</strong> on every change: page-range typing, every page edit, the split plans, the settings file (including rejecting damaged files), and the written PDFs (page order, repeated pages, rotation, resizing, images placed as pages), the rules for compression (how detail is estimated, which pictures are eligible), and where added text and pictures are placed on pages of every rotation. See the <a href={`${repo}/VERIFICATION.md`}>verification log</a>.</li>
-    <li><strong>Run end to end in one browser so far</strong> (Chrome on a computer, 16 November 2026, with small test files): every feature above, including password protection (the result checked with two other programs), compression of generated scan-like files and adding text and pictures to plain, sideways, cropped and turned pages, and that the browser blocked a deliberate attempt to contact another site. Firefox, Safari and phones are <strong>not yet checked</strong>, and nor are large or complicated real-world PDFs.</li>
+    <li><strong>Run end to end in one browser</strong> (Chrome on a computer, headless, with small generated test files), each task when it was built, from 16 to 20 November 2026: the first tasks on 16 November (including password protection, checked with two other programs, and compression); Crop, Sign, shapes, image page layout, Extract pictures, Repair, Compare, Text to PDF, PDF to Markdown and HTML, Fill in forms, OCR (40 languages), your own font, Noto Sans and copied text in several readers on 19 November; Redact, PDF/A and PDF to Word, PowerPoint and Excel on 20 November. Each run, its files and what it found are in the <a href={`${repo}/VERIFICATION.md`}>verification log</a>.</li>
+    <li><strong>PDF/A</strong> was measured with veraPDF 1.30.4, and the Office files were checked against the standard's schemas, opened in LibreOffice and read back with independent libraries (details under "How it works" above).</li>
+    <li><strong>Not yet checked:</strong> Firefox, Safari, real phones (touch, memory), keyboard-only use of the editor, Adobe Acrobat and Apple's Preview, Microsoft Office itself, and large or complicated real-world PDFs.</li>
     <li><strong>Checked against the PDF standard:</strong> the tool relies on one fixed number, that a PDF's unit of length is 1/72 of an inch unless the file says otherwise. This was checked on 16 November 2026 against the PDF standard (PDF 32000-1:2008, the edition Adobe publishes of ISO 32000-1; section 8.3.2.3 on page 115, and the UserUnit entry of Table 30 on page 79). The copy used is not yet in this site's archive of sources, so it is not yet listed as a numbered reference.</li>
     <li><strong>Checked in Chrome, 16 November 2026:</strong> a background worker started from a web address could contact another site despite the page's policy; one started from code held in the page could not. The tool starts its only worker the second way, and a test fails if that changes. Other browsers are <strong>not yet checked</strong>.</li>
   </ul>
@@ -100,11 +135,11 @@ const { cite } = referencesFor(references);
     <li><strong>Long page lists are shown a screenful at a time.</strong> The number of pages per screen follows the size of your screen (or your choice). "Select all" and "Select none" cover the whole document, not just the pages in view, and the line above the list says how many are selected. You can drag a page to a new place only within the screen you are on; to move it further, use "Move earlier", "Move later" or "Move selected to position", which take you to the page's new screen.</li>
     <li><strong>Cropping is not removal.</strong> Anything cut off a page stays in the saved file and can be recovered by someone with the right software. Do not use Crop to hide private information; use Redact.</li>
     <li><strong>Editing only adds.</strong> It cannot yet change or remove text or pictures already on a page. The tool deliberately offers no "cover it with a box" option: a covered word is still in the file and can be copied out, so it would look like removal without being it.</li>
-    <li><strong>Added text uses Western European characters only</strong> (letters with common accents, digits, punctuation, £ and €). Other scripts, and symbols such as Ω or emoji, can't be written yet; the editor says which characters are the problem and won't save until they are removed. Three typefaces are offered, each in regular and bold.</li>
+    <li><strong>The built-in typefaces</strong> (Helvetica, Times and Courier) cover Western European characters only (letters with common accents, digits, punctuation, £ and €). Other alphabets need Noto Sans or your own font (above). Characters no chosen font has, such as emoji, can't be written; the page says which they are.</li>
     <li><strong>A watermark is a label, not protection.</strong> It is ordinary text added to the page, and anyone with PDF software can take it out again. A faint grey watermark can also be hard to see over photographs or dark areas: check the preview. Picture watermarks (a logo) are not built yet.</li>
     <li><strong>Page numbers don't know what is already on the page.</strong> If a page already has a number printed, or other content where the number goes, the new number is drawn over it. Check the preview and move the position if needed.</li>
     <li><strong>Small previews don't show additions.</strong> The page list marks pages that have them; open the page to see them.</li>
-    <li><strong>Not built yet:</strong> changing or removing existing text and pictures within a page; converting to and from Word, PowerPoint, Excel and web pages; text files to PDF; saving pages as SVG drawings. These are planned; see the <a href={`${repo}/ROADMAP.md`}>roadmap</a>.</li>
+    <li><strong>Not built yet:</strong> changing or removing existing text and pictures within a page; Word, PowerPoint, Excel and web pages to PDF; saving pages as SVG drawings; named paper sizes (A4, Letter); picture watermarks. See the <a href={`${repo}/ROADMAP.md`}>roadmap</a>.</li>
     <li><strong>Compression is lossy and can't be undone.</strong> Shrunk pictures lose fine detail for good, so keep your original. Small print inside a scanned page can become hard to read at strong settings: use the before-and-after preview, which shows the first page only.</li>
     <li><strong>How picture detail is judged.</strong> The tool estimates a picture's dots per inch as if it filled its page. A small picture on a large page really has more dots per inch than the estimate, so it may be shrunk less than the setting suggests, never more.</li>
     <li><strong>Pictures the compressor leaves alone.</strong> Black-and-white fax-style scans, pictures in print (CMYK) or palette colours, pictures with special masks, and some less common storage formats are not changed, and the result panel says how many were skipped and why. Pictures with a colour profile are stored without it afterwards, which can shift colours slightly. Grey pictures are stored as colour JPEGs.</li>
@@ -114,12 +149,20 @@ const { cite } = referencesFor(references);
     <li><strong>Password-protected PDFs</strong> can be opened if you know the password, but the PDFs you save from the other tools are not password-protected; use Protect PDF afterwards if you need that. The same goes for PDFs their author has locked against changes or copying: saved copies don't carry the lock. Only work on files you have the right to change.</li>
     <li><strong>A lost password can't be recovered</strong> by this tool or by this site, which never sees it. A short or guessable password can be found by trying many: the protection is only as good as the password. Very old PDF viewers may not open files protected this way.</li>
     <li><strong>Redaction rebuilds pages as pictures.</strong> Redact removes content by replacing each page that has areas with a picture of it, so those pages lose selectable text (unless read back by text recognition, which can make mistakes), links and vector sharpness. It cannot remove words from a page while keeping the rest of that page's text as text. Words you did not search for, and areas you did not draw, are not removed: the check after saving only covers the words you searched for.</li>
-    <li><strong>Scans have no text.</strong> A scanned page is a photograph of text. This tool does not do text recognition (OCR), so saving such pages as text gives nothing.</li>
+    <li><strong>Scans have no text.</strong> A scanned page is a photograph of text, so saving it as text, Markdown, Word or Excel gives nothing, and Compare and Redact's word search find nothing on it, until OCR PDF has added recognised text, which can contain mistakes.</li>
     <li><strong>Text order and layout.</strong> Saved text has no columns, tables or formatting, and can come out in an odd order for pages with complex layouts.</li>
     <li><strong>Images.</strong> Only the first image in a multi-image TIFF is used. An SVG drawing is placed as a picture at its stated size, not as a scalable drawing. Animated images use one frame. Saved TIFF and BMP files are uncompressed and large.</li>
     <li><strong>Large files.</strong> Everything is held in your device's memory. Very large PDFs, or saving many pages as high-detail images, can be slow or fail, especially on phones.</li>
     <li><strong>Unusual or damaged PDFs</strong> may fail to open, or show a preview that differs slightly from other PDF viewers.</li>
   </ul>
+  <h2>Changes</h2>
+  <ul class="prose small">
+    <li><strong>20 Nov 2026:</strong> Redact PDF, PDF to PDF/A (PDF/A-2b) and PDF to Word, PowerPoint and Excel added; inputs and defaults, an up-to-date record of what has been checked and this list added to this page; limits that had been overtaken (other alphabets, OCR, conversions) corrected.</li>
+    <li><strong>19 Nov 2026:</strong> Crop, Sign, shapes, highlight and freehand drawing, image page size and margin, Extract pictures, Repair, Compare, Text to PDF, PDF to Markdown and HTML, Fill in forms and OCR PDF (40 languages) added; Noto Sans in many alphabets and your own font, shaped with HarfBuzz; page lists shown a screenful at a time.</li>
+    <li><strong>17 Nov 2026:</strong> page numbers and text watermarks added.</li>
+    <li><strong>16 Nov 2026:</strong> first version: merge, split, extract, remove, organise, rotate and resize pages, PDF to pictures and text, images to PDF, compression, adding text and pictures, Protect and Unlock; the no-upload policy enforced by the browser and by a test.</li>
+  </ul>
+
   <p>Found a file that comes out wrong? Please <a href="https://github.com/mehfoos/halfbakedtools/issues">report it</a>, without attaching anything private.</p>
   <References file={references} />
 </ToolLayout>
