@@ -1,6 +1,6 @@
 // Browser code for the exercise planner: reads the form, keeps settings in the page address, runs the
 // planner (pure code in planner.ts) and draws the results. Nothing leaves the browser.
-import { AEROBIC, AEROBIC_LABEL, EQUIPMENT, EXERCISES, MUSCLES, PRESETS, assumedMuscles, isAssumed, type Equipment, type Exercise, type Muscle, type Target } from "./catalogue.ts";
+import { AEROBIC, AEROBIC_LABEL, EQUIPMENT, EXERCISES, MUSCLES, PRESETS, assumedMuscles, isAssumed, isSupported, type Equipment, type Exercise, type Muscle, type Target } from "./catalogue.ts";
 import { caveat } from "@site/lib/caveats.ts";
 import { canDo, intensity, suggest, type Suggestion } from "./planner.ts";
 import { chartSvg, fmt, type Axis } from "./chart.ts";
@@ -170,6 +170,10 @@ export function start(root: HTMLElement) {
     const missing = s.missing.length
       ? `<p class="notice small">Not covered: ${esc(list(s.missing.map(label)))}. Allow more exercises, tick more equipment, or choose fewer targets.</p>` : "";
     const rows = s.exercises.map((e) => exerciseRow(e, targets)).join("");
+    const supported = s.exercises.some((e) => [...e.direct, ...e.indirect].some((m) => isSupported(e, m)))
+      ? `<p class="small sans muted">Muscles marked <span aria-hidden="true">†</span> grew in studies that measured muscle size
+        after training with that exercise; whether they count as a full or half set is still the planner's classification.
+        <a href="${METHODS}#growth-evidence">The studies</a>.</p>` : "";
     const assumed = s.exercises.some((e) => assumedMuscles(e).length)
       ? caveat("assumption", `Muscles marked <span class="assumed" aria-hidden="true">◇</span> are the planner's own classification, made from
         anatomy (which muscle moves which joint), not taken from a study. The study behind the set counting classified only some
@@ -194,12 +198,13 @@ export function start(root: HTMLElement) {
         moderate-intensity or at least 75–150 minutes of vigorous-intensity aerobic activity (or an equivalent mix), plus
         muscle-strengthening activity at moderate or greater intensity on 2 or more days a week. Moderate usually feels like
         5 or 6 out of 10 for you, vigorous like 7 or 8. <a href="${METHODS}#heart-and-lungs">More, including advice for older adults</a>.</p>` : "";
-    return `<section class="card option">${head}${missing}<ul class="ex-list">${rows}</ul>${assumed}${bodyNote}${who}${charts}</section>`;
+    return `<section class="card option">${head}${missing}<ul class="ex-list">${rows}</ul>${assumed}${supported}${bodyNote}${who}${charts}</section>`;
   }
 
   function exerciseRow(e: Exercise, targets: Target[]) {
     const tag = (m: Muscle) => `${targets.includes(m) ? `<strong>${esc(MUSCLE_LABEL[m])}</strong>` : esc(MUSCLE_LABEL[m])}`
-      + (isAssumed(e, m) ? ` <span class="assumed" title="Assumption: the planner's own classification">◇</span><span class="sr-only"> (assumption)</span>` : "");
+      + (isAssumed(e, m) ? ` <span class="assumed" title="Assumption: the planner's own classification">◇</span><span class="sr-only"> (assumption)</span>`
+        : isSupported(e, m) ? ` <span class="supported" title="Supported by studies that measured muscle growth">†</span><span class="sr-only"> (supported by growth studies)</span>` : "");
     const parts: string[] = [];
     if (e.direct.length) parts.push(`directly: ${e.direct.map(tag).join(", ")}`);
     if (e.indirect.length) parts.push(`indirectly (½ set): ${e.indirect.map(tag).join(", ")}`);

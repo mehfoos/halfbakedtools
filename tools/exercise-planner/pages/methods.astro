@@ -3,13 +3,13 @@ import ToolLayout from "@site/layouts/ToolLayout.astro";
 import { referencesFor } from "@site/lib/references.ts";
 import references from "../references.json";
 import Caveat from "@site/components/Caveat.astro";
-import { EXERCISES, EQUIPMENT, MUSCLES, isAssumed, type Exercise, type Muscle } from "../web/catalogue.ts";
+import { EXERCISES, EQUIPMENT, MUSCLES, isAssumed, isSupported, type Exercise, type Muscle } from "../web/catalogue.ts";
 const { cite } = referencesFor(references as Parameters<typeof referencesFor>[0]);
 const muscle = Object.fromEntries(MUSCLES.map((m) => [m.id, m.label]));
 const equip = Object.fromEntries(EQUIPMENT.map((e) => [e.id, e.label]));
 const needs = (n: string[][]) => n.length ? n.map((g) => g.map((e) => equip[e]).join(" or ")).join("; plus ") : "nothing";
 const strength = EXERCISES.filter((e) => e.direct.length);
-const cell = (e: Exercise, ms: Muscle[]) => ms.map((m) => muscle[m] + (isAssumed(e, m) ? " ◇" : "")).join(", ") || "–";
+const cell = (e: Exercise, ms: Muscle[]) => ms.map((m) => muscle[m] + (isAssumed(e, m) ? " ◇" : isSupported(e, m) ? " †" : "")).join(", ") || "–";
 const sourced = (e: Exercise) => Object.entries(e.sources ?? {}).map(([m, n]) => `${muscle[m]}: "${n}"`).join("; ");
 const aerobic = EXERCISES.filter((e) => e.met?.length);
 const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "light");
@@ -90,7 +90,28 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
   </p>
   <Caveat kind="assumption">These assignments are marked ◇ in the planner and in the table below. They are a
     judgement made openly, not a measurement, and the counting method itself was only tested on the muscles and the kind
-    of exercises in the study. Studies that measured muscle growth directly will replace them where they exist.</Caveat>
+    of exercises in the study. Where studies that measured muscle growth support one, it is marked † instead
+    (<a href="#growth-evidence">see below</a>).</Caveat>
+  <h3 id="growth-evidence">Evidence from studies that measured muscle growth</h3>
+  <p>
+    The planner's own classifications are being compared, one muscle group at a time, with training studies that measured
+    muscle size (by MRI or ultrasound) before and after, which say more than studies of muscle activity (EMG) alone. Where
+    such studies show that a muscle grows with an exercise, it is marked † instead of ◇. That supports counting the muscle;
+    whether it counts as a full or half set remains the planner's judgement.
+  </p>
+  <ul>
+    <li><strong>Glutes</strong> (checked 20 November 2026). A 2025 systematic review of 12 training studies found that
+      the gluteus maximus grew with back squats to parallel or deeper, the leg press, the hip thrust and progressive
+      bodyweight squat variations <Fragment set:html={cite("krause-neto-2025")} />. In a randomised trial, 9 weeks of hip
+      thrusts or back squats (equal sets) grew the gluteus maximus similarly <Fragment set:html={cite("plotkin-2023")} />.
+      Squats to only 90° of knee bend grew it less, or not significantly, in the studies reviewed, so the planner's squat is
+      to parallel or lower. No study isolated the deadlift, Romanian deadlift, kettlebell swing, lunge or back extension,
+      so those stay marked ◇.</li>
+    <li><strong>Hamstrings in hip thrusts.</strong> The hamstrings showed little to no growth with either the hip thrust
+      or the back squat <Fragment set:html={cite("plotkin-2023")} />, so the planner no longer counts them for the hip
+      thrust or the glute bridge (the same movement without a weight). For squats this matches Pelland and colleagues'
+      table.</li>
+  </ul>
   <p>
     Muscles that only hold the body still (such as the trunk muscles in a squat) are listed as "steadied" and not counted,
     except in exercises whose whole purpose is the hold, such as the plank or the farmer's carry. Counting those is also
@@ -100,7 +121,8 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
   <details>
     <summary>All {strength.length} exercises and their muscles</summary>
     <div class="details-body table-scroll">
-      <p class="small">◇ = the planner's own classification (an assumption). The last column gives the exercise name exactly as
+      <p class="small">◇ = the planner's own classification (an assumption); † = the planner's classification, supported by
+        studies that measured muscle growth (<a href="#growth-evidence">which</a>). The last column gives the exercise name exactly as
         printed in the study's table, for each muscle taken from it.</p>
       <table>
         <thead><tr><th>Exercise</th><th>Needs</th><th>Direct (1 set)</th><th>Indirect (½ set)</th><th>From Pelland et al., Table 1A</th></tr></thead>
@@ -111,7 +133,7 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
               <td class="small">{needs(e.needs)}</td>
               <td>{cell(e, e.direct)}</td>
               <td>{cell(e, e.indirect)}</td>
-              <td class="small">{sourced(e) || "None: all assumptions ◇"}</td>
+              <td class="small">{sourced(e) || "None"}</td>
             </tr>
           ))}
         </tbody>
@@ -174,9 +196,9 @@ const band = (met: number) => (met >= 6 ? "vigorous" : met >= 3 ? "moderate" : "
     muscle actions used from the anatomy textbook. Details, with dates, are in the repository's
     <code>tools/exercise-planner/VERIFICATION.md</code>.
   </p>
-  <Caveat kind="unverified">The planner's own classifications (◇) haven't yet been compared with studies of the
-    exercises themselves. Studies that measured muscle growth after training (not just muscle activity during it) are the
-    next thing to compare against.</Caveat>
+  <Caveat kind="unverified">The planner's own classifications (◇) for the glutes have been compared with studies that
+    measured muscle growth (<a href="#growth-evidence">above</a>); the other muscle groups haven't yet, and are being
+    checked one group at a time.</Caveat>
 
   <h2 id="limitations">Limitations</h2>
   <ul class="prose">

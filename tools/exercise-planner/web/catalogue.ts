@@ -103,6 +103,12 @@ export type Exercise = {
    * classification from anatomy (an assumption), and is labelled as such on the site. Checked by planner.test.ts.
    */
   sources?: Partial<Record<Muscle, string>>;
+  /**
+   * Muscles whose counting here is supported by studies that measured muscle growth (MRI or ultrasound) after
+   * training with this exercise: reference ids from references.json. This supports counting the muscle at all; whether
+   * it counts as a full or half set is still the planner's classification. Checked by planner.test.ts.
+   */
+  evidence?: Partial<Record<Muscle, string[]>>;
   /** Muscles that hold a position but don't move a joint through a range: shown, not counted. */
   steadies?: Muscle[];
   /** Compendium rows (aerobic and interval activities), lightest effort first. None is a Compendium estimate (checked 20 Nov 2026). */
@@ -123,6 +129,7 @@ export const EXERCISES: Exercise[] = [
     moves: "shoulder extension and shoulder-blade retraction (pulling the chest to the bar); elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["forearms", "glutes"] }),
   X({ id: "squatBw", name: "Bodyweight squat", kind: "strength", needs: [["body"]],
+    evidence: { glutes: ["krause-neto-2025"] },
     moves: "knee extension; hip extension",
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "lunge", name: "Bodyweight lunge (reverse or forward)", kind: "strength", needs: [["body"]],
@@ -130,7 +137,8 @@ export const EXERCISES: Exercise[] = [
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "gluteBridge", name: "Glute bridge", kind: "strength", needs: [["body"]],
     moves: "hip extension (lifting the hips from the floor)",
-    direct: ["glutes"], indirect: ["hamstrings"] }),
+    // Hamstrings not counted: they didn't grow after hip thrust training (Plotkin et al. 2023); same movement.
+    direct: ["glutes"], indirect: [] }),
   X({ id: "singleLegRdl", name: "Single-leg Romanian deadlift", kind: "strength", needs: [["body", "dumbbells", "kettlebell"]],
     moves: "hip extension with a nearly straight knee, on one leg (hinging at the hip)",
     direct: ["hamstrings", "glutes"], indirect: [], steadies: ["lowerBack"] }),
@@ -211,7 +219,8 @@ export const EXERCISES: Exercise[] = [
   // --- Barbell ---
   X({ id: "backSquat", name: "Barbell back squat", kind: "strength", needs: [["barbell"], ["rack"]],
     sources: { quads: "Back Squat" },
-    moves: "knee extension; hip extension",
+    evidence: { glutes: ["krause-neto-2025", "plotkin-2023"] },
+    moves: "knee extension; hip extension (squatting to thighs parallel with the floor or lower)",
     direct: ["quads", "glutes"], indirect: [], steadies: ["lowerBack", "abs"] }),
   X({ id: "deadlift", name: "Deadlift", kind: "strength", needs: [["barbell", "kettlebell", "dumbbells"]],
     moves: "hip extension; knee extension (lifting a weight from the floor)",
@@ -233,12 +242,15 @@ export const EXERCISES: Exercise[] = [
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["lowerBack", "hamstrings"] }),
   X({ id: "hipThrust", name: "Hip thrust", kind: "strength", needs: [["barbell", "dumbbells"], ["bench", "chair"]],
+    evidence: { glutes: ["plotkin-2023", "krause-neto-2025"] },
     moves: "hip extension (back on a bench, lifting the hips)",
-    direct: ["glutes"], indirect: ["hamstrings"] }),
+    // Hamstrings not counted: no meaningful growth after 9 weeks of hip thrust training (Plotkin et al. 2023).
+    direct: ["glutes"], indirect: [] }),
 
   // --- Machines and cables ---
   X({ id: "legPress", name: "Leg press", kind: "strength", needs: [["machines"]],
     sources: { quads: "Leg Press" },
+    evidence: { glutes: ["krause-neto-2025"] },
     moves: "knee extension; hip extension",
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "legExtension", name: "Leg extension", kind: "strength", needs: [["machines"]],
@@ -322,8 +334,12 @@ export const EXERCISES: Exercise[] = [
     met: [{ code: "02020", met: 7.5, label: "Calisthenics (e.g., pushups, sit ups, pull-ups, jumping jacks, burpees, battling ropes), vigorous effort" }] }),
 ];
 
-/** True when the planner's classification of muscle `m` in `e` is its own assumption, not from Pelland et al. */
-export const isAssumed = (e: Exercise, m: Muscle) => !e.sources?.[m];
+/** True when counting muscle `m` in `e` is supported by studies that measured muscle growth (`evidence`). */
+export const isSupported = (e: Exercise, m: Muscle) => !e.sources?.[m] && !!e.evidence?.[m]?.length;
+
+/** True when the planner's classification of muscle `m` in `e` is its own assumption: neither from Pelland et al.'s
+ * table nor supported by studies that measured muscle growth. */
+export const isAssumed = (e: Exercise, m: Muscle) => !e.sources?.[m] && !e.evidence?.[m]?.length;
 
 /** Counted muscles (direct and indirect) whose classification is the planner's own assumption. */
 export const assumedMuscles = (e: Exercise) => [...e.direct, ...e.indirect].filter((m) => isAssumed(e, m));

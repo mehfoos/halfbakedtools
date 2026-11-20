@@ -100,6 +100,40 @@
       ]
     },
     {
+      "id": "krause-neto-2025",
+      "pre": "W. Krause Neto, T. L. V. Krause and E. F. Gama,",
+      "title": "The impact of resistance training on gluteus maximus hypertrophy: a systematic review and meta-analysis",
+      "style": "quoted",
+      "post": "<i>Frontiers in Physiology</i>, vol. 16, art. 1542334, Apr. 2025, doi: 10.3389/fphys.2025.1542334.",
+      "url": "https://doi.org/10.3389/fphys.2025.1542334",
+      "licence": "CC BY 4.0",
+      "usedFor": "Which exercises have been shown to grow the gluteus maximus (squats to parallel or deeper, the leg press, the hip thrust, bodyweight squat variations)",
+      "archive": [
+        {
+          "label": "Archived copy (PDF)",
+          "asset": "krause-neto-2025-gluteus-maximus-meta-analysis.pdf",
+          "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2025.1542334/pdf"
+        }
+      ]
+    },
+    {
+      "id": "plotkin-2023",
+      "pre": "D. L. Plotkin et al.,",
+      "title": "Hip thrust and back squat training elicit similar gluteus muscle hypertrophy and transfer similarly to the deadlift",
+      "style": "quoted",
+      "post": "<i>Frontiers in Physiology</i>, vol. 14, art. 1279170, Oct. 2023, doi: 10.3389/fphys.2023.1279170.",
+      "url": "https://doi.org/10.3389/fphys.2023.1279170",
+      "licence": "CC BY 4.0",
+      "usedFor": "The hip thrust and back squat grew the gluteus maximus similarly; neither grew the hamstrings",
+      "archive": [
+        {
+          "label": "Archived copy (PDF)",
+          "asset": "plotkin-2023-hip-thrust-squat.pdf",
+          "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1279170/pdf"
+        }
+      ]
+    },
+    {
       "id": "who-2020",
       "pre": "World Health Organization,",
       "title": "WHO Guidelines on Physical Activity and Sedentary Behaviour",

@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { EXERCISES, EQUIPMENT, MUSCLES, PRESETS, assumedMuscles, type Equipment, type Muscle } from "./catalogue.ts";
+import { EXERCISES, EQUIPMENT, MUSCLES, PRESETS, assumedMuscles, isAssumed, isSupported, type Equipment, type Muscle } from "./catalogue.ts";
+import references from "../references.json" with { type: "json" };
 import { TABLE_1A, TABLE_1A_MUSCLES } from "./pelland-table-1a.ts";
 import { canDo, coverage, intensity, suggest, weights } from "./planner.ts";
 
@@ -216,4 +217,20 @@ test("shoulders are three groups: a face pull alone doesn't cover the front or s
   assert.deepEqual(full.suggestions[0].missing, []);
   // Table 1A's anterior-deltoid row is credited to the front shoulders only.
   for (const e of EXERCISES) for (const m of Object.keys(e.sources ?? {})) assert.ok(!["sideDelts", "rearDelts"].includes(m), e.id);
+});
+
+test("outcome evidence: cited references exist, and only counted muscles carry it", () => {
+  const refIds = new Set(references.sources.map((r: { id: string }) => r.id));
+  for (const e of EXERCISES) for (const [m, refs] of Object.entries(e.evidence ?? {}) as [Muscle, string[]][]) {
+    assert.ok(refs.length, `${e.id}: ${m}`);
+    for (const r of refs) assert.ok(refIds.has(r), `${e.id}: unknown reference ${r}`);
+    assert.ok(e.direct.includes(m) || e.indirect.includes(m), `${e.id}: ${m} has evidence but isn't counted`);
+    assert.ok(isSupported(e, m) && !isAssumed(e, m));
+  }
+  // Glutes grew with squats, the leg press and the hip thrust; hamstrings didn't with the hip thrust (Plotkin 2023).
+  for (const id of ["backSquat", "legPress", "hipThrust", "squatBw"]) assert.ok(isSupported(EXERCISES.find((e) => e.id === id)!, "glutes"), id);
+  for (const id of ["hipThrust", "gluteBridge"]) {
+    const e = EXERCISES.find((x) => x.id === id)!;
+    assert.ok(!e.direct.includes("hamstrings") && !e.indirect.includes("hamstrings"), id);
+  }
 });

@@ -522,6 +522,17 @@
       "checked": "2026-11-18"
     },
     {
+      "file": "krause-neto-2025-gluteus-maximus-meta-analysis.pdf",
+      "title": "The impact of resistance training on gluteus maximus hypertrophy: a systematic review and meta-analysis (Frontiers in Physiology, 2025)",
+      "publisher": "W. Krause Neto et al., Frontiers in Physiology (Frontiers Media)",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.3389/fphys.2025.1542334",
+      "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2025.1542334/pdf",
+      "sha256": "7de04db71dc7d99e7c9d2e6f1709e7171ba53f0bf37d9e83b46530ce10990c6d",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
+    },
+    {
       "file": "nasem-dri-cdrr.pdf",
       "title": "Dietary Reference Intakes summary tables",
       "publisher": "National Academies of Sciences, Engineering, and Medicine, Food and Nutrition Board",
@@ -806,6 +817,17 @@
       "manual": "Moved from the repository's sources/ folder in Nov 2026 (the history clean-up); first archived there before Nov 2026: uploaded by the site owner.",
       "retrieved": null,
       "checked": "2026-11-18"
+    },
+    {
+      "file": "plotkin-2023-hip-thrust-squat.pdf",
+      "title": "Hip thrust and back squat training elicit similar gluteus muscle hypertrophy and transfer similarly to the deadlift (Frontiers in Physiology, 2023)",
+      "publisher": "D. L. Plotkin et al., Frontiers in Physiology (Frontiers Media)",
+      "licence": "CC BY 4.0",
+      "origin": "https://doi.org/10.3389/fphys.2023.1279170",
+      "fetch": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2023.1279170/pdf",
+      "sha256": "f8cada55d0fe8ba2b37b932e0e34e6c24413d2d9c4d6ef02756bcaea149561b1",
+      "retrieved": "2026-11-20",
+      "checked": "2026-11-20"
     },
     {
       "file": "schoenfeld-2019-set-volume-multi-joint.pdf",
