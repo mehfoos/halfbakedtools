@@ -175,7 +175,7 @@
       "ownerCopy": [
         {
           "file": "krause-neto-2025-gluteus-maximus-meta-analysis.pdf",
-          "pending": true
+          "sha256": "7de04db71dc7d99e7c9d2e6f1709e7171ba53f0bf37d9e83b46530ce10990c6d"
         }
       ]
     },
@@ -474,27 +474,27 @@
         },
         {
           "file": "compendium-2024-web-bicycling.pdf",
-          "pending": true
+          "sha256": "5392abd07e31776cda6c240ca894b5827dac86eead1b62164aedc95bbfea2eb5"
         },
         {
           "file": "compendium-2024-web-conditioning-exercise.pdf",
-          "pending": true
+          "sha256": "e8bfb4eb17ab7e95349d564b5d31f22b470ec39fb2f2c5d7c1a321e277014a8e"
         },
         {
           "file": "compendium-2024-web-running.pdf",
-          "pending": true
+          "sha256": "5d6825627d5a40bbea56b63cc48e5cefccbfe2d83f7c5467b880aef580704d22"
         },
         {
           "file": "compendium-2024-web-walking.pdf",
-          "pending": true
+          "sha256": "b7457dc8babdd554cbfc9963a904a482ad9ccac0231828a84a7d61cd9231f624"
         },
         {
           "file": "compendium-2024-web-water-activities.pdf",
-          "pending": true
+          "sha256": "f413764a69abd9bd68a81604938350f7d047b016950c107c6ff742ab23189195"
         },
         {
           "file": "compendium-2024-web-sports.pdf",
-          "pending": true
+          "sha256": "2fa0d50399fd29ecc20e7a3d6806c0e2fe6e57b90f33022bced503a52d22738c"
         }
       ]
     }
