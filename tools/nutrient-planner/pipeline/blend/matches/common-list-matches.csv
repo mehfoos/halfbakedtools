@@ -2280,6 +2280,7 @@ bls,bls:m882000,Whole milk powder,afcd,afcd:f005648,"Milk, cow, powder, regular 
 bls,bls:m882000,Whole milk powder,afcd,afcd:f005650,"Milk, cow, powder, regular fat, unfortified",more words: whole,?,afcd,source unknown
 bls,bls:m882000,Whole milk powder,ciqual,ciqual:19021,"Milk powder, whole",same words,?,ciqual,source unknown
 bls,bls:m882000,Whole milk powder,frida,frida:511,"Milk, dry, whole, powder",same words,?,frida,source unknown
+bls,bls:m882000,Whole milk powder,kfcdb,kfcdb:m0020040009a,"Milk powder, Whole milk",same words,?,kfcdb,source unknown
 bls,bls:m884000,Skimmed milk powder,ciqual,ciqual:19054,"Milk powder, skimmed",same words,?,ciqual,source unknown
 bls,bls:m884000,Skimmed milk powder,frida,frida:158,"Milk, dry, skimmed, powder",same words,?,frida,source unknown
 bls,bls:m884000,Skimmed milk powder,kfcdb,kfcdb:m0020050009a,"Milk powder, Skim milk",same words,?,kfcdb,source unknown
@@ -3092,6 +3093,7 @@ ciqual,ciqual:19016,"Milk, whole (average)",kfcdb,kfcdb:m0090000009a,Cow's milk,
 ciqual,ciqual:19021,"Milk powder, whole",afcd,afcd:f005648,"Milk, cow, powder, regular fat",more words: whole,ciqual,afcd,independent
 ciqual,ciqual:19021,"Milk powder, whole",afcd,afcd:f005650,"Milk, cow, powder, regular fat, unfortified",more words: whole,ciqual,afcd,independent
 ciqual,ciqual:19021,"Milk powder, whole",frida,frida:511,"Milk, dry, whole, powder",same words,ciqual,frida,independent
+ciqual,ciqual:19021,"Milk powder, whole",kfcdb,kfcdb:m0020040009a,"Milk powder, Whole milk",same words,ciqual,kfcdb,independent
 ciqual,ciqual:19023,"Milk, whole, UHT",frida,frida:1265,"Milk, whole, 3.5, (UHT), % fat",more words: uht,ciqual,frida,independent
 ciqual,ciqual:19023,"Milk, whole, UHT",frida,frida:1266,"Milk, whole, organic, 3.5 % fat",more words: uht,ciqual,frida,independent
 ciqual,ciqual:19023,"Milk, whole, UHT",frida,frida:6,"Milk, whole, konventional (not organic), 3.5 % fat",more words: uht,ciqual,frida,independent
@@ -3112,6 +3114,8 @@ ciqual,ciqual:19033,"Milk, semi-skimmed (average)",frida,frida:1154,"Milk, partl
 ciqual,ciqual:19033,"Milk, semi-skimmed (average)",frida,frida:33,"Milk, partly skimmed, konventional (not organic), 1.5 % fat",more words: partly,ciqual,frida,independent
 ciqual,ciqual:19033,"Milk, semi-skimmed (average)",japan,japan:13005,"(liquid milks), processed milk, low fat",more words: processed,ciqual,japan,independent
 ciqual,ciqual:19033,"Milk, semi-skimmed (average)",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",same words,ciqual,kfcdb,independent
+ciqual,ciqual:19037,"Milk,  semi-skimmed, UHT, fortified with vitamin D",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: uht,ciqual,kfcdb,independent
+ciqual,ciqual:19038,"Milk, 1,2% fat, UHT, fortified with vitamins",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: uht,ciqual,kfcdb,independent
 ciqual,ciqual:19041,"Milk, semi-skimmed, UHT",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",more words: uht,ciqual,afcd,independent
 ciqual,ciqual:19041,"Milk, semi-skimmed, UHT",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: uht,ciqual,afcd,independent
 ciqual,ciqual:19041,"Milk, semi-skimmed, UHT",fineli,fineli:29210,"Milk, 1.5% fat, without added vitamin d, organic",more words: uht,ciqual,fineli,independent
@@ -7925,6 +7929,7 @@ fineli,fineli:33456,Spinach,afcd,afcd:f008763,"Spinach, water, fresh, raw",more 
 fineli,fineli:33456,Spinach,cnf,cnf:2213,"Spinach, raw",same words,fineli,usda,independent
 fineli,fineli:33456,Spinach,cnf,cnf:2273,"Vine spinach, raw",more words: vine,fineli,usda,independent
 fineli,fineli:33456,Spinach,kfcdb,kfcdb:f1150000000a,"Spinach, Raw",same words,fineli,kfcdb,independent
+fineli,fineli:33466,"Milk, average, 1 ug added vitamin d",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: ug,fineli,kfcdb,independent
 fineli,fineli:335,Onion,afcd,afcd:f006250,"Onion, spring, fresh, raw",more words: spring,fineli,afcd,independent
 fineli,fineli:335,Onion,cnf,cnf:2145,"Onion, Welsh, raw",more words: welsh,fineli,usda,independent
 fineli,fineli:335,Onion,cnf,cnf:2401,"Onion, raw",same words,fineli,usda,independent
@@ -8197,6 +8202,7 @@ fineli,fineli:604,"Milk, goat milk",cnf,cnf:6353,"Milk, fluid, goat, unfortified
 fineli,fineli:604,"Milk, goat milk",kfcdb,kfcdb:m0030000009a,Goat's milk,same words,fineli,kfcdb,independent
 fineli,fineli:604,"Milk, goat milk",kfcdb,kfcdb:m0090000009a,Cow's milk,more words: goat,fineli,kfcdb,independent
 fineli,fineli:606,"Milk, 0% fat, i ug added vitamin d",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",more words: ug,fineli,cnf,independent
+fineli,fineli:606,"Milk, 0% fat, i ug added vitamin d",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: ug,fineli,kfcdb,independent
 fineli,fineli:617,"Curd milk, plain, 3.5% fat",afcd,afcd:f005634,"Milk, cow, fluid, regular fat (~3.5%)",more words: curd,fineli,afcd,independent
 fineli,fineli:617,"Curd milk, plain, 3.5% fat",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: curd,fineli,afcd,independent
 fineli,fineli:617,"Curd milk, plain, 3.5% fat",kfcdb,kfcdb:m0090000009a,Cow's milk,more words: curd,fineli,kfcdb,independent
@@ -8206,6 +8212,7 @@ fineli,fineli:618,"Curd milk, plain, 2.5% fat",kfcdb,kfcdb:m0090000009a,Cow's mi
 fineli,fineli:619,"Yoghurt, plain, 2.5% fat, low-lactose",japan,japan:13025,"(fermented milks), yogurt, whole milk, unsweetened",more words: low-lactose,fineli,japan,independent
 fineli,fineli:620,"Yoghurt, plain, bulgarian, 9% fat",japan,japan:13025,"(fermented milks), yogurt, whole milk, unsweetened",more words: bulgarian,fineli,japan,independent
 fineli,fineli:627,"Milk, 1% fat, 1 ug added vitamin d",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",more words: ug,fineli,cnf,independent
+fineli,fineli:627,"Milk, 1% fat, 1 ug added vitamin d",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: ug,fineli,kfcdb,independent
 fineli,fineli:643,"Cheese, hard cheese, edam type, 24-27% fat",afcd,afcd:f002448,"Cheese, edam",more words: hard,fineli,afcd,independent
 fineli,fineli:647,"Processed cheese, 20-24% fat",afcd,afcd:f002428,"Cheese, cheddar, processed, regular fat",more words: cheddar,fineli,afcd,independent
 fineli,fineli:647,"Processed cheese, 20-24% fat",japan,japan:13040,"(cheeses), processed cheese",same words,fineli,japan,independent
@@ -8215,6 +8222,8 @@ fineli,fineli:654,"Cheese, gouda, average, 28-30% fat",kfcdb,kfcdb:m0100110009a,
 fineli,fineli:680,"Curd milk, plain, 1% fat",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",more words: curd,fineli,afcd,independent
 fineli,fineli:680,"Curd milk, plain, 1% fat",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: curd,fineli,afcd,independent
 fineli,fineli:680,"Curd milk, plain, 1% fat",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: curd,fineli,kfcdb,independent
+fineli,fineli:684,"Milk, 1.5% fat, 1 ug added vitamin d",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: ug,fineli,kfcdb,independent
+fineli,fineli:689,"Milk, 3.5% fat, 1 ug added vitamin d",kfcdb,kfcdb:m0090000009a,Cow's milk,more words: ug,fineli,kfcdb,independent
 fineli,fineli:690,"Cheese, feta type salad cheese in brine, 18% fat",cnf,cnf:108,"Cheese, feta",more words: salad,fineli,cnf,independent
 fineli,fineli:698,"Cheese, cheddar type, 34% fat",afcd,afcd:f002414,"Cheese, cheddar, natural, regular fat",more words: natural,fineli,afcd,independent
 fineli,fineli:698,"Cheese, cheddar type, 34% fat",cnf,cnf:119,"Cheese, cheddar, mild",more words: mild,fineli,cnf,independent
@@ -9088,6 +9097,7 @@ frida,frida:510,"Papaya, raw",kfcdb,kfcdb:h0950002540a,"Papaya(Carica papaya L.)
 frida,frida:510,"Papaya, raw",kfcdb,kfcdb:h0950010000a,"Papaya(Carica papaya L.), Green, Raw",more words: green,frida,kfcdb,independent
 frida,frida:511,"Milk, dry, whole, powder",afcd,afcd:f005648,"Milk, cow, powder, regular fat",more words: whole,frida,afcd,independent
 frida,frida:511,"Milk, dry, whole, powder",afcd,afcd:f005650,"Milk, cow, powder, regular fat, unfortified",more words: whole,frida,afcd,independent
+frida,frida:511,"Milk, dry, whole, powder",kfcdb,kfcdb:m0020040009a,"Milk powder, Whole milk",same words,frida,kfcdb,independent
 frida,frida:515,"Pecans, dried",afcd,afcd:f006111,"Nut, pecan, raw, unsalted",more words: nut,frida,afcd,independent
 frida,frida:515,"Pecans, dried",cnf,cnf:2582,"Nuts, pecans, dried",more words: nut,frida,usda,copies (values nearly identical)
 frida,frida:515,"Pecans, dried",fineli,fineli:33095,"Nut, pecan",more words: nut,frida,fineli,copies (values nearly identical)
@@ -10645,6 +10655,12 @@ kfcdb,kfcdb:k613013000ra,"Siba shrimp(Metapenaeus joyneri), Canned",cnf,cnf:3224
 kfcdb,kfcdb:l0270000001a,"Sea lettuce, Dried",japan,japan:09001,"Algae, sea lettuce, plain dried",more words: algae,kfcdb,japan,independent
 kfcdb,kfcdb:l0270040001a,"Sea lettuce(Enteromorpha intestinalis), Dried",japan,japan:09001,"Algae, sea lettuce, plain dried",more words: algae,kfcdb,japan,independent
 kfcdb,kfcdb:m0010000009a,Human milk,cnf,cnf:73,"Milk, fluid, human (breast milk), mature",same words,japan,usda,independent
+kfcdb,kfcdb:m0020040009a,"Milk powder, Whole milk",afcd,afcd:f005648,"Milk, cow, powder, regular fat",more words: whole,kfcdb,afcd,independent
+kfcdb,kfcdb:m0020040009a,"Milk powder, Whole milk",afcd,afcd:f005649,"Milk, cow, powder, regular fat, added vitamins A & D",more words: whole,kfcdb,afcd,independent
+kfcdb,kfcdb:m0020040009a,"Milk powder, Whole milk",afcd,afcd:f005650,"Milk, cow, powder, regular fat, unfortified",more words: whole,kfcdb,afcd,independent
+kfcdb,kfcdb:m0020050009a,"Milk powder, Skim milk",afcd,afcd:f005652,"Milk, cow, powder, skim",same words,kfcdb,afcd,independent
+kfcdb,kfcdb:m0020050009a,"Milk powder, Skim milk",cnf,cnf:115,"Milk, dry, skim, powder, instant",more words: instant,kfcdb,usda,independent
+kfcdb,kfcdb:m0020050009a,"Milk powder, Skim milk",cnf,cnf:134,"Milk, dry, skim, powder, regular",same words,kfcdb,usda,independent
 kfcdb,kfcdb:m0030000009a,Goat's milk,afcd,afcd:f005634,"Milk, cow, fluid, regular fat (~3.5%)",more words: goat,kfcdb,afcd,independent
 kfcdb,kfcdb:m0030000009a,Goat's milk,afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: goat,kfcdb,afcd,independent
 kfcdb,kfcdb:m0030000009a,Goat's milk,cnf,cnf:6353,"Milk, fluid, goat, unfortified, whole, 3.25% M.F.",more words: whole,kfcdb,cnf,independent
@@ -10653,7 +10669,10 @@ kfcdb,kfcdb:m0090000009a,Cow's milk,afcd,afcd:f005634,"Milk, cow, fluid, regular
 kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",afcd,afcd:f005605,"Milk, cow, fluid, prepared from dry powder, skim, standard dilution",more words: dilution,kfcdb,afcd,independent
 kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",same words,kfcdb,afcd,independent
 kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",same words,kfcdb,afcd,independent
+kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",same words,kfcdb,cnf,independent
 kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",cnf,cnf:124,"Milk, fluid, buttermilk, 1% M.F.",more words: buttermilk,kfcdb,cnf,independent
+kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",cnf,cnf:61,"Milk, fluid, partly skimmed, 2% M.F.",more words: partly,kfcdb,cnf,independent
+kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",cnf,cnf:63,"Milk, fluid, partly skimmed, 1% M.F.",more words: partly,kfcdb,cnf,independent
 kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",cnf,cnf:7709,"Milk, fluid, buttermilk, 0.25% M.F.",more words: buttermilk,kfcdb,cnf,independent
 kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",cnf,cnf:7710,"Milk, fluid, buttermilk, 1.5%",more words: buttermilk,kfcdb,cnf,independent
 kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",cnf,cnf:7720,"Milk, fluid, goat, unfortified, 2% M.F.",more words: goat,kfcdb,cnf,independent
@@ -12744,6 +12763,7 @@ usda,u169867,"Oil, corn and canola",fineli,fineli:543,"Corn oil, maize oil",more
 usda,u169867,"Oil, corn and canola",frida,frida:1415,Corn oil,more words: rapeseed,usda,frida,independent
 usda,u169867,"Oil, corn and canola",kfcdb,kfcdb:n0160000009a,Corn oil,more words: rapeseed,usda,kfcdb,independent
 usda,u169868,"Milk, fluid, nonfat, calcium fortified (fat free or skim)",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",more words: calcium,usda,cnf,independent
+usda,u169868,"Milk, fluid, nonfat, calcium fortified (fat free or skim)",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: calcium,usda,kfcdb,independent
 usda,u169869,"Peanut butter, reduced sodium",cnf,cnf:5509,"Peanut butter, reduced sodium",same words,usda,usda,copies (values nearly identical)
 usda,u169889,"Radishes, hawaiian style, pickled",cnf,cnf:5547,"Radish, hawaiian style, pickled",same words,usda,usda,copies (values nearly identical)
 usda,u169890,"Cabbage, japanese style, fresh, pickled",cnf,cnf:5548,"Cabbage, japanese style, fresh, pickled",same words,usda,usda,copies (values nearly identical)
@@ -13853,7 +13873,10 @@ usda,u170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin 
 usda,u170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",fineli,fineli:627,"Milk, 1% fat, 1 ug added vitamin d",more words: ug,usda,fineli,independent
 usda,u170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",fineli,fineli:684,"Milk, 1.5% fat, 1 ug added vitamin d",more words: ug,usda,fineli,independent
 usda,u170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",japan,japan:13005,"(liquid milks), processed milk, low fat",more words: processed,usda,japan,independent
+usda,u170872,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",same words,usda,kfcdb,independent
 usda,u170873,"Milk, lowfat, fluid, 1% milkfat, with added nonfat milk solids, vitamin A and vitamin D",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",more words: solid,usda,cnf,independent
+usda,u170873,"Milk, lowfat, fluid, 1% milkfat, with added nonfat milk solids, vitamin A and vitamin D",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: solid,usda,kfcdb,independent
+usda,u170875,"Milk, low sodium, fluid",kfcdb,kfcdb:m0090000009a,Cow's milk,more words: sodium,usda,kfcdb,independent
 usda,u170876,"Milk, dry, whole, with added vitamin D",cnf,cnf:66,"Milk, dry whole",same words,usda,usda,copies (values nearly identical)
 usda,u170878,"Milk, canned, evaporated, nonfat, with added vitamin A and vitamin D",cnf,cnf:112,"Milk, evaporated, skim, canned, undiluted, 0.2% M.F.",more words: undiluted,usda,usda,copies (values nearly identical)
 usda,u170882,"Milk, sheep, fluid",bls,bls:m011000,Sheep's milk min. 4.5 % fat,same words,usda,?,source unknown
@@ -14017,6 +14040,7 @@ usda,u171257,"Cream, sour, cultured",cnf,cnf:152,"Cream, sour, cultured, 18% M.F
 usda,u171265,"Milk, whole, 3.25% milkfat, with added vitamin D",ciqual,ciqual:19202,"Goat milk, whole, raw",more words: goat,usda,ciqual,independent
 usda,u171265,"Milk, whole, 3.25% milkfat, with added vitamin D",cnf,cnf:123,"Milk, fluid, whole, producer, 3.7% M.F.",more words: producer,usda,usda,same source family
 usda,u171265,"Milk, whole, 3.25% milkfat, with added vitamin D",cnf,cnf:7024,"Milk, fluid, buttermilk, whole, 3.25% M.F.",more words: buttermilk,usda,cnf,independent
+usda,u171265,"Milk, whole, 3.25% milkfat, with added vitamin D",kfcdb,kfcdb:m0090000009a,Cow's milk,more words: whole,usda,kfcdb,independent
 usda,u171266,"Milk, producer, fluid, 3.7% milkfat",afcd,afcd:f005634,"Milk, cow, fluid, regular fat (~3.5%)",more words: producer,usda,afcd,independent
 usda,u171266,"Milk, producer, fluid, 3.7% milkfat",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: producer,usda,afcd,independent
 usda,u171266,"Milk, producer, fluid, 3.7% milkfat",cnf,cnf:123,"Milk, fluid, whole, producer, 3.7% M.F.",more words: whole,usda,usda,copies (values nearly identical)
@@ -14031,6 +14055,7 @@ usda,u171267,"Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vit
 usda,u171267,"Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D",fineli,fineli:684,"Milk, 1.5% fat, 1 ug added vitamin d",more words: ug,usda,fineli,independent
 usda,u171267,"Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D",japan,japan:13005,"(liquid milks), processed milk, low fat",more words: processed,usda,japan,independent
 usda,u171267,"Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D",kfcdb,kfcdb:m0090021469a,"Cow's milk, Calcium fortified",more words: calcium,usda,kfcdb,independent
+usda,u171268,"Milk, lowfat, fluid, 1% milkfat, protein fortified, with added vitamin A and vitamin D",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: protein,usda,kfcdb,independent
 usda,u171269,"Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",ciqual,ciqual:19050,"Milk, skimmed, UHT",more words: uht,usda,ciqual,independent
 usda,u171269,"Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",same words,usda,cnf,independent
 usda,u171269,"Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",cnf,cnf:63,"Milk, fluid, partly skimmed, 1% M.F.",more words: partly,usda,cnf,independent
@@ -14038,9 +14063,14 @@ usda,u171269,"Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free 
 usda,u171269,"Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",fineli,fineli:606,"Milk, 0% fat, i ug added vitamin d",more words: ug,usda,fineli,independent
 usda,u171269,"Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",fineli,fineli:627,"Milk, 1% fat, 1 ug added vitamin d",more words: ug,usda,fineli,independent
 usda,u171269,"Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",japan,japan:13005,"(liquid milks), processed milk, low fat",more words: processed,usda,japan,independent
+usda,u171269,"Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",same words,usda,kfcdb,independent
 usda,u171270,"Milk, nonfat, fluid, with added nonfat milk solids, vitamin A and vitamin D (fat free or skim)",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",more words: solid,usda,cnf,independent
+usda,u171270,"Milk, nonfat, fluid, with added nonfat milk solids, vitamin A and vitamin D (fat free or skim)",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: solid,usda,kfcdb,independent
 usda,u171271,"Milk, nonfat, fluid, protein fortified, with added vitamin A and vitamin D (fat free and skim)",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",more words: protein,usda,cnf,independent
+usda,u171271,"Milk, nonfat, fluid, protein fortified, with added vitamin A and vitamin D (fat free and skim)",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: protein,usda,kfcdb,independent
 usda,u171278,"Milk, goat, fluid, with added vitamin D",ciqual,ciqual:19202,"Goat milk, whole, raw",more words: whole,usda,ciqual,independent
+usda,u171278,"Milk, goat, fluid, with added vitamin D",kfcdb,kfcdb:m0030000009a,Goat's milk,same words,usda,kfcdb,independent
+usda,u171278,"Milk, goat, fluid, with added vitamin D",kfcdb,kfcdb:m0090000009a,Cow's milk,more words: goat,usda,kfcdb,independent
 usda,u171279,"Milk, human, mature, fluid",cnf,cnf:73,"Milk, fluid, human (breast milk), mature",same words,usda,usda,copies (values nearly identical)
 usda,u171279,"Milk, human, mature, fluid",kfcdb,kfcdb:m0010000009a,Human milk,same words,usda,japan,independent
 usda,u171281,"Whey, acid, dried",cnf,cnf:78,"Whey, acid, dry",same words,usda,usda,copies (values nearly identical)

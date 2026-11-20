@@ -382,6 +382,35 @@ def used_members(recs: list[dict], members: list[int]) -> tuple[list[int], dict[
     return used, why
 
 
+# ---- energy ---------------------------------------------------------------------------------------------------------
+# Energy is worked out from the blended protein, fat, carbohydrate and fibre with the EU labelling factors (Regulation
+# (EU) No 1169/2011, Annex XIV; kcal per g), because blending it separately could take it from one table and its parts
+# from others (owner's decision, 20 Nov 2026). The factors leave out organic acids and alcohol, and a table's carbohydrate
+# can still include fibre (KFCDb where it gives no fibre value), so the result can be wrong for the food. Where it is not
+# within 5 kcal or 10% of any table's own energy for the food, the tables' median is kept, with a caveat. The US standard
+# keeps USDA/CNF's own Atwater energy where a table gives it: the EU factors give less than Atwater's for pulses and
+# cereals (cooked lentils 104 against 116 kcal).
+EU_FACTORS = {"protein": 4, "fat": 9, "carbohydrate": 4, "fibre": 2}
+ENERGY_NEAR = (5, 0.10)
+
+
+def energy_from_parts(v: dict) -> float | None:
+    """Energy (kcal) from the blended parts; None unless every part is known (a missing part is never taken as zero)."""
+    if any(v.get(k) is None for k in EU_FACTORS):
+        return None
+    return sum(f * v[k] for k, f in EU_FACTORS.items())
+
+
+def choose_energy(calc: float | None, published: list[float]) -> str:
+    """"calc" when the worked-out energy is near a published one (or none is published), else "published"
+    ("none" when neither exists)."""
+    if calc is None:
+        return "published" if published else "none"
+    if published and not any(abs(x - calc) <= max(ENERGY_NEAR[0], ENERGY_NEAR[1] * x) for x in published):
+        return "published"
+    return "calc"
+
+
 # ---- values ---------------------------------------------------------------------------------------------------------
 def fmt(x: float) -> str:
     return f"{x:.4g}"
@@ -447,6 +476,21 @@ def blend_food(recs: list[dict], members: list[int], labels: dict, plant: bool =
         v = out[s]["v"]
         if sum(v.get(k) or 0 for k in ("protein", "fat", "carbohydrate", "fibre")) > 100.5:
             out[s]["c"]["carbohydrate"].append("over-100")   # medians from different tables can add up to more than the food
+        calc_e = energy_from_parts(v)
+        pub_e = [recs[i]["f"]["v"][IX["energy"]] for i in used if recs[i]["f"]["v"][IX["energy"]] is not None]
+        how = choose_energy(calc_e, pub_e)
+        if s == "us" and out[s]["d"].get("energy") == "energy:atwater":
+            how = "published"   # the US target's own definition (USDA/CNF Atwater energy) stays where a table gives it
+        if how == "calc":
+            v["energy"], out[s]["d"]["energy"] = calc_e, "calc:energy"
+            out[s]["r"].pop("energy", None)
+            out[s]["c"].pop("energy", None)
+            if pub_e:
+                out[s]["r"]["energy"] = [round(sum(f * out[s]["r"].get(k, [v[k], v[k]])[0] for k, f in EU_FACTORS.items()), 6),
+                                         round(sum(f * out[s]["r"].get(k, [v[k], v[k]])[1] for k, f in EU_FACTORS.items()), 6),
+                                         max([out[s]["r"].get(k, [0, 0, 1])[2] for k in EU_FACTORS])]
+        elif calc_e is not None and pub_e and not (s == "us" and out[s]["d"].get("energy") == "energy:atwater"):
+            out[s]["c"]["energy"].append("energy-published")
         calc = common.derive(v, table_gives_ne="niacinNE" in v)
         for k, x in calc.items():
             v[k] = x
@@ -479,6 +523,7 @@ CAVEATS = {
     "one-table": {"kind": "estimate", "text": "Only one table gives this value for this food, so it fills the gap unconfirmed."},
     "two-fold": {"kind": "assumption", "text": "The tables' values differ more than two-fold (or one gives none). The median is shown with the range; check which table suits you."},
     "tables-disagree": {"kind": "assumption", "text": "The two tables that give this value differ more than five-fold, so their mean would mean nothing: no value is given. Each table's value is shown."},
+    "energy-published": {"kind": "assumption", "text": "The energy worked out from the protein, fat, carbohydrate and fibre shown is not close to any table's own energy for this food, which can mean something the factors leave out (organic acids, alcohol) or a carbohydrate value that includes fibre. The tables' median energy is shown instead."},
     "over-100": {"kind": "assumption", "text": "Protein, fat, carbohydrate and fibre add up to more than 100 g, because each is the median of different tables. Read each one as an estimate."},
     "closest-definition": {"kind": "assumption", "text": "The US target is for total fibre (dietary plus functional fibre); food tables measure fibre by AOAC methods, which capture most of it but not all."},
     "salt-basis-thiamin": {"kind": "assumption", "text": "Combined, as in the earlier USDA and CoFID blend, where a data check showed no salt-basis factor. CoFID says it expresses thiamin as thiamine chloride hydrochloride; the other tables don't say. If they differed, CoFID's values would be about 27% higher (molar masses 337.3 and 265.4)."},
@@ -499,7 +544,8 @@ def main() -> int:
         groups_k = set(DEFINITIONS.get(k, {}).values()) or {"std"}
         for g in groups_k | {"std"}:
             definitions[def_id(k, g)] = nutrient_label.get(k, k) + (f" ({GROUP_LABEL[k][g]})" if g != "std" else "")
-    definitions |= {"calc:salt": "Salt, calculated: sodium (mg) x 2.5 / 1000", "calc:epaDha": "EPA + DHA, calculated: (EPA + DHA) (g) x 1000, in mg",
+    definitions |= {"calc:energy": "Energy, calculated from the blended protein, fat, carbohydrate and fibre: 4 x protein + 9 x fat + 4 x carbohydrate + 2 x fibre (kcal per g; Regulation (EU) No 1169/2011, Annex XIV)",
+                    "calc:salt": "Salt, calculated: sodium (mg) x 2.5 / 1000", "calc:epaDha": "EPA + DHA, calculated: (EPA + DHA) (g) x 1000, in mg",
                     "calc:metCys": "Methionine + cysteine, calculated: their sum", "calc:pheTyr": "Phenylalanine + tyrosine, calculated: their sum",
                     "calc:niacinNE": "Niacin equivalents, calculated: niacin + tryptophan (mg) / 60"}
     groups_ = groups(recs)

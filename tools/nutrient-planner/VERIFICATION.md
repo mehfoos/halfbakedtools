@@ -158,7 +158,7 @@ file's unit row or component list. Tests: `pipeline/blend/test_table_checks.py` 
 
 All 438 blended foods: every UK blended value lies within the values of its source records, and plant foods carry
 no vitamin B12, retinol, EPA or DHA. About 120 familiar foods were read against their per-table values, with no errors.
-Energy and protein, fat and carbohydrate don't always add up (18 foods by more than 15%), because each nutrient is
-blended within its own definition. KFCDb's vitamin D zeros for some animal foods (butter, canned mackerel, milk powder)
-are implausible and its documentation isn't archived; they are used as published until the owner decides. Record:
-`pipeline/blend/reviews/2026-11-20-spot-check.md`.
+Both open points were then resolved by the owner and rechecked: KFCDb vitamin D zeros in animal foods are missing
+(butter, milk and powders now show other tables' non-zero values), and blended energy is worked out from the blended
+parts where it stays close to a table's published energy (familiar foods compared before and after; 33 foods keep
+the published value). Record: `pipeline/blend/reviews/2026-11-20-spot-check.md`.

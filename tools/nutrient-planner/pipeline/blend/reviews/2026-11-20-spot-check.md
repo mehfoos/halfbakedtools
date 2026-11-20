@@ -22,7 +22,14 @@ Values are in the expected ranges and match their sources. Checked further again
 - Unsalted butter vitamin D 0 µg: KFCDb's value (D2 + D3, the standard's definition) is used; Fineli's 0.325 µg is
   another definition. See the open question below.
 
-## Open questions for the owner
+## Resolved by the owner (20 Nov, 21:09)
+Both questions below were decided and implemented: KFCDb vitamin D zeros in animal foods are missing (699 values,
+label "znd"); blended energy is worked out from the blended parts when close to a table's published energy (US
+keeps Atwater). Recheck: butter 0.76 µg, whole milk 0.08 µg, milk powders 0.72 and 0.86 µg; 18 energy mismatches
+fell to 7, all foods whose published energy is kept (lemon juice, passion fruit juice, rose hip, Chinese quince,
+atemoya, dried onion, cooked peas) because the factors don't fit them.
+
+## Open questions for the owner (now resolved, as above)
 1. KFCDb vitamin D zeros. KFCDb writes "-" for missing and also 0 (1,253 zeros, 1,491 dashes, 366 values). Most zeros
    are plant foods or egg white, where 0 is right; but canned mackerel, canned saury, whole milk powder, egg powder
    and butter have 0, and these foods contain measurable vitamin D. Without KFCDb's documentation (not archived) we

@@ -48,7 +48,14 @@ MAP = {
     "methionine": ("MET", MG, ""), "cystine": ("CYS", MG, ""), "phenylalanine": ("PHE", MG, ""), "tyrosine": ("TYR", MG, ""),
     "threonine": ("THR", MG, ""), "tryptophan": ("TRP", MG, ""), "valine": ("VAL", MG, ""),
 }
-LABELS = {"e": "KFCDb: estimated value (shown in brackets in the table)", "trace": "trace",
+# KFCDb writes 0 for vitamin D in foods that contain it (butter, canned mackerel, milk powder), and its documentation,
+# which would say whether 0 means "none found" or "not analysed", is not archived. In animal foods a vitamin D zero is
+# therefore missing (owner's decision, 20 Nov 2026). Egg white is kept at 0: the vitamin D of an egg is in the yolk.
+ANIMAL = {"meat", "fish", "dairy"}
+ANIMAL_FAT = re.compile(r"butter|lard|tallow|ghee|cream|suet|fish oil|liver oil", re.I)
+NONE_THERE = re.compile(r"\begg,? (quail,? )?white\b", re.I)
+D_KEYS = ("vitaminD", "vitaminD2", "vitaminD3")
+LABELS = {"znd": "KFCDb: 0 for vitamin D in a food that contains it; whether none was found or it wasn't analysed isn't known", "e": "KFCDb: estimated value (shown in brackets in the table)", "trace": "trace",
           "b": "KFCDb: this food's data come from another table (see the food's source)"}
 GROUP = {"곡류및그제품": "grains", "감자류및전분류": "veg", "당류": "sweets", "두류": "pulses", "견과류및종실류": "nuts",
          "채소류": "veg", "버섯류": "veg", "과일류": "fruit", "육류": "meat", "난류": "dairy", "어패류및기타수산물": "fish",
@@ -94,8 +101,13 @@ def main() -> int:
             continue
         if "carbohydrate" in vals and "fibre" in vals:
             vals["carbohydrate"] = max(0.0, vals["carbohydrate"] - vals["fibre"])
-        vals |= common.derive(vals, table_gives_ne=True)
         cat = GROUP.get(grp, "other")
+        if (cat in ANIMAL or (cat == "oils" and ANIMAL_FAT.search(name))) and not NONE_THERE.search(name):
+            for k in D_KEYS:
+                if vals.get(k) == 0:
+                    del vals[k]
+                    labels[k] = "znd"
+        vals |= common.derive(vals, table_gives_ne=True)
         if cat == "veg" and re.search(r"starch|noodle|vermicelli", name, re.I):
             cat = "other"
         bcat = common.basic_category(cat, name) if "energy" in vals else None

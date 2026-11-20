@@ -17,7 +17,9 @@ test("Blended table: values follow the standard's definitions, and the file's va
   assert.deepEqual(blend.foods["blend:lentils"].records.map((r) => r.code), ["172421", "F005177", "3393", "H730132"]);
   applySource(data, blend, "blend", "uk");
   assert.equal(lentils.per100g.energy, 119);         // no UK-factor value in the group: EU factors (BLS), the UK's next choice
-  assert.deepEqual(lentils.blend!.c.uk.energy, ["one-table"]);
+  // the energy worked out from the blended parts (104 kcal) is near no table's own energy for cooked lentils, so the
+  // tables' median stays, with a caveat
+  assert.deepEqual(lentils.blend!.c.uk.energy, ["one-table", "energy-published"]);
   assert.equal(lentils.per100g.vitaminA, undefined); // retinol equivalents: AFCD and BLS differ five-fold, so no value
   assert.ok(lentils.blend!.c.uk.vitaminA.includes("tables-disagree"));
   applySource(data, blend, "blend", "us");
@@ -140,7 +142,7 @@ test("codes are labels, never numbers: trace, below-limit and erratum values are
     for (const file of [t.basic, t.more]) {
       const d = read(file);
       for (const f of d.foods) for (const [k, q] of Object.entries(f.q ?? {})) {
-        const missing = ["trace", "lod", "loq", "lodloq", "lor", "errna", "erraa", "zx"];
+        const missing = ["trace", "lod", "loq", "lodloq", "lor", "errna", "erraa", "zx", "znd"];
         if (missing.includes(String(q)) || String(q).startsWith("<")) assert.equal(f.v[d.keys.indexOf(k)], null, `${t.id} ${f.name} ${k}`);
         if (q === "z") assert.equal(f.v[d.keys.indexOf(k)], 0, `${t.id} ${f.name} ${k}: an assumed zero is 0`);
       }

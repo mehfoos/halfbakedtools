@@ -135,5 +135,54 @@ class Definitions(unittest.TestCase):
         self.assertTrue(all(value(keys, f, k) == 0 for f, k in z))
 
 
+
+class KfcdbVitaminD(unittest.TestCase):
+    """KFCDb writes 0 for vitamin D in foods that contain it; in animal foods it is missing (owner, 20 Nov 2026)."""
+    def test_animal_zeros_are_missing_but_plants_and_egg_white_stay_zero(self):
+        keys, f = foods("kfcdb")
+        by_name = {x["name"]: x for x in f.values()}
+        for name in ("Chicken, Breast, Meat only, Boiled", "Milk powder, Whole milk"):
+            x = by_name[name]
+            self.assertIsNone(value(keys, x, "vitaminD"), name)
+            self.assertEqual(x["q"]["vitaminD"], "znd", name)
+        white = by_name["Egg, White, Raw"]
+        self.assertEqual(value(keys, white, "vitaminD"), 0)
+        plant = next(x for x in f.values() if x["cat"] in ("veg", "fruit", "grains") and value(keys, x, "vitaminD") == 0)
+        self.assertNotIn("znd", (plant.get("q") or {}).values())
+        for x in f.values():
+            if (x.get("q") or {}).get("vitaminD") == "znd":
+                self.assertIsNone(value(keys, x, "vitaminD"))
+            if x["cat"] in ("meat", "fish", "dairy") and "egg, " not in x["name"].lower() and "white" not in x["name"].lower():
+                self.assertNotEqual(value(keys, x, "vitaminD"), 0, x["name"])
+
+
+class BlendedEnergy(unittest.TestCase):
+    def test_worked_out_with_the_eu_factors_only_when_every_part_is_known(self):
+        v = {"protein": 10, "fat": 5, "carbohydrate": 20, "fibre": 3}
+        self.assertEqual(blend_all.energy_from_parts(v), 4 * 10 + 9 * 5 + 4 * 20 + 2 * 3)
+        self.assertIsNone(blend_all.energy_from_parts({"protein": 10, "fat": 5, "carbohydrate": 20}))   # no fibre: not zero
+        self.assertIsNone(blend_all.energy_from_parts({**v, "fibre": None}))
+
+    def test_calculation_is_kept_near_a_table_and_dropped_far_from_all(self):
+        self.assertEqual(blend_all.choose_energy(305, [266, 337]), "calc")        # 337 is within 10% (kidney beans: 307)
+        self.assertEqual(blend_all.choose_energy(10, [24, 30]), "published")      # organic acids: lime juice
+        self.assertEqual(blend_all.choose_energy(91, [73, 81]), "published")      # carbohydrate that includes fibre
+        self.assertEqual(blend_all.choose_energy(200, []), "calc")
+        self.assertEqual(blend_all.choose_energy(None, [50]), "published")
+        self.assertEqual(blend_all.choose_energy(None, []), "none")
+
+    def test_every_blended_energy_is_either_calculated_or_a_table_value(self):
+        d = json.loads((DATA / "foods-blend-values.json").read_text())
+        ei = d["keys"].index("energy")
+        for fid, e in d["foods"].items():
+            for std in ("uk", "us", "eu"):
+                v = e["v"][std][ei]
+                defn = e["d"][std][ei] if isinstance(e["d"][std], list) else e["d"][std].get("energy")
+                if defn == "calc:energy":
+                    parts = [e["v"][std][d["keys"].index(k)] for k in ("protein", "fat", "carbohydrate", "fibre")]
+                    self.assertNotIn(None, parts, fid)
+                    self.assertAlmostEqual(v, 4 * parts[0] + 9 * parts[1] + 4 * parts[2] + 2 * parts[3], delta=0.01 * max(v, 1) + 0.05, msg=fid)
+
+
 if __name__ == "__main__":
     unittest.main()
