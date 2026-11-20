@@ -44,6 +44,14 @@ It suggests exercises; it is not a training programme (no loads, repetitions or 
 
 ## Possible next steps
 
+- **Hamstrings evidence found but not yet used (20 Nov 2026), pending the owner's decision on sources that can't be
+  redistributed:** Morin et al. 2025 (J Strength Cond Res 39(9):924–932; preprint medRxiv 10.1101/2024.12.17.24319207,
+  "cc_no" licence): 9 weeks of stiff-leg deadlifts (hip flexion 0–90°, knees slightly unlocked) grew the whole
+  hamstrings by 7.0 ± 8.1% vs control (p = 0.044), mostly the semimembranosus; supports the Romanian deadlift.
+  Bourne et al. 2017 (Br J Sports Med 51:469–477; accepted manuscript at Griffith, "no further distribution"): 10 weeks
+  of 45° hip extension increased biceps femoris long head, semitendinosus and semimembranosus volume vs control (MRI);
+  supports the back extension. Crawford et al. 2025 (MSSE, RDL vs Nordic, 6 weeks) not yet read (paywalled).
+
 - Compare each "by analogy" exercise with systematic reviews of muscle activity (EMG), e.g. gluteus maximus
   (Neto et al. 2020, J Sports Sci Med), deadlift variants (Martín-Fuentes et al. 2020, PLOS ONE), core exercises
   (Oliva-Lozano and Muyor 2020, IJERPH), and record the outcome.
