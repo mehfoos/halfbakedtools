@@ -24,6 +24,12 @@ def rec(table: str, name: str, cat: str = "veg", **vals) -> dict:
 
 
 class SameFood(unittest.TestCase):
+    def test_flavoured_and_fortified_names(self):
+        self.assertIn("flavoured", cl.read_name("Yoghurt, flavoured, 2.5% fat")[0])   # flavoured is another product
+        self.assertIn("flavoured", cl.DISTINCT)
+        self.assertTrue(b.fortified("Yoghurt, plain, fat-free, lactose-free, 1 ug vitamin d"))
+        self.assertTrue(cl.NAMED_DOSE.search("(arc)milk, 0% fat, with added calcium and 0.5 ug vitamin d"))
+
     def test_fresh_milk_is_plain_milk_but_fresh_mozzarella_is_not_low_moisture(self):
         vals = dict(protein=3.4, fat=0.1, calcium=123)
         bls = rec("bls", "Milk skimmed, fresh, max. 0.1 % fat, pasteurised", "dairy", **vals)

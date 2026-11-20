@@ -375,7 +375,6 @@ bls,bls:c352000,White rice raw,kfcdb,kfcdb:a008022a030a,"Rice, White, China, Raw
 bls,bls:c352000,White rice raw,kfcdb,kfcdb:a008024a030a,"Rice, White, Chucheongbyeo, Raw",more words: chucheongbyeo,bls,kfcdb,independent
 bls,bls:c352000,White rice raw,kfcdb,kfcdb:a008026a030a,"Rice, White, Thailand, Raw",more words: thailand,bls,kfcdb,independent
 bls,bls:c352000,White rice raw,kfcdb,kfcdb:a008028a030a,"Rice, White, Tongilhyeongbyeo, Raw",more words: tongilhyeongbyeo,bls,kfcdb,independent
-bls,bls:c352000,White rice raw,kfcdb,kfcdb:a008031a030a,"Rice, White, Flavored rice, Raw",more words: flavored,bls,kfcdb,independent
 bls,bls:c352000,White rice raw,kfcdb,kfcdb:a008032a030a,"Rice, White, Australia, Raw",same words,bls,kfcdb,independent
 bls,bls:c352000,White rice raw,kfcdb,kfcdb:a008035a030a,"Rice, White, Huitomebore, Raw",more words: huitomebore,bls,kfcdb,independent
 bls,bls:c352032,White rice boiled,afcd,afcd:f007661,"Rice, white, boiled or rice cooker, no added salt",more words: cooker,bls,afcd,independent
@@ -2104,7 +2103,6 @@ bls,bls:m141300,"Yogurt mild, min. 3.5 % fat",fineli,fineli:34638,"Yoghurt, plai
 bls,bls:m141300,"Yogurt mild, min. 3.5 % fat",frida,frida:12,"Yogurt plain, whole milk",more words: mild,bls,frida,independent
 bls,bls:m141300,"Yogurt mild, min. 3.5 % fat",japan,japan:13025,"(fermented milks), yogurt, whole milk, unsweetened",more words: mild,bls,japan,independent
 bls,bls:m141500,Yogurt min. 10 % fat,ciqual,ciqual:19860,"Yogurt, Greek-style, plain",more words: greek-style,bls,ciqual,independent
-bls,bls:m141500,Yogurt min. 10 % fat,fineli,fineli:686,"Yoghurt, flavoured, 7% fat",more words: flavoured,bls,fineli,independent
 bls,bls:m149500,Yogurt made from sheep's milk,ciqual,ciqual:19860,"Yogurt, Greek-style, plain",more words: greek-style,bls,ciqual,independent
 bls,bls:m161000,Sweet whey,cnf,cnf:79,"Whey, sweet, fluid",same words,?,usda,source unknown
 bls,bls:m161000,Sweet whey,frida,frida:526,"Whey, sweet, fluid",same words,?,frida,source unknown
@@ -2124,13 +2122,9 @@ bls,bls:m173900,Whipping cream min. 36 % fat,frida,frida:1174,"Cream, whipping, 
 bls,bls:m182100,Evaporated milk max. 1 % fat,cnf,cnf:112,"Milk, evaporated, skim, canned, undiluted, 0.2% M.F.",more words: undiluted,bls,usda,independent
 bls,bls:m182400,Evaporated milk min. 7.5 % fat,afcd,afcd:f005581,"Milk, cow, canned, evaporated, regular",same words,?,afcd,source unknown
 bls,bls:m182500,Evaporated milk 10 % fat,afcd,afcd:f005581,"Milk, cow, canned, evaporated, regular",same words,bls,afcd,independent
-bls,bls:m1b1100,"Yogurt from skimmed milk, max. 0.5 % fat, lactose-free",fineli,fineli:33221,"Yoghurt, flavoured, 1% fat, lactose-free",more words: flavoured,bls,fineli,independent
-bls,bls:m1b1100,"Yogurt from skimmed milk, max. 0.5 % fat, lactose-free",fineli,fineli:33284,"Yoghurt, plain, fat-free, lactose-free, 1 ug vitamin d",more words: ug,bls,fineli,independent
 bls,bls:m1b1100,"Yogurt from skimmed milk, max. 0.5 % fat, lactose-free",frida,frida:1598,"Yogurt low fat, 0.1 % fat",more words: lactose-free,bls,frida,independent
-bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",fineli,fineli:33042,"Yoghurt, plain, a+, fat 4%, 1 ug vitamin d, lactose-free",more words: ug,bls,fineli,independent
 bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",fineli,fineli:33162,"Yoghurt, plain, 2.5% fat",more words: lactose-free,bls,fineli,independent
 bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",fineli,fineli:33298,"Yoghurt with muesli, a+, fat 3.5%, lactose-free",more words: muesli,bls,fineli,independent
-bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",fineli,fineli:34630,"Yoghurt, plain, a+, fat 2.5%, lactose-free, 1 ug vitamin d",more words: ug,bls,fineli,independent
 bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",fineli,fineli:34636,"Yoghurt, plain, 2,5 % fat, organic, lactose-free",same words,bls,fineli,independent
 bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",fineli,fineli:34638,"Yoghurt, plain, organic, 3% fat",more words: lactose-free,bls,fineli,independent
 bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",fineli,fineli:34656,"Yoghurt, plain, 4% fat, lactose-free, probiotics",more words: probiotic,bls,fineli,independent
@@ -3009,7 +3003,6 @@ ciqual,ciqual:15055,"Cashew nut, dry-grilled, no added salt",afcd,afcd:f006092,"
 ciqual,ciqual:15055,"Cashew nut, dry-grilled, no added salt",cnf,cnf:2546,"Nuts, cashew nuts, dry roasted",same words,ciqual,usda,independent
 ciqual,ciqual:15055,"Cashew nut, dry-grilled, no added salt",frida,frida:815,"Cashew nuts, dry roasted",same words,ciqual,frida,independent
 ciqual,ciqual:15055,"Cashew nut, dry-grilled, no added salt",kfcdb,kfcdb:e029000000da,"Cashew nuts, Seasoned, Roasted",more words: seasoned,ciqual,japan,independent
-ciqual,ciqual:15057,"Peanut, grilled, flavoured",kfcdb,kfcdb:e0070000009n,"Peanut(Arachis hypogaea), Roasted",more words: flavoured,ciqual,kfcdb,independent
 ciqual,ciqual:15063,"Hemp, seed, hulled",afcd,afcd:f009977,"Seed, hemp, dried",more words: hulled,ciqual,?,source unknown
 ciqual,ciqual:15063,"Hemp, seed, hulled",cnf,cnf:7568,"Seeds, hemp seeds, hulled",same words,ciqual,usda,copies (values nearly identical)
 ciqual,ciqual:15064,"Pumpkin and squash, seed, dried",cnf,cnf:2516,"Seeds, pumpkin and squash seed kernels, dried",same words,ciqual,usda,copies (values nearly identical)
@@ -4259,7 +4252,6 @@ ciqual,ciqual:9100,"Rice, white, raw",kfcdb,kfcdb:a008024a030a,"Rice, White, Chu
 ciqual,ciqual:9100,"Rice, white, raw",kfcdb,kfcdb:a008025a030a,"Rice, White, Keunnunbyeo, Raw",more words: keunnunbyeo,ciqual,kfcdb,independent
 ciqual,ciqual:9100,"Rice, white, raw",kfcdb,kfcdb:a008026a030a,"Rice, White, Thailand, Raw",more words: thailand,ciqual,kfcdb,independent
 ciqual,ciqual:9100,"Rice, white, raw",kfcdb,kfcdb:a008028a030a,"Rice, White, Tongilhyeongbyeo, Raw",more words: tongilhyeongbyeo,ciqual,kfcdb,independent
-ciqual,ciqual:9100,"Rice, white, raw",kfcdb,kfcdb:a008031a030a,"Rice, White, Flavored rice, Raw",more words: flavored,ciqual,kfcdb,independent
 ciqual,ciqual:9100,"Rice, white, raw",kfcdb,kfcdb:a008032a030a,"Rice, White, Australia, Raw",same words,ciqual,kfcdb,independent
 ciqual,ciqual:9100,"Rice, white, raw",kfcdb,kfcdb:a008035a030a,"Rice, White, Huitomebore, Raw",more words: huitomebore,ciqual,kfcdb,independent
 ciqual,ciqual:9100,"Rice, white, raw",kfcdb,kfcdb:a008036a030a,"Rice, White, Goldenqueen3, Raw",more words: goldenqueen,ciqual,kfcdb,independent
@@ -5233,7 +5225,6 @@ cofid,cofid:12-367,"Cheese, Stilton, blue",cnf,cnf:18,"Cheese, blue",more words:
 cofid,cofid:12-367,"Cheese, Stilton, blue",frida,frida:138,"Cheese, Danish Blue, 50 % fidm.",more words: stilton,cofid,frida,independent
 cofid,cofid:12-367,"Cheese, Stilton, blue",kfcdb,kfcdb:m0100080009a,"Cheese, Blue",more words: stilton,cofid,usda,independent
 cofid,cofid:12-375,"Yogurt, whole milk, fruit",frida,frida:1286,"Yoghurt, whole milk, with fruit",same words,cofid,frida,independent
-cofid,cofid:12-379,"Yogurt, low fat, plain",afcd,afcd:f009810,"Yoghurt, flavoured, low fat (~2%)",more words: flavoured,cofid,afcd,independent
 cofid,cofid:12-379,"Yogurt, low fat, plain",bls,bls:m141100,"Yogurt from skimmed milk, max. 0.5 % fat",same words,cofid,?,source unknown
 cofid,cofid:12-379,"Yogurt, low fat, plain",bls,bls:m1b1100,"Yogurt from skimmed milk, max. 0.5 % fat, lactose-free",more words: lactose-free,cofid,bls,independent
 cofid,cofid:12-379,"Yogurt, low fat, plain",fineli,fineli:11736,"Yoghurt, plain, 1.5% fat",same words,cofid,fineli,independent
@@ -6684,7 +6675,6 @@ cofid,cofid:14-877,"Peanuts, kernel only, plain, unsalted",afcd,afcd:f006107,"Nu
 cofid,cofid:14-877,"Peanuts, kernel only, plain, unsalted",bls,bls:h110600,Peanut roasted,same words,cofid,bls,independent
 cofid,cofid:14-877,"Peanuts, kernel only, plain, unsalted",ciqual,ciqual:15001,"Peanut, no added salt",same words,cofid,ciqual,independent
 cofid,cofid:14-877,"Peanuts, kernel only, plain, unsalted",ciqual,ciqual:15053,"Peanut, grilled, no added salt",same words,cofid,ciqual,independent
-cofid,cofid:14-877,"Peanuts, kernel only, plain, unsalted",ciqual,ciqual:15057,"Peanut, grilled, flavoured",more words: flavoured,cofid,ciqual,independent
 cofid,cofid:14-877,"Peanuts, kernel only, plain, unsalted",fineli,fineli:378,"Nut, peanut",more words: nut,cofid,fineli,independent
 cofid,cofid:14-877,"Peanuts, kernel only, plain, unsalted",frida,frida:150,"Peanut, dried",same words,cofid,frida,independent
 cofid,cofid:14-877,"Peanuts, kernel only, plain, unsalted",japan,japan:05034,"Peanut, large-seeded, dried",more words: large-seeded,cofid,japan,independent
@@ -6697,7 +6687,6 @@ cofid,cofid:14-877,"Peanuts, kernel only, plain, unsalted",kfcdb,kfcdb:e00700000
 cofid,cofid:14-878,"Peanuts, dry roasted",bls,bls:h110600,Peanut roasted,same words,cofid,bls,independent
 cofid,cofid:14-878,"Peanuts, dry roasted",ciqual,ciqual:15001,"Peanut, no added salt",same words,cofid,ciqual,independent
 cofid,cofid:14-878,"Peanuts, dry roasted",ciqual,ciqual:15053,"Peanut, grilled, no added salt",same words,cofid,ciqual,independent
-cofid,cofid:14-878,"Peanuts, dry roasted",ciqual,ciqual:15057,"Peanut, grilled, flavoured",more words: flavoured,cofid,ciqual,independent
 cofid,cofid:14-878,"Peanuts, dry roasted",fineli,fineli:383,"Nut, peanut, salt",more words: nut,cofid,fineli,independent
 cofid,cofid:14-878,"Peanuts, dry roasted",japan,japan:05035,"Peanut, large-seeded, roasted",more words: large-seeded,cofid,japan,independent
 cofid,cofid:14-878,"Peanuts, dry roasted",japan,japan:05045,"Peanut, small-seeded, roasted",more words: small-seeded,cofid,japan,independent
@@ -7629,7 +7618,6 @@ fineli,fineli:11735,Oyster mushroom,japan,japan:08025,"King oyster mushroom, raw
 fineli,fineli:11735,Oyster mushroom,kfcdb,kfcdb:g0040000000a,"Oyster mushroom, Raw",same words,fineli,kfcdb,independent
 fineli,fineli:11735,Oyster mushroom,kfcdb,kfcdb:g0040040000a,"Oyster mushroom, Chamtari, Raw",more words: chamtari,fineli,kfcdb,independent
 fineli,fineli:11735,Oyster mushroom,kfcdb,kfcdb:g0230000000a,"King oyster mushroom(Pleurotus eryngii), Raw",more words: king,fineli,kfcdb,independent
-fineli,fineli:11736,"Yoghurt, plain, 1.5% fat",afcd,afcd:f009810,"Yoghurt, flavoured, low fat (~2%)",more words: flavoured,fineli,afcd,independent
 fineli,fineli:11736,"Yoghurt, plain, 1.5% fat",japan,japan:13053,"(fermented milks), yogurt, low fat, unsweetened",same words,fineli,japan,independent
 fineli,fineli:119,"Macaroni, whole wheat",afcd,afcd:f009537,"Wheat, whole, uncooked",more words: macaroni,fineli,afcd,independent
 fineli,fineli:119,"Macaroni, whole wheat",kfcdb,kfcdb:a0160000100a,"Wheat, Whole, Raw",more words: macaroni,fineli,kfcdb,independent
@@ -7656,7 +7644,6 @@ fineli,fineli:156,"Rice, white",kfcdb,kfcdb:a008024a030a,"Rice, White, Chucheong
 fineli,fineli:156,"Rice, white",kfcdb,kfcdb:a008025a030a,"Rice, White, Keunnunbyeo, Raw",more words: keunnunbyeo,fineli,kfcdb,independent
 fineli,fineli:156,"Rice, white",kfcdb,kfcdb:a008026a030a,"Rice, White, Thailand, Raw",more words: thailand,fineli,kfcdb,independent
 fineli,fineli:156,"Rice, white",kfcdb,kfcdb:a008030a030a,"Rice, White, Haiami, Raw",more words: haiami,fineli,kfcdb,independent
-fineli,fineli:156,"Rice, white",kfcdb,kfcdb:a008031a030a,"Rice, White, Flavored rice, Raw",more words: flavored,fineli,kfcdb,independent
 fineli,fineli:156,"Rice, white",kfcdb,kfcdb:a008032a030a,"Rice, White, Australia, Raw",same words,fineli,kfcdb,independent
 fineli,fineli:156,"Rice, white",kfcdb,kfcdb:a008035a030a,"Rice, White, Huitomebore, Raw",more words: huitomebore,fineli,kfcdb,independent
 fineli,fineli:156,"Rice, white",kfcdb,kfcdb:a008036a030a,"Rice, White, Goldenqueen3, Raw",more words: goldenqueen,fineli,kfcdb,independent
@@ -9954,7 +9941,6 @@ kfcdb,kfcdb:a008025a060a,"Rice, Brown, Keunnunbyeo, Raw",afcd,afcd:f007648,"Rice
 kfcdb,kfcdb:a008025a060a,"Rice, Brown, Keunnunbyeo, Raw",japan,japan:01080,"Rice, [paddy rice, grain], brown rice",more words: keunnunbyeo,kfcdb,japan,independent
 kfcdb,kfcdb:a008026a030a,"Rice, White, Thailand, Raw",afcd,afcd:f007682,"Rice, white, uncooked",more words: thailand,kfcdb,afcd,independent
 kfcdb,kfcdb:a008028a030a,"Rice, White, Tongilhyeongbyeo, Raw",afcd,afcd:f007682,"Rice, white, uncooked",more words: tongilhyeongbyeo,kfcdb,afcd,independent
-kfcdb,kfcdb:a008031a030a,"Rice, White, Flavored rice, Raw",afcd,afcd:f007682,"Rice, white, uncooked",more words: flavored,kfcdb,afcd,independent
 kfcdb,kfcdb:a008032a030a,"Rice, White, Australia, Raw",afcd,afcd:f007682,"Rice, white, uncooked",same words,kfcdb,afcd,independent
 kfcdb,kfcdb:a008032a030a,"Rice, White, Australia, Raw",cnf,cnf:4424,"Grains, rice, white, glutinous, dry",more words: glutinous,kfcdb,usda,independent
 kfcdb,kfcdb:a008032a030a,"Rice, White, Australia, Raw",cnf,cnf:4471,"Grains, rice, white, long-grain, regular, dry",more words: long,kfcdb,usda,independent
@@ -11312,7 +11298,6 @@ usda,parsnip,"Parsnips, cooked, boiled, drained, without salt",cofid,parsnip,"Pa
 usda,peanuts,"Peanuts, all types, dry-roasted, without salt",bls,bls:h110600,Peanut roasted,same words,usda,bls,independent
 usda,peanuts,"Peanuts, all types, dry-roasted, without salt",ciqual,ciqual:15001,"Peanut, no added salt",same words,usda,ciqual,independent
 usda,peanuts,"Peanuts, all types, dry-roasted, without salt",ciqual,ciqual:15053,"Peanut, grilled, no added salt",same words,usda,ciqual,independent
-usda,peanuts,"Peanuts, all types, dry-roasted, without salt",ciqual,ciqual:15057,"Peanut, grilled, flavoured",more words: flavoured,usda,ciqual,independent
 usda,peanuts,"Peanuts, all types, dry-roasted, without salt",cnf,cnf:2577,"Nuts, mixed nuts, dry roasted with peanuts",more words: nut,usda,usda,same source family
 usda,peanuts,"Peanuts, all types, dry-roasted, without salt",japan,japan:05035,"Peanut, large-seeded, roasted",more words: large-seeded,usda,japan,independent
 usda,peanuts,"Peanuts, all types, dry-roasted, without salt",japan,japan:05045,"Peanut, small-seeded, roasted",more words: small-seeded,usda,japan,independent
@@ -12906,7 +12891,6 @@ usda,u169867,"Oil, corn and canola",frida,frida:1415,Corn oil,more words: rapese
 usda,u169867,"Oil, corn and canola",kfcdb,kfcdb:n0160000009a,Corn oil,more words: rapeseed,usda,kfcdb,independent
 usda,u169868,"Milk, fluid, nonfat, calcium fortified (fat free or skim)",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: calcium,usda,afcd,independent
 usda,u169868,"Milk, fluid, nonfat, calcium fortified (fat free or skim)",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",more words: calcium,usda,cnf,independent
-usda,u169868,"Milk, fluid, nonfat, calcium fortified (fat free or skim)",fineli,fineli:11572,"(arc)milk, 0% fat, with added calcium and 0.5 ug vitamin d",more words: ug,usda,fineli,independent
 usda,u169868,"Milk, fluid, nonfat, calcium fortified (fat free or skim)",fineli,fineli:29211,"Milk, 0% fat, without added vitamin d, organic",more words: calcium,usda,fineli,independent
 usda,u169868,"Milk, fluid, nonfat, calcium fortified (fat free or skim)",frida,frida:1048,"Milk, skimmed, organic",more words: calcium,usda,frida,independent
 usda,u169868,"Milk, fluid, nonfat, calcium fortified (fat free or skim)",frida,frida:1049,"Milk, skimmed",more words: calcium,usda,frida,independent
@@ -14078,7 +14062,6 @@ usda,u170882,"Milk, sheep, fluid",ciqual,ciqual:19250,"Sheep milk, whole",more w
 usda,u170882,"Milk, sheep, fluid",cnf,cnf:74,"Milk, fluid, sheep, whole",more words: whole,usda,usda,copies (values nearly identical)
 usda,u170882,"Milk, sheep, fluid",cofid,cofid:12-329,"Milk, sheeps, raw",same words,usda,cofid,independent
 usda,u170885,"Whey, acid, fluid",cnf,cnf:77,"Whey, acid, fluid",same words,usda,usda,copies (values nearly identical)
-usda,u170886,"Yogurt, plain, low fat",afcd,afcd:f009810,"Yoghurt, flavoured, low fat (~2%)",more words: flavoured,usda,afcd,independent
 usda,u170886,"Yogurt, plain, low fat",cofid,cofid:12-379,"Yogurt, low fat, plain",same words,usda,cofid,independent
 usda,u170886,"Yogurt, plain, low fat",cofid,cofid:12-380,"Yogurt, low fat, fruit",more words: fruit,usda,cofid,independent
 usda,u170886,"Yogurt, plain, low fat",cofid,cofid:12-904,"Yogurt, low fat, hazelnut",more words: hazelnut,usda,cofid,independent
@@ -14087,8 +14070,6 @@ usda,u170886,"Yogurt, plain, low fat",fineli,fineli:34636,"Yoghurt, plain, 2,5 %
 usda,u170887,"Yogurt, plain, skim milk",bls,bls:m141100,"Yogurt from skimmed milk, max. 0.5 % fat",same words,usda,?,source unknown
 usda,u170887,"Yogurt, plain, skim milk",bls,bls:m1b1100,"Yogurt from skimmed milk, max. 0.5 % fat, lactose-free",more words: lactose-free,usda,bls,independent
 usda,u170887,"Yogurt, plain, skim milk",frida,frida:1681,"Yogurt, with fruit, 0.4 % fat",more words: fruit,usda,frida,independent
-usda,u170888,"Yogurt, vanilla, low fat.",afcd,afcd:f009749,"Yoghurt, vanilla flavoured (~2%)",more words: flavoured,usda,afcd,independent
-usda,u170888,"Yogurt, vanilla, low fat.",afcd,afcd:f009752,"Yoghurt, vanilla flavoured, low fat (<0.5%)",more words: flavoured,usda,afcd,independent
 usda,u170899,"Cheese, cheddar, sharp, sliced",cnf,cnf:7737,"Cheese, cheddar, medium",more words: sharp,usda,cnf,independent
 usda,u170899,"Cheese, cheddar, sharp, sliced",fineli,fineli:698,"Cheese, cheddar type, 34% fat",more words: sharp,usda,fineli,independent
 usda,u170917,"Spices, bay leaf",ciqual,ciqual:11053,"Bay, leaves",more words: spice,usda,ciqual,copies (values nearly identical)
@@ -14672,8 +14653,6 @@ usda,u172201,"Cheese, mexican, queso anejo",cnf,cnf:102,"Cheese, Mexican, queso 
 usda,u172207,"Cheese, cream, fat free",cnf,cnf:4722,"Cheese, cream, fat free",same words,usda,usda,copies (values nearly identical)
 usda,u172215,"Cheese, provolone, reduced fat",cnf,cnf:42,"Cheese, provolone",same words,usda,cnf,independent
 usda,u172215,"Cheese, provolone, reduced fat",cnf,cnf:6311,"Cheese, provolone, reduced fat",same words,usda,usda,copies (values nearly identical)
-usda,u172219,"Yogurt, vanilla, low fat, fortified with vitamin D",afcd,afcd:f009749,"Yoghurt, vanilla flavoured (~2%)",more words: flavoured,usda,afcd,independent
-usda,u172219,"Yogurt, vanilla, low fat, fortified with vitamin D",afcd,afcd:f009752,"Yoghurt, vanilla flavoured, low fat (<0.5%)",more words: flavoured,usda,afcd,independent
 usda,u172225,"Milk, buttermilk, fluid, whole",ciqual,ciqual:19016,"Milk, whole (average)",more words: buttermilk,usda,ciqual,independent
 usda,u172225,"Milk, buttermilk, fluid, whole",cnf,cnf:7024,"Milk, fluid, buttermilk, whole, 3.25% M.F.",same words,usda,cnf,independent
 usda,u172225,"Milk, buttermilk, fluid, whole",frida,frida:1265,"Milk, whole, 3.5, (UHT), % fat",more words: buttermilk,usda,frida,independent
@@ -15464,7 +15443,6 @@ usda,wholemeal-flour,"Wheat flour, whole-grain (Includes foods for USDA's Food D
 usda,wholewheat-pasta,"Pasta, whole-wheat, cooked (Includes foods for USDA's Food Distribution Program)",cofid,wholewheat-pasta,"Pasta, wholewheat, spaghetti, dried, boiled in unsalted water",reviewed: same,usda,cofid,independent
 usda,yogurt,"Yogurt, plain, whole milk",bls,bls:m141300,"Yogurt mild, min. 3.5 % fat",more words: mild,usda,bls,independent
 usda,yogurt,"Yogurt, plain, whole milk",bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",more words: lactose-free,usda,bls,independent
-usda,yogurt,"Yogurt, plain, whole milk",fineli,fineli:11727,"Yoghurt, flavoured, 2.5% fat",more words: flavoured,usda,fineli,independent
 usda,yogurt,"Yogurt, plain, whole milk",fineli,fineli:33162,"Yoghurt, plain, 2.5% fat",same words,usda,fineli,independent
 usda,yogurt,"Yogurt, plain, whole milk",fineli,fineli:34636,"Yoghurt, plain, 2,5 % fat, organic, lactose-free",more words: lactose-free,usda,fineli,independent
 usda,yogurt,"Yogurt, plain, whole milk",fineli,fineli:34638,"Yoghurt, plain, organic, 3% fat",same words,usda,fineli,independent

@@ -118,7 +118,7 @@ BLEND_QUALIFIER = set("farmed norwegian alaskan common standard".split())   # no
 PACKING = re.compile(r"\b(?:in|packed in|canned in|pack)\b[^,]*?\b(heavy syrup|light syrup|syrup|juice|water|brine|oil)\b|\b(juice|syrup|water|oil) pack\b", re.I)
 
 
-FORTIFIED = re.compile(r"\b(fortified|enriched|added vitamins?|vitamins? added|with added|added (?:iron|calcium|vitamins?|minerals?)|vitamins? (?:&|and) minerals|calcium[- ]enriched|with vitamins?|with calcium)\b|, ?(?:vitamins?|calcium|vitamin d)\b|\+ ?calcium", re.I)
+FORTIFIED = re.compile(r"\b(fortified|enriched|added vitamins?|vitamins? added|with added|added (?:iron|calcium|vitamins?|minerals?)|vitamins? (?:&|and) minerals|calcium[- ]enriched|with vitamins?|with calcium)\b|, ?(?:vitamins?|calcium|vitamin d)\b|\+ ?calcium|\b\d+(?:\.\d+)? ?(?:ug|µg|mcg) vitamin d\b", re.I)   # Fineli "1 ug vitamin d"
 UNFORTIFIED = re.compile(r"\b(unfortified|not fortified|unenriched|not enriched|without added|no added vitamins?)\b", re.I)
 
 

@@ -94,11 +94,12 @@ grain grains breakfast hot lowfat low reduced milkfat nonfat fat-free lite matte
 semi-skim semi-skimmed extra virgin value values as purchased type fish crustacean mollusk mollusc
 shellfish finfish kernel cob off heat include""".split())
 LIMIT_WORD = re.compile(r"\b(?:max|min)\.? ?(?=\d+(?:\.\d+)? ?%)")
+NAMED_DOSE = re.compile(r"\b\d+(?:\.\d+)? ?(?:ug|µg|mcg) vitamin d\b", re.I)
 FAT_MILK = re.compile(r"\b(?:made with |with )?(?:whole|skim|skimmed|semi-skimmed|part[- ]skim|low[- ]fat|reduced[- ]fat|full[- ]fat|fat-free|nonfat|lowfat) milk\b")
 DISTINCT = set("""juice nectar dried frozen powder flour oil sauce seed leaf sprout sprouted puree paste milk butter cream
 cheese bran germ flake meal starch concentrate canned pickled smoked syrup drink beverage liver egg white yolk spread
 noodle pasta bread chip stock soup jam roe drumstick wing thigh breast leg mince ground minced liquid deep-frozen
-mustard sweet soured sour yoghurt kefir cultured fermented mixed squash content prickly""".split())
+mustard sweet soured sour flavoured flavored yoghurt kefir cultured fermented mixed squash content prickly""".split())
 # A second extra word is allowed only when both are harmless qualifiers like these (origin, farming, colour, grain).
 QUALIFIER = set("""atlantic pacific farmed wild north american european norwegian alaskan rainbow long-grain long short-grain
 medium-grain short medium red green yellow white brown black golden split whole kernel skinned pink purple common
@@ -332,6 +333,8 @@ def match_all(recs: list[dict]) -> dict[int, list[tuple[int, str]]]:
             return
         if not composition_ok(a["f"]["v"], b["f"]["v"]):
             return
+        if bool(NAMED_DOSE.search(a["name"])) != bool(NAMED_DOSE.search(b["name"])):
+            return   # Fineli "1 ug vitamin d": a fortified product is not the unfortified food
         links[i].append((j, how))
         links[j].append((i, how))
 
