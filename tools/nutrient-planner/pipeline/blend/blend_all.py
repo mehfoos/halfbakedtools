@@ -199,7 +199,9 @@ def identity_ok(a: dict, b: dict, reviewed: bool = False) -> bool:
         fa, fb = FLOUR_TYPE.findall(a["name"]), FLOUR_TYPE.findall(b["name"])
         if (fa or fb) and fa != fb and a["f"]["cat"] in ("grains", "cereals"):
             return False
-        if a["f"]["cat"] in ("grains", "cereals", "dairy") and bool(re.search(r"\bfresh\b", a["name"], re.I)) != bool(re.search(r"\bfresh\b", b["name"], re.I)):
+        both_milk = "milk" in a["words"] and "milk" in b["words"]   # BLS "Milk, fresh, pasteurised" is plain chilled milk (UHT is named)
+        if a["f"]["cat"] in ("grains", "cereals", "dairy") and not both_milk \
+                and bool(re.search(r"\bfresh\b", a["name"], re.I)) != bool(re.search(r"\bfresh\b", b["name"], re.I)):
             return False   # fresh pasta (often with egg) is not dried pasta; fresh mozzarella is not low-moisture
     if fortified(a["name"]) or fortified(b["name"]):
         return False

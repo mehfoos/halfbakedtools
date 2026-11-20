@@ -59,6 +59,10 @@ CASES = {
     "Tomatoes, red, ripe, canned, packed in tomato juice": {"medium": "tomato-juice", "form": ""},
     "Tofu, raw, firm, prepared with calcium sulfate": {"state": "raw", "rest": "firm; prepared with calcium sulfate"},
     "Bread, white, commercially prepared, toasted": {"state": "cooked", "cooking": "toasted"},
+    # BLS writes the fat figure with a space and a limit word; it is a figure, not an unclassified qualifier
+    "Milk skimmed, fresh, max. 0.1 % fat, pasteurised": {"fat": "fat-free", "detail": "max. 0.1% fat", "rest": ""},
+    "Milk, fresh, 1.5 % fat, pasteurised": {"detail": "1.5% fat", "rest": ""},
+    "Milk, 3.25% milkfat": {"detail": "3.25% milkfat", "rest": ""},
 }
 
 

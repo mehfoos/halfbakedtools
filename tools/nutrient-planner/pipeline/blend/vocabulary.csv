@@ -77,7 +77,7 @@ fat,full-fat,"\bwhole milk\b|\bfull[- ]fat\b|(?<=^milk, )whole\b|\bwhole\b(?=,? 
 fat,extra-lean,\bextra[- ]lean\b,,,,"a product description, not the same as 'lean only'"
 fat,lean-only,"\b(separable )?lean only\b|(?<=, )lean(?=,|$)",,,,
 fat,lean-and-fat,\b(separable )?lean and fat\b|\bwith fat\b,,,,
-fat-detail,percent,"\b\d+(\.\d+)?% ?(milk ?fat|fat)\b|\btrimmed to [\d/.]+[\""”]? ?(inch )?fat\b",,,,the figure is kept in the 'detail' column
+fat-detail,percent,"\b(?:(?:max|min)\. ?)?\d+(\.\d+)? ?% ?(milk ?fat|fat)\b|\btrimmed to [\d/.]+[\""”]? ?(inch )?fat\b",,,,the figure is kept in the 'detail' column
 variety,wholemeal,\bwhole[- ]?(wheat|meal|grain)\b|\bwholemeal\b,,,,
 part,flesh-and-skin,\bflesh and skin\b|\bmeat and skin\b|\bwith skin\b|\bwith peel\b|\bincludes? (skin|peel)\b,,,,
 part,flesh,\bflesh only\b|\bmeat only\b|\bwithout skin\b|\bskinless\b|\bflesh\b,,,,

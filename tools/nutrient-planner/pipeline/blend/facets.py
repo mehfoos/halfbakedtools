@@ -86,7 +86,7 @@ def describe(name: str, vocab: list[Term]) -> Description:
             elif t.facet == "ignore-early":
                 pass
             elif t.facet == "fat-detail":
-                detail.append(_tidy(m.group(0)))
+                detail.append(re.sub(r"\s+%", "%", _tidy(m.group(0))))   # "1.5 % fat" (BLS) = "1.5% fat"
             else:
                 if t.term not in found.setdefault(t.facet, []):
                     found[t.facet].append(t.term)

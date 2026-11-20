@@ -24,6 +24,23 @@ def rec(table: str, name: str, cat: str = "veg", **vals) -> dict:
 
 
 class SameFood(unittest.TestCase):
+    def test_fresh_milk_is_plain_milk_but_fresh_mozzarella_is_not_low_moisture(self):
+        vals = dict(protein=3.4, fat=0.1, calcium=123)
+        bls = rec("bls", "Milk skimmed, fresh, max. 0.1 % fat, pasteurised", "dairy", **vals)
+        cofid = rec("cofid", "Milk, skimmed, pasteurised, average", "dairy", **vals)
+        self.assertTrue(b.identity_ok(bls, cofid))
+        fresh = rec("a", "Mozzarella, fresh", "dairy", protein=18, fat=17)
+        dry = rec("b", "Mozzarella", "dairy", protein=18, fat=17)
+        self.assertFalse(b.identity_ok(fresh, dry))
+
+    def test_a_fat_limit_in_the_name_is_not_a_food_word(self):
+        # BLS "max. 0.1 % fat" must read as the milk, not as a word "max"; the fat level stays with the values
+        w = cl.read_name("Milk skimmed, fresh, max. 0.1 % fat, pasteurised")[0]
+        self.assertEqual(w, cl.read_name("Milk, skimmed, pasteurised")[0])
+        self.assertNotIn("max", w)
+        self.assertEqual(cl.read_name("Milk, whole, fresh, min. 3.5 % fat, pasteurised")[0],
+                         cl.read_name("Milk, whole, pasteurised")[0])
+
     def test_colour_and_other_foods_are_not_qualifiers(self):
         self.assertFalse(b.words_same(cl.read_name("Tomatoes, green, raw")[0], cl.read_name("Tomato, raw")[0]))
         self.assertFalse(b.words_same(cl.read_name("Mustard spinach, raw")[0], cl.read_name("Spinach, raw")[0]))
