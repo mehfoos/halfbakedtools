@@ -1,9 +1,8 @@
-Copyright (c) 2011, Dan Sayers (i@iotic.com),
-with Reserved Font Name 'Averia' and 'Averia Libre'.
+Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
-https://openfontlicense.org
+http://scripts.sil.org/OFL
 
 
 -----------------------------------------------------------

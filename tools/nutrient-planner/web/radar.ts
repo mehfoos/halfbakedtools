@@ -104,6 +104,6 @@ export function radarSvg(axes: Axis[], opts: { title: string; base?: number; siz
   const clipped = axes.filter((a) => a.pct > max).length;
   const note = clipped ? `<text x="${W - 6}" y="${H - 6}" text-anchor="end" font-size="${fs.note}" fill="#8a8670">Zoomed to ${max}%: arrows mark ${clipped} value${clipped > 1 ? "s" : ""} beyond the edge</text>`
     : max > (opts.base ?? 150) ? `<text x="${W - 6}" y="${H - 6}" text-anchor="end" font-size="${fs.note}" fill="#8a8670">Scale extended to ${max}% to fit the highest value</text>` : "";
-  return `<svg class="radar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.title)}" font-family="'Averia Sans Libre', Arial, sans-serif">`
+  return `<svg class="radar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.title)}" font-family="'Alegreya Sans', Arial, sans-serif">`
     + `<title>${esc(opts.title)}</title>${g}${note}</svg>`;
 }

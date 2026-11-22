@@ -56,7 +56,7 @@ Tool-specific data builds are described in each tool's README.
 ## Licences
 
 - Code: MIT (see `LICENSE`).
-- Fonts: Averia Serif Libre and Averia Sans Libre, SIL Open Font Licence (`site/src/assets/fonts/OFL.txt`).
+- Fonts: Alegreya and Alegreya Sans, SIL Open Font Licence (licence texts and sources in `site/src/assets/fonts/`).
 - Archived source documents (the `source-archive` release) remain under their publishers' terms; each tool's
   `references.json` records the licence of every document it cites.
 

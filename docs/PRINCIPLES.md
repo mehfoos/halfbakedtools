@@ -202,8 +202,9 @@ The first tool is the [nutrient planner](../tools/nutrient-planner/). More tools
   - **Licence and hosting:** the code is MIT-licensed and the site is static, hosted on GitHub Pages.
   - **Data scripts:** they need nothing beyond what's in the repo (Python standard library), and generated files
     are rebuilt from scripts, never edited by hand.
-  - **Look and feel:** the theme follows the owner's physicsoffusion.com site (Averia fonts, navy on beige, light
-    only) and the logo is the owner's own.
+  - **Look and feel:** navy on beige, light only, in the Alegreya and Alegreya Sans fonts (served from this site;
+    sources and licences in `site/src/assets/fonts/`); the theme began as a copy of the owner's physicsoffusion.com
+    site, and the logo is the owner's own.
   - **Commits:** they are made in the owner's name (`mehfoos`, using the GitHub no-reply address).
 
 ## Decision log
@@ -213,6 +214,7 @@ reason.
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-11-22 | Fonts changed from Averia to Alegreya (text and headings) and Alegreya Sans (forms and tables), using the designers' own web font files unchanged, with their licence texts and checksums in `site/src/assets/fonts/` | Owner's choice. Averia has no OpenType features (so `tabular-nums` did nothing) and lacks characters the site uses (≤ ≥ → μ α ₂ and Ā), which fell back to another font. Breaking from physicsoffusion.com's fonts is fine |
 | 2026-11-22 | The food and exercise tools share one home-page topic, "Health" (`topic` in each `tool.json`; `TOPIC_ORDER` in `site/src/lib/tools.ts`); folders and web addresses are unchanged, so no redirects are needed | Owner's request: visitors look for a subject, not a code folder, and two single-tool headings made the home page look thin. The first step of a wider look-and-feel refresh, recorded in the project plan |
 | 2026-11-20 | References in three layers: every source has an access date and an owner's private copy (only its file name and checksum are in the repository); a public copy in the release only for sources that numbers in results come from, whose licence allows it, in a health tool or hard to obtain again. Web pages are saved as single-file MHTML or self-contained HTML. Links are checked every three months. Every tool records its full method on its methods page (principle 3a). `"health"` in `tool.json` replaces `"archive": "optional"` | Owner's review of the archive rules: one test that doesn't need rethinking for each new tool, and public copies only where a visitor or future editor may need them |
 | 2026-11-20 | Sources that can't be redistributed are kept privately by the owner and listed as private copies; links that only help a reader (exercise how-to pages) are not references and aren't archived | Owner's decisions while checking the exercise planner's evidence |

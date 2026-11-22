@@ -10,7 +10,7 @@ feature work. Any new worker must be started from a blob, or the policy won't bi
 
 ## Interface direction (owner, 2026-11-16)
 
-The owner wants the interface to **emulate ilovepdf.com's way of working, in this site's own theme** (Averia
+The owner wants the interface to **emulate ilovepdf.com's way of working, in this site's own theme** (Alegreya
 fonts, navy on beige; do not copy their branding, icons or colours). That means task-first: a grid of named
 tasks (Merge PDF, Split PDF, Rotate, PDF to JPG, JPG to PDF, Word to PDF, ...), each opening a focused page with
 one large "select files" button, then previews with the task's few options beside them and one clear action

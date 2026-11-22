@@ -1,10 +1,13 @@
-/* Half-Baked Tools: theme shared with physicsoffusion.com (Averia fonts, navy and beige). Light only. */
+/* Half-Baked Tools: navy on beige, Alegreya fonts (see ../assets/fonts/README.md). Light only.
+   size-adjust evens out Alegreya's slightly smaller letters (x-height about 2% serif, 4.5% sans, against Averia). */
 
-@font-face { font-family: "Averia Serif Libre"; font-style: normal; font-weight: 400; font-display: swap; src: url("../assets/fonts/AveriaSerifLibre-Regular.woff2") format("woff2"); }
-@font-face { font-family: "Averia Serif Libre"; font-style: normal; font-weight: 700; font-display: swap; src: url("../assets/fonts/AveriaSerifLibre-Bold.woff2") format("woff2"); }
-@font-face { font-family: "Averia Serif Libre"; font-style: italic; font-weight: 400; font-display: swap; src: url("../assets/fonts/AveriaSerifLibre-Italic.woff2") format("woff2"); }
-@font-face { font-family: "Averia Sans Libre"; font-style: normal; font-weight: 400; font-display: swap; src: url("../assets/fonts/AveriaSansLibre-Regular.woff2") format("woff2"); }
-@font-face { font-family: "Averia Sans Libre"; font-style: normal; font-weight: 700; font-display: swap; src: url("../assets/fonts/AveriaSansLibre-Bold.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya"; font-style: normal; font-weight: 400; font-display: swap; size-adjust: 102%; src: url("../assets/fonts/Alegreya-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya"; font-style: italic; font-weight: 400; font-display: swap; size-adjust: 102%; src: url("../assets/fonts/Alegreya-Italic.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya"; font-style: normal; font-weight: 700; font-display: swap; size-adjust: 102%; src: url("../assets/fonts/Alegreya-Bold.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya"; font-style: italic; font-weight: 700; font-display: swap; size-adjust: 102%; src: url("../assets/fonts/Alegreya-BoldItalic.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya Sans"; font-style: normal; font-weight: 400; font-display: swap; size-adjust: 104%; src: url("../assets/fonts/AlegreyaSans-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya Sans"; font-style: italic; font-weight: 400; font-display: swap; size-adjust: 104%; src: url("../assets/fonts/AlegreyaSans-Italic.woff2") format("woff2"); }
+@font-face { font-family: "Alegreya Sans"; font-style: normal; font-weight: 700; font-display: swap; size-adjust: 104%; src: url("../assets/fonts/AlegreyaSans-Bold.woff2") format("woff2"); }
 
 :root {
   --bg: #ffffff;
@@ -24,8 +27,8 @@
   --warn-soft: #fbefd2;
   --bad: #a3271c;
   --bad-soft: #f8e0dc;
-  --serif: "Averia Serif Libre", Times, serif;
-  --sans: "Averia Sans Libre", Arial, sans-serif;
+  --serif: "Alegreya", Times, serif;
+  --sans: "Alegreya Sans", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color-scheme: light;
 }

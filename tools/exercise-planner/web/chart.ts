@@ -73,7 +73,7 @@ function radarSvg(axes: Axis[], title: string) {
   });
   const legend = targets.some((t) => t !== undefined)
     ? `<line x1="8" y1="${H - 10}" x2="30" y2="${H - 10}" stroke="${NAVY}" stroke-width="2.6"/><text x="34" y="${H - 6}" font-size="12" fill="#444">covered level for your targets (bold)</text>` : "";
-  return `<svg class="radar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}" font-family="'Averia Sans Libre', Arial, sans-serif"><title>${esc(title)}</title>${g}${legend}</svg>`;
+  return `<svg class="radar" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}" font-family="'Alegreya Sans', Arial, sans-serif"><title>${esc(title)}</title>${g}${legend}</svg>`;
 }
 
 function barsSvg(axes: Axis[], title: string) {
@@ -91,5 +91,5 @@ function barsSvg(axes: Axis[], title: string) {
     if (a.isTarget && a.target !== undefined) g += `<line x1="${x(a.target)}" y1="${y}" x2="${x(a.target)}" y2="${y + 22}" stroke="${NAVY}" stroke-width="2.6"/>`;
     g += `<text x="${x(a.value) + 6}" y="${y + 15}" font-size="12" font-weight="700" fill="${c}">${fmt(a.value)}${mark(a)}</text>`;
   });
-  return `<svg class="radar bars" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}" font-family="'Averia Sans Libre', Arial, sans-serif"><title>${esc(title)}</title>${g}</svg>`;
+  return `<svg class="radar bars" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}" font-family="'Alegreya Sans', Arial, sans-serif"><title>${esc(title)}</title>${g}</svg>`;
 }
