@@ -516,3 +516,15 @@ pictures are mostly CMYK, JPEG 2000 or JBIG2, which are still left as they are.
   settings either side differ by less than 1/50, where JPEG's whole-number quality steps make sizes jump.
 - Unit tests: CMYK, JPEG 2000, palette and remapped pictures go to the reader only when one is given; masks, 1-bit,
   JBIG2, CCITT, 3-bit and encrypted (Crypt) pictures never do; plain colour still goes direct.
+
+### Compress PDF: repeated parts stored once; decoded pictures kept between tries (2026-11-22)
+
+- A file made by joining the photo test file to itself with pikepdf (16.3 MB, every picture and font stored twice):
+  13 repeated streams stored once; the result keeps all 12 pages and the same text (pdftotext), qpdf finds no errors,
+  and the 12 pages use 7 picture objects, as in the original. For an 8 MB limit: 6.93 MB in 3 tries.
+- Keeping decoded pictures between tries, measured in headless Chrome: the 30-page grey scan took 30 s with every
+  picture kept (400 million pixels allowed) against 32 s without, so pictures the browser decodes itself are not
+  kept; the JPEG 2000 file (drawn by PDF.js) went from 5 s to 2 s, so those are kept, within the memory budget.
+- Our eight largest test files compressed together again: same text in every output.
+- Unit test: two identical pictures become one object, a third with another colour space stays separate, and the
+  dropped copy is pruned.

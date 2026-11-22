@@ -45,3 +45,32 @@ export function tidyStreams(doc: PDFDocument): { thumbnails: number; streams: nu
   }
   return { thumbnails, streams };
 }
+
+/**
+ * Stores each repeated stream once: pictures, fonts and drawings saved more than once with exactly the same
+ * settings and bytes (common in merged files) are pointed at one copy, and the others are left unused (the
+ * caller prunes them). Streams are compared by their dictionary (apart from Length) and every byte. Returns how
+ * many copies were dropped.
+ */
+export function mergeDuplicates(doc: PDFDocument): number {
+  const ctx = doc.context, buckets = new Map<string, PDFRef[]>(), same = new Map<string, PDFRef>();
+  const dictKey = (d: PDFDict) => [...d.entries()].filter(([k]) => k.decodeText() !== "Length").map(([k, v]) => `${k.toString()} ${v.toString()}`).sort().join("\n");
+  const fnv = (b: Uint8Array) => { let h = 0x811c9dc5; for (let i = 0; i < b.length; i++) { h ^= b[i]; h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(16); };
+  for (const [ref, o] of ctx.enumerateIndirectObjects()) {
+    if (!(o instanceof PDFRawStream) || o.contents.length < 64) continue;
+    const key = `${o.contents.length}:${fnv(o.contents)}:${dictKey(o.dict)}`;
+    const list = buckets.get(key) ?? [];
+    const twin = list.find((r) => { const a = (ctx.lookup(r) as PDFRawStream).contents; return a.length === o.contents.length && a.every((x, i) => x === o.contents[i]); });
+    if (twin) same.set(ref.toString(), twin); else { list.push(ref); buckets.set(key, list); }
+  }
+  if (!same.size) return 0;
+  const swap = (v: PDFObject): PDFObject => (v instanceof PDFRef ? same.get(v.toString()) ?? v : v);
+  const fix = (o: PDFObject | undefined, depth = 0): void => {
+    if (depth > 64) return;
+    if (o instanceof PDFDict) for (const [k, v] of o.entries()) { const w = swap(v); if (w !== v) o.set(k, w); else fix(v instanceof PDFRef ? undefined : v, depth + 1); }
+    else if (o instanceof PDFArray) o.asArray().forEach((v, i) => { const w = swap(v); if (w !== v) o.set(i, w); else fix(v instanceof PDFRef ? undefined : v, depth + 1); });
+    else if (o instanceof PDFStream) fix(o.dict, depth + 1);
+  };
+  for (const [, o] of ctx.enumerateIndirectObjects()) fix(o);
+  return same.size;
+}

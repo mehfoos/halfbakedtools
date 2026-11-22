@@ -1495,7 +1495,7 @@ test("structure: a bullet drawn larger than its text doesn't make the line a hea
 
 // ---------- Compress PDF: to a size, detail as drawn, lossless tidying ----------
 import { ladder, defaultTarget, fitToSize, drawnDpi, sizeAt } from "./compress-core.ts";
-import { tidyStreams } from "./tidy.ts";
+import { tidyStreams, mergeDuplicates, prune as pruneObjects } from "./tidy.ts";
 import { PDFRawStream, decodePDFRawStream } from "@cantoo/pdf-lib";
 test("compress to a size: the ladder, the size offered first, and detail as drawn", () => {
   assert.deepEqual(ladder(0), { dpi: 600, quality: 0.95 }); assert.deepEqual(ladder(1), { dpi: 50, quality: 0.25 }); assert.deepEqual(ladder(0.5), { dpi: 173, quality: 0.6 });
@@ -1536,4 +1536,16 @@ test("compress: pictures the browser can't decode go to the PDF reader when one 
   assert.deepEqual(canRecompress({ ...base, colour: "rgb", colours: 3 }, true), { ok: true, kind: "jpeg" }, "plain colour still goes direct");
   for (const bad of [{ hasMask: true }, { bits: 1, filters: ["FlateDecode"] }, { filters: ["JBIG2Decode"] }, { filters: ["CCITTFaxDecode"] }, { bits: 3, filters: ["FlateDecode"] }, { filters: ["Crypt"] }])
     assert.equal(canRecompress({ ...base, ...bad }, true).ok, false, JSON.stringify(bad));
+});
+
+test("compress: a picture stored twice with the same settings and bytes is stored once; a different one is kept", async () => {
+  const doc = await PDFDocument.create(), ctx = doc.context, px = new Uint8Array(3000).map((_, i) => (i * 7) % 251);
+  const img = () => ctx.register(ctx.flateStream(px, { Type: "XObject", Subtype: "Image", Width: 10, Height: 100, ColorSpace: "DeviceRGB", BitsPerComponent: 8 }));
+  const a = img(), b = img(), c = ctx.register(ctx.flateStream(px, { Type: "XObject", Subtype: "Image", Width: 10, Height: 100, ColorSpace: "DeviceGray", BitsPerComponent: 8 }));
+  for (const r of [a, b, c]) doc.addPage([100, 100]).node.set(PDFName.of("Resources"), ctx.obj({ XObject: { Im: r } }));
+  const saved = await PDFDocument.load(await doc.save({ useObjectStreams: false }));   // as read from a file: raw streams
+  assert.equal(mergeDuplicates(saved), 1);
+  const refs = saved.getPages().map((p) => String((p.node.Resources()!.lookup(PDFName.of("XObject"), PDFDict)).get(PDFName.of("Im"))));
+  assert.equal(refs[0], refs[1]); assert.notEqual(refs[0], refs[2]);
+  assert.equal(pruneObjects(saved), 1, "the dropped copy is no longer reached");
 });

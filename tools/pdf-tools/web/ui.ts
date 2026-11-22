@@ -1181,14 +1181,15 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
           if (c.mode === "target") {
             const target = c.target || defaultTarget(built.length);
             let n = 0;
+            const { decodedCache, releaseCache } = await import("./compress.ts"), cache = decodedCache();
             const r = await fitToSize(target, async (t) => {
               n++;
               const opts: CompressOptions = t === "lossless" ? { ...c, mode: "tidy" } : { ...c, mode: "images", ...ladder(t) };
               const what = t === "lossless" ? "tidying without loss" : `pictures at ${opts.dpi} dots per inch, ${Math.round(opts.quality * 100)}% quality`;
-              const x = await recompressImages(built, opts, (i, k) => progress(`${label}: try ${n} (${what}): ${i} of ${k} pictures done…`), reader);
+              const x = await recompressImages(built, opts, (i, k) => progress(`${label}: try ${n} (${what}): ${i} of ${k} pictures done…`), reader, cache);
               progress(`${label}: try ${n} came to ${fmtSize(x.bytes.length)}; the limit is ${fmtSize(target)}.`);
               return { ...x, size: x.bytes.length, opts, t };
-            });
+            }).finally(() => releaseCache(cache));
             const pick = r.best ?? r.smallest;
             return { bytes: pick.bytes, stats: pick.stats, fit: { target, met: !!r.best, lossless: pick.t === "lossless", dpi: pick.opts.dpi, quality: pick.opts.quality, tries: r.tries } };
           }
@@ -1339,9 +1340,12 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       const changed = st.reduce((n, x) => n + x.changed, 0), total = st.reduce((n, x) => n + x.images, 0);
       const why = new Map<string, number>(); for (const x of st) for (const [k, n] of Object.entries(x.skipped)) why.set(k, (why.get(k) ?? 0) + n);
       const conv = st.reduce((n, x) => n + (x.converted ?? 0), 0);
+      const td = st.reduce((a, x) => ({ d: a.d + (x.tidied?.duplicates ?? 0), t: a.t + (x.tidied?.thumbnails ?? 0), s: a.s + (x.tidied?.streams ?? 0) }), { d: 0, t: 0, s: 0 });
+      const tidyBits = [td.d && `${td.d} repeated picture${td.d === 1 ? "" : "s"}, font${td.d === 1 ? "" : "s"} or drawing${td.d === 1 ? "" : "s"} stored once`, td.t && `${td.t} stored page thumbnail${td.t === 1 ? "" : "s"} removed`, td.s && `${td.s} uncompressed part${td.s === 1 ? "" : "s"} compressed`].filter(Boolean);
       result.append(el("p", { className: "small" }, `${changed} of ${total} picture${total === 1 ? "" : "s"} made smaller.` +
         (conv ? ` ${conv} of them ${conv === 1 ? "was" : "were"} in print colours (CMYK), a palette or another colour system, or JPEG 2000, and ${conv === 1 ? "is" : "are"} now in screen colours (RGB) as this tool's PDF reader shows them; colours meant for a printer may shift slightly.` : "") +
-        (why.size ? ` Left as they were: ${[...why].map(([k, n]) => `${n} that ${k}`).join("; ")}.` : "")));
+        (why.size ? ` Left as they were: ${[...why].map(([k, n]) => `${n} that ${k}`).join("; ")}.` : "") +
+        (tidyBits.length ? ` Also tidied without loss: ${tidyBits.join("; ")}.` : "")));
     }
     if (better.length) {
       try {

@@ -203,7 +203,7 @@ export function greyInPlace(rgba: Uint8ClampedArray): void {
 }
 
 export type CompressStats = { images: number; changed: number; converted?: number; skipped: Record<string, number>; before: number; after: number;
-  tidied?: { thumbnails: number; streams: number; unused: number } };
+  tidied?: { thumbnails: number; streams: number; unused: number; duplicates: number } };
 
 /** "1.2 MB -> 300 kB (75% smaller)" style percentage, never claiming a saving that isn't there. */
 export function saving(before: number, after: number): number {

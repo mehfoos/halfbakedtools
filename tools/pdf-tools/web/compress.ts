@@ -3,7 +3,7 @@ import { PDFDocument, PDFName, PDFNumber, PDFRawStream, PDFArray, PDFDict, PDFRe
 import { unzlibSync } from "fflate";
 import { canRecompress, estimateDpi, drawnDpi, sizeAt, unpredict, toRgba, greyInPlace, type CompressOptions, type CompressStats, type ImageInfo } from "./compress-core.ts";
 import { tokens, streamBytes } from "./pdfascan.ts";
-import { tidyStreams, prune } from "./tidy.ts";
+import { tidyStreams, prune, mergeDuplicates } from "./tidy.ts";
 
 const N = (s: string) => PDFName.of(s);
 const num = (d: PDFDict, key: string, fallback: number) => { const v = d.lookup(N(key)); return v instanceof PDFNumber ? v.asNumber() : fallback; };
@@ -142,15 +142,32 @@ async function viaReader(doc: PDFDocument, stream: PDFRawStream, width: number, 
 }
 
 /**
+ * Pictures drawn by PDF.js (print colours, palettes, JPEG 2000...), kept between the tries of compressing to a size,
+ * so each is drawn once rather than at every try. (Pictures the browser decodes itself are not kept: in testing,
+ * keeping them saved about 2 of 32 seconds on a 30-page scan, not worth the memory.) Each is kept at the most detail
+ * any try can ask for (600 dots per inch as drawn), within a memory budget: 64 million pixels (about 256 MB), or 24
+ * million on devices that report under 4 GB of memory. Pictures beyond the budget are drawn again at each try.
+ */
+export type DecodedCache = { map: Map<string, ImageBitmap>; pixels: number; budget: number };
+export function decodedCache(): DecodedCache {
+  const gb = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  return { map: new Map(), pixels: 0, budget: gb !== undefined && gb < 4 ? 24e6 : 64e6 };
+}
+export function releaseCache(c: DecodedCache) { for (const b of c.map.values()) b.close(); c.map.clear(); c.pixels = 0; }
+
+/**
  * Rewrites eligible pictures at most `opts.dpi` dots per inch (as drawn on the page) as JPEG of `opts.quality`,
  * keeping a rewritten picture only when it is smaller than the original, then tidies without loss. Page sizes, text
  * and drawings are untouched. With `reader`, pictures the browser can't decode are drawn by the PDF reader. Up to
  * three pictures are worked on at once (decoding and encoding run outside the page's own thread).
  */
-export async function recompressImages(bytes: Uint8Array, opts: CompressOptions, progress?: (done: number, total: number) => void, reader?: Reader): Promise<{ bytes: Uint8Array; stats: CompressStats }> {
+export async function recompressImages(bytes: Uint8Array, opts: CompressOptions, progress?: (done: number, total: number) => void, reader?: Reader, cache?: DecodedCache): Promise<{ bytes: Uint8Array; stats: CompressStats }> {
   const doc = await PDFDocument.load(bytes);
   const stats: CompressStats = { images: 0, changed: 0, skipped: {}, before: bytes.length, after: 0 };
   const skip = (why: string) => { stats.skipped[why] = (stats.skipped[why] ?? 0) + 1; };
+  // repeated pictures, fonts and drawings are stored once first, so a repeated picture is also shrunk only once
+  const tidyable = opts.mode !== "none" && !doc.context.trailerInfo.Encrypt, duplicates = tidyable ? mergeDuplicates(doc) : 0;
+  if (duplicates) prune(doc);
   if (opts.mode === "images") {
     const { byImage, largest } = pageSizes(doc), drawn = drawnDetail(doc);
     const images = doc.context.enumerateIndirectObjects().filter(([, o]) => o instanceof PDFRawStream && o.dict.lookup(N("Subtype")) === N("Image")) as [PDFRef, PDFRawStream][];
@@ -161,13 +178,21 @@ export async function recompressImages(bytes: Uint8Array, opts: CompressOptions,
       if (!check.ok) { skip(check.why); return; }
       try {
         const page = byImage.get(ref) ?? largest;
-        const t = sizeAt(info.width, info.height, drawn.get(ref.toString()) ?? estimateDpi(info.width, info.height, page.w, page.h), opts.dpi);
-        const src = check.kind === "reader" ? await viaReader(doc, stream, t.width, t.height, reader!) : await decode(stream, info, check.kind);
+        const dpi = drawn.get(ref.toString()) ?? estimateDpi(info.width, info.height, page.w, page.h), t = sizeAt(info.width, info.height, dpi, opts.dpi);
+        const key = ref.toString(), hit = cache?.map.get(key);
+        let src: CanvasImageSource, kept = false;
+        if (hit && hit.width >= t.width && hit.height >= t.height) { src = hit; kept = true; }
+        else if (check.kind === "reader") {
+          const most = sizeAt(info.width, info.height, dpi, 600), keep = !!cache && cache.pixels + most.width * most.height <= cache.budget;
+          const at = keep ? most : t;
+          src = await viaReader(doc, stream, at.width, at.height, reader!);
+          if (keep && cache) { const bmp = await createImageBitmap(src); cache.map.set(key, bmp); cache.pixels += most.width * most.height; src = bmp; kept = true; }
+        } else src = await decode(stream, info, check.kind);
         const c = document.createElement("canvas"); c.width = t.width; c.height = t.height;
         const ctx = c.getContext("2d")!;
         ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, t.width, t.height);
         ctx.imageSmoothingQuality = "high"; ctx.drawImage(src, 0, 0, t.width, t.height);
-        if ("close" in src && typeof src.close === "function") src.close();
+        if (!kept && "close" in src && typeof src.close === "function") src.close();
         if (opts.grey) { const d = ctx.getImageData(0, 0, t.width, t.height); greyInPlace(d.data); ctx.putImageData(d, 0, 0); }
         const blob = await new Promise<Blob | null>((ok) => c.toBlob(ok, "image/jpeg", opts.quality));
         c.width = c.height = 0;   // let the browser free the canvas now
@@ -186,9 +211,9 @@ export async function recompressImages(bytes: Uint8Array, opts: CompressOptions,
     if (converted) stats.converted = converted;
   }
   // lossless tidying, in every mode (an encrypted file is left as it is: its streams can't be read here)
-  if (opts.mode !== "none" && !doc.context.trailerInfo.Encrypt) {
+  if (tidyable) {
     const t = tidyStreams(doc), unused = prune(doc);
-    stats.tidied = { ...t, unused };
+    stats.tidied = { ...t, unused, duplicates };
   }
   const out = await doc.save({ useObjectStreams: true });
   stats.after = out.length;
