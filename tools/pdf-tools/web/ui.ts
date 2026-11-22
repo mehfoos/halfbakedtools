@@ -1171,6 +1171,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         if (o.watermark.on && !o.watermark.text.trim()) throw new Error("Type the words for the watermark first.");
         const build = makeBuilder(data, { imageDpi: o.imageDpi, images: o.images, crop: o.crop, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han(), arabic: arabic() });
         const c = o.compress;
+        // pictures the browser can't decode (print colours, palettes, JPEG 2000...) are drawn by PDF.js
+        const reader = async (pdf: Uint8Array) => { const d = await openPdf(pdf, vendor); try { return await drawPage({ kind: "pdf", doc: d }, 0, 0, { pxPerPoint: 1, pxPerImagePx: 1 }); } finally { closePdf(d); } };
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats; fit?: Fit }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };
           let built = await build(pp);
@@ -1183,14 +1185,14 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
               n++;
               const opts: CompressOptions = t === "lossless" ? { ...c, mode: "tidy" } : { ...c, mode: "images", ...ladder(t) };
               const what = t === "lossless" ? "tidying without loss" : `pictures at ${opts.dpi} dots per inch, ${Math.round(opts.quality * 100)}% quality`;
-              const x = await recompressImages(built, opts, (i, k) => progress(`${label}: try ${n} (${what}): picture ${i + 1} of ${k}…`));
+              const x = await recompressImages(built, opts, (i, k) => progress(`${label}: try ${n} (${what}): ${i} of ${k} pictures done…`), reader);
               progress(`${label}: try ${n} came to ${fmtSize(x.bytes.length)}; the limit is ${fmtSize(target)}.`);
               return { ...x, size: x.bytes.length, opts, t };
             });
             const pick = r.best ?? r.smallest;
             return { bytes: pick.bytes, stats: pick.stats, fit: { target, met: !!r.best, lossless: pick.t === "lossless", dpi: pick.opts.dpi, quality: pick.opts.quality, tries: r.tries } };
           }
-          return recompressImages(built, c, (i, n) => progress(`${label}: picture ${i + 1} of ${n}…`));
+          return recompressImages(built, c, (i, n) => progress(`${label}: ${i} of ${n} pictures done…`), reader);
         };
         if (task.perFile) {
           const done: Compressed[] = [];
@@ -1336,7 +1338,9 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     } else if (shrinks && st.length) {
       const changed = st.reduce((n, x) => n + x.changed, 0), total = st.reduce((n, x) => n + x.images, 0);
       const why = new Map<string, number>(); for (const x of st) for (const [k, n] of Object.entries(x.skipped)) why.set(k, (why.get(k) ?? 0) + n);
+      const conv = st.reduce((n, x) => n + (x.converted ?? 0), 0);
       result.append(el("p", { className: "small" }, `${changed} of ${total} picture${total === 1 ? "" : "s"} made smaller.` +
+        (conv ? ` ${conv} of them ${conv === 1 ? "was" : "were"} in print colours (CMYK), a palette or another colour system, or JPEG 2000, and ${conv === 1 ? "is" : "are"} now in screen colours (RGB) as this tool's PDF reader shows them; colours meant for a printer may shift slightly.` : "") +
         (why.size ? ` Left as they were: ${[...why].map(([k, n]) => `${n} that ${k}`).join("; ")}.` : "")));
     }
     if (better.length) {

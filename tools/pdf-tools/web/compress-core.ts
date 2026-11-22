@@ -20,13 +20,13 @@ export const PRESETS: Record<"light" | "recommended" | "strong" | "extreme" | "m
 
 /**
  * Settings at a strength from 0 (mildest) to 1 (strongest), for compressing to a chosen size: dots per inch fall
- * evenly on a log scale from 400 to 50, and quality evenly from 92% to 25%. This tool's own choice, like the presets;
- * the mild end keeps print quality, so a limit near the file's own size is met with little loss, and the strong end
+ * evenly on a log scale from 600 to 50, and quality evenly from 95% to 25%. This tool's own choice, like the presets;
+ * the mild end is close to unchanged, so a limit near the file's own size is met with little loss, and the strong end
  * sits beyond "Extreme".
  */
 export function ladder(t: number): { dpi: number; quality: number } {
   const s = Math.min(1, Math.max(0, t));
-  return { dpi: Math.round(400 * (50 / 400) ** s), quality: Math.round((0.92 - 0.67 * s) * 100) / 100 };
+  return { dpi: Math.round(600 * (50 / 600) ** s), quality: Math.round((0.95 - 0.7 * s) * 100) / 100 };
 }
 
 /** The size offered before the visitor chooses one: about half the file, rounded down to two significant figures
@@ -43,10 +43,10 @@ export function defaultTarget(bytes: number): number {
  * without touching the pictures (`"lossless"`); then the strongest setting (1), to know whether the size can be
  * reached at all; then the mildest (0); then in between, guessing the next strength from the sizes on either side
  * (on a log scale, as picture sizes shrink roughly in proportion). It stops when a result is within 5% under the
- * target, when the strengths on either side are closer than 1/50, or after `maxTries`. Results whose size didn't
+ * target, when the strengths on either side are closer than 1/50, or after `maxTries` (10). Results whose size didn't
  * shrink with strength (it can happen) are still compared: the largest one that fits wins.
  */
-export async function fitToSize<R extends { size: number }>(target: number, tryAt: (t: number | "lossless") => Promise<R>, maxTries = 8):
+export async function fitToSize<R extends { size: number }>(target: number, tryAt: (t: number | "lossless") => Promise<R>, maxTries = 10):
     Promise<{ best?: R; bestT?: number | "lossless"; smallest: R; tries: number }> {
   let tries = 0, best: R | undefined, bestT: number | "lossless" | undefined, smallest: R | undefined;
   const run = async (t: number | "lossless") => {
@@ -100,10 +100,11 @@ export function targetSize(width: number, height: number, pageW: number, pageH: 
 
 /** What the PDF says about a stored picture. */
 export type ImageInfo = {
-  width: number; height: number; bits: number;
+  width: number; height: number; bits: number;   // bits 0: not stated (JPEG 2000 states it inside)
   filters: string[];                 // e.g. ["DCTDecode"] for JPEG, ["FlateDecode"] for losslessly packed pixels
   colour: "rgb" | "grey" | "other";  // "other" = CMYK, indexed palettes, spot colours...
-  hasMask: boolean;                  // a colour-key mask, a stencil, or a Decode array
+  hasMask: boolean;                  // a colour-key or stencil mask, or the picture is itself a stencil
+  hasDecode?: boolean;               // a Decode array (inverted or remapped colour values)
   bytes: number;                     // stored size
   predictor: number; colours: number;
 };
@@ -112,15 +113,32 @@ export type ImageInfo = {
  *  own coding. Some programs (ReportLab, for one) wrap JPEG pictures in ASCII85 text this way. */
 export const WRAPPERS = new Set(["ASCII85Decode", "ASCIIHexDecode", "FlateDecode", "LZWDecode", "RunLengthDecode"]);
 
-/** Whether this tool can safely rewrite the picture, and if not, why. Anything unusual is left untouched.
- *  `jpeg`: a JPEG, possibly wrapped; `flate`: pixels packed with Flate, possibly with row prediction; `pixels`:
- *  pixels stored plainly or packed with other wrappers, without prediction. */
-export function canRecompress(i: ImageInfo): { ok: true; kind: "jpeg" | "flate" | "pixels" } | { ok: false; why: string } {
-  if (i.hasMask) return { ok: false, why: "has a mask or special colour mapping" };
-  if (i.colour === "other") return { ok: false, why: "uses a colour system other than plain colour or grey" };
-  if (i.bits !== 8) return { ok: false, why: `uses ${i.bits} bits per colour` };
+/**
+ * Whether this tool can safely rewrite the picture, and how, or why not. `jpeg`: a JPEG, possibly wrapped; `flate`:
+ * plain colour or grey pixels packed with Flate, possibly with row prediction; `pixels`: such pixels stored plainly or
+ * in other wrappers. `reader` (only when `reader` is true): any other picture this site's PDF reader (PDF.js) can draw:
+ * print colours (CMYK), palettes, spot colours, Lab, JPEG 2000, 2, 4 or 16 bits per colour, remapped values. Its
+ * colours become screen colours (RGB) as the reader shows them. Left alone: masks (they would lose see-through
+ * parts), black-and-white pictures (already compact, and JPEG would blur them), tiny or huge pictures.
+ */
+export function canRecompress(i: ImageInfo, reader = false): { ok: true; kind: "jpeg" | "flate" | "pixels" | "reader" } | { ok: false; why: string } {
+  if (i.hasMask) return { ok: false, why: "has a mask (parts see-through)" };
+  if (i.bits === 1 || i.filters.some((f) => f === "JBIG2Decode" || f === "CCITTFaxDecode")) return { ok: false, why: "is black and white, which is already stored compactly" };
   if (i.width * i.height < 64 * 64 || i.bytes < 8_000) return { ok: false, why: "is too small to be worth it" };
   if (i.width * i.height > 50_000_000) return { ok: false, why: "is too large for the browser to redraw" };
+  const direct = directKind(i);
+  if (direct.ok || !reader) return direct;
+  const last = i.filters[i.filters.length - 1];
+  const known = i.filters.slice(0, -1).every((f) => WRAPPERS.has(f)) && (last === undefined || WRAPPERS.has(last) || last === "DCTDecode" || last === "JPXDecode");
+  if (!known) return direct;
+  if (last !== "JPXDecode" && ![2, 4, 8, 16].includes(i.bits)) return { ok: false, why: `uses ${i.bits} bits per colour` };
+  return { ok: true, kind: "reader" };
+}
+/** Plain colour or grey, 8 bits, values as stored: read directly. */
+function directKind(i: ImageInfo): { ok: true; kind: "jpeg" | "flate" | "pixels" } | { ok: false; why: string } {
+  if (i.hasDecode) return { ok: false, why: "has remapped colour values" };
+  if (i.colour === "other") return { ok: false, why: "uses a colour system other than plain colour or grey" };
+  if (i.bits !== 8 && !(i.bits === 0 && i.filters.includes("JPXDecode"))) return { ok: false, why: `uses ${i.bits} bits per colour` };
   const last = i.filters[i.filters.length - 1];
   if (last === "DCTDecode" && i.filters.slice(0, -1).every((f) => WRAPPERS.has(f))) {
     if (i.filters.length > 1 && i.predictor !== 1) return { ok: false, why: "uses an unsupported packing method" };
@@ -184,7 +202,7 @@ export function greyInPlace(rgba: Uint8ClampedArray): void {
   for (let o = 0; o < rgba.length; o += 4) rgba[o] = rgba[o + 1] = rgba[o + 2] = Math.round(0.299 * rgba[o] + 0.587 * rgba[o + 1] + 0.114 * rgba[o + 2]);
 }
 
-export type CompressStats = { images: number; changed: number; skipped: Record<string, number>; before: number; after: number;
+export type CompressStats = { images: number; changed: number; converted?: number; skipped: Record<string, number>; before: number; after: number;
   tidied?: { thumbnails: number; streams: number; unused: number } };
 
 /** "1.2 MB -> 300 kB (75% smaller)" style percentage, never claiming a saving that isn't there. */

@@ -1498,7 +1498,7 @@ import { ladder, defaultTarget, fitToSize, drawnDpi, sizeAt } from "./compress-c
 import { tidyStreams } from "./tidy.ts";
 import { PDFRawStream, decodePDFRawStream } from "@cantoo/pdf-lib";
 test("compress to a size: the ladder, the size offered first, and detail as drawn", () => {
-  assert.deepEqual(ladder(0), { dpi: 400, quality: 0.92 }); assert.deepEqual(ladder(1), { dpi: 50, quality: 0.25 }); assert.deepEqual(ladder(0.5), { dpi: 141, quality: 0.59 });
+  assert.deepEqual(ladder(0), { dpi: 600, quality: 0.95 }); assert.deepEqual(ladder(1), { dpi: 50, quality: 0.25 }); assert.deepEqual(ladder(0.5), { dpi: 173, quality: 0.6 });
   assert.equal(defaultTarget(4_730_000), 2_300_000); assert.equal(defaultTarget(860_000), 430_000); assert.equal(defaultTarget(25_100_000), 12_000_000);
   assert.equal(defaultTarget(9_000), 10_000, "at least 10 kB"); assert.equal(defaultTarget(2_000_000), 1_000_000);
   // a 3000-pixel-wide picture drawn 2 inches wide has 1500 dots per inch; kept at 150 it becomes 300 pixels
@@ -1510,7 +1510,7 @@ test("compress to a size: keeps the mildest result that fits, close under the li
   const tried: (number | "lossless")[] = [];
   const r = await fitToSize(2_000_000, async (t) => { tried.push(t); return { size: sizeAtT(t), t }; });
   assert.ok(r.best && r.best.size <= 2_000_000 && r.best.size >= 1_900_000, `got ${r.best?.size}`);
-  assert.deepEqual(tried.slice(0, 3), ["lossless", 1, 0]); assert.ok(r.tries <= 8);
+  assert.deepEqual(tried.slice(0, 3), ["lossless", 1, 0]); assert.ok(r.tries <= 10);
   // already small enough without loss: one try
   assert.equal((await fitToSize(20_000_000, async (t) => ({ size: sizeAtT(t) }))).tries, 1);
   // can't be reached: no best, the smallest is reported
@@ -1525,4 +1525,15 @@ test("compress: lossless tidying removes thumbnails, packs uncompressed streams,
   const s = doc.context.lookup(raw) as PDFRawStream;
   assert.equal(String(s.dict.get(PDFName.of("Filter"))), "/FlateDecode"); assert.ok(s.contents.length < 200);
   assert.equal(new TextDecoder().decode(decodePDFRawStream(s).decode()), "0 0 m 100 100 l S\n".repeat(50));
+});
+test("compress: pictures the browser can't decode go to the PDF reader when one is given; masks and black and white never", () => {
+  const base: ImageInfo = { width: 1000, height: 1000, bits: 8, filters: ["DCTDecode"], colour: "other", hasMask: false, bytes: 100_000, predictor: 1, colours: 4 };
+  assert.equal(canRecompress(base).ok, false, "no reader: CMYK is left alone");
+  assert.deepEqual(canRecompress(base, true), { ok: true, kind: "reader" }, "CMYK JPEG");
+  assert.deepEqual(canRecompress({ ...base, colour: "rgb", filters: ["JPXDecode"], bits: 0 }, true), { ok: true, kind: "reader" }, "JPEG 2000");
+  assert.deepEqual(canRecompress({ ...base, filters: ["FlateDecode"], bits: 8, colours: 1 }, true), { ok: true, kind: "reader" }, "a palette");
+  assert.deepEqual(canRecompress({ ...base, colour: "rgb", hasDecode: true }, true), { ok: true, kind: "reader" }, "remapped values");
+  assert.deepEqual(canRecompress({ ...base, colour: "rgb", colours: 3 }, true), { ok: true, kind: "jpeg" }, "plain colour still goes direct");
+  for (const bad of [{ hasMask: true }, { bits: 1, filters: ["FlateDecode"] }, { filters: ["JBIG2Decode"] }, { filters: ["CCITTFaxDecode"] }, { bits: 3, filters: ["FlateDecode"] }, { filters: ["Crypt"] }])
+    assert.equal(canRecompress({ ...base, ...bad }, true).ok, false, JSON.stringify(bad));
 });

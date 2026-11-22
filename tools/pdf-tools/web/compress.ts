@@ -1,5 +1,5 @@
 // Browser-only: rewrites the pictures inside a PDF at lower detail (see compress-core.ts for the rules).
-import { PDFDocument, PDFName, PDFNumber, PDFRawStream, PDFArray, PDFDict, PDFRef, decodePDFRawStream } from "@cantoo/pdf-lib";
+import { PDFDocument, PDFName, PDFNumber, PDFRawStream, PDFArray, PDFDict, PDFRef, PDFObjectCopier, decodePDFRawStream } from "@cantoo/pdf-lib";
 import { unzlibSync } from "fflate";
 import { canRecompress, estimateDpi, drawnDpi, sizeAt, unpredict, toRgba, greyInPlace, type CompressOptions, type CompressStats, type ImageInfo } from "./compress-core.ts";
 import { tokens, streamBytes } from "./pdfascan.ts";
@@ -27,7 +27,7 @@ function describe(doc: PDFDocument, s: PDFRawStream): ImageInfo {
   const p = parms instanceof PDFDict ? parms : parms instanceof PDFArray ? parms.asArray().map((x) => doc.context.lookup(x)).find((x): x is PDFDict => x instanceof PDFDict && num(x, "Predictor", 1) !== 1) : undefined;
   return {
     width: num(d, "Width", 0), height: num(d, "Height", 0), bits: num(d, "BitsPerComponent", 0), filters, colour,
-    hasMask: d.has(N("Mask")) || d.has(N("Decode")) || d.lookup(N("ImageMask"))?.toString() === "true",
+    hasMask: d.has(N("Mask")) || d.lookup(N("ImageMask"))?.toString() === "true", hasDecode: d.has(N("Decode")),
     bytes: s.contents.length,
     predictor: p ? num(p, "Predictor", 1) : 1, colours: p ? num(p, "Colors", 1) : colour === "rgb" ? 3 : 1,
   };
@@ -122,12 +122,32 @@ async function decode(s: PDFRawStream, info: ImageInfo, kind: "jpeg" | "flate" |
   return c;
 }
 
+/** Draws a PDF's first page at 1 pixel per point, with this site's PDF reader (PDF.js). Given by the page, so this
+ *  module doesn't load the reader itself. */
+export type Reader = (pdf: Uint8Array) => Promise<CanvasImageSource>;
+
+/**
+ * A picture the browser can't decode itself (print colours, palettes, JPEG 2000...), drawn by the PDF reader at the
+ * size wanted: it is copied alone into a one-page PDF of that size in points, without its soft mask, and drawn at 1
+ * pixel per point. The colours are the reader's screen colours.
+ */
+async function viaReader(doc: PDFDocument, stream: PDFRawStream, width: number, height: number, reader: Reader): Promise<CanvasImageSource> {
+  const mini = await PDFDocument.create();
+  const copy = PDFObjectCopier.for(doc.context, mini.context).copy(stream);
+  copy.dict.delete(N("SMask")); copy.dict.delete(N("SMaskInData"));
+  const page = mini.addPage([width, height]);
+  page.node.set(N("Resources"), mini.context.obj({ XObject: { Im0: mini.context.register(copy) } }));
+  page.node.set(N("Contents"), mini.context.register(mini.context.stream(`q ${width} 0 0 ${height} 0 0 cm /Im0 Do Q`)));
+  return reader(await mini.save());
+}
+
 /**
  * Rewrites eligible pictures at most `opts.dpi` dots per inch (as drawn on the page) as JPEG of `opts.quality`,
  * keeping a rewritten picture only when it is smaller than the original, then tidies without loss. Page sizes, text
- * and drawings are untouched.
+ * and drawings are untouched. With `reader`, pictures the browser can't decode are drawn by the PDF reader. Up to
+ * three pictures are worked on at once (decoding and encoding run outside the page's own thread).
  */
-export async function recompressImages(bytes: Uint8Array, opts: CompressOptions, progress?: (done: number, total: number) => void): Promise<{ bytes: Uint8Array; stats: CompressStats }> {
+export async function recompressImages(bytes: Uint8Array, opts: CompressOptions, progress?: (done: number, total: number) => void, reader?: Reader): Promise<{ bytes: Uint8Array; stats: CompressStats }> {
   const doc = await PDFDocument.load(bytes);
   const stats: CompressStats = { images: 0, changed: 0, skipped: {}, before: bytes.length, after: 0 };
   const skip = (why: string) => { stats.skipped[why] = (stats.skipped[why] ?? 0) + 1; };
@@ -135,29 +155,35 @@ export async function recompressImages(bytes: Uint8Array, opts: CompressOptions,
     const { byImage, largest } = pageSizes(doc), drawn = drawnDetail(doc);
     const images = doc.context.enumerateIndirectObjects().filter(([, o]) => o instanceof PDFRawStream && o.dict.lookup(N("Subtype")) === N("Image")) as [PDFRef, PDFRawStream][];
     stats.images = images.length;
-    for (const [i, [ref, stream]] of images.entries()) {
-      progress?.(i, images.length);
-      const info = describe(doc, stream), check = canRecompress(info);
-      if (!check.ok) { skip(check.why); continue; }
+    let done = 0, converted = 0;
+    const one = async (ref: PDFRef, stream: PDFRawStream) => {
+      const info = describe(doc, stream), check = canRecompress(info, !!reader);
+      if (!check.ok) { skip(check.why); return; }
       try {
         const page = byImage.get(ref) ?? largest;
         const t = sizeAt(info.width, info.height, drawn.get(ref.toString()) ?? estimateDpi(info.width, info.height, page.w, page.h), opts.dpi);
-        const src = await decode(stream, info, check.kind);
+        const src = check.kind === "reader" ? await viaReader(doc, stream, t.width, t.height, reader!) : await decode(stream, info, check.kind);
         const c = document.createElement("canvas"); c.width = t.width; c.height = t.height;
         const ctx = c.getContext("2d")!;
         ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, t.width, t.height);
         ctx.imageSmoothingQuality = "high"; ctx.drawImage(src, 0, 0, t.width, t.height);
+        if ("close" in src && typeof src.close === "function") src.close();
         if (opts.grey) { const d = ctx.getImageData(0, 0, t.width, t.height); greyInPlace(d.data); ctx.putImageData(d, 0, 0); }
         const blob = await new Promise<Blob | null>((ok) => c.toBlob(ok, "image/jpeg", opts.quality));
-        if (!blob || blob.type !== "image/jpeg") { skip("couldn't be re-encoded by this browser"); continue; }
+        c.width = c.height = 0;   // let the browser free the canvas now
+        if (!blob || blob.type !== "image/jpeg") { skip("couldn't be re-encoded by this browser"); return; }
         const jpeg = new Uint8Array(await blob.arrayBuffer());
-        if (jpeg.length >= stream.contents.length * 0.95) { skip("was already as small"); continue; }
+        if (jpeg.length >= stream.contents.length * 0.95) { skip("was already as small"); return; }
         const fresh = doc.context.stream(jpeg, { Type: "XObject", Subtype: "Image", Width: t.width, Height: t.height, ColorSpace: "DeviceRGB", BitsPerComponent: 8, Filter: "DCTDecode" });
         const soft = stream.dict.get(N("SMask")); if (soft) fresh.dict.set(N("SMask"), soft);   // keep see-through areas
         doc.context.assign(ref, fresh);
-        stats.changed++;
+        stats.changed++; if (check.kind === "reader") converted++;
       } catch (e) { console.error(e); skip("couldn't be read"); }
-    }
+      finally { progress?.(++done, images.length); }
+    };
+    let next = 0;
+    await Promise.all(Array.from({ length: Math.min(3, images.length) }, async () => { while (next < images.length) { const [ref, s] = images[next++]; await one(ref, s); } }));
+    if (converted) stats.converted = converted;
   }
   // lossless tidying, in every mode (an encrypted file is left as it is: its streams can't be read here)
   if (opts.mode !== "none" && !doc.context.trailerInfo.Encrypt) {

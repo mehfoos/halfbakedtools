@@ -500,3 +500,19 @@ tables with merged cells or wrapped text; many-column financial statements.
 
 Not checked: very large scanned files (time per try grows with the pictures; each try redoes them all); files whose
 pictures are mostly CMYK, JPEG 2000 or JBIG2, which are still left as they are.
+
+### Compress PDF: other picture types, three at a time, wider search (2026-11-22)
+
+- Test files made with PIL and img2pdf: a 2400 × 1600 photo as CMYK JPEG (1.86 MB), as JPEG 2000 (1.44 MB) and as a
+  256-colour palette PNG (850 kB); previously all three were left alone. With the size offered first, each now
+  reaches its limit (741 kB of 930 kB; 656 kB of 720 kB; 413 kB of 420 kB), stored as RGB JPEG. Compared with
+  poppler's rendering of the originals (30 dpi, mean difference per channel, 0 to 255): JPEG 2000 1.4/0.8/1.7, palette
+  1.9/1.1/2.2, CMYK 8.3/9.7/7.7 (PDF.js uses a CMYK profile, poppler a plain formula; neither is "the" answer for
+  colours without a profile). The result says which pictures changed colour system.
+- A 30-page grey scan (28.7 MB, 300 dpi JPEGs): with three pictures at a time, 6 tries took 20 s instead of 28 s in
+  headless Chrome on the test machine; with the wider search the run now takes 9 tries and 32 s and lands at 13.4 MB
+  for a 14 MB limit. Phones will be slower.
+- The photo test file: 3.64 MB for 4 MB (7 tries), 755 kB for 800 kB, 19.6 kB for 20 kB; the search stops when the
+  settings either side differ by less than 1/50, where JPEG's whole-number quality steps make sizes jump.
+- Unit tests: CMYK, JPEG 2000, palette and remapped pictures go to the reader only when one is given; masks, 1-bit,
+  JBIG2, CCITT, 3-bit and encrypted (Crypt) pictures never do; plain colour still goes direct.
