@@ -1,7 +1,7 @@
 # Checks every reference and further-reading link every three months (1 January, April, July and October), or when
 # run by hand from the Actions tab, and opens or updates one issue labelled "link-check" listing links that fail.
 # It never changes files: an editor fixes each link, re-checks the source and updates its "accessed" date
-# (principle 3 in docs/PRINCIPLES.md).
+# (principle 3 in AGENTS.md).
 name: Link check
 on:
   schedule:

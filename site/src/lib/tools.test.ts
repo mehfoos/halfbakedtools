@@ -1,5 +1,5 @@
-// Checks every tool folder follows the conventions in docs/ADDING_A_TOOL.md, and that every
-// reference follows the three-layer rule (docs/PRINCIPLES.md, principle 3).
+// Checks every tool folder follows the conventions in AGENTS.md ("Adding a tool"), and that every
+// reference follows the three-layer rule (AGENTS.md, principle 3).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
@@ -35,7 +35,7 @@ for (const slug of folders) {
   });
 
   // Every source: a public reference with an access date, the owner's private copy, and either a public copy in the
-  // source-archive release or a stated reason for not having one (docs/PRINCIPLES.md, principle 3).
+  // source-archive release or a stated reason for not having one (AGENTS.md, principle 3).
   test(`${slug}: every citation is in the reference list, and every reference follows the three-layer rule`, () => {
     const refsPath = join(dir, "references.json");
     if (!existsSync(refsPath)) return;
@@ -78,7 +78,7 @@ for (const slug of folders) {
     }
   });
 
-  // Every tool records its method in full on a methods page (docs/PRINCIPLES.md, principle 3a).
+  // Every tool records its method in full on a methods page (AGENTS.md, principle 3).
   test(`${slug}: has a methods page`, () => {
     const pages = json(join(dir, "tool.json")).pages.map((p: { page: string }) => p.page);
     assert.ok(pages.includes("methods"), "every tool needs a pages/methods.astro page recording its full method");

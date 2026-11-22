@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check every link to a source or further-reading page on the site (principle 3 in docs/PRINCIPLES.md).
+"""Check every link to a source or further-reading page on the site (principle 3 in AGENTS.md).
 
 Links checked:
   * the "url" of every reference in tools/*/references.json;
@@ -100,7 +100,7 @@ def main() -> int:
             lines += [f"- {u} ({why}), in {'; '.join(sorted(links[u]))}" for u, why in groups[g]]
             lines.append("")
     lines += ["For each link: find the current address, re-check the source still says what the site uses, and update "
-              "the reference's `accessed` date (principle 3 in `docs/PRINCIPLES.md`)."]
+              "the reference's `accessed` date (principle 3 in `AGENTS.md`)."]
     report = "\n".join(lines)
     print(report)
     if args.report:

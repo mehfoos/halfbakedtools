@@ -1,4 +1,4 @@
-// Missing food data is never turned into zero (docs/PRINCIPLES.md, principle 2): a day's totals count the
+// Missing food data is never turned into zero (AGENTS.md, principle 2): a day's totals count the
 // foods that have no value, targets that can't be confirmed say so, and a nutrient with no data at all is "NA".
 import { test } from "node:test";
 import assert from "node:assert/strict";

@@ -5,7 +5,7 @@
 import releaseManifest from "../../../sources/release-manifest.json";
 import { site } from "../site.config.ts";
 
-// Three layers for every source (docs/PRINCIPLES.md, principle 3; owner's decision, 20 Nov 2026):
+// Three layers for every source (AGENTS.md, principle 3; owner's decision, 20 Nov 2026):
 //   1. the public reference itself, with the date the original was last read ("accessed");
 //   2. the owner's private copy ("ownerCopy"): every source has one; only its file name and SHA-256 are recorded
 //      here, never where it is stored;

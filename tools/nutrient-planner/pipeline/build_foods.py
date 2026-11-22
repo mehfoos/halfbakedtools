@@ -165,7 +165,7 @@ def extract(nutrients: list[dict], raw: dict[int, float], meta: dict[int, tuple[
 def derive(v: dict) -> dict:
     d = {}
     # A derived value is worked out only when every part is known; otherwise it is left missing,
-    # never completed with zero (docs/PRINCIPLES.md, principle 2).
+    # never completed with zero (AGENTS.md, principle 2).
     if "niacinPreformed" in v and "tryptophan" in v:
         d["niacinNE"] = v["niacinPreformed"] + v["tryptophan"] * 1000 / 60
     if "sodium" in v:
