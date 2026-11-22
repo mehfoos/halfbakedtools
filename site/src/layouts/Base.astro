@@ -30,9 +30,12 @@ const nav = [
     <header class="wrap">
       <div class="title-heading">
         <a class="logo" href={base}><img src={`${base}brand/logo.svg`} alt="Half-Baked Tools home" width="72" height="72" /></a>
-        <p class="site-title"><a href={base}>HALF-BAKED TOOLS</a></p>
+        <p class="site-title"><a href={base}><i>Half-Baked</i> Tools</a></p>
         <div class="spacer" aria-hidden="true"></div>
       </div>
+      <ul class="tagline">
+        <li>Evolving</li><li>Open</li><li>Cited</li><li>Private</li>
+      </ul>
       <nav aria-label="Main">
         <ul class="nav-menu">
           {nav.map((n) => <li><a href={n.href} aria-current={n.id === current ? "page" : undefined}>{n.label}</a></li>)}
