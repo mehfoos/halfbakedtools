@@ -57,8 +57,12 @@ export async function start(root: HTMLElement) {
     $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => (r.checked = r.value === app.tableId()));
     $(root, "#blendNote").hidden = app.tableId() !== "blend";
     const t = app.table()!;
+    $(root, "#sourceName").textContent = t.title;
+    $(root, "#sourceCount").textContent = `· ${t.basicFoods.toLocaleString("en-GB")} foods`;
     $(root, "#tableNote").textContent = `${t.title}, ${t.country}: ${t.basicFoods.toLocaleString("en-GB")} foods here (${t.foods.toLocaleString("en-GB")} in Food Finder). Licence: ${t.licence}.`
       + (app.s.source ? "" : ` This is the default table; pick another table to use it instead.`);
+    // The FSANZ licence asks for credit where AFCD values are used: the AFCD table itself and the Blended table.
+    $(root, "#afcdCredit").hidden = app.tableId() !== "afcd" && app.tableId() !== "blend";
     app.applySource();
   }
   $$<HTMLInputElement>(root, 'input[name="source"]').forEach((r) => r.addEventListener("change", async () => {

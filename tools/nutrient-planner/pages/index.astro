@@ -37,13 +37,19 @@ const tool = `${base}tools/nutrient-planner/`;
           </div>
           <span class="sans" id="foodCount"></span>
         </div>
-        <div class="food-head">
-          <div class="segmented" role="radiogroup" aria-label="Food table">
-            {tables.map((t) => <label><input type="radio" name="source" value={t.id} /><span title={t.title}>{t.tag}</span></label>)}
+        <details id="sourceBox">
+          <summary id="sourceSummary">Food data: <b id="sourceName"></b> <span class="summary-note" id="sourceCount"></span> <span class="summary-note">· change</span></summary>
+          <div class="source-body">
+            <div class="food-head">
+              <div class="segmented" role="radiogroup" aria-label="Food table">
+                {tables.map((t) => <label><input type="radio" name="source" value={t.id} /><span title={t.title}>{t.tag}</span></label>)}
+              </div>
+              <span class="small muted sans" id="sourceStatus" role="status" aria-live="polite"></span>
+            </div>
+            <p class="small muted sans" id="tableNote"></p>
+            <p class="small muted sans" id="afcdCredit" hidden>Includes data derived from the <a href="https://www.foodstandards.gov.au/science-data/food-nutrient-databases/afcd/australian-food-composition-database-download-excel-files">Australian Food Composition Database</a>, Release 3 (December 2025), © Food Standards Australia New Zealand, used under the <a href="https://www.foodstandards.gov.au/science-data/monitoringnutrients/afcd/datauserlicenceagreement">FSANZ Data User Licence Agreement</a>.</p>
           </div>
-          <span class="small muted sans" id="sourceStatus" role="status" aria-live="polite"></span>
-        </div>
-        <p class="small muted sans" id="tableNote"></p>
+        </details>
         <Caveat kind="alpha" id="blendNote" hidden>The Blended table holds the foods found to be the same food in at least two independent food tables. Each nutrient is the median of the tables that give it under the same definition, with the range shown; a value only one table gives fills the gap and is marked. Some nutrients are defined differently by each target standard, so the values follow the standard you chose. Matches and values were made by automated steps without manual human verification. <a href="https://github.com/mehfoos/halfbakedtools/tree/main/tools/nutrient-planner/pipeline/blend">How the blend is made</a></Caveat>
         <FoodList />
       </section>

@@ -89,3 +89,9 @@
 :is(#planner, #finder) .amount-row .amt { display: flex; gap: 6px; align-items: center; }
 :is(#planner, #finder) #amount { width: 6em; padding: 3px 6px; }
 :is(#planner, #finder) #youBox > summary .summary-note { font-weight: 400; }
+:is(#planner, #finder) .source-body { padding: 8px 12px 10px; }
+:is(#planner, #finder) .source-body p { margin: 8px 0 0; }
+/* The table buttons wrap onto several lines on narrow screens, so every table can be reached (they were clipped after "Ciqual" on phones). */
+:is(#planner, #finder) .source-body .segmented { display: flex; flex-wrap: wrap; border: 0; gap: 6px; overflow: visible; }
+:is(#planner, #finder) .source-body .segmented span { border: 1px solid var(--navy); border-radius: 3px; padding: 5px 12px; }
+:is(#planner, #finder) .source-body .segmented label + label span { border-left: 1px solid var(--navy); }
