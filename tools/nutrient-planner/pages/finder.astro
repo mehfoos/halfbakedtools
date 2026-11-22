@@ -1,0 +1,60 @@
+---
+// Food Finder: look up one food against the daily targets. Built from the Planner's own parts (components/ and
+// web/ui/), so the two pages stay alike; see web/finder.ts.
+import ToolLayout from "@site/layouts/ToolLayout.astro";
+import YouFields from "../components/YouFields.astro";
+import FoodList from "../components/FoodList.astro";
+import ShareBox from "../components/ShareBox.astro";
+import "../web/ui/page.css";
+import { site } from "@site/site.config.ts";
+const base = import.meta.env.BASE_URL;
+const tool = `${base}tools/nutrient-planner/`;
+---
+<ToolLayout slug="nutrient-planner" page="finder" description="Look up any food's nutrients and see how an amount of it measures up against a day's recommended intakes.">
+  <h1>Food Finder</h1>
+  <p class="lede">Look up any food's nutrients and see how an amount of it measures up against a day's recommended intakes. To combine foods into a day, use the <a href={tool}>Planner</a>.</p>
+
+  <div id="finder" data-base={base} data-data={`${tool}data/`} data-refresh-url={site.issueUrl("nutrient-planner-data-refresh.yml", "Data refresh request: nutrient planner")} data-methods-url={`${tool}methods/`} data-privacy-url={`${base}privacy/`}>
+    <noscript><p class="notice">Food Finder runs in your browser and needs JavaScript.</p></noscript>
+    <p id="loading" class="muted">Loading food data…</p>
+
+    <div id="app" hidden>
+      <!-- 1. The food -->
+      <section class="panel" aria-labelledby="h-foods">
+        <h2 id="h-foods">1. Food</h2>
+        <div class="food-head">
+          <div class="segmented" role="radiogroup" aria-label="Diet">
+            <label><input type="radio" name="diet" value="none" /><span>No restriction</span></label>
+            <label><input type="radio" name="diet" value="vegetarian" /><span>Vegetarian</span></label>
+            <label><input type="radio" name="diet" value="vegan" /><span>Vegan</span></label>
+          </div>
+          <span class="small muted sans" id="sourceStatus" role="status" aria-live="polite"></span>
+        </div>
+        <FoodList single />
+      </section>
+
+      <!-- 2. About you: the Planner's defaults until opened -->
+      <section class="panel" aria-labelledby="h-you">
+        <details id="youBox">
+          <summary><span id="h-you">2. About you</span> <span class="summary-note">targets used: <span id="youNote"></span></span></summary>
+          <div class="details-body">
+            <YouFields />
+          </div>
+        </details>
+      </section>
+
+      <!-- 3. Results -->
+      <section class="panel" aria-labelledby="h-result">
+        <h2 id="h-result">3. Nutrients</h2>
+        <div id="finderResult"></div>
+      </section>
+
+      <ShareBox />
+    </div>
+  </div>
+</ToolLayout>
+
+<script>
+  import { startFinder } from "../web/finder.ts";
+  startFinder(document.getElementById("finder")!);
+</script>

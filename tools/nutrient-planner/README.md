@@ -4,14 +4,14 @@ Two pages built from the same parts. **Food Finder** (the main page) shows one f
 UK, US or EU nutrient recommendations. The **Planner** suggests a small number of everyday foods, with practical
 amounts, that together come as close as possible to those recommendations without exceeding upper limits, or lets
 visitors build their own day and see how it measures up. Live at https://halfbakedtools.com/tools/nutrient-planner/
-(Food Finder) and https://halfbakedtools.com/tools/nutrient-planner/planner/ (Planner).
+(Planner) and https://halfbakedtools.com/tools/nutrient-planner/finder/ (Food Finder).
 
 ## Files
 
 ```
 tool.json             name, summary, status, pages
-pages/index.astro     Food Finder: one food against the daily targets (the tool's main page)
-pages/planner.astro   the Planner
+pages/index.astro     the Planner (the tool's main page)
+pages/finder.astro    Food Finder: one food against the daily targets
 pages/methods.astro   methods, sources, verification status and limitations
 components/           page parts shared by the Planner and Food Finder pages (about you, food list, save or share)
 web/                  browser code and tests (see "Code map" below)

@@ -1,52 +1,84 @@
 ---
-// Food Finder: look up one food against the daily targets. Built from the Planner's own parts (components/ and
-// web/ui/), so the two pages stay alike; see web/finder.ts.
 import ToolLayout from "@site/layouts/ToolLayout.astro";
+import Caveat from "@site/components/Caveat.astro";
 import YouFields from "../components/YouFields.astro";
 import FoodList from "../components/FoodList.astro";
 import ShareBox from "../components/ShareBox.astro";
 import "../web/ui/page.css";
 import { site } from "@site/site.config.ts";
+import tableList from "../data/foods/tables.json";
+const tables = tableList.tables;
 const base = import.meta.env.BASE_URL;
 const tool = `${base}tools/nutrient-planner/`;
 ---
-<ToolLayout slug="nutrient-planner" page="index" description="Look up any food's nutrients and see how an amount of it measures up against a day's recommended intakes.">
-  <h1>Food Finder</h1>
-  <p class="lede">Look up any food's nutrients and see how an amount of it measures up against a day's recommended intakes. To combine foods into a day, use the <a href={`${tool}planner/`}>Planner</a>.</p>
+<ToolLayout slug="nutrient-planner" page="index" description="Find a handful of everyday foods that together come close to a day's recommended nutrients, or build your own day and see how it measures up.">
+  <h1>Nutrient planner</h1>
+  <p class="lede">Find a handful of everyday foods that together come close to a day's recommended nutrients, or build your own day and see how it measures up. To look up one food, use <a href={`${tool}finder/`}>Food Finder</a>.</p>
 
-  <div id="finder" data-base={base} data-data={`${tool}data/`} data-refresh-url={site.issueUrl("nutrient-planner-data-refresh.yml", "Data refresh request: nutrient planner")} data-methods-url={`${tool}methods/`} data-privacy-url={`${base}privacy/`}>
-    <noscript><p class="notice">Food Finder runs in your browser and needs JavaScript.</p></noscript>
+  <div id="planner" data-base={base} data-data={`${tool}data/`} data-refresh-url={site.issueUrl("nutrient-planner-data-refresh.yml", "Data refresh request: nutrient planner")} data-methods-url={`${tool}methods/`} data-privacy-url={`${base}privacy/`}>
+    <noscript><p class="notice">The planner runs in your browser and needs JavaScript.</p></noscript>
     <p id="loading" class="muted">Loading food data…</p>
 
     <div id="app" hidden>
-      <!-- 1. The food -->
+      <!-- 1. About you -->
+      <section class="panel" aria-labelledby="h-you">
+        <h2 id="h-you">1. About you</h2>
+        <YouFields />
+      </section>
+
+      <!-- 2. Foods -->
       <section class="panel" aria-labelledby="h-foods">
-        <h2 id="h-foods">1. Food</h2>
+        <h2 id="h-foods">2. Foods</h2>
         <div class="food-head">
           <div class="segmented" role="radiogroup" aria-label="Diet">
             <label><input type="radio" name="diet" value="none" /><span>No restriction</span></label>
             <label><input type="radio" name="diet" value="vegetarian" /><span>Vegetarian</span></label>
             <label><input type="radio" name="diet" value="vegan" /><span>Vegan</span></label>
           </div>
+          <span class="sans" id="foodCount"></span>
+        </div>
+        <div class="food-head">
+          <div class="segmented" role="radiogroup" aria-label="Food table">
+            {tables.map((t) => <label><input type="radio" name="source" value={t.id} /><span title={t.title}>{t.tag}</span></label>)}
+          </div>
           <span class="small muted sans" id="sourceStatus" role="status" aria-live="polite"></span>
         </div>
-        <FoodList single />
+        <p class="small muted sans" id="tableNote"></p>
+        <Caveat kind="alpha" id="blendNote" hidden>The Blended table holds the foods found to be the same food in at least two independent food tables. Each nutrient is the median of the tables that give it under the same definition, with the range shown; a value only one table gives fills the gap and is marked. Some nutrients are defined differently by each target standard, so the values follow the standard you chose. Matches and values were made by automated steps without manual human verification. <a href="https://github.com/mehfoos/halfbakedtools/tree/main/tools/nutrient-planner/pipeline/blend">How the blend is made</a></Caveat>
+        <FoodList />
       </section>
 
-      <!-- 2. About you: the Planner's defaults until opened -->
-      <section class="panel" aria-labelledby="h-you">
-        <details id="youBox">
-          <summary><span id="h-you">2. About you</span> <span class="summary-note">targets used: <span id="youNote"></span></span></summary>
-          <div class="details-body">
-            <YouFields />
+      <!-- 3. Plan -->
+      <section class="panel" aria-labelledby="h-plan">
+        <h2 id="h-plan">3. Plan your day</h2>
+        <div class="segmented mode" role="radiogroup" aria-label="Mode">
+          <label><input type="radio" name="mode" value="suggest" /><span>Suggest foods for me</span></label>
+          <label><input type="radio" name="mode" value="build" /><span>Build my own</span></label>
+        </div>
+
+        <div id="suggestPane">
+          <div class="run-row sans">
+            <label>Up to <input type="number" id="n" min="1" max="15" step="1" inputmode="numeric" /> different foods</label>
+            <label>Show <input type="number" id="options" min="1" max="50" step="1" inputmode="numeric" /> options</label>
+            <button type="button" class="primary" id="run">Find combinations</button>
+            <button type="button" id="stop" hidden>Stop</button>
+            <span id="status" class="muted small" role="status" aria-live="polite"></span>
           </div>
-        </details>
-      </section>
+          <p class="small sans"><label><input type="checkbox" id="vitd" /> Also try to reach the vitamin D target from food</label>
+            <span class="muted">(off by default: few foods have much, and the usual advice is sunlight and a supplement)</span></p>
+          <div id="results"></div>
+        </div>
 
-      <!-- 3. Results -->
-      <section class="panel" aria-labelledby="h-result">
-        <h2 id="h-result">3. Nutrients</h2>
-        <div id="finderResult"></div>
+        <div id="buildPane" hidden>
+          <p class="sans small">Add the foods you plan to eat in a day and their amounts. The charts update as you go.</p>
+          <div class="add-box">
+            <label class="sr-only" for="addSearch">Add a food</label>
+            <input type="search" id="addSearch" placeholder="Add a food: type to search" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="addList" />
+            <ul id="addList" role="listbox" hidden></ul>
+          </div>
+          <div id="builderList"></div>
+          <div id="builderResult"></div>
+        </div>
       </section>
 
       <ShareBox />
@@ -55,6 +87,6 @@ const tool = `${base}tools/nutrient-planner/`;
 </ToolLayout>
 
 <script>
-  import { startFinder } from "../web/finder.ts";
-  startFinder(document.getElementById("finder")!);
+  import { start } from "../web/main.ts";
+  start(document.getElementById("planner")!);
 </script>

@@ -1,7 +1,7 @@
 {
   "slug": "nutrient-planner",
   "name": "Nutrient planner",
-  "summary": "Look up any food's vitamins, minerals and amino acids against UK, US or EU daily recommendations for your age and sex (Food Finder), or find a handful of everyday foods that together come close to them, or build your own day (Planner), with charts throughout. Food values come from ten national food composition tables, with a beta Blended table that combines them.",
+  "summary": "Look up any food's vitamins, minerals and amino acids against UK, US or EU daily recommendations for your age and sex (Food Finder), or find a handful of everyday foods that together come close to them, or build your own day (Planner, the first page), with charts throughout. Food values come from ten national food composition tables, with a beta Blended table that combines them.",
   "topic": "Food and health",
   "status": "beta",
   "health": true,
@@ -9,11 +9,11 @@
   "pages": [
     {
       "page": "index",
-      "label": "Food Finder"
+      "label": "Planner"
     },
     {
-      "page": "planner",
-      "label": "Planner"
+      "page": "finder",
+      "label": "Food Finder"
     },
     {
       "page": "methods",

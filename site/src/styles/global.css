@@ -55,7 +55,7 @@ img { max-width: 100%; height: auto; }
 /* Header and footer, as on physicsoffusion.com */
 .title-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0 8px; }
 .title-heading .logo img { display: block; width: 4.5rem; height: 4.5rem; }
-.title-heading .site-title { margin: 0; font-size: clamp(1.4rem, 4.5vw, 2.1rem); letter-spacing: 0.03em; text-align: center; flex: 1; }
+.title-heading .site-title { margin: 0; font-size: clamp(1.4rem, 4.5vw, 2.1rem); font-weight: 700; letter-spacing: 0.03em; text-align: center; flex: 1; }
 .title-heading .site-title a { color: #000; text-decoration: none; border-bottom: 1px solid transparent; transition: all ease 0.4s; }
 .title-heading .site-title a:hover { color: var(--link-hover); border-bottom-color: #000; }
 .title-heading .spacer { width: 4.5rem; }

@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 
 const page = (name: string) => readFileSync(new URL(`../pages/${name}.astro`, import.meta.url), "utf8");
 
-for (const name of ["index", "planner"]) {
+for (const name of ["index", "finder"]) {
   test(`${name}.astro is built from the shared parts`, () => {
     const s = page(name);
     for (const part of ["YouFields", "FoodList", "ShareBox"]) assert.ok(s.includes(`<${part}`), `${name} uses <${part}>`);
@@ -16,7 +16,7 @@ for (const name of ["index", "planner"]) {
 }
 
 test("Food Finder uses the single-pick food list and its own start-up", () => {
-  const s = page("index");
+  const s = page("finder");
   assert.ok(s.includes("<FoodList single"), "single-pick list");
   assert.ok(s.includes("startFinder"), "web/finder.ts");
 });

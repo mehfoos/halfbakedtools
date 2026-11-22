@@ -1,4 +1,4 @@
-// Food Finder: the entry point of the tool's main page. Look up one food, from one food data source, in any amount,
+// Food Finder: the entry point of the Food Finder page (`pages/finder.astro`). Look up one food, from one food data source, in any amount,
 // against the same targets, charts and notes as the Planner. It reuses the Planner's code throughout (see ui/), so a
 // change to the Planner's targets, charts or food list shows here too. The only differences: one food at a time,
 // no suggestions, and the person's details are tucked away under "About you" with the Planner's defaults.

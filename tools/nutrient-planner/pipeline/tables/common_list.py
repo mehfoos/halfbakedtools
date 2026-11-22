@@ -93,6 +93,7 @@ unenriched fortified unfortified vitamin vitamins added ascorbic acid unheated l
 grain grains breakfast hot lowfat low reduced milkfat nonfat fat-free lite matter min creamed full part skim skimmed
 semi-skim semi-skimmed extra virgin value values as purchased type fish crustacean mollusk mollusc
 shellfish finfish kernel cob off heat include""".split())
+ULTRA_HEATED = re.compile(r"\bultra[- ]heated\b")
 LIMIT_WORD = re.compile(r"\b(?:max|min)\.? ?(?=\d+(?:\.\d+)? ?%)")
 NAMED_DOSE = re.compile(r"\b\d+(?:\.\d+)? ?(?:ug|µg|mcg) vitamin d\b", re.I)
 FAT_MILK = re.compile(r"\b(?:made with |with )?(?:whole|skim|skimmed|semi-skimmed|part[- ]skim|low[- ]fat|reduced[- ]fat|full[- ]fat|fat-free|nonfat|lowfat) milk\b")
@@ -133,6 +134,7 @@ def read_name(name: str, process: str | None = None) -> tuple[frozenset, str, st
     t = re.sub(r"\([^)]*\)|\[[^\]]*\]|（[^）]*）", " ", t)
     t = re.sub(r"\b(?:packed|canned) in [^,]*", " canned ", t)
     t = NOT_STATE.sub(" ", t)
+    t = ULTRA_HEATED.sub(" ", t)   # BLS "ultra-heated" is UHT, which other tables put in brackets (dropped above)
     t = LIMIT_WORD.sub(" ", t)   # BLS "max. 0.1 % fat": the limit word is not part of the food
     if not re.match(r"\s*(?:whole |skim |skimmed |semi-skimmed |)milk\b", t):
         t = FAT_MILK.sub(" ", t)  # "Cheese, mozzarella, whole milk": the fat level, left to the composition check

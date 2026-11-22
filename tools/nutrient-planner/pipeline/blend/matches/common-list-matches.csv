@@ -2069,18 +2069,41 @@ bls,bls:m111300,"Whole milk, fresh, 3.5 % fat, pasteurised",frida,frida:6,"Milk,
 bls,bls:m112300,"Certified raw milk, min. 3.5 % fat",afcd,afcd:f005634,"Milk, cow, fluid, regular fat (~3.5%)",more words: certified,?,afcd,source unknown
 bls,bls:m112300,"Certified raw milk, min. 3.5 % fat",fineli,fineli:600,"Milk, raw milk, 4.4 % fat, without added vitamin d",more words: certified,?,fineli,source unknown
 bls,bls:m112300,"Certified raw milk, min. 3.5 % fat",kfcdb,kfcdb:m0090000009a,Cow's milk,more words: certified,?,kfcdb,source unknown
-bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",more words: ultra,bls,afcd,independent
-bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: ultra,bls,afcd,independent
-bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",fineli,fineli:29211,"Milk, 0% fat, without added vitamin d, organic",more words: ultra,bls,fineli,independent
-bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",frida,frida:1048,"Milk, skimmed, organic",more words: ultra,bls,frida,independent
-bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",frida,frida:1049,"Milk, skimmed",more words: ultra,bls,frida,independent
-bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",frida,frida:1066,"Milk, skimmed, 0.5 % fat",more words: ultra,bls,frida,independent
-bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",frida,frida:1596,"Milk, skimmed, 0.1 % fat",more words: ultra,bls,frida,independent
-bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: ultra,bls,kfcdb,independent
-bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",ciqual,ciqual:19016,"Milk, whole (average)",more words: ultra,bls,ciqual,independent
-bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",frida,frida:1265,"Milk, whole, 3.5, (UHT), % fat",more words: ultra,bls,frida,independent
-bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",frida,frida:1266,"Milk, whole, organic, 3.5 % fat",more words: ultra,bls,frida,independent
-bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",frida,frida:6,"Milk, whole, konventional (not organic), 3.5 % fat",more words: ultra,bls,frida,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",afcd,afcd:f005605,"Milk, cow, fluid, prepared from dry powder, skim, standard dilution",more words: dilution,bls,afcd,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",same words,bls,afcd,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",same words,bls,afcd,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",ciqual,ciqual:19050,"Milk, skimmed, UHT",more words: uht,bls,ciqual,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",ciqual,ciqual:19051,"Milk, skimmed, pasteurised",more words: pasteurised,bls,ciqual,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",cnf,cnf:124,"Milk, fluid, buttermilk, 1% M.F.",more words: buttermilk,bls,cnf,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",cnf,cnf:7709,"Milk, fluid, buttermilk, 0.25% M.F.",more words: buttermilk,bls,cnf,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",fineli,fineli:29128,"Curd milk, plain, fat-free",more words: curd,bls,fineli,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",fineli,fineli:29211,"Milk, 0% fat, without added vitamin d, organic",same words,bls,fineli,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",fineli,fineli:680,"Curd milk, plain, 1% fat",more words: curd,bls,fineli,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",frida,frida:1048,"Milk, skimmed, organic",same words,bls,frida,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",frida,frida:1049,"Milk, skimmed",same words,bls,frida,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",frida,frida:1066,"Milk, skimmed, 0.5 % fat",same words,bls,frida,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",frida,frida:1596,"Milk, skimmed, 0.1 % fat",same words,bls,frida,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",frida,frida:32,"Milk, buttermilk",more words: buttermilk,bls,frida,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",japan,japan:13005,"(liquid milks), processed milk, low fat",more words: processed,bls,japan,independent
+bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",same words,bls,kfcdb,independent
+bls,bls:m113200,"Milk low-fat, 1.5 % fat, ultra-heated",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",more words: low-fat,bls,afcd,independent
+bls,bls:m113200,"Milk low-fat, 1.5 % fat, ultra-heated",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: low-fat,bls,afcd,independent
+bls,bls:m113200,"Milk low-fat, 1.5 % fat, ultra-heated",ciqual,ciqual:19033,"Milk, semi-skimmed (average)",more words: low-fat,bls,ciqual,independent
+bls,bls:m113200,"Milk low-fat, 1.5 % fat, ultra-heated",fineli,fineli:29210,"Milk, 1.5% fat, without added vitamin d, organic",more words: low-fat,bls,fineli,independent
+bls,bls:m113200,"Milk low-fat, 1.5 % fat, ultra-heated",frida,frida:1066,"Milk, skimmed, 0.5 % fat",more words: low-fat,bls,frida,independent
+bls,bls:m113200,"Milk low-fat, 1.5 % fat, ultra-heated",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: low-fat,bls,kfcdb,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",afcd,afcd:f005634,"Milk, cow, fluid, regular fat (~3.5%)",more words: whole,bls,afcd,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: whole,bls,afcd,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",ciqual,ciqual:19016,"Milk, whole (average)",same words,bls,ciqual,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",ciqual,ciqual:19023,"Milk, whole, UHT",more words: uht,bls,ciqual,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",ciqual,ciqual:19024,"Milk, whole, pasteurised",more words: pasteurised,bls,ciqual,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",ciqual,ciqual:19202,"Goat milk, whole, raw",more words: goat,bls,ciqual,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",cnf,cnf:6353,"Milk, fluid, goat, unfortified, whole, 3.25% M.F.",more words: goat,bls,cnf,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",fineli,fineli:600,"Milk, raw milk, 4.4 % fat, without added vitamin d",more words: whole,bls,fineli,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",frida,frida:1265,"Milk, whole, 3.5, (UHT), % fat",same words,bls,frida,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",frida,frida:1266,"Milk, whole, organic, 3.5 % fat",same words,bls,frida,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",frida,frida:6,"Milk, whole, konventional (not organic), 3.5 % fat",same words,bls,frida,independent
+bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",kfcdb,kfcdb:m0090000009a,Cow's milk,more words: whole,bls,kfcdb,independent
 bls,bls:m114100,"Milk skimmed, fresh, max. 0.1 % fat, lactose-free, pasteurised",ciqual,ciqual:19051,"Milk, skimmed, pasteurised",more words: lactose-free,bls,ciqual,independent
 bls,bls:m114300,"Whole milk, fresh, 3.5 % fat, lactose-free, pasteurised",ciqual,ciqual:19024,"Milk, whole, pasteurised",more words: lactose-free,bls,ciqual,independent
 bls,bls:m130100,"Kefir from skimmed milk, max. 0.5 % fat",cnf,cnf:6999,"Kefir, plain, low fat (0.5-1.9% M.F.)",same words,bls,cnf,independent
@@ -2109,6 +2132,21 @@ bls,bls:m173900,Whipping cream min. 36 % fat,cnf,cnf:138,"Cream, whipping, 35% M
 bls,bls:m173900,Whipping cream min. 36 % fat,frida,frida:1174,"Cream, whipping, 38 % fat",same words,bls,frida,independent
 bls,bls:m182400,Evaporated milk min. 7.5 % fat,afcd,afcd:f005581,"Milk, cow, canned, evaporated, regular",same words,?,afcd,source unknown
 bls,bls:m182500,Evaporated milk 10 % fat,afcd,afcd:f005581,"Milk, cow, canned, evaporated, regular",same words,bls,afcd,independent
+bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",more words: lactose-free,bls,afcd,independent
+bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: lactose-free,bls,afcd,independent
+bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",fineli,fineli:29211,"Milk, 0% fat, without added vitamin d, organic",more words: lactose-free,bls,fineli,independent
+bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",fineli,fineli:33201,"Curd milk, plain, 1% fat, lactose-free",more words: curd,bls,fineli,independent
+bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",frida,frida:1048,"Milk, skimmed, organic",more words: lactose-free,bls,frida,independent
+bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",frida,frida:1049,"Milk, skimmed",more words: lactose-free,bls,frida,independent
+bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",frida,frida:1066,"Milk, skimmed, 0.5 % fat",more words: lactose-free,bls,frida,independent
+bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",frida,frida:1596,"Milk, skimmed, 0.1 % fat",more words: lactose-free,bls,frida,independent
+bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: lactose-free,bls,kfcdb,independent
+bls,bls:m1a5200,"Milk low-fat, 1.5 % fat, lactose-free, ultra-heated",fineli,fineli:31553,"Milk, 1.5% fat, lactose-free, without added vitamin d, organic",more words: low-fat,bls,fineli,independent
+bls,bls:m1a7300,"Whole milk, 3.5 % fat, lactose-free, ultra-heated",ciqual,ciqual:19016,"Milk, whole (average)",more words: lactose-free,bls,ciqual,independent
+bls,bls:m1a7300,"Whole milk, 3.5 % fat, lactose-free, ultra-heated",fineli,fineli:34716,"Milk, 3% fat, lactose-free, no added vitamin d",more words: whole,bls,fineli,independent
+bls,bls:m1a7300,"Whole milk, 3.5 % fat, lactose-free, ultra-heated",frida,frida:1265,"Milk, whole, 3.5, (UHT), % fat",more words: lactose-free,bls,frida,independent
+bls,bls:m1a7300,"Whole milk, 3.5 % fat, lactose-free, ultra-heated",frida,frida:1266,"Milk, whole, organic, 3.5 % fat",more words: lactose-free,bls,frida,independent
+bls,bls:m1a7300,"Whole milk, 3.5 % fat, lactose-free, ultra-heated",frida,frida:6,"Milk, whole, konventional (not organic), 3.5 % fat",more words: lactose-free,bls,frida,independent
 bls,bls:m1b1100,"Yogurt from skimmed milk, max. 0.5 % fat, lactose-free",frida,frida:1598,"Yogurt low fat, 0.1 % fat",more words: lactose-free,bls,frida,independent
 bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",fineli,fineli:33162,"Yoghurt, plain, 2.5% fat",more words: lactose-free,bls,fineli,independent
 bls,bls:m1e3300,"Yogurt min. 3.5 % fat, lactose-free",fineli,fineli:33298,"Yoghurt with muesli, a+, fat 3.5%, lactose-free",more words: muesli,bls,fineli,independent
@@ -5122,6 +5160,7 @@ cofid,cofid:12-314,"Milk, semi-skimmed, UHT",ciqual,ciqual:19041,"Milk, semi-ski
 cofid,cofid:12-314,"Milk, semi-skimmed, UHT",ciqual,ciqual:19060,"Milk, semi-skimmed, UHT, reduced lactose",more words: lactose,cofid,ciqual,independent
 cofid,cofid:12-314,"Milk, semi-skimmed, UHT",fineli,fineli:29210,"Milk, 1.5% fat, without added vitamin d, organic",more words: uht,cofid,fineli,independent
 cofid,cofid:12-314,"Milk, semi-skimmed, UHT",kfcdb,kfcdb:m0090040009a,"Cow's milk, Low fat",more words: uht,cofid,kfcdb,independent
+cofid,cofid:12-320,"Milk, whole, UHT",bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",more words: uht,cofid,bls,independent
 cofid,cofid:12-320,"Milk, whole, UHT",ciqual,ciqual:19016,"Milk, whole (average)",more words: uht,cofid,ciqual,independent
 cofid,cofid:12-320,"Milk, whole, UHT",ciqual,ciqual:19023,"Milk, whole, UHT",same words,cofid,ciqual,independent
 cofid,cofid:12-320,"Milk, whole, UHT",ciqual,ciqual:19200,"Goat milk, whole, UHT",more words: goat,cofid,ciqual,independent
@@ -5207,6 +5246,7 @@ cofid,cofid:12-512,"Milk, 1% fat, pasteurised",afcd,afcd:f005614,"Milk, cow, flu
 cofid,cofid:12-512,"Milk, 1% fat, pasteurised",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: pasteurised,cofid,afcd,independent
 cofid,cofid:12-512,"Milk, 1% fat, pasteurised",bls,bls:m111100,"Milk skimmed, fresh, max. 0.1 % fat, pasteurised",same words,cofid,?,source unknown
 cofid,cofid:12-512,"Milk, 1% fat, pasteurised",bls,bls:m111200,"Milk low-fat, fresh, 1.5 % fat, pasteurised",more words: low-fat,cofid,bls,independent
+cofid,cofid:12-512,"Milk, 1% fat, pasteurised",bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",more words: pasteurised,cofid,bls,independent
 cofid,cofid:12-512,"Milk, 1% fat, pasteurised",bls,bls:m114100,"Milk skimmed, fresh, max. 0.1 % fat, lactose-free, pasteurised",more words: lactose-free,cofid,bls,independent
 cofid,cofid:12-512,"Milk, 1% fat, pasteurised",ciqual,ciqual:19033,"Milk, semi-skimmed (average)",more words: pasteurised,cofid,ciqual,independent
 cofid,cofid:12-512,"Milk, 1% fat, pasteurised",ciqual,ciqual:19042,"Milk, semi-skimmed, pasteurised",same words,cofid,ciqual,independent
@@ -5227,6 +5267,7 @@ cofid,cofid:12-527,"Cheese, processed, plain",fineli,fineli:647,"Processed chees
 cofid,cofid:12-539,"Cheese, cottage, plain",cnf,cnf:25,"Cheese, cottage, creamed (4.5% M.F.)",same words,cofid,usda,independent
 cofid,cofid:12-539,"Cheese, cottage, plain",cnf,cnf:5562,"Cheese, cottage, with vegetables",more words: vegetable,cofid,usda,independent
 cofid,cofid:12-554,"Milk, skimmed, UHT",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: uht,cofid,afcd,independent
+cofid,cofid:12-554,"Milk, skimmed, UHT",bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",more words: uht,cofid,bls,independent
 cofid,cofid:12-554,"Milk, skimmed, UHT",ciqual,ciqual:19050,"Milk, skimmed, UHT",same words,cofid,ciqual,independent
 cofid,cofid:12-554,"Milk, skimmed, UHT",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",more words: uht,cofid,cnf,independent
 cofid,cofid:12-554,"Milk, skimmed, UHT",fineli,fineli:29211,"Milk, 0% fat, without added vitamin d, organic",more words: uht,cofid,fineli,independent
@@ -7332,6 +7373,7 @@ cofid,sesame,Sesame seeds,kfcdb,kfcdb:e0260010009n,"Sesame seeds, Black sesame, 
 cofid,skimmed-milk,"Milk, skimmed, pasteurised, average",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",more words: pasteurised,cofid,afcd,independent
 cofid,skimmed-milk,"Milk, skimmed, pasteurised, average",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: pasteurised,cofid,afcd,independent
 cofid,skimmed-milk,"Milk, skimmed, pasteurised, average",bls,bls:m111100,"Milk skimmed, fresh, max. 0.1 % fat, pasteurised",same words,cofid,?,source unknown
+cofid,skimmed-milk,"Milk, skimmed, pasteurised, average",bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",more words: pasteurised,cofid,bls,independent
 cofid,skimmed-milk,"Milk, skimmed, pasteurised, average",bls,bls:m114100,"Milk skimmed, fresh, max. 0.1 % fat, lactose-free, pasteurised",more words: lactose-free,cofid,bls,independent
 cofid,skimmed-milk,"Milk, skimmed, pasteurised, average",ciqual,ciqual:19051,"Milk, skimmed, pasteurised",same words,cofid,ciqual,independent
 cofid,skimmed-milk,"Milk, skimmed, pasteurised, average",cnf,cnf:114,"Milk, fluid, skim, 0.1% M.F.",more words: pasteurised,cofid,cnf,independent
@@ -7389,6 +7431,7 @@ cofid,white-rice,"Rice, white, long grain, boiled in unsalted water",cnf,cnf:452
 cofid,white-rice,"Rice, white, long grain, boiled in unsalted water",cnf,cnf:4525,"Grains, rice, white, long-grain, regular, cooked, salt added",same words,cofid,usda,independent
 cofid,white-rice,"Rice, white, long grain, boiled in unsalted water",kfcdb,kfcdb:a013000a039a,"Rice, White, Cooked",more words: long,cofid,kfcdb,independent
 cofid,whole-milk,"Milk, whole, pasteurised, average",bls,bls:m111300,"Whole milk, fresh, 3.5 % fat, pasteurised",same words,cofid,bls,independent
+cofid,whole-milk,"Milk, whole, pasteurised, average",bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",more words: pasteurised,cofid,bls,independent
 cofid,whole-milk,"Milk, whole, pasteurised, average",bls,bls:m114300,"Whole milk, fresh, 3.5 % fat, lactose-free, pasteurised",more words: lactose-free,cofid,bls,independent
 cofid,whole-milk,"Milk, whole, pasteurised, average",ciqual,ciqual:19016,"Milk, whole (average)",more words: pasteurised,cofid,ciqual,independent
 cofid,whole-milk,"Milk, whole, pasteurised, average",ciqual,ciqual:19024,"Milk, whole, pasteurised",same words,cofid,ciqual,independent
@@ -11101,6 +11144,7 @@ usda,melon,"Melons, cantaloupe, raw",fineli,fineli:28915,"Muskmelon/cantaloupe m
 usda,melon,"Melons, cantaloupe, raw",fineli,fineli:477,"Muskmelon/cantaloupe melon, without skin",more words: muskmelon,usda,fineli,independent
 usda,milk,"Milk, reduced fat, fluid, 2% milkfat, without added vitamin A and vitamin D",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",same words,usda,afcd,independent
 usda,milk,"Milk, reduced fat, fluid, 2% milkfat, without added vitamin A and vitamin D",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",same words,usda,afcd,independent
+usda,milk,"Milk, reduced fat, fluid, 2% milkfat, without added vitamin A and vitamin D",bls,bls:m113200,"Milk low-fat, 1.5 % fat, ultra-heated",more words: low-fat,usda,bls,independent
 usda,milk,"Milk, reduced fat, fluid, 2% milkfat, without added vitamin A and vitamin D",ciqual,ciqual:19033,"Milk, semi-skimmed (average)",same words,usda,ciqual,independent
 usda,milk,"Milk, reduced fat, fluid, 2% milkfat, without added vitamin A and vitamin D",ciqual,ciqual:19041,"Milk, semi-skimmed, UHT",more words: uht,usda,ciqual,independent
 usda,milk,"Milk, reduced fat, fluid, 2% milkfat, without added vitamin A and vitamin D",ciqual,ciqual:19042,"Milk, semi-skimmed, pasteurised",more words: pasteurised,usda,ciqual,independent
@@ -11315,7 +11359,8 @@ usda,sesame,"Seeds, sesame seeds, whole, dried",frida,frida:370,"Sesame seeds, w
 usda,skimmed-milk,"Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",afcd,afcd:f005605,"Milk, cow, fluid, prepared from dry powder, skim, standard dilution",more words: dilution,usda,afcd,independent
 usda,skimmed-milk,"Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",same words,usda,afcd,independent
 usda,skimmed-milk,"Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",bls,bls:m111100,"Milk skimmed, fresh, max. 0.1 % fat, pasteurised",more words: pasteurised,usda,?,source unknown
-usda,skimmed-milk,"Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",more words: ultra,usda,bls,independent
+usda,skimmed-milk,"Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",same words,usda,bls,independent
+usda,skimmed-milk,"Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",more words: lactose-free,usda,bls,independent
 usda,skimmed-milk,"Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",ciqual,ciqual:19050,"Milk, skimmed, UHT",more words: uht,usda,ciqual,independent
 usda,skimmed-milk,"Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",ciqual,ciqual:19051,"Milk, skimmed, pasteurised",more words: pasteurised,usda,ciqual,copies (values nearly identical)
 usda,skimmed-milk,"Milk, nonfat, fluid, without added vitamin A and vitamin D (fat free or skim)",cnf,cnf:124,"Milk, fluid, buttermilk, 1% M.F.",more words: buttermilk,usda,cnf,independent
@@ -14652,7 +14697,9 @@ usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",afcd,a
 usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",afcd,afcd:f005614,"Milk, cow, fluid, reduced fat (~1%)",same words,usda,afcd,independent
 usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",same words,usda,afcd,independent
 usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",bls,bls:m111100,"Milk skimmed, fresh, max. 0.1 % fat, pasteurised",more words: pasteurised,usda,?,source unknown
-usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",more words: ultra,usda,bls,independent
+usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",bls,bls:m113100,"Milk skimmed, max. 0.5 % fat, ultra-heated",same words,usda,bls,independent
+usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",bls,bls:m113200,"Milk low-fat, 1.5 % fat, ultra-heated",more words: low-fat,usda,bls,independent
+usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",bls,bls:m1a3100,"Milk skimmed, max. 0.5 % fat, lactose-free, ultra-heated",more words: lactose-free,usda,bls,independent
 usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",ciqual,ciqual:19033,"Milk, semi-skimmed (average)",same words,usda,ciqual,independent
 usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",ciqual,ciqual:19041,"Milk, semi-skimmed, UHT",more words: uht,usda,ciqual,independent
 usda,u173441,"Milk, fluid, 1% fat, without added vitamin A and vitamin D",ciqual,ciqual:19042,"Milk, semi-skimmed, pasteurised",more words: pasteurised,usda,ciqual,independent
@@ -15157,7 +15204,8 @@ usda,white-rice,"Rice, white, long-grain, regular, unenriched, cooked without sa
 usda,whole-milk,"Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",afcd,afcd:f005634,"Milk, cow, fluid, regular fat (~3.5%)",more words: whole,usda,afcd,independent
 usda,whole-milk,"Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",afcd,afcd:f005637,"Milk, cow, fluid, skim (~0.15% fat)",more words: whole,usda,afcd,independent
 usda,whole-milk,"Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",bls,bls:m111300,"Whole milk, fresh, 3.5 % fat, pasteurised",more words: pasteurised,usda,bls,independent
-usda,whole-milk,"Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",more words: ultra,usda,bls,independent
+usda,whole-milk,"Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",bls,bls:m113300,"Whole milk, 3.5 % fat, ultra-heated",same words,usda,bls,independent
+usda,whole-milk,"Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",bls,bls:m1a7300,"Whole milk, 3.5 % fat, lactose-free, ultra-heated",more words: lactose-free,usda,bls,independent
 usda,whole-milk,"Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",ciqual,ciqual:19016,"Milk, whole (average)",same words,usda,ciqual,independent
 usda,whole-milk,"Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",ciqual,ciqual:19023,"Milk, whole, UHT",more words: uht,usda,ciqual,independent
 usda,whole-milk,"Milk, whole, 3.25% milkfat, without added vitamin A and vitamin D",ciqual,ciqual:19024,"Milk, whole, pasteurised",more words: pasteurised,usda,ciqual,independent
