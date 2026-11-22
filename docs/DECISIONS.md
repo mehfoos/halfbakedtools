@@ -30,5 +30,5 @@ history only.
 | 2026-11-10 | **Superseded** by the 18 Nov (release) and 20 Nov (three layers) rows. Every cited document archived in the repo, including owner-uploaded copies | Links move and documents change |
 | 2026-11-09 | Accuracy over features; claim less, deliver more; label anything not yet checked | Owner's standing instruction |
 | 2026-11-08 | No sign-in; settings in the URL; opt-in local storage | Privacy, simplicity, GDPR |
-| 2026-11-08 | Local data snapshot, quarterly refresh, visitor requests limited to once in 90 days | Resilience to upstream changes |
+| 2026-11-08 | **Partly superseded** (22 Nov 2026: no automatic refresh; the snapshot stays). Local data snapshot, quarterly refresh, visitor requests limited to once in 90 days | Resilience to upstream changes |
 | 2026-11-08 | Name: Half-Baked Tools (halfbakedtools.com) | "Never finished", not "low quality" |

@@ -92,14 +92,14 @@ python3 -I tools/nutrient-planner/pipeline/blend/planner_pack.py
 ## First-time setup
 
 1. Create the issue labels `data-refresh` and `nutrient-planner`. The planner's "Request a data refresh" link opens
-   an issue with both.
+   an issue with both, for a maintainer to handle by hand.
 2. Run Actions → *Nutrient planner: refresh food data* with *force* ticked. It downloads the USDA data, commits
    `data/foods/`, archives the raw files as a release and redeploys. Then read `data/foods/match_report.md` to check
    each food matched the USDA record you'd expect; fix any in `pipeline/foods_catalogue.json` and run it again.
 
 ## Ongoing
 
-- The food data refreshes automatically on 1 January, April, July and October
-  (`.github/workflows/nutrient-planner-refresh.yml`).
-- Refresh requests from the site (`nutrient-planner-refresh-request.yml`) are honoured only when the snapshot is at
-  least 90 days old; maintainers can always run the refresh manually with *force*.
+- No food table is updated automatically (owner's decision, 22 Nov 2026): a new release can change its format or
+  add files, so it is checked by hand first. Updates start from an issue, which anyone can open with the planner's
+  "Request a data refresh" link. For USDA, after checking, run *Nutrient planner: refresh food data*
+  (`.github/workflows/nutrient-planner-refresh.yml`, manual only; tick *force* if the snapshot is under 90 days old).

@@ -1,20 +1,15 @@
 name: "Nutrient planner: refresh food data"
 
-# Rebuilds the local food snapshot from USDA FoodData Central every three
-# months, archives the raw downloads as a GitHub release, commits the result
-# and redeploys the site.
+# Rebuilds the local food snapshot from USDA FoodData Central, archives the raw
+# downloads as a GitHub release, commits the result and redeploys the site.
+# Run by hand only (Actions tab), after a maintainer has checked the new USDA
+# release: there is no schedule, because releases can change format or add
+# files (owner's decision, 22 Nov 2026).
 on:
-  schedule:
-    - cron: "17 4 1 1,4,7,10 *"   # 04:17 UTC on 1 Jan, Apr, Jul, Oct
   workflow_dispatch:
     inputs:
       force:
         description: "Refresh even if the data is less than 3 months old"
-        type: boolean
-        default: false
-  workflow_call:
-    inputs:
-      force:
         type: boolean
         default: false
 
