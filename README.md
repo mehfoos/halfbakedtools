@@ -19,7 +19,7 @@ calculations run in the visitor's browser. The intent and the reasons behind the
 ```
 tools/                     one self-contained folder per tool (see docs/ADDING_A_TOOL.md)
   <slug>/
-    tool.json              name, summary, tagline, icon, order, topic, status, pages: drives the home page and navigation
+    tool.json              name, summary, tagline, order, topic, status, pages: drives the home page and navigation
     pages/*.astro          the tool's pages, served at /tools/<slug>/ and /tools/<slug>/<page>/
     web/                   browser code and its tests (*.test.ts)
     references.json        the tool's references, in citation order ([1], [2], ...)

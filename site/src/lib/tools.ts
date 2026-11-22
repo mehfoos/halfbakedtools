@@ -4,8 +4,6 @@ export type Tool = {
   slug: string; name: string; summary: string; topic: string;
   /** Short line for the home-page card (the summary is for the meta description and methods pages). */
   tagline: string;
-  /** Two or three capital letters drawn on the card's icon square. */
-  icon: string;
   /** Position within its topic on the home page (lower first); ties go A to Z. */
   order?: number;
   status: "alpha" | "beta" | "stable"; added: string; pages: ToolPage[];

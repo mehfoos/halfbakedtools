@@ -3,7 +3,6 @@
   "name": "Tool name",
   "summary": "One or two sentences on what the tool does, shown on the home page and in search results.",
   "tagline": "A short line for the home-page card, about ten words.",
-  "icon": "ABC",
   "order": 1,
   "topic": "Topic used to group tools on the home page",
   "status": "alpha",

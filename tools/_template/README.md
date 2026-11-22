@@ -4,7 +4,7 @@ What the tool does, how it works, where its data comes from, and how to maintain
 
 ## Files
 
-- `tool.json`: name, summary, tagline (short line for the home-page card), icon (2-3 capitals), order, topic, status and pages
+- `tool.json`: name, summary, tagline (short line for the home-page card), order, topic, status and pages
 - `pages/`: the tool's pages
 - `web/`: browser code and tests
 - `references.json`: references, in citation order
