@@ -338,6 +338,7 @@ const policy = import.meta.env.PROD ? CSP : "";
           <div id="optCompress" data-part="compress">
             <p><label class="field">Compression
               <select id="cLevel">
+                <option value="target">To a size you choose</option>
                 <option value="none">None</option>
                 <option value="light">Light: best quality</option>
                 <option value="recommended">Recommended</option>
@@ -346,6 +347,9 @@ const policy = import.meta.env.PROD ? CSP : "";
                 <option value="maximum">Maximum: pages become pictures</option>
                 <option value="custom">Custom…</option>
               </select></label></p>
+            <p id="cTargetRow"><label for="cTarget">Make each file at most</label>
+              <span style="display:block;white-space:nowrap"><input id="cTarget" type="number" min="0.01" step="any" inputmode="decimal" style="width:6em" />
+              <select id="cUnit" aria-label="Unit"><option value="kB">kB</option><option value="MB">MB</option></select></span></p>
             <p class="small muted" id="cSummary"></p>
             <div id="cCustom">
               <p><label class="field">Method

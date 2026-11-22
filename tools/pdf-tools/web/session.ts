@@ -189,10 +189,11 @@ const num = (v: unknown, min: number, max: number) => typeof v === "number" && N
 function parseCompress(c: unknown): CompressOptions {
   if (!isObj(c)) return { ...NO_COMPRESSION };
   return {
-    mode: (["none", "tidy", "images", "flatten"] as const).find((m) => m === c.mode) ?? "none",
+    mode: (["none", "tidy", "images", "flatten", "target"] as const).find((m) => m === c.mode) ?? "none",
     dpi: num(c.dpi, DPI_MIN, DPI_MAX) ? (c.dpi as number) : NO_COMPRESSION.dpi,
     quality: num(c.quality, 0.1, 1) ? (c.quality as number) : NO_COMPRESSION.quality,
     grey: c.grey === true,
+    ...(c.mode === "target" && num(c.target, 1_000, 1e11) ? { target: Math.round(c.target as number) } : {}),
   };
 }
 

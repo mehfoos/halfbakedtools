@@ -3,7 +3,7 @@
 import type { OutputFormat, SplitMode } from "./session.ts";
 
 /** The home page's categories, in order (the same split ilovepdf.com uses, so people find things where they expect). */
-export const GROUPS = ["Organise", "Optimise", "Convert to PDF", "Convert from PDF", "Edit", "Security"] as const;
+export const GROUPS = ["Optimise", "Organise", "Convert to PDF", "Convert from PDF", "Edit", "Security"] as const;   // Optimise first: Compress PDF is the most asked-for (owner, 2026-11-22)
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
@@ -68,8 +68,8 @@ export const TASKS: Task[] = [
   { slug: "watermark", name: "Watermark", blurb: "Put words such as DRAFT or CONFIDENTIAL across every page, as faint or as bold as you like.", group: "Edit", accept: "pdf",
     pick: "Select PDF files", hint: "Type the words and choose how they look. The preview shows a page exactly as it will be saved.",
     parts: ["watermark", "preview"], formats: ["pdf"], which: "all", action: "Add watermark", perFile: true, suffix: "watermarked", tag: "≋" },
-  { slug: "compress", name: "Compress PDF", blurb: "Make a PDF smaller by shrinking the pictures inside it. You see the real new size before you download.", group: "Optimise", accept: "pdf",
-    pick: "Select PDF files", hint: "Choose how hard to compress, then press Compress to see the new size and a before-and-after preview.",
+  { slug: "compress", name: "Compress PDF", blurb: "Make a PDF smaller, down to a size you choose (such as an upload limit), by shrinking the pictures inside it. You see the real new size before you download.", group: "Optimise", accept: "pdf",
+    pick: "Select PDF files", hint: "Type the largest size you want (it starts at about half your file), or choose a level, then press Compress to see the new size and a before-and-after preview.",
     parts: ["compress"], formats: ["pdf"], which: "all", action: "Compress PDF", perFile: true, suffix: "compressed", tag: "↓" },
 
   { slug: "ocr", name: "OCR PDF", blurb: "Make scanned PDFs searchable: the words in the page pictures are recognised and added as invisible text you can search, select and copy.", group: "Optimise", accept: "pdf",

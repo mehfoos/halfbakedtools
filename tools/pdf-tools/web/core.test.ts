@@ -239,12 +239,16 @@ test("compress: detail is estimated against the page, and pictures are never enl
   assert.deepEqual(targetSize(600, 800, 595.28, 841.89, 150), { width: 600, height: 800, scale: 1 });
   assert.equal(targetSize(10, 4000, 72, 72, 36).width, 1);
 });
-test("compress: only plain 8-bit colour or grey pictures are rewritten", () => {
+test("compress: only plain 8-bit colour or grey pictures are rewritten, also when wrapped in ASCII85 or Flate", () => {
   const base: ImageInfo = { width: 1000, height: 1000, bits: 8, filters: ["DCTDecode"], colour: "rgb", hasMask: false, bytes: 100_000, predictor: 1, colours: 3 };
   assert.deepEqual(canRecompress(base), { ok: true, kind: "jpeg" });
   assert.deepEqual(canRecompress({ ...base, filters: ["FlateDecode"], predictor: 15 }), { ok: true, kind: "flate" });
   assert.deepEqual(canRecompress({ ...base, filters: ["FlateDecode"], colour: "grey", colours: 1 }), { ok: true, kind: "flate" });
-  for (const bad of [{ colour: "other" as const }, { bits: 1 }, { hasMask: true }, { filters: ["JPXDecode"] }, { filters: ["FlateDecode", "DCTDecode"] }, { filters: [] },
+  assert.deepEqual(canRecompress({ ...base, filters: ["ASCII85Decode", "DCTDecode"] }), { ok: true, kind: "jpeg" }, "a JPEG wrapped in ASCII85 text (ReportLab)");
+  assert.deepEqual(canRecompress({ ...base, filters: ["ASCII85Decode", "FlateDecode"], colours: 3 }), { ok: true, kind: "pixels" });
+  assert.equal(canRecompress({ ...base, filters: ["ASCII85Decode", "FlateDecode"], colours: 3, predictor: 15 }).ok, false);
+  assert.equal(canRecompress({ ...base, filters: ["JBIG2Decode"] }).ok, false);
+  for (const bad of [{ colour: "other" as const }, { bits: 1 }, { hasMask: true }, { filters: ["JPXDecode"] }, { filters: ["DCTDecode", "FlateDecode"] },
     { filters: ["FlateDecode"], predictor: 2 }, { filters: ["FlateDecode"], colours: 4 }, { width: 20, height: 20 }, { bytes: 500 }, { width: 10_000, height: 10_000 }]) {
     assert.equal(canRecompress({ ...base, ...bad }).ok, false, JSON.stringify(bad));
   }
@@ -263,7 +267,7 @@ test("compress: pixel conversion, greying and the stated saving", () => {
   assert.throws(() => toRgba(Uint8Array.from([1]), 2, 2, 1));
   const px = Uint8ClampedArray.from([255, 0, 0, 255, 255, 255, 255, 200]); greyInPlace(px);
   assert.deepEqual([...px], [76, 76, 76, 255, 255, 255, 255, 200]);
-  assert.equal(saving(1000, 250), 75); assert.equal(saving(1000, 1000), 0); assert.equal(saving(1000, 1200), 0); assert.equal(saving(0, 0), 0);
+  assert.equal(saving(1000, 250), 75); assert.equal(saving(1000, 1000), 0); assert.equal(saving(1000, 1200), 0); assert.equal(saving(0, 0), 0); assert.equal(saving(1000, 2), 99, "rounded down, never 100%");
   assert.ok(PRESETS.light.dpi > PRESETS.recommended.dpi && PRESETS.recommended.dpi > PRESETS.strong.dpi && PRESETS.strong.dpi > PRESETS.extreme.dpi);
   assert.ok(PRESETS.strong.quality > PRESETS.extreme.quality);
   assert.equal(PRESETS.extreme.mode, "images"); assert.equal(PRESETS.maximum.mode, "flatten", "only the level that says so turns pages into pictures");
@@ -273,6 +277,8 @@ test("settings: compression options are kept, and older files without them still
   let s = addSource(emptySession(), { name: "a.pdf", size: 10, sha256: SHA("a"), pages: 1, kind: "pdf" }).session;
   s = { ...s, output: { ...s.output, compress: { mode: "images", dpi: 120, quality: 0.5, grey: true } } };
   assert.deepEqual(parseSettings(serialise(s)).output.compress, { mode: "images", dpi: 120, quality: 0.5, grey: true });
+  const t = { ...s, output: { ...s.output, compress: { mode: "target" as const, dpi: 150, quality: 0.65, grey: false, target: 2_000_000 } } };
+  assert.deepEqual(parseSettings(serialise(t)).output.compress, t.output.compress, "a size target is kept");
   const old = JSON.parse(serialise(s)); delete old.output.compress;
   assert.deepEqual(parseSettings(JSON.stringify(old)).output.compress, NO_COMPRESSION);
   old.output.compress = { mode: "explode", dpi: 5, quality: 9, grey: "yes" };
@@ -1485,4 +1491,38 @@ test("office: Word, Excel and PowerPoint files have the parts Office needs", () 
 test("structure: a bullet drawn larger than its text doesn't make the line a heading", () => {
   const lines = toLines([{ str: "•", x: 50, y: 700, size: 15 }, { str: " Costs fell.", x: 60, y: 700, size: 10, eol: true }, { str: "Body text here.", x: 50, y: 680, size: 10 }]);
   assert.deepEqual(toBlocks([lines])[0].map((b) => b.kind), ["li", "p"]);
+});
+
+// ---------- Compress PDF: to a size, detail as drawn, lossless tidying ----------
+import { ladder, defaultTarget, fitToSize, drawnDpi, sizeAt } from "./compress-core.ts";
+import { tidyStreams } from "./tidy.ts";
+import { PDFRawStream, decodePDFRawStream } from "@cantoo/pdf-lib";
+test("compress to a size: the ladder, the size offered first, and detail as drawn", () => {
+  assert.deepEqual(ladder(0), { dpi: 400, quality: 0.92 }); assert.deepEqual(ladder(1), { dpi: 50, quality: 0.25 }); assert.deepEqual(ladder(0.5), { dpi: 141, quality: 0.59 });
+  assert.equal(defaultTarget(4_730_000), 2_300_000); assert.equal(defaultTarget(860_000), 430_000); assert.equal(defaultTarget(25_100_000), 12_000_000);
+  assert.equal(defaultTarget(9_000), 10_000, "at least 10 kB"); assert.equal(defaultTarget(2_000_000), 1_000_000);
+  // a 3000-pixel-wide picture drawn 2 inches wide has 1500 dots per inch; kept at 150 it becomes 300 pixels
+  assert.equal(drawnDpi(3000, 1500, 144, 72), 1500); assert.deepEqual(sizeAt(3000, 1500, 1500, 150), { width: 300, height: 150, scale: 0.1 });
+  assert.equal(drawnDpi(1000, 1000, 72, 144), 500, "squashed: the lower detail counts");
+});
+test("compress to a size: keeps the mildest result that fits, close under the limit", async () => {
+  const sizeAtT = (t: number | "lossless") => (t === "lossless" ? 10_000_000 : Math.round(9_000_000 * Math.exp(-3 * t)));   // shrinks with strength
+  const tried: (number | "lossless")[] = [];
+  const r = await fitToSize(2_000_000, async (t) => { tried.push(t); return { size: sizeAtT(t), t }; });
+  assert.ok(r.best && r.best.size <= 2_000_000 && r.best.size >= 1_900_000, `got ${r.best?.size}`);
+  assert.deepEqual(tried.slice(0, 3), ["lossless", 1, 0]); assert.ok(r.tries <= 8);
+  // already small enough without loss: one try
+  assert.equal((await fitToSize(20_000_000, async (t) => ({ size: sizeAtT(t) }))).tries, 1);
+  // can't be reached: no best, the smallest is reported
+  const no = await fitToSize(100_000, async (t) => ({ size: sizeAtT(t) }));
+  assert.equal(no.best, undefined); assert.equal(no.smallest.size, sizeAtT(1)); assert.equal(no.tries, 2);
+});
+test("compress: lossless tidying removes thumbnails, packs uncompressed streams, and leaves the look alone", async () => {
+  const doc = await PDFDocument.create(), page = doc.addPage([100, 100]);
+  const raw = doc.context.register(PDFRawStream.of(doc.context.obj({}), new TextEncoder().encode("0 0 m 100 100 l S\n".repeat(50))));
+  page.node.set(PDFName.of("Contents"), raw); page.node.set(PDFName.of("Thumb"), raw);
+  assert.deepEqual(tidyStreams(doc), { thumbnails: 1, streams: 1 });
+  const s = doc.context.lookup(raw) as PDFRawStream;
+  assert.equal(String(s.dict.get(PDFName.of("Filter"))), "/FlateDecode"); assert.ok(s.contents.length < 200);
+  assert.equal(new TextDecoder().decode(decodePDFRawStream(s).decode()), "0 0 m 100 100 l S\n".repeat(50));
 });

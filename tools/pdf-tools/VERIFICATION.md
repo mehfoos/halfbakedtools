@@ -479,3 +479,24 @@ LibreOffice Writer, wkhtmltopdf, Chrome, and this site's own Latin, Cyrillic, Ar
 
 Not checked: Microsoft Word, Excel or PowerPoint themselves (not available here); Google Docs, Sheets or Slides;
 tables with merged cells or wrapped text; many-column financial statements.
+
+### Compress PDF to a size, detail as drawn, lossless tidying (2026-11-22)
+
+- A ReportLab test file of six 3000 × 2000 photos drawn 6.25 inches wide plus a 2000 × 2000 logo drawn 1 inch wide
+  (8.13 MB; ReportLab stores its JPEGs wrapped in ASCII85, so the earlier version left every picture alone): the size
+  offered first was 4 MB; results 3.95 MB (6 tries, 397 dpi, 92%), 787 kB for an 800 kB limit (5 tries), 19.6 kB for
+  20 kB (3 tries, the strongest setting). A 5 kB limit can't be reached: the 19.6 kB result is offered with the warning.
+  The downloaded files are exactly those sizes; the text is unchanged (pdftotext), qpdf finds no errors, and the logo
+  came out at 258 × 258 pixels (258 dpi as drawn), where the page estimate would have kept 2000 × 2000.
+- Eight of our test files at once (one limit for each: 46 kB, half the largest): three reach it, five can't (no
+  shrinkable pictures or text-heavy), each said so; every file keeps its text and page count; a file tidied without
+  loss renders pixel for pixel the same as its original (poppler, 60 dpi).
+- A one-page text file is tidied only ("no loss of quality").
+- Unit tests: the settings ladder, the size offered first, detail as drawn (including a squashed picture), the search
+  keeping the mildest result within 5% under the limit, stopping after one try when already small enough and after two
+  when the limit can't be reached; ASCII85-wrapped JPEGs and pixels accepted, predictors in chains refused; thumbnails
+  removed and an uncompressed stream compressed and read back unchanged; size targets kept in the settings file.
+- The saving shown is now rounded down (an 8.13 MB file reduced to 19.6 kB shows 99%, not 100%).
+
+Not checked: very large scanned files (time per try grows with the pictures; each try redoes them all); files whose
+pictures are mostly CMYK, JPEG 2000 or JBIG2, which are still left as they are.

@@ -12,6 +12,7 @@ import { checkObjects } from "./pdfachecks.ts";
 import { markPdfA, infoOf } from "./pdfa.ts";
 import { woffToSfnt } from "./woff.ts";
 import { addTextLayer } from "./ocr.ts";
+import { prune } from "./tidy.ts";
 import { addGlyphlessFont } from "./glyphless.ts";
 import type { RedactedPage } from "./redact.ts";
 
@@ -464,22 +465,4 @@ export async function picturesToPdfA(original: Uint8Array, password: string | un
   return bytes;
 }
 
-/** Deletes every object the saved file would not reach from its trailer (earlier versions of changed objects, removed
- *  attachments and scripts), so nothing removed stays in the file. Returns how many were deleted. */
-export function prune(doc: PDFDocument): number {
-  const ctx = doc.context, reached = new Set<string>();
-  const visit = (o: PDFObject | undefined): void => {
-    const stack: (PDFObject | undefined)[] = [o];
-    while (stack.length) {
-      const x = stack.pop();
-      if (x instanceof PDFRef) { const k = x.toString(); if (reached.has(k)) continue; reached.add(k); stack.push(ctx.lookup(x)); }
-      else if (x instanceof PDFDict) for (const [, v] of x.entries()) stack.push(v);
-      else if (x instanceof PDFArray) stack.push(...x.asArray());
-      else if (x instanceof PDFStream) stack.push(x.dict);
-    }
-  };
-  const t = ctx.trailerInfo; visit(t.Root); visit(t.Info as PDFObject); visit(t.ID as PDFObject);
-  let n = 0;
-  for (const [ref] of ctx.enumerateIndirectObjects()) if (!reached.has(ref.toString())) { ctx.delete(ref); n++; }
-  return n;
-}
+export { prune } from "./tidy.ts";

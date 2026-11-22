@@ -1,10 +1,12 @@
 // The arithmetic behind "Compress PDF". Pure; no DOM, so it is tested in Node.
 // Compressing means: find the pictures stored inside the PDF, shrink the ones holding more detail than asked
-// for, and store them again as JPEG. Text and line drawings are left exactly as they are.
+// for, and store them again as JPEG. Text and line drawings are left exactly as they are. Every mode also tidies
+// without loss (page thumbnails, uncompressed streams, unused objects: see compress.ts).
 
-export type CompressMode = "none" | "tidy" | "images" | "flatten";
-/** `dpi`: most dots per inch a picture may keep. `quality`: JPEG quality 0.1-1. `grey`: drop colour. */
-export type CompressOptions = { mode: CompressMode; dpi: number; quality: number; grey: boolean };
+export type CompressMode = "none" | "tidy" | "images" | "flatten" | "target";
+/** `dpi`: most dots per inch a picture may keep. `quality`: JPEG quality 0.1-1. `grey`: drop colour. `target`: for
+ *  mode "target", the size in bytes each file should end up at or under (0: not chosen yet). */
+export type CompressOptions = { mode: CompressMode; dpi: number; quality: number; grey: boolean; target?: number };
 export const NO_COMPRESSION: CompressOptions = { mode: "none", dpi: 150, quality: 0.65, grey: false };
 
 /** Ready-made settings. These are this tool's own choices, not taken from a standard. */
@@ -17,7 +19,68 @@ export const PRESETS: Record<"light" | "recommended" | "strong" | "extreme" | "m
 };
 
 /**
- * A picture's detail, in dots per inch, estimated as if it filled the page: its longer side in pixels over the
+ * Settings at a strength from 0 (mildest) to 1 (strongest), for compressing to a chosen size: dots per inch fall
+ * evenly on a log scale from 400 to 50, and quality evenly from 92% to 25%. This tool's own choice, like the presets;
+ * the mild end keeps print quality, so a limit near the file's own size is met with little loss, and the strong end
+ * sits beyond "Extreme".
+ */
+export function ladder(t: number): { dpi: number; quality: number } {
+  const s = Math.min(1, Math.max(0, t));
+  return { dpi: Math.round(400 * (50 / 400) ** s), quality: Math.round((0.92 - 0.67 * s) * 100) / 100 };
+}
+
+/** The size offered before the visitor chooses one: about half the file, rounded down to two significant figures
+ *  in kB or MB (1 kB = 1,000 bytes, 1 MB = 1,000,000), and at least 10 kB. */
+export function defaultTarget(bytes: number): number {
+  const half = bytes / 2, unit = half >= 1e6 ? 1e6 : 1e3, v = half / unit;
+  if (!(v > 0)) return 10_000;
+  const step = 10 ** (Math.floor(Math.log10(v)) - 1);
+  return Math.max(10_000, Math.round(Math.floor(v / step + 1e-9) * step * unit));
+}
+
+/**
+ * Compressing to a size: tries settings and keeps the mildest one found whose file is at or under `target`. First
+ * without touching the pictures (`"lossless"`); then the strongest setting (1), to know whether the size can be
+ * reached at all; then the mildest (0); then in between, guessing the next strength from the sizes on either side
+ * (on a log scale, as picture sizes shrink roughly in proportion). It stops when a result is within 5% under the
+ * target, when the strengths on either side are closer than 1/50, or after `maxTries`. Results whose size didn't
+ * shrink with strength (it can happen) are still compared: the largest one that fits wins.
+ */
+export async function fitToSize<R extends { size: number }>(target: number, tryAt: (t: number | "lossless") => Promise<R>, maxTries = 8):
+    Promise<{ best?: R; bestT?: number | "lossless"; smallest: R; tries: number }> {
+  let tries = 0, best: R | undefined, bestT: number | "lossless" | undefined, smallest: R | undefined;
+  const run = async (t: number | "lossless") => {
+    const r = await tryAt(t); tries++;
+    if (!smallest || r.size < smallest.size) smallest = r;
+    if (r.size <= target && (!best || r.size > best.size)) { best = r; bestT = t; }
+    return r;
+  };
+  if ((await run("lossless")).size <= target) return { best, bestT, smallest: smallest!, tries };
+  const hard = await run(1);
+  if (hard.size > target) return { best, bestT, smallest: smallest!, tries };
+  const soft = await run(0);
+  if (soft.size <= target) return { best, bestT, smallest: smallest!, tries };
+  let lo = { t: 0, size: soft.size }, hi = { t: 1, size: hard.size };   // lo too big, hi fits
+  while (tries < maxTries && hi.t - lo.t > 0.02 && best!.size < target * 0.95) {
+    const k = (Math.log(lo.size) - Math.log(target * 0.975)) / (Math.log(lo.size) - Math.log(hi.size));
+    const t = lo.t + (hi.t - lo.t) * Math.min(0.85, Math.max(0.15, Number.isFinite(k) ? k : 0.5));
+    const r = await run(t);
+    if (r.size <= target) hi = { t, size: r.size }; else lo = { t, size: r.size };
+  }
+  return { best, bestT, smallest: smallest!, tries };
+}
+
+/**
+ * A picture's detail, in dots per inch, from the size it is drawn at on the page (in points, 1/72 inch): the lower
+ * of its detail across and down, so a squashed picture keeps enough detail in both directions.
+ */
+export function drawnDpi(width: number, height: number, drawnW: number, drawnH: number): number {
+  return Math.min(width / (drawnW / 72), height / (drawnH / 72));
+}
+
+/**
+ * A picture's detail, in dots per inch, estimated as if it filled the page (used when where it is drawn isn't
+ * known, as for pictures inside patterns or comments): its longer side in pixels over the
  * page's longer side in inches (a PDF point is 1/72 inch). A picture drawn smaller than the page really has more
  * dots per inch than this, so the estimate errs towards shrinking too little, never too much.
  */
@@ -25,10 +88,14 @@ export function estimateDpi(width: number, height: number, pageW: number, pageH:
   return Math.max(width, height) / (Math.max(pageW, pageH) / 72);
 }
 
-/** The pixel size to store a picture at so it keeps at most `maxDpi`. Never enlarges. */
-export function targetSize(width: number, height: number, pageW: number, pageH: number, maxDpi: number): { width: number; height: number; scale: number } {
-  const scale = Math.min(1, maxDpi / estimateDpi(width, height, pageW, pageH));
+/** The pixel size to store a picture at so it keeps at most `maxDpi`, given its detail now. Never enlarges. */
+export function sizeAt(width: number, height: number, dpi: number, maxDpi: number): { width: number; height: number; scale: number } {
+  const scale = Math.min(1, maxDpi / dpi);
   return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)), scale };
+}
+/** As `sizeAt`, with the detail estimated against the page. */
+export function targetSize(width: number, height: number, pageW: number, pageH: number, maxDpi: number): { width: number; height: number; scale: number } {
+  return sizeAt(width, height, estimateDpi(width, height, pageW, pageH), maxDpi);
 }
 
 /** What the PDF says about a stored picture. */
@@ -41,18 +108,33 @@ export type ImageInfo = {
   predictor: number; colours: number;
 };
 
-/** Whether this tool can safely rewrite the picture, and if not, why. Anything unusual is left untouched. */
-export function canRecompress(i: ImageInfo): { ok: true; kind: "jpeg" | "flate" } | { ok: false; why: string } {
+/** Filters that only pack bytes (text encodings and general compression), which can be undone before the picture's
+ *  own coding. Some programs (ReportLab, for one) wrap JPEG pictures in ASCII85 text this way. */
+export const WRAPPERS = new Set(["ASCII85Decode", "ASCIIHexDecode", "FlateDecode", "LZWDecode", "RunLengthDecode"]);
+
+/** Whether this tool can safely rewrite the picture, and if not, why. Anything unusual is left untouched.
+ *  `jpeg`: a JPEG, possibly wrapped; `flate`: pixels packed with Flate, possibly with row prediction; `pixels`:
+ *  pixels stored plainly or packed with other wrappers, without prediction. */
+export function canRecompress(i: ImageInfo): { ok: true; kind: "jpeg" | "flate" | "pixels" } | { ok: false; why: string } {
   if (i.hasMask) return { ok: false, why: "has a mask or special colour mapping" };
   if (i.colour === "other") return { ok: false, why: "uses a colour system other than plain colour or grey" };
   if (i.bits !== 8) return { ok: false, why: `uses ${i.bits} bits per colour` };
   if (i.width * i.height < 64 * 64 || i.bytes < 8_000) return { ok: false, why: "is too small to be worth it" };
   if (i.width * i.height > 50_000_000) return { ok: false, why: "is too large for the browser to redraw" };
-  if (i.filters.length === 1 && i.filters[0] === "DCTDecode") return { ok: true, kind: "jpeg" };
+  const last = i.filters[i.filters.length - 1];
+  if (last === "DCTDecode" && i.filters.slice(0, -1).every((f) => WRAPPERS.has(f))) {
+    if (i.filters.length > 1 && i.predictor !== 1) return { ok: false, why: "uses an unsupported packing method" };
+    return { ok: true, kind: "jpeg" };
+  }
   if (i.filters.length === 1 && i.filters[0] === "FlateDecode") {
     if (i.predictor !== 1 && i.predictor < 10) return { ok: false, why: "uses an unsupported packing method" };
     if (i.colours !== (i.colour === "rgb" ? 3 : 1)) return { ok: false, why: "has an unexpected number of colour channels" };
     return { ok: true, kind: "flate" };
+  }
+  if (i.filters.every((f) => WRAPPERS.has(f))) {   // plain, or several wrappers
+    if (i.predictor !== 1) return { ok: false, why: "uses an unsupported packing method" };
+    if (i.colours !== (i.colour === "rgb" ? 3 : 1)) return { ok: false, why: "has an unexpected number of colour channels" };
+    return { ok: true, kind: "pixels" };
   }
   return { ok: false, why: `is stored as ${i.filters.join("+") || "raw data"}, which is left alone` };
 }
@@ -102,9 +184,10 @@ export function greyInPlace(rgba: Uint8ClampedArray): void {
   for (let o = 0; o < rgba.length; o += 4) rgba[o] = rgba[o + 1] = rgba[o + 2] = Math.round(0.299 * rgba[o] + 0.587 * rgba[o + 1] + 0.114 * rgba[o + 2]);
 }
 
-export type CompressStats = { images: number; changed: number; skipped: Record<string, number>; before: number; after: number };
+export type CompressStats = { images: number; changed: number; skipped: Record<string, number>; before: number; after: number;
+  tidied?: { thumbnails: number; streams: number; unused: number } };
 
 /** "1.2 MB -> 300 kB (75% smaller)" style percentage, never claiming a saving that isn't there. */
 export function saving(before: number, after: number): number {
-  return before > 0 && after < before ? Math.round((1 - after / before) * 100) : 0;
+  return before > 0 && after < before ? Math.floor((1 - after / before) * 100) : 0;   // rounded down: never overstated
 }

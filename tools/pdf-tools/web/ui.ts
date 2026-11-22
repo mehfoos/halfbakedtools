@@ -4,7 +4,7 @@
 import { perScreen, screenCount, clampScreen, screenRange, screenOf, pagerItems, MIN_PER_SCREEN } from "./paging.ts";
 import { zipSync } from "fflate";
 import { PDFDocument } from "@cantoo/pdf-lib";
-import { NO_COMPRESSION, PRESETS, saving, greyInPlace, type CompressOptions, type CompressStats } from "./compress-core.ts";
+import { NO_COMPRESSION, PRESETS, saving, greyInPlace, defaultTarget, ladder, fitToSize, type CompressOptions, type CompressStats } from "./compress-core.ts";
 import { recompressImages } from "./compress.ts";
 import {
   emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName, withMarks,
@@ -48,10 +48,12 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   const task = taskBySlug(taskSlug);
   const can = (p: Part) => task.parts.includes(p);
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => root.querySelector<T>(`#${id}`)!;
-  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none", compress: { ...(task.slug === "compress" ? PRESETS.recommended : NO_COMPRESSION) }, numbers: { ...NO_NUMBERS, on: task.slug === "page-numbers" }, watermark: { ...NO_WATERMARK, on: task.slug === "watermark" } } }; };
-  type Level = "none" | keyof typeof PRESETS | "custom";
-  const levelOf = (c: CompressOptions): Level => c.mode === "none" ? "none" : (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).find((k) => JSON.stringify(PRESETS[k]) === JSON.stringify(c)) ?? "custom";
-  let level: Level = task.slug === "compress" ? "recommended" : "none";
+  const fresh = (): Session => { const s = emptySession(); return { ...s, output: { ...s.output, format: task.formats[0], split: can("split") ? task.split ?? "none" : "none", compress: task.slug === "compress" ? { ...NO_COMPRESSION, mode: "target", target: 0 } : { ...NO_COMPRESSION }, numbers: { ...NO_NUMBERS, on: task.slug === "page-numbers" }, watermark: { ...NO_WATERMARK, on: task.slug === "watermark" } } }; };
+  type Level = "none" | "target" | keyof typeof PRESETS | "custom";
+  const levelOf = (c: CompressOptions): Level => c.mode === "none" ? "none" : c.mode === "target" ? "target" : (Object.keys(PRESETS) as (keyof typeof PRESETS)[]).find((k) => JSON.stringify(PRESETS[k]) === JSON.stringify(c)) ?? "custom";
+  let level: Level = task.slug === "compress" ? "target" : "none";
+  /** Whether the visitor has typed a size; until then it follows the files added (about half the largest). */
+  let targetTyped = false;
   let session: Session = fresh();
   const loaded = new Map<string, Loaded>();      // by SHA-256 of the file, so it survives loading a settings file
   let sel = new Set<number>();
@@ -626,7 +628,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const wm = o.watermark;
     put("wText", wm.text); put("wLayout", wm.layout); put("wAngle", String(wm.angle)); put("wOpacity", String(Math.round(wm.opacity * 100)));
     put("wSize", String(wm.size)); put("wFont", wm.font); put("wColor", wm.color); tick("wOn", wm.on); tick("wBold", wm.bold);
-    put("cLevel", level); put("cDpi", String(o.compress.dpi)); put("cQuality", String(Math.round(o.compress.quality * 100)));
+    put("cLevel", level); put("cDpi", String(o.compress.dpi)); showTarget(o.compress.target ?? 0); put("cQuality", String(Math.round(o.compress.quality * 100)));
     if (o.compress.mode !== "none") put("cMode", o.compress.mode);
     const grey = root.querySelector<HTMLInputElement>("#cGrey"); if (grey) grey.checked = o.compress.grey;
     showOptions(); refreshButtons();
@@ -634,7 +636,15 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     schedulePreview();
     if (can("crop")) { if (!firstFile()) { $("cropper").hidden = true; cropKey = ""; cropShown = false; } else if (!cropShown || cropKey !== firstFile()!.sha256) { cropKey = firstFile()!.sha256; cropAt = 0; drawCropper(); } else cropOverlay(); }
   }
-  const fmtSize = (n: number) => n < 1e6 ? `${Math.max(1, Math.round(n / 1e3))} kB` : `${(n / 1e6).toFixed(1)} MB`;
+  const fmtSize = (n: number) => n < 1e5 ? `${(n / 1e3).toFixed(1)} kB` : n < 1e6 ? `${Math.round(n / 1e3)} kB` : `${(n / 1e6).toFixed(n < 1e7 ? 2 : 1)} MB`;
+  /** Puts a size in the target box, in MB from 1 MB up, otherwise kB. Empty until a file gives a size. */
+  function showTarget(bytes: number) {
+    const box = root.querySelector<HTMLInputElement>("#cTarget"), unit = root.querySelector<HTMLSelectElement>("#cUnit");
+    if (!box || !unit) return;
+    if (!bytes) { box.value = ""; return; }
+    const mb = bytes >= 1e6; unit.value = mb ? "MB" : "kB";
+    box.value = String(Math.round((bytes / (mb ? 1e6 : 1e3)) * 1000) / 1000);
+  }
 
   function refreshButtons() {
     const n = sel.size, total = session.pages.length;
@@ -842,7 +852,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     const lv = root.querySelector<HTMLSelectElement>("#cLevel");
     if (lv) {
       level = lv.value as Level;
-      compress = level === "none" ? { ...NO_COMPRESSION } : level !== "custom" ? { ...PRESETS[level] } : {
+      const tv = Number(v("cTarget")), unit = v("cUnit") === "MB" ? 1e6 : 1e3;
+      compress = level === "none" ? { ...NO_COMPRESSION } : level === "target" ? { ...NO_COMPRESSION, mode: "target", target: Number.isFinite(tv) && tv > 0 ? Math.max(1_000, Math.round(tv * unit)) : o.compress.target ?? 0 } : level !== "custom" ? { ...PRESETS[level] } : {
         mode: v("cMode") as CompressOptions["mode"], dpi: clamp(Number(v("cDpi")), DPI_MIN, DPI_MAX, o.compress.dpi),
         quality: clamp(Number(v("cQuality")) / 100, 0.1, 1, o.compress.quality), grey: !!root.querySelector<HTMLInputElement>("#cGrey")?.checked,
       };
@@ -902,15 +913,21 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     hide("imCustom", session.output.images.size !== "custom");
     const cw = root.querySelector<HTMLSelectElement>("#crWhich"); if (cw) hide("crPagesRow", cw.value !== "some");
     hide("optNumbers", f !== "pdf"); hide("nFields", !session.output.numbers.on); hide("nOnRow", task.slug === "page-numbers");
-    hide("optCompress", f !== "pdf"); hide("cCustom", level !== "custom");
+    hide("optCompress", f !== "pdf"); hide("cCustom", level !== "custom"); hide("cTargetRow", level !== "target");
+    if (level === "target" && !targetTyped && session.sources.length) {   // follow the files until a size is typed
+      const t = defaultTarget(Math.max(...session.sources.map((x) => x.size)));
+      if (t !== c.target) { c.target = t; showTarget(t); }
+    }
     hide("cDpiRow", c.mode === "tidy"); hide("cQualityRow", c.mode === "tidy"); hide("cGreyRow", c.mode === "tidy"); hide("cFlattenWarn", c.mode !== "flatten");
     const sum = root.querySelector<HTMLElement>("#cSummary");
     if (sum) sum.textContent = level === "none" ? "Pictures are kept exactly as they are." : level === "custom" ? "" :
+      level === "target" ? "The tool tries settings from mildest to strongest and keeps the best-looking result at or under this size (1 MB = 1,000,000 bytes). Pictures are shrunk as needed; text and line drawings are not changed. A file already small enough is only tidied, without any loss." :
       c.mode === "flatten" ? `Every page is redrawn as one picture at ${c.dpi} dots per inch and ${Math.round(c.quality * 100)}% quality. Text is lost. This can come out larger than the original for pages that are mostly text.` :
       `Pictures are kept at up to ${c.dpi} dots per inch, at ${Math.round(c.quality * 100)}% quality.${level === "extreme" ? " Expect visibly rough pictures." : ""} Text and line drawings are not changed.`;
     const dpiBox = root.querySelector<HTMLElement>("#optImageDpi"); if (dpiBox) dpiBox.hidden = f === "txt" || f === "md" || f === "html" || f === "docx" || f === "pptx" || f === "xlsx" || !session.sources.some((x) => x.kind === "image");
   }
   $("savePanel").addEventListener("change", () => { readOptions(); showOptions(); if (task.perFile) clearResult(); schedulePreview(); });
+  root.querySelectorAll("#cTarget, #cUnit").forEach((e) => e.addEventListener("input", () => { targetTyped = true; }));
   $("savePanel").addEventListener("input", (e) => { if ((e.target as HTMLElement).closest("#optNumbers, #optWatermark")) { readOptions(); showOptions(); schedulePreview(); } });
   $("savePanel").addEventListener("input", (e) => { if (e.target instanceof HTMLInputElement && e.target.closest("#optImages")) { readOptions(); clearResult(); } });
   $("savePanel").addEventListener("change", (e) => { if ((e.target as HTMLElement).id === "imUnit") render(); });
@@ -1154,11 +1171,25 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         if (o.watermark.on && !o.watermark.text.trim()) throw new Error("Type the words for the watermark first.");
         const build = makeBuilder(data, { imageDpi: o.imageDpi, images: o.images, crop: o.crop, numbers: o.numbers, watermark: o.watermark, ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han(), arabic: arabic() });
         const c = o.compress;
-        const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats }> => {
+        const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats; fit?: Fit }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };
           let built = await build(pp);
           if (password) built = await protect(built, password);   // last step: nothing rewrites the file afterwards
           if (c.mode === "none") return { bytes: built };
+          if (c.mode === "target") {
+            const target = c.target || defaultTarget(built.length);
+            let n = 0;
+            const r = await fitToSize(target, async (t) => {
+              n++;
+              const opts: CompressOptions = t === "lossless" ? { ...c, mode: "tidy" } : { ...c, mode: "images", ...ladder(t) };
+              const what = t === "lossless" ? "tidying without loss" : `pictures at ${opts.dpi} dots per inch, ${Math.round(opts.quality * 100)}% quality`;
+              const x = await recompressImages(built, opts, (i, k) => progress(`${label}: try ${n} (${what}): picture ${i + 1} of ${k}…`));
+              progress(`${label}: try ${n} came to ${fmtSize(x.bytes.length)}; the limit is ${fmtSize(target)}.`);
+              return { ...x, size: x.bytes.length, opts, t };
+            });
+            const pick = r.best ?? r.smallest;
+            return { bytes: pick.bytes, stats: pick.stats, fit: { target, met: !!r.best, lossless: pick.t === "lossless", dpi: pick.opts.dpi, quality: pick.opts.quality, tries: r.tries } };
+          }
           return recompressImages(built, c, (i, n) => progress(`${label}: picture ${i + 1} of ${n}…`));
         };
         if (task.perFile) {
@@ -1167,7 +1198,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
             const pp = pages.filter((x) => x.src === s.id);
             if (!pp.length) continue;
             const r = await make(pp, s.name);
-            done.push({ source: s, name: perFileName(s), bytes: r.bytes, stats: r.stats, first: pp[0] });
+            done.push({ source: s, name: perFileName(s), bytes: r.bytes, stats: r.stats, fit: r.fit, first: pp[0] });
           }
           if (task.slug === "compress") { progress("Preparing the preview…"); await showResult(done); note = ""; }
           else {
@@ -1267,13 +1298,28 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   }
 
   // ---------- Compress PDF: show the real result before anything is downloaded ----------
-  type Compressed = { source: SourceRef; name: string; bytes: Uint8Array; stats?: CompressStats; first: PageItem };
+  /** How a size target went: met or not, and with which setting (`lossless`: pictures untouched). */
+  type Fit = { target: number; met: boolean; lossless: boolean; dpi: number; quality: number; tries: number };
+  type Compressed = { source: SourceRef; name: string; bytes: Uint8Array; stats?: CompressStats; fit?: Fit; first: PageItem };
   const result = $("result");
   function clearResult() { result.hidden = true; result.replaceChildren(); }
   async function showResult(done: Compressed[]) {
     const better = done.filter((d) => d.bytes.length < d.source.size);
     const before = done.reduce((n, d) => n + d.source.size, 0), after = done.reduce((n, d) => n + Math.min(d.bytes.length, d.source.size), 0);
     result.replaceChildren(); result.className = `result sans${better.length ? "" : " same"}`;
+    const fits = done.filter((d) => d.fit);
+    if (fits.length) {
+      // compressing to a size: say for each file whether it fits, and how
+      const line = (d: Compressed) => {
+        const f = d.fit!, size = Math.min(d.bytes.length, d.source.size);
+        if (d.source.size <= f.target && d.bytes.length >= d.source.size) return `${d.source.name} is already ${fmtSize(d.source.size)}, under your limit of ${fmtSize(f.target)}: nothing to do.`;
+        if (!f.met) return `${d.source.name}: couldn't get under ${fmtSize(f.target)} with text kept. The smallest was ${fmtSize(size)}` +
+          (f.lossless || !d.stats?.changed ? ", because none of its pictures could be shrunk (see below)." : `, with pictures at ${f.dpi} dots per inch and ${Math.round(f.quality * 100)}% quality, the strongest setting.`) +
+          " To go smaller, try “Maximum: pages become pictures” (text becomes part of the picture), making pictures grey (Custom), or removing pages.";
+        return `${d.source.name}: ${fmtSize(size)}, under your limit of ${fmtSize(f.target)}` + (f.lossless ? ", with no loss of quality (only tidied)." : `, with pictures at ${f.dpi} dots per inch and ${Math.round(f.quality * 100)}% quality (the mildest setting found that fits, after ${f.tries} tries).`);
+      };
+      result.append(...fits.map((d) => el("p", { className: d.fit!.met ? "" : "notice warn small" }, line(d))));
+    }
     if (!better.length) {
       result.append(el("p", {}, el("strong", {}, "These settings didn't make the file smaller, so there is nothing to download.")),
         el("p", { className: "small" }, "It may already be well compressed, or be mostly text and drawings, which this tool doesn't change. You could try a stronger setting."));
@@ -1284,9 +1330,10 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         el("td", {}, d.source.name), el("td", { className: "num" }, fmtSize(d.source.size)), el("td", { className: "num" }, d.bytes.length < d.source.size ? `${fmtSize(d.bytes.length)} (−${saving(d.source.size, d.bytes.length)}%)` : "not smaller: left out"))))));
     }
     const st = done.map((d) => d.stats).filter((x): x is CompressStats => !!x);
-    if (session.output.compress.mode === "images" && st.length && !st.some((x) => x.images)) {
+    const shrinks = session.output.compress.mode === "images" || session.output.compress.mode === "target";
+    if (shrinks && st.length && !st.some((x) => x.images)) {
       result.append(el("p", { className: "small" }, "There are no pictures in this PDF to shrink."));
-    } else if (session.output.compress.mode === "images" && st.length) {
+    } else if (shrinks && st.length) {
       const changed = st.reduce((n, x) => n + x.changed, 0), total = st.reduce((n, x) => n + x.images, 0);
       const why = new Map<string, number>(); for (const x of st) for (const [k, n] of Object.entries(x.skipped)) why.set(k, (why.get(k) ?? 0) + n);
       result.append(el("p", { className: "small" }, `${changed} of ${total} picture${total === 1 ? "" : "s"} made smaller.` +
@@ -1338,8 +1385,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
       if (!can("numbers")) next.output.numbers = { ...NO_NUMBERS };
       else if (task.slug === "page-numbers") next.output.numbers.on = true;
       if (!can("compress")) next.output.compress = { ...NO_COMPRESSION };
-      else if (task.slug === "compress" && next.output.compress.mode === "none") next.output.compress = { ...PRESETS.recommended };
-      level = levelOf(next.output.compress);
+      else if (task.slug === "compress" && next.output.compress.mode === "none") next.output.compress = { ...NO_COMPRESSION, mode: "target", target: 0 };
+      level = levelOf(next.output.compress); targetTyped = !!next.output.compress.target;
       session = next; sel = new Set(); undo.length = 0;
       render();
       say(session.sources.every((s) => loaded.has(s.sha256)) ? "Settings loaded." : "Settings loaded. Now add the files they refer to.");

@@ -35,7 +35,7 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | Their tool | Here | Notes |
 |---|---|---|
 | Merge, Split, Remove pages, Extract pages, Organize | Done | |
-| Compress PDF | Done | Six levels plus custom |
+| Compress PDF | Done; **to a size added 2026-11-22** | To a size you choose (first, default about half the file), six levels plus custom; detail measured as drawn; lossless tidying. Follow-ups: JPEG 2000 and CMYK pictures; removing duplicate pictures; a size target in the all-in-one workspace reports only the saved files |
 | Rotate PDF | Done | |
 | JPG to PDF | Done as "Images to PDF" | Theirs also offers orientation and margins: chunk 6 |
 | PDF to JPG | Done | Theirs can also pull out the pictures stored in a PDF: chunk 6 |
