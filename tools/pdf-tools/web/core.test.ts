@@ -1549,3 +1549,15 @@ test("compress: a picture stored twice with the same settings and bytes is store
   assert.equal(refs[0], refs[1]); assert.notEqual(refs[0], refs[2]);
   assert.equal(pruneObjects(saved), 1, "the dropped copy is no longer reached");
 });
+test("compress to a size from a sample: corrects a biased estimate and lands just under the limit in a few full tries", async () => {
+  const { fitBySample } = await import("./compress-core.ts");
+  const fixed = 500_000, real = (t: number) => fixed + Math.round(30_000_000 * Math.exp(-4 * t));   // pictures shrink with strength
+  const est = (t: number) => fixed + 30_000_000 * Math.exp(-4 * t) * 0.8;                              // the sample guesses 20% low
+  let fulls = 0;
+  const r = await fitBySample(3_000_000, fixed, async () => ({ size: 30_500_000 }), async (t) => { fulls++; return { size: real(t) }; }, async (t) => est(t));
+  assert.ok(r.best && r.best.size <= 3_000_000 && r.best.size >= 0.93 * 3_000_000, `got ${r.best?.size}`);
+  assert.ok(fulls <= 4 && r.tries === fulls + 1, `${fulls} full tries`);
+  // a limit no strength reaches: the strongest is made, and nothing "fits"
+  const no = await fitBySample(100_000, fixed, async () => ({ size: 30_500_000 }), async (t) => ({ size: real(t) }), async (t) => est(t));
+  assert.equal(no.best, undefined); assert.equal(no.smallest.size, real(1));
+});

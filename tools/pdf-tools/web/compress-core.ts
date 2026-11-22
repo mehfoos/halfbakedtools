@@ -71,6 +71,51 @@ export async function fitToSize<R extends { size: number }>(target: number, tryA
 }
 
 /**
+ * Compressing to a size when there are many pictures: the search runs on estimates, and only its answers are made in
+ * full. `estimate(t)` predicts the file size at strength t from a sample of the pictures; `full(t)` makes the whole
+ * file; `fixed` is the part of the size that isn't shrinkable pictures. Each round searches the estimates with
+ * `fitToSize` (aiming 2% under the limit), makes the strength found in full, and then corrects the estimates by how
+ * far off they were (the shrinkable part scaled by actual / estimated at that strength); once full results lie on both
+ * sides of the limit, it aims between them instead. It stops when a full result is within 7% under the limit, or
+ * after `maxFull` full tries (then the largest that fits wins; if none fits, the
+ * strongest setting is made). Estimates are remembered by strength, so rounds reuse them.
+ */
+export async function fitBySample<R extends { size: number }>(target: number, fixed: number, lossless: () => Promise<R>, full: (t: number) => Promise<R>, estimate: (t: number) => Promise<number>, maxFull = 4):
+    Promise<{ best?: R; bestT?: number | "lossless"; smallest: R; tries: number; estimates: number }> {
+  let best: R | undefined, bestT: number | "lossless" | undefined, smallest: R | undefined, fulls = 0, factor = 1;
+  const note = (r: R, t: number | "lossless") => { if (!smallest || r.size < smallest.size) smallest = r; if (r.size <= target && (!best || r.size > best.size)) { best = r; bestT = t; } return r; };
+  const l = note(await lossless(), "lossless");
+  if (l.size <= target) return { best, bestT, smallest: smallest!, tries: 1, estimates: 0 };
+  const memo = new Map<number, number>();
+  const raw = async (t: number) => { let v = memo.get(t); if (v === undefined) { v = await estimate(t); memo.set(t, v); } return v; };
+  const tried = new Map<number, number>();   // strength -> actual size
+  while (fulls < maxFull) {
+    // once full results lie on both sides of the limit, aim between them (on a log scale); before that, use the
+    // estimates, corrected by the last full result
+    const over = [...tried].filter(([, z]) => z > target).sort((a, b) => b[0] - a[0])[0], fit = [...tried].filter(([, z]) => z <= target).sort((a, b) => a[0] - b[0])[0];
+    let t: number;
+    if (over && fit) {
+      if (fit[0] - over[0] < 0.01) break;
+      const k = (Math.log(over[1]) - Math.log(target * 0.975)) / (Math.log(over[1]) - Math.log(fit[1]));
+      t = over[0] + (fit[0] - over[0]) * Math.min(0.85, Math.max(0.15, Number.isFinite(k) ? k : 0.5));
+    } else {
+      const est = await fitToSize(target * 0.98, async (x) => ({ size: x === "lossless" ? l.size : fixed + (await raw(x) - fixed) * factor }));
+      t = typeof est.bestT === "number" ? est.bestT : 1;
+      const near = (x: number) => [...tried.keys()].some((y) => Math.abs(x - y) < 0.01);
+      if (near(t)) t = Math.min(1, t + (fit ? -0.03 : 0.03));   // the corrected search can land on a strength already made
+      if (near(t) || t < 0) break;
+    }
+    fulls++;
+    const r = note(await full(t), t); tried.set(t, r.size);
+    if (best && best.size >= target * 0.93) break;
+    const e = await raw(t);
+    if (e > fixed && r.size > fixed) factor = (r.size - fixed) / (e - fixed);
+  }
+  if (!best && !tried.has(1)) { fulls++; note(await full(1), 1); }
+  return { best, bestT, smallest: smallest!, tries: 1 + fulls, estimates: memo.size };
+}
+
+/**
  * A picture's detail, in dots per inch, from the size it is drawn at on the page (in points, 1/72 inch): the lower
  * of its detail across and down, so a squashed picture keeps enough detail in both directions.
  */

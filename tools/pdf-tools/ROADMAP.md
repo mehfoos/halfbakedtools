@@ -35,7 +35,7 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | Their tool | Here | Notes |
 |---|---|---|
 | Merge, Split, Remove pages, Extract pages, Organize | Done | |
-| Compress PDF | Done; **to a size added 2026-11-22** | To a size you choose (first, default about half the file), six levels plus custom; detail measured as drawn; lossless tidying. CMYK, palette, JPEG 2000 and other pictures drawn by PDF.js (2026-11-22). Repeated pictures, fonts and drawings stored once, and pictures drawn by PDF.js kept between tries (2026-11-22). Follow-ups: faster tries for long scans (the time goes to encoding and to reading and writing the whole file, not decoding); a size target in the all-in-one workspace reports only the saved files |
+| Compress PDF | Done; **to a size added 2026-11-22** | To a size you choose (first, default about half the file), six levels plus custom; detail measured as drawn; lossless tidying. CMYK, palette, JPEG 2000 and other pictures drawn by PDF.js (2026-11-22). Repeated pictures, fonts and drawings stored once, and pictures drawn by PDF.js kept between tries (2026-11-22). Long files searched on a sample of eight pictures (2026-11-22). Follow-ups: a size target in the all-in-one workspace reports only the saved files |
 | Rotate PDF | Done | |
 | JPG to PDF | Done as "Images to PDF" | Theirs also offers orientation and margins: chunk 6 |
 | PDF to JPG | Done | Theirs can also pull out the pictures stored in a PDF: chunk 6 |

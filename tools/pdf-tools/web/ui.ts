@@ -4,7 +4,7 @@
 import { perScreen, screenCount, clampScreen, screenRange, screenOf, pagerItems, MIN_PER_SCREEN } from "./paging.ts";
 import { zipSync } from "fflate";
 import { PDFDocument } from "@cantoo/pdf-lib";
-import { NO_COMPRESSION, PRESETS, saving, greyInPlace, defaultTarget, ladder, fitToSize, type CompressOptions, type CompressStats } from "./compress-core.ts";
+import { NO_COMPRESSION, PRESETS, saving, greyInPlace, defaultTarget, ladder, fitToSize, fitBySample, type CompressOptions, type CompressStats } from "./compress-core.ts";
 import { recompressImages } from "./compress.ts";
 import {
   emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName, withMarks,
@@ -1181,17 +1181,36 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
           if (c.mode === "target") {
             const target = c.target || defaultTarget(built.length);
             let n = 0;
-            const { decodedCache, releaseCache } = await import("./compress.ts"), cache = decodedCache();
-            const r = await fitToSize(target, async (t) => {
+            const { decodedCache, releaseCache, eligibleImages } = await import("./compress.ts"), cache = decodedCache();
+            const make1 = async (t: number | "lossless") => {
               n++;
               const opts: CompressOptions = t === "lossless" ? { ...c, mode: "tidy" } : { ...c, mode: "images", ...ladder(t) };
               const what = t === "lossless" ? "tidying without loss" : `pictures at ${opts.dpi} dots per inch, ${Math.round(opts.quality * 100)}% quality`;
               const x = await recompressImages(built, opts, (i, k) => progress(`${label}: try ${n} (${what}): ${i} of ${k} pictures done…`), reader, cache);
               progress(`${label}: try ${n} came to ${fmtSize(x.bytes.length)}; the limit is ${fmtSize(target)}.`);
               return { ...x, size: x.bytes.length, opts, t };
-            }).finally(() => releaseCache(cache));
-            const pick = r.best ?? r.smallest;
-            return { bytes: pick.bytes, stats: pick.stats, fit: { target, met: !!r.best, lossless: pick.t === "lossless", dpi: pick.opts.dpi, quality: pick.opts.quality, tries: r.tries } };
+            };
+            try {
+              // many pictures: search on a sample of eight (spread from smallest to largest), then make the answer in full
+              const list = await eligibleImages(built, reader);
+              if (list.length > 8) {
+                const sorted = [...list].sort((a, b) => a.bytes - b.bytes), sample = new Set(Array.from({ length: 8 }, (_, i) => sorted[Math.round((i * (sorted.length - 1)) / 7)].key));
+                const total = list.reduce((s, x) => s + x.bytes, 0);
+                let losslessSize = 0, k = 0;
+                const lossless = await make1("lossless"); losslessSize = lossless.size;
+                const r = await fitBySample(target, Math.max(0, losslessSize - total), async () => lossless, make1, async (t) => {
+                  const m = { only: sample, old: 0, now: 0 }, o = ladder(t);
+                  progress(`${label}: estimating from 8 of ${list.length} pictures (${++k}): ${o.dpi} dots per inch, ${Math.round(o.quality * 100)}% quality…`);
+                  await recompressImages(built, { ...c, mode: "images", ...o }, undefined, reader, cache, m);
+                  return m.old ? losslessSize - total + total * (m.now / m.old) : losslessSize;
+                });
+                const pick = r.best ?? r.smallest;
+                return { bytes: pick.bytes, stats: pick.stats, fit: { target, met: !!r.best, lossless: pick.t === "lossless", dpi: pick.opts.dpi, quality: pick.opts.quality, tries: r.tries, estimates: r.estimates } };
+              }
+              const r = await fitToSize(target, make1);
+              const pick = r.best ?? r.smallest;
+              return { bytes: pick.bytes, stats: pick.stats, fit: { target, met: !!r.best, lossless: pick.t === "lossless", dpi: pick.opts.dpi, quality: pick.opts.quality, tries: r.tries } };
+            } finally { releaseCache(cache); }
           }
           return recompressImages(built, c, (i, n) => progress(`${label}: ${i} of ${n} pictures done…`), reader);
         };
@@ -1302,7 +1321,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
 
   // ---------- Compress PDF: show the real result before anything is downloaded ----------
   /** How a size target went: met or not, and with which setting (`lossless`: pictures untouched). */
-  type Fit = { target: number; met: boolean; lossless: boolean; dpi: number; quality: number; tries: number };
+  type Fit = { target: number; met: boolean; lossless: boolean; dpi: number; quality: number; tries: number; estimates?: number };
   type Compressed = { source: SourceRef; name: string; bytes: Uint8Array; stats?: CompressStats; fit?: Fit; first: PageItem };
   const result = $("result");
   function clearResult() { result.hidden = true; result.replaceChildren(); }
@@ -1319,7 +1338,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         if (!f.met) return `${d.source.name}: couldn't get under ${fmtSize(f.target)} with text kept. The smallest was ${fmtSize(size)}` +
           (f.lossless || !d.stats?.changed ? ", because none of its pictures could be shrunk (see below)." : `, with pictures at ${f.dpi} dots per inch and ${Math.round(f.quality * 100)}% quality, the strongest setting.`) +
           " To go smaller, try “Maximum: pages become pictures” (text becomes part of the picture), making pictures grey (Custom), or removing pages.";
-        return `${d.source.name}: ${fmtSize(size)}, under your limit of ${fmtSize(f.target)}` + (f.lossless ? ", with no loss of quality (only tidied)." : `, with pictures at ${f.dpi} dots per inch and ${Math.round(f.quality * 100)}% quality (the mildest setting found that fits, after ${f.tries} tries).`);
+        return `${d.source.name}: ${fmtSize(size)}, under your limit of ${fmtSize(f.target)}` + (f.lossless ? ", with no loss of quality (only tidied)." : `, with pictures at ${f.dpi} dots per inch and ${Math.round(f.quality * 100)}% quality (the mildest setting found that fits, after ${f.tries} ${f.tries === 1 ? "try" : "tries"}${f.estimates ? ` on the whole file and ${f.estimates} estimates from a sample of its pictures` : ""}).`);
       };
       result.append(...fits.map((d) => el("p", { className: d.fit!.met ? "" : "notice warn small" }, line(d))));
     }

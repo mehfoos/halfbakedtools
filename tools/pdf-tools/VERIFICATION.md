@@ -528,3 +528,22 @@ pictures are mostly CMYK, JPEG 2000 or JBIG2, which are still left as they are.
 - Our eight largest test files compressed together again: same text in every output.
 - Unit test: two identical pictures become one object, a third with another colour space stays separate, and the
   dropped copy is pruned.
+
+### Compress PDF to a size: searching on a sample (2026-11-22)
+
+- Measured first: in a try on the 30-page scan, reading the file took 15 to 30 ms and saving 2 to 65 ms; re-encoding
+  the pictures took 1.2 to 3.9 s. So tries were made cheaper by estimating from a sample instead.
+- Headless Chrome, the same machine as before:
+
+  | File | Limit | Before (every try in full) | Now |
+  |---|---|---|---|
+  | 30-page grey scan, 28.7 MB | 14 MB (offered first) | 32 s, 13.4 MB | 12 s, 13.1 MB (2 full tries, 7 estimates) |
+  | same | 3 MB | not measured | 16 s, 2.86 MB (4 full tries) |
+  | scan + photos + CMYK + JPEG 2000 + palette, 40.9 MB | 20 MB | not measured | 29 s, 19.6 MB (5 full tries) |
+  | same | 5 MB | not measured | 16 s, 4.67 MB |
+
+  The first estimate for the mixed file was 20% low (19.4 MB predicted, 24.0 MB made); the correction found 19.6 MB.
+  An earlier version that didn't correct the estimate landed at 4.06 MB for the 20 MB limit, which is why it does.
+- Unit test: an estimate 20% low still lands within 7% under the limit in at most four full tries; an unreachable
+  limit makes the strongest setting and reports that nothing fits.
+- Files with eight pictures or fewer are searched in full, as before.

@@ -141,6 +141,16 @@ async function viaReader(doc: PDFDocument, stream: PDFRawStream, width: number, 
   return reader(await mini.save());
 }
 
+/** The pictures a compression would rewrite, by object, with their stored sizes (after repeated ones are merged, as
+ *  every try does, so the names match). */
+export async function eligibleImages(bytes: Uint8Array, reader?: Reader): Promise<{ key: string; bytes: number }[]> {
+  const doc = await PDFDocument.load(bytes);
+  if (doc.context.trailerInfo.Encrypt) return [];
+  if (mergeDuplicates(doc)) prune(doc);
+  return (doc.context.enumerateIndirectObjects().filter(([, o]) => o instanceof PDFRawStream && o.dict.lookup(N("Subtype")) === N("Image")) as [PDFRef, PDFRawStream][])
+    .filter(([, s]) => canRecompress(describe(doc, s), !!reader).ok).map(([r, s]) => ({ key: r.toString(), bytes: s.contents.length }));
+}
+
 /**
  * Pictures drawn by PDF.js (print colours, palettes, JPEG 2000...), kept between the tries of compressing to a size,
  * so each is drawn once rather than at every try. (Pictures the browser decodes itself are not kept: in testing,
@@ -161,7 +171,8 @@ export function releaseCache(c: DecodedCache) { for (const b of c.map.values()) 
  * and drawings are untouched. With `reader`, pictures the browser can't decode are drawn by the PDF reader. Up to
  * three pictures are worked on at once (decoding and encoding run outside the page's own thread).
  */
-export async function recompressImages(bytes: Uint8Array, opts: CompressOptions, progress?: (done: number, total: number) => void, reader?: Reader, cache?: DecodedCache): Promise<{ bytes: Uint8Array; stats: CompressStats }> {
+export async function recompressImages(bytes: Uint8Array, opts: CompressOptions, progress?: (done: number, total: number) => void, reader?: Reader, cache?: DecodedCache,
+    measure?: { only: Set<string>; old: number; now: number }): Promise<{ bytes: Uint8Array; stats: CompressStats }> {
   const doc = await PDFDocument.load(bytes);
   const stats: CompressStats = { images: 0, changed: 0, skipped: {}, before: bytes.length, after: 0 };
   const skip = (why: string) => { stats.skipped[why] = (stats.skipped[why] ?? 0) + 1; };
@@ -170,7 +181,8 @@ export async function recompressImages(bytes: Uint8Array, opts: CompressOptions,
   if (duplicates) prune(doc);
   if (opts.mode === "images") {
     const { byImage, largest } = pageSizes(doc), drawn = drawnDetail(doc);
-    const images = doc.context.enumerateIndirectObjects().filter(([, o]) => o instanceof PDFRawStream && o.dict.lookup(N("Subtype")) === N("Image")) as [PDFRef, PDFRawStream][];
+    const images = (doc.context.enumerateIndirectObjects().filter(([, o]) => o instanceof PDFRawStream && o.dict.lookup(N("Subtype")) === N("Image")) as [PDFRef, PDFRawStream][])
+      .filter(([ref]) => !measure || measure.only.has(ref.toString()));
     stats.images = images.length;
     let done = 0, converted = 0;
     const one = async (ref: PDFRef, stream: PDFRawStream) => {
@@ -198,6 +210,7 @@ export async function recompressImages(bytes: Uint8Array, opts: CompressOptions,
         c.width = c.height = 0;   // let the browser free the canvas now
         if (!blob || blob.type !== "image/jpeg") { skip("couldn't be re-encoded by this browser"); return; }
         const jpeg = new Uint8Array(await blob.arrayBuffer());
+        if (measure) { measure.old += stream.contents.length; measure.now += jpeg.length < stream.contents.length * 0.95 ? jpeg.length : stream.contents.length; return; }
         if (jpeg.length >= stream.contents.length * 0.95) { skip("was already as small"); return; }
         const fresh = doc.context.stream(jpeg, { Type: "XObject", Subtype: "Image", Width: t.width, Height: t.height, ColorSpace: "DeviceRGB", BitsPerComponent: 8, Filter: "DCTDecode" });
         const soft = stream.dict.get(N("SMask")); if (soft) fresh.dict.set(N("SMask"), soft);   // keep see-through areas
@@ -210,6 +223,7 @@ export async function recompressImages(bytes: Uint8Array, opts: CompressOptions,
     await Promise.all(Array.from({ length: Math.min(3, images.length) }, async () => { while (next < images.length) { const [ref, s] = images[next++]; await one(ref, s); } }));
     if (converted) stats.converted = converted;
   }
+  if (measure) return { bytes: new Uint8Array(0), stats };   // measuring only: nothing to save
   // lossless tidying, in every mode (an encrypted file is left as it is: its streams can't be read here)
   if (tidyable) {
     const t = tidyStreams(doc), unused = prune(doc);
