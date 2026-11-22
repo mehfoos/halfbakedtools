@@ -2,7 +2,7 @@
 
 ## What is kept, and where (from 20 Nov 2026)
 
-Every source cited on the site has three layers (principle 3 in [`docs/PRINCIPLES.md`](../docs/PRINCIPLES.md)):
+Every source cited on the site has three layers (principle 3 in [`AGENTS.md`](../AGENTS.md)):
 
 1. **The reference**, in the tool's `references.json`, with `accessed`: the date the original was last read and
    checked.
@@ -12,6 +12,16 @@ Every source cited on the site has three layers (principle 3 in [`docs/PRINCIPLE
 3. **A public copy** in this repository's **`source-archive` release**, only where numbers or data in a visitor's
    result come from the source, its licence allows redistribution, and the tool is a health tool or the source is
    hard to obtain again. Otherwise `references.json` says why there is none (`noPublicCopy`).
+
+**Owner's copies:** editors may save them to the private folder directly, under the same file name as in
+`archive.json` where there is a public copy; the owner saves what an editor can't reach.
+
+**Further-reading links** (for example an exercise how-to page) only help a reader do something; nothing on the site
+relies on them. They aren't references: they aren't numbered or copied, and their source is named next to the link.
+
+**Link check:** every three months a workflow (`link-check.yml`) checks every reference and further-reading link and
+opens an issue listing those that fail. It never changes files: an editor fixes each one, re-checks the source and
+updates `accessed`.
 
 **Never commit reference files to the repository**: no PDFs, spreadsheets, datasets, zips or saved web pages, on
 any branch. Anything committed stays in the repository's history for good. The tests fail if one appears.

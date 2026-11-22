@@ -1,46 +1,35 @@
 # Half-Baked Tools
 
-Open-source tools and utilities for everyday questions and tasks; always a work in progress. Live at **https://halfbakedtools.com**.
+Small, free, open-source tools for everyday questions and tasks; always a work in progress. Live at
+**https://halfbakedtools.com**.
 
-Every tool on the site follows the same rules: accuracy comes before features, every claim is cited and
-the cited documents are archived in this repository, methods and limitations are written down, and
-calculations run in the visitor's browser. The intent and the reasons behind these rules are in
-**[docs/PRINCIPLES.md](docs/PRINCIPLES.md)**; contributors (human or AI) should read it, and [AGENTS.md](AGENTS.md), first.
+Accuracy comes before features, every claim is cited, methods and limits are written down, and everything runs in
+the visitor's browser. **All the rules are in [AGENTS.md](AGENTS.md)**: read it before changing anything (human or AI).
 
 ## Tools
 
 | Tool | Folder | Status |
 |---|---|---|
-| Nutrient planner: look up any food against UK, US or EU daily nutrient recommendations (Food Finder), or find a few everyday foods that together meet them, or check your own day (Planner) | [`tools/nutrient-planner/`](tools/nutrient-planner/) | Beta |
-| PDF tools: merge, split, reorder, rotate and resize pages, pages to images or text, images to PDF, all in the browser with no upload (phase 1 of 4; see its `ROADMAP.md`) | [`tools/pdf-tools/`](tools/pdf-tools/) | Alpha |
+| Nutrient planner: look up a food against UK, US or EU daily nutrient recommendations (Food Finder), find a few everyday foods that together meet them, or check your own day (Planner) | [`tools/nutrient-planner/`](tools/nutrient-planner/) | Beta |
+| Exercise planner: choose the muscles (or heart and lung fitness) to train and the equipment you have, and get short lists of exercises that cover them | [`tools/exercise-planner/`](tools/exercise-planner/) | Alpha |
+| PDF tools: merge, split, compress, edit and convert PDFs in the browser, with no upload (plan in its `ROADMAP.md`) | [`tools/pdf-tools/`](tools/pdf-tools/) | Alpha |
 
 ## Repository layout
 
 ```
-tools/                     one self-contained folder per tool (see docs/ADDING_A_TOOL.md)
-  <slug>/
-    tool.json              name, summary, tagline, order, topic, status, pages: drives the home page and navigation
-    pages/*.astro          the tool's pages, served at /tools/<slug>/ and /tools/<slug>/<page>/
-    web/                   browser code and its tests (*.test.ts)
-    references.json        the tool's references, in citation order ([1], [2], ...)
-    VERIFICATION.md        what has been checked against which source, and when
-    DECISIONS.md           the tool's intent and design decisions, with reasons
-    data/                  data the tool publishes (copied to the site at build time)
-    pipeline/              scripts that build data/ (optional)
-    README.md              how the tool works and how to maintain it
-  _template/               copy this to start a new tool
-site/                      the shared site shell
-  src/layouts/             Base (header, footer) and ToolLayout (tool tabs + reference list)
-  src/components/          shared components (References)
-  src/lib/                 tool registry, IEEE reference formatting
-  src/pages/               site-wide pages only: home, about, privacy
-  src/styles/, public/     shared design, logo, fonts
-sources/                   registry of archived copies (archive.json) and their verified checksums;
-                           the copies themselves are files of the source-archive release
-scripts/                   site-wide scripts: data sync, archive checking
-docs/                      principles (PRINCIPLES.md), setup and contributor guides
-AGENTS.md, CLAUDE.md       instructions for AI assistants
-.github/workflows/         deploy, source archiving, per-tool data jobs (named <slug>-*.yml)
+AGENTS.md            the rules (CLAUDE.md points to it)
+tools/<slug>/        one self-contained folder per tool; tools/_template/ is the starting point
+  tool.json          name, summary, tagline, order, topic, status, health, pages
+  pages/             the tool's pages, served at /tools/<slug>/…; one is methods.astro
+  web/               browser code and its tests (*.test.ts)
+  references.json    the tool's references, in citation order
+  README.md, DECISIONS.md, VERIFICATION.md
+  data/, pipeline/   published data, and the scripts that build it (optional)
+site/                the shared shell: layouts, components, tool registry, styles, home/about/privacy pages
+sources/             registry of archived source copies (the copies are files of the source-archive release)
+scripts/             site-wide scripts: data sync, archive check, link check
+docs/                DECISIONS.md (site-wide decision log), SETUP.md (hosting)
+.github/workflows/   deploy, link check, source archiving, per-tool jobs (<slug>-*.yml)
 ```
 
 ## Running locally

@@ -1,7 +1,7 @@
 # Exercise planner: design decisions
 
-Tool-specific intent and decisions, newest first. Site-wide principles are in
-[`docs/PRINCIPLES.md`](../../docs/PRINCIPLES.md).
+Tool-specific intent and decisions, newest first. The site-wide rules are in
+[`AGENTS.md`](../../AGENTS.md).
 
 ## Intent
 

@@ -1,6 +1,6 @@
 # PDF tools: roadmap and handover notes
 
-For whoever continues this work, human or AI. Read [`AGENTS.md`](../../AGENTS.md), [`docs/PRINCIPLES.md`](../../docs/PRINCIPLES.md),
+For whoever continues this work, human or AI. Read [`AGENTS.md`](../../AGENTS.md),
 then this tool's [`README.md`](README.md) and [`DECISIONS.md`](DECISIONS.md) (which records the owner's full
 requirements) first.
 

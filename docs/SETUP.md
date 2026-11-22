@@ -16,7 +16,7 @@
   The build runs every test first; a failing test stops the deploy.
 - **Sources:** every reference has an access date and an owner's private copy (recorded by file name and checksum
   only); some also have a public copy in the `source-archive` release, never committed (principle 3 in
-  `PRINCIPLES.md`). An editor checks a public copy and lists it in `sources/archive.json`; the owner attaches it to
+  `AGENTS.md`). An editor checks a public copy and lists it in `sources/archive.json`; the owner attaches it to
   the release by hand (*Releases* -> *Source archive* -> *Edit*). See `sources/README.md`. The tests fail if a
   reference is incomplete or a reference file is committed.
 - **Link check** (`link-check.yml`) runs every three months (and on demand from the Actions tab), and opens or

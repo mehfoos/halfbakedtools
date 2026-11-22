@@ -2,7 +2,7 @@
 
 The site's fonts are **Alegreya** (text and headings) and **Alegreya Sans** (forms, tables, notes), by Juan Pablo
 del Peral of Huerta Tipográfica, under the SIL Open Font License 1.1. They are served from this site; no font is
-loaded from another site (docs/PRINCIPLES.md, privacy).
+loaded from another site (AGENTS.md, principle 4).
 
 The files are the designers' own web fonts, copied unchanged (not subset, converted or edited by us). Licence
 texts: `OFL-Alegreya.txt` and `OFL-AlegreyaSans.txt`, as published with each family. Neither declares a Reserved
