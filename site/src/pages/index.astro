@@ -1,27 +1,69 @@
 ---
 import Base from "../layouts/Base.astro";
 import { TOOLS, orderedTopics, pageHref, STATUS_LABEL } from "../lib/tools.ts";
+import { site } from "../site.config.ts";
 const base = import.meta.env.BASE_URL;
 const topics = orderedTopics();
 ---
 <Base current="home">
-  <h1>Half-Baked Tools</h1>
-  <p class="lede">Small, open-source tools and utilities for everyday questions and tasks. They are works in progress.</p>
-  {topics.map((topic) => (
-    <section class="tool-group">
-      <h2>{topic}</h2>
-      <ul class="tool-list">
-        {TOOLS.filter((t) => t.topic === topic).map((t) => (
-          <li>
-            <a class="card" href={pageHref(base, t, "index")}>
-              <h3 style="margin-top:0">{t.name} <span class="tag">{STATUS_LABEL[t.status]}</span></h3>
-              <p class="muted" style="margin:0">{t.summary}</p>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </section>
-  ))}
-  <h2>Why "half-baked"?</h2>
-  <p>Because the tools are never finished: expect rough edges, and changes as they are corrected and refined. <a href={`${base}about/`}>More about the site</a>.</p>
+  <div id="home">
+    <h1 class="lede">Small, free, open-source tools for everyday questions and tasks.</h1>
+
+    <ul class="principles">
+      <li class="block">
+        <span class="ico" aria-hidden="true">E</span>
+        <h2>Evolving</h2>
+        <p>"Half-baked" means never finished, not low quality. Tools are corrected and refined as they go, and each carries an <a href={`${base}about/#status-labels`}>Early version, Beta or Stable label</a> to show where it stands.</p>
+      </li>
+      <li class="block">
+        <span class="ico" aria-hidden="true">O</span>
+        <h2>Open</h2>
+        <p>The code is MIT-licensed and on <a href={site.repoUrl}>GitHub</a>. Each tool has a methods page explaining how it works.</p>
+      </li>
+      <li class="block">
+        <span class="ico" aria-hidden="true">C</span>
+        <h2>Cited</h2>
+        <p>Where a tool uses published figures, it links to the original source.</p>
+      </li>
+      <li class="block">
+        <span class="ico" aria-hidden="true">P</span>
+        <h2>Private</h2>
+        <p>The work happens in your browser. What you enter or open isn't sent to a server. <a href={`${base}privacy/`}>Privacy</a></p>
+      </li>
+    </ul>
+
+    {topics.map((topic) => (
+      <section class="tool-group">
+        <h2 class="topic">{topic}</h2>
+        <ul class="tiles">
+          {TOOLS.filter((t) => t.topic === topic).map((t) => (
+            <li>
+              <a class="tile" href={pageHref(base, t, "index")}>
+                <span class="ico" aria-hidden="true">{t.icon}</span>
+                <span class="name">{t.name} <span class="tag">{STATUS_LABEL[t.status]}</span></span>
+                <span class="blurb">{t.tagline}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
 </Base>
+
+<style is:global>
+  #home h1.lede { font-size: clamp(1.3rem, 3.4vw, 1.7rem); font-weight: 700; line-height: 1.25; text-align: center; margin: 1.1rem auto 1.2rem; max-width: 30em; }
+  #home ul { list-style: none; padding: 0; margin: 0; }
+  #home .principles, #home .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 12px; }
+  #home .principles { margin-bottom: 0.4rem; }
+  #home .block, #home .tile { display: grid; align-content: start; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; height: 100%; padding: 14px; border: 1px solid var(--line-soft); border-radius: 6px; background: #fff; color: inherit; text-decoration: none; box-sizing: border-box; }
+  #home .tile { transition: border-color 0.15s, background 0.15s, transform 0.15s; }
+  #home a.tile:hover, #home a.tile:focus-visible { border-color: var(--navy); background: var(--beige); transform: translateY(-2px); }
+  #home .ico { grid-row: 1; width: 2.6rem; height: 3.1rem; display: flex; align-items: center; justify-content: center; font-family: var(--sans); font-weight: 700; font-size: 0.8rem; color: #fff; background: var(--navy); border-radius: 3px 10px 3px 3px; }
+  #home .block .ico { background: var(--accent); }
+  #home .block h2 { margin: 0; font-size: 1.08rem; line-height: 1.2; color: var(--navy); }
+  #home .block p, #home .tile .blurb { grid-column: 1 / -1; margin: 0; font-family: var(--sans); font-size: 0.88rem; color: var(--muted); }
+  #home .tile .name { font-weight: 700; font-size: 1.08rem; color: var(--navy); line-height: 1.3; }
+  #home h2.topic { font-size: 1.15rem; margin: 1.6em 0 0.5em; border-bottom: 1px solid var(--line-soft); padding-bottom: 0.2em; }
+  #home .tiles { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+</style>

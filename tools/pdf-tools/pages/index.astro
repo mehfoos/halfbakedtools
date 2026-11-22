@@ -82,7 +82,7 @@ const id = (g: string) => g.replace(/\s+/g, "-");
     #pdfhome h2 { font-size: 1.15rem; margin: 1.4em 0 0.5em; border-bottom: 1px solid var(--line-soft); padding-bottom: 0.2em; }
     #pdfhome .tasks { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 12px; }
     #pdfhome .tasks .wide { grid-column: 1 / -1; }
-    #pdfhome .task { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; height: 100%; padding: 14px; border: 1px solid var(--line-soft); border-radius: 6px; background: #fff; color: inherit; text-decoration: none; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+    #pdfhome .task { display: grid; align-content: start; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; height: 100%; padding: 14px; border: 1px solid var(--line-soft); border-radius: 6px; background: #fff; color: inherit; text-decoration: none; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
     #pdfhome a.task:hover, #pdfhome a.task:focus-visible { border-color: var(--navy); background: var(--beige); transform: translateY(-2px); }
     #pdfhome .ico { grid-row: 1; width: 2.6rem; height: 3.1rem; display: flex; align-items: center; justify-content: center; font-family: var(--sans); font-weight: 700; font-size: 0.8rem; color: #fff; background: var(--navy); border-radius: 3px 10px 3px 3px; }
     #pdfhome .name { font-weight: 700; font-size: 1.08rem; color: var(--navy); line-height: 1.2; }

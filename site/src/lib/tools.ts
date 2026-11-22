@@ -2,6 +2,12 @@
 export type ToolPage = { page: string; label: string; nav?: boolean };
 export type Tool = {
   slug: string; name: string; summary: string; topic: string;
+  /** Short line for the home-page card (the summary is for the meta description and methods pages). */
+  tagline: string;
+  /** Two or three capital letters drawn on the card's icon square. */
+  icon: string;
+  /** Position within its topic on the home page (lower first); ties go A to Z. */
+  order?: number;
   status: "alpha" | "beta" | "stable"; added: string; pages: ToolPage[];
 };
 
@@ -10,7 +16,7 @@ const found = import.meta.glob<Tool>("../../../tools/*/tool.json", { eager: true
 export const TOOLS: Tool[] = Object.entries(found)
   .filter(([path]) => !path.split("/").at(-2)!.startsWith("_"))
   .map(([, t]) => t)
-  .sort((a, b) => a.name.localeCompare(b.name));
+  .sort((a, b) => (a.order ?? 99) - (b.order ?? 99) || a.name.localeCompare(b.name));
 
 /** Topics in the order the home page lists them: health first. Topics not listed here follow, A to Z. */
 export const TOPIC_ORDER = ["Health", "Documents"];
