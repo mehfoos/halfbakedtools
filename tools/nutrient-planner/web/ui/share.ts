@@ -34,7 +34,7 @@ export function setupShare(app: App, onImport: () => void) {
 
   // Where the food data came from, at the foot of the tool.
   const { refreshUrl, methodsUrl } = root.dataset;
-  $(root, "#dataInfo").innerHTML = `Food data: ${app.tables.map((t) => `${esc(t.title)} ${t.refs[0] ? cite(t.refs[0]) : ""}, built ${esc(t.generated ?? "on an unknown date")} (${int(t.foods)} foods, ${int(t.basicFoods)} in the Planner)`).join("; ")}; the beta blended option uses USDA and UK CoFID. `
+  $(root, "#dataInfo").innerHTML = `Food data: ${app.tables.map((t) => `${esc(t.title)} ${t.refs[0] ? cite(t.refs[0]) : ""}, built ${esc(t.generated ?? "on an unknown date")} (${int(t.foods)} foods, ${int(t.basicFoods)} in the Planner)`).join("; ")}; the alpha Blended option combines the tables listed here. `
     + (refreshUrl ? `<a href="${esc(refreshUrl)}">Request a data refresh</a>. ` : "")
     + `<a href="${esc(methodsUrl)}">Methods and sources</a>`;
 }
