@@ -12,8 +12,8 @@ export const TOOLS: Tool[] = Object.entries(found)
   .map(([, t]) => t)
   .sort((a, b) => a.name.localeCompare(b.name));
 
-/** Topics in the order the home page lists them: food and health first. Topics not listed here follow, A to Z. */
-export const TOPIC_ORDER = ["Food and health", "Exercise and health", "Documents"];
+/** Topics in the order the home page lists them: health first. Topics not listed here follow, A to Z. */
+export const TOPIC_ORDER = ["Health", "Documents"];
 
 export function orderedTopics(tools: Tool[] = TOOLS): string[] {
   const rank = (t: string) => (TOPIC_ORDER.includes(t) ? TOPIC_ORDER.indexOf(t) : TOPIC_ORDER.length);
