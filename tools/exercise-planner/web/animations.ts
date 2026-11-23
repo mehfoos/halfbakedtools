@@ -1368,6 +1368,153 @@ export const ANIMATIONS: Animation[] = [
       "Jump your feet back towards your hands, then jump up with your arms overhead and land softly with bent knees",
     ],
   },
+  {
+    // ACE "Bicep Curl" (barbell): hands about shoulder-width, palms up, wrists, elbows and shoulders in line; lift the
+    // bar towards the shoulders by bending the elbows, keeping them by the body; lower slowly; chest still. Standing,
+    // which the page's photos may show but its text doesn't say; drawn standing, feet hip-width.
+    exercise: "curl", using: ["barbell"],
+    pose: (t) => {
+      const b = lerp(0, 140, t);
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: [dir(-4), dir(-4)], fore: [dir(b), dir(b)] }));
+      return { ...p, props: [barbell(mid(p.j.lwr, p.j.rwr))] };
+    },
+    cues: [
+      "Hold the bar with both palms facing up, hands about shoulder-width apart",
+      "Bend your elbows to lift the bar towards your shoulders, keeping your elbows by your sides",
+      "Keep your chest still, moving only your arms",
+      "Lower the bar slowly to the start",
+    ],
+  },
+  {
+    // ACE "Standing Bicep Curl" (resistance band): the middle of the band under one foot, a handle in each hand; palms
+    // facing the ceiling, bend the elbows to bring the hands towards the shoulders, elbows close to the sides; lower
+    // slowly. Drawn with the band under the left foot, feet hip-width.
+    exercise: "curl", using: ["bands"],
+    pose: (t) => {
+      const b = lerp(0, 140, t);
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: [DOWN, DOWN], fore: [dir(b), dir(b)] }));
+      const under: V3 = [p.j.lankle[0], 0.5, p.j.lankle[2] + 5];
+      return { ...p, props: [cable(under, p.j.lwr), cable(under, p.j.rwr), grip(p.j.lwr, [1, 0, 0]), grip(p.j.rwr, [1, 0, 0])] };
+    },
+    cues: [
+      "Stand on the middle of the band with one foot and hold a handle in each hand",
+      "With your palms facing up, bend your elbows to bring your hands up towards your shoulders",
+      "Keep your elbows close to your sides",
+      "Lower slowly to the start",
+    ],
+  },
+  {
+    // ACE "Seated Biceps Curl" (machine): seated, arms over the incline pad, the elbows lined up with the machine's
+    // pivot; handles gripped, wrists straight; start with the elbows extended but not locked; curl until the elbows
+    // bend no further; return slowly until the arms are extended and the forearms lightly touch the pad. The pad's
+    // slope (45°), the seat and the trunk's lean are this site's choices; the machine is simplified.
+    exercise: "curl", using: ["machines"],
+    pose: (t) => {
+      const seat = 40, hipC: V3 = [0, seat + 4, 0], torso = dir(162), b = 45 + lerp(12, 140, t);
+      const p = body({ hipC, torso, thigh: [dir(90), dir(90)], shin: [DOWN, DOWN], upper: [dir(45, 6), dir(45, -6)], fore: [dir(b, 4), dir(b, -4)] });
+      const el = mid(p.j.lel, p.j.rel), sh = mid(p.j.lsh, p.j.rsh), padDir = dir(45), under: V3 = [0, -4, 2];
+      const props: Prop[] = [
+        { kind: "line", a: [0, seat, -8], b: [0, seat, 30], width: 5 },
+        { kind: "line", a: [0, seat, 12], b: [0, 0, 12] },
+        { kind: "line", a: add(add(sh, padDir, 4), under), b: add(add(el, padDir, 6), under), width: 6 },
+        { kind: "line", a: add(add(el, padDir, 6), under), b: [0, 0, el[2] + 8] },
+        { kind: "line", a: add(el, [-22, 0, 0]), b: add(el, [22, 0, 0]), width: 2 },
+        { kind: "line", a: add(p.j.lwr, [-4, 0, 0]), b: add(p.j.rwr, [4, 0, 0]) },
+        { kind: "line", a: add(el, [22, 0, 0]), b: add(p.j.lwr, [18, 0, 0]), width: 3 },
+        { kind: "line", a: add(el, [-22, 0, 0]), b: add(p.j.rwr, [-18, 0, 0]), width: 3 },
+      ];
+      return { ...p, props };
+    },
+    cues: [
+      "Sit with your arms over the pad and the seat set so your elbows line up with the machine's pivot",
+      "Grip the handles with straight wrists, elbows extended but not locked",
+      "Curl the handles towards your chest until your elbows bend no further, keeping your body still",
+      "Lower slowly until your arms are extended and your forearms lightly touch the pad",
+    ],
+  },
+  {
+    // ACE "Single Arm Overhead Press" (kettlebell): feet hip-width, the right foot slightly in front; the kettlebell in
+    // the right hand in front of the chest near the shoulder, resting on the forearm, elbow close to the ribs; push the
+    // right foot into the floor to shift the weight forward and press the arm straight overhead; pull the elbow back
+    // down to the ribs to lower. A standing, one-arm press, unlike the seated two-dumbbell press. The free arm isn't
+    // described: drawn hanging.
+    exercise: "dbPress", using: ["kettlebell"], box: 224,
+    pose: (t) => {
+      const hipC: V3 = [0, 75.5, lerp(0, 3, t)], [lh, rh] = hipsOf(hipC), [, rs] = shouldersOf(hipC, UP);
+      const L = twoBone(lh, [SEG.hipW, 0, -4], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-SEG.hipW, 0, 8], SEG.thigh, SEG.shin, FWD);
+      const wr = lerp3([rs[0] + 6, rs[1] - 14, rs[2] + 13], [rs[0] + 1, rs[1] + 53.5, rs[2] + 2], t);
+      const A = twoBone(rs, wr, SEG.upper, SEG.fore, [-0.3, -1, 0.4]);
+      const p = body({ hipC, torso: UP, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [dir(0, 4), A[0]], fore: [dir(0, 3), A[1]] });
+      const h: V3 = [lerp(-0.85, -0.3, t), -0.2 * t, lerp(-0.5, -0.9, t)], n = Math.hypot(...h);
+      return { ...p, props: [{ kind: "kettlebell", at: p.j.rwr, hang: [h[0] / n, h[1] / n, h[2] / n] }] };
+    },
+    cues: [
+      "Stand with your feet hip-width apart, one foot slightly in front",
+      "Hold the kettlebell in front of your chest near that side's shoulder, resting on your forearm, elbow close to your ribs",
+      "Push the front foot into the floor and press the arm straight overhead",
+      "Pull your elbow back down to your ribs to lower it; do all reps on one side, then switch",
+    ],
+  },
+  {
+    // ACE "How to Get Started With Kettlebells" (Anthony J. Wall, 2015), "Kettlebell Deadlifts": feet shoulder-width,
+    // toes slightly out, chest up, back straight; bend at the hips and slightly at the knees to grip the kettlebell
+    // with both hands; with the weight on the heels, drive the hips open to stand; brace and squeeze the glutes. Where
+    // the kettlebell starts isn't stated: drawn on the floor between the feet. Starts at the floor (t = 0).
+    exercise: "deadlift", using: ["kettlebell"],
+    pose: (t) => {
+      const lean = lerp(70, 0, t) * Math.PI / 180, hipC: V3 = [0, lerp(55, 75.5, t), lerp(-37, 0, t)], torso: V3 = [0, Math.cos(lean), Math.sin(lean)];
+      const toes = 10, [lh, rh] = hipsOf(hipC);
+      const L = twoBone(lh, [13, 0, 0], SEG.thigh, SEG.shin, yaw(FWD, toes)), R = twoBone(rh, [-13, 0, 0], SEG.thigh, SEG.shin, yaw(FWD, -toes));
+      const [ls, rs] = shouldersOf(hipC, torso), y = Math.max(17, ls[1] - 53.5), z = lerp(ls[2], ls[2] + 2, t);
+      const LA = twoBone(ls, [3, y, z], SEG.upper, SEG.fore, [1, 0, 0]), RA = twoBone(rs, [-3, y, z], SEG.upper, SEG.fore, [-1, 0, 0]);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [yaw(FWD, toes), yaw(FWD, -toes)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      return { ...p, props: [{ kind: "kettlebell", at: mid(p.j.lwr, p.j.rwr), hang: DOWN }] };
+    },
+    cues: [
+      "Stand with your feet shoulder-width apart, toes slightly out, chest up and back straight",
+      "Bend at the hips and slightly at the knees to grip the kettlebell with both hands",
+      "Keeping your weight on your heels, drive your hips forward to stand",
+      "Brace your stomach and squeeze your glutes at the top",
+    ],
+  },
+  {
+    // ACE "How to Get Started With Kettlebells" (Anthony J. Wall, 2015), "Goblet Squat": the kettlebell held in both
+    // hands at chest height; feet shoulder-width, toes slightly out, chest up, back straight; bend at the hips and
+    // knees, pushing the hips back, elbows forward, and sit down into a squat; weight on the heels, drive back up. The
+    // depth isn't given: drawn to the thighs about level with the floor.
+    exercise: "gobletSquat", using: ["kettlebell"],
+    pose: (t) => {
+      const p = squatPose(t, { depth: 92, shin: 34, lean: 30, wide: 9 }, (sh, torso, neck) => {
+        const chest = add(add(neck, torso, -10), front(torso), 13);
+        const L = twoBone(sh[0], add(chest, [4, 0, 0]), SEG.upper, SEG.fore, [0.05, -1, 0.5]), R = twoBone(sh[1], add(chest, [-4, 0, 0]), SEG.upper, SEG.fore, [-0.05, -1, 0.5]);
+        return [[L[0], R[0]], [L[1], R[1]]];
+      });
+      return { ...p, props: [{ kind: "kettlebell", at: mid(p.j.lwr, p.j.rwr), hang: DOWN }] };
+    },
+    cues: [
+      "Hold the kettlebell in both hands at chest height",
+      "Stand with your feet shoulder-width apart, toes slightly out, chest up and back straight",
+      "Bend at your hips and knees, pushing your hips back and keeping your elbows forward, and sit down into a squat",
+      "Keep your weight on your heels as you drive back up to standing",
+    ],
+  },
+  {
+    // ACE "Farmer's Carry" (listed with kettlebells): a weight in each hand, firm grip, arms at the sides beside the
+    // hips; back straight; walk a set distance, turn and come back. Drawn walking on the spot, as for the dumbbells.
+    exercise: "farmerCarry", using: ["kettlebell"],
+    pose: (t) => {
+      const swing = Math.cos(Math.PI * t) * 20, knee = (s: number) => Math.max(0, -s) * 1.2;
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(swing), dir(-swing)], shin: [dir(swing - knee(swing)), dir(-swing - knee(-swing))],
+        foot: [dir(90 - knee(swing) * 0.4), dir(90 - knee(-swing) * 0.4)], upper: [dir(0, 10), dir(0, -10)], fore: [dir(0, 8), dir(0, -8)] }));
+      return { ...p, props: [{ kind: "kettlebell", at: p.j.lwr, hang: DOWN }, { kind: "kettlebell", at: p.j.rwr, hang: DOWN }] };
+    },
+    cues: [
+      "Hold a kettlebell in each hand with a firm grip, arms at your sides, weights beside your hips",
+      "Keep your back straight",
+      "Walk a set distance",
+      "Turn round and walk back",
+    ],
+  },
 ];
 
 /** The animation for the version of an exercise the visitor will see, if there is one. */
