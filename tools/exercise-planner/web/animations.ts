@@ -1515,6 +1515,108 @@ export const ANIMATIONS: Animation[] = [
       "Turn round and walk back",
     ],
   },
+  {
+    // ACE "Shrug" (barbell): palms-down grip, hands about shoulder-width; knees slightly bent, hips straight, back tall;
+    // shoulders raised straight up towards the ears as high as possible and lowered slowly; pull the hands apart on the
+    // bar; don't roll the shoulders. The rise is drawn as 7 units, as for the dumbbell shrug.
+    exercise: "shrug", using: ["barbell"],
+    pose: (t) => {
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, shrug: lerp(0, 7, t),
+        thigh: [dir(6), dir(6)], shin: [dir(-4), dir(-4)], upper: [dir(5), dir(5)], fore: [dir(8), dir(8)] }));
+      return { ...p, props: [barbell(mid(p.j.lwr, p.j.rwr))] };
+    },
+    cues: [
+      "Hold the bar with your palms down, hands about shoulder-width apart",
+      "Keep your knees slightly bent, hips straight and back tall",
+      "Raise your shoulders straight up towards your ears as high as you can, without rolling them",
+      "Lower slowly to the start",
+    ],
+  },
+  {
+    // ACE "Single-arm Lateral Raise" (cable): pulley at about waist height with a single handle; stand with the right
+    // side to the machine, handle in the left hand; chest tall, hips straight; lift the left hand out to the side until
+    // the arm is level with the floor, the cable passing in front of the body; pause; lower slowly. The free arm isn't
+    // described: drawn hanging. The machine is drawn as a post with the pulley.
+    exercise: "lateralRaise", using: ["machines"], box: 224,
+    pose: (t) => {
+      const a = lerp(6, 90, t);
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(0, 3), dir(0, -3)], shin: [dir(0, 3), dir(0, -3)],
+        upper: [yaw(dir(0, a), -14), dir(0, -4)], fore: [yaw(dir(0, Math.max(a - 6, 3)), -14), dir(0, -3)] }));
+      const pulley: V3 = [-38, 100, 14];
+      return { ...p, props: [{ kind: "line", a: [-44, 0, 14], b: [-44, 170, 14], width: 3 }, cable(pulley, p.j.lwr), grip(p.j.lwr, [0, 0, 1])] };
+    },
+    cues: [
+      "Set the pulley at about waist height and stand with that side to the machine, handle in the far hand",
+      "Keep your chest tall and hips straight",
+      "Lift the arm out to the side until it is level with the floor, the cable passing in front of you",
+      "Pause for a second, then lower slowly; do all reps on one side, then switch",
+    ],
+  },
+  {
+    // ACE "Single-arm, Single-leg Romanian Dead Lift" (dumbbell): balance on one leg, the dumbbell in the opposite hand;
+    // standing knee slightly bent, back straight, leaning forward at the hip while the free leg straightens behind,
+    // toes pointed; the arm straight so the dumbbell lowers in front of the standing leg; push the foot down, pull the
+    // knee back and lower the free leg to stand. Drawn standing on the right leg, the dumbbell in the left hand.
+    exercise: "singleLegRdl", using: ["dumbbells"],
+    pose: (t) => {
+      const L = lerp(0, 72, t) * Math.PI / 180, torso: V3 = [0, Math.cos(L), Math.sin(L)];
+      const ankle: V3 = [-SEG.hipW, 0, 0], hz = -18 * Math.sin(L), hipC: V3 = [0, Math.sqrt(74 ** 2 - hz ** 2), hz];
+      const [lh, rh] = hipsOf(hipC), R = twoBone(rh, ankle, SEG.thigh, SEG.shin, FWD);
+      const back: V3 = [0, -Math.cos(L), -Math.sin(L)], LL = twoBone(lh, add(lh, back, 74), SEG.thigh, SEG.shin, FWD);
+      const [ls] = shouldersOf(hipC, torso), aim: V3 = [-6 - ls[0], -50, 6], n = Math.hypot(...aim), arm: V3 = [aim[0] / n, aim[1] / n, aim[2] / n];
+      const p = body({ hipC, torso, thigh: [LL[0], R[0]], shin: [LL[1], R[1]], foot: [dir(90 - Math.max(0, (L * 180) / Math.PI - 14)), FWD], upper: [arm, DOWN], fore: [arm, DOWN] });
+      return { ...p, props: [{ kind: "dumbbell", at: p.j.lwr, axis: [1, 0, 0] }] };
+    },
+    cues: [
+      "Stand on one leg, knee slightly bent, holding a dumbbell in the opposite hand",
+      "Keep your back straight and lean forward from the hip, straightening the free leg behind you with the toes pointed",
+      "Keep the arm straight so the dumbbell lowers in front of your standing leg",
+      "Push the foot into the floor and bring the free leg down to stand; do all reps on one leg, then switch",
+    ],
+  },
+  {
+    // ACE "4 Deadlift Variations to Spice Up Your Programming" (Pete McCall, 2018), "Kettlebell (or Vertical
+    // Dumbbell) Deadlift": the weight directly in front; feet shoulder-width, slight knee bend; hinge at the hips,
+    // spine straight, hips back; for a dumbbell, stand it on end and grip each side of its top end; push the feet down
+    // and the hips forward, pulling the knees back, to stand with the weight resting on the fronts of the thighs; the
+    // strength comes from the legs and hips. Starts at the floor (t = 0); the 70° lean at the bottom is this site's.
+    exercise: "deadlift", using: ["dumbbells"],
+    pose: (t) => {
+      const lean = lerp(70, 0, t) * Math.PI / 180, hipC: V3 = [0, lerp(58, 75.5, t), lerp(-37, 0, t)], torso: V3 = [0, Math.cos(lean), Math.sin(lean)];
+      const [lh, rh] = hipsOf(hipC);
+      const L = twoBone(lh, [13, 0, 0], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-13, 0, 0], SEG.thigh, SEG.shin, FWD);
+      const [ls, rs] = shouldersOf(hipC, torso), y = Math.max(22, ls[1] - 53.5), z = lerp(ls[2], ls[2] + 3, t);
+      const LA = twoBone(ls, [3, y, z], SEG.upper, SEG.fore, [1, 0, 0]), RA = twoBone(rs, [-3, y, z], SEG.upper, SEG.fore, [-1, 0, 0]);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      return { ...p, props: [{ kind: "dumbbell", at: add(mid(p.j.lwr, p.j.rwr), DOWN, 9), axis: [0, 1, 0] }] };
+    },
+    cues: [
+      "Stand the dumbbell on end in front of you; feet shoulder-width apart, knees slightly bent",
+      "Hinge forward at the hips, spine straight, pushing your hips back, and grip the top of the dumbbell with both hands",
+      "Push your feet into the floor and press your hips forward to stand, the weight resting on the fronts of your thighs",
+      "The strength comes from your legs and hips, not your shoulders",
+    ],
+  },
+  {
+    // ACE "Build Your Triceps Workout" (Stephanie Thielen, 2015), "Overhead Extension" (resistance band): one end of
+    // the band under the right foot, the other end in the right hand; the right arm up by the ear, palm facing in; bend
+    // the elbow to lower the handle behind the head; press it back up. How far to lower isn't given: drawn to about a
+    // right angle and a little more. The free arm isn't described: drawn hanging.
+    exercise: "overheadExt", using: ["bands"], box: 224,
+    pose: (t) => {
+      const bend = lerp(4, 100, t);
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(0, 3), dir(0, -3)], shin: [dir(0, 3), dir(0, -3)],
+        upper: [dir(0, 4), dir(178, -4)], fore: [dir(0, 3), dir(178 + bend, 6)] }));
+      const under: V3 = [p.j.rankle[0], 0.5, p.j.rankle[2] + 5];
+      return { ...p, props: [cable(under, p.j.rwr), grip(p.j.rwr, [0, 0, 1])] };
+    },
+    cues: [
+      "Stand on one end of the band with one foot and hold the other end in the same-side hand",
+      "Raise that arm up by your ear, palm facing in",
+      "Bend the elbow to lower the handle behind your head",
+      "Press it back up until the arm is straight; do all reps on one side, then switch",
+    ],
+  },
 ];
 
 /** The animation for the version of an exercise the visitor will see, if there is one. */
