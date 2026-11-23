@@ -30,7 +30,7 @@ export const BONES: [Joint, Joint, number][] = [
 /** Equipment, drawn in grey: a dumbbell (handle along `axis`), a bar, or a plain line (bench, cable, step...). */
 export type Prop =
   | { kind: "dumbbell"; at: V3; axis: V3 }
-  | { kind: "bar"; at: V3; axis: V3; half: number }
+  | { kind: "bar"; at: V3; axis: V3; half: number; plate?: number }
   | { kind: "line"; a: V3; b: V3; width?: number };
 
 export type Pose = { j: Record<Joint, V3>; props: Prop[] };
@@ -68,6 +68,7 @@ export function body(o: {
   thigh: [V3, V3]; // from each hip down to the knee
   shin: [V3, V3]; // from each knee down to the ankle
   foot?: [V3, V3]; // from each ankle to the toes; defaults to forward
+  shrug?: number; // how far the shoulders are raised above their usual height
   upper: [V3, V3]; // from each shoulder to the elbow
   fore: [V3, V3]; // from each elbow to the wrist
   props?: Prop[];
@@ -79,8 +80,8 @@ export function body(o: {
   j.waist = add(o.hipC, o.torso, SEG.lowBack);
   j.neck = add(j.waist, o.chest ?? o.torso, SEG.upBack);
   j.head = add(j.neck, o.head ?? o.chest ?? o.torso, SEG.neck + SEG.head);
-  j.lsh = add(j.neck, [SEG.shW, 0, 0]);
-  j.rsh = add(j.neck, [-SEG.shW, 0, 0]);
+  j.lsh = add(j.neck, [SEG.shW, o.shrug ?? 0, 0]);
+  j.rsh = add(j.neck, [-SEG.shW, o.shrug ?? 0, 0]);
   const foot = o.foot ?? [[0, 0, 1], [0, 0, 1]];
   ([["l", 0], ["r", 1]] as const).forEach(([s, i]) => {
     j[`${s}knee`] = add(j[`${s}hip`], o.thigh[i], SEG.thigh);
@@ -156,9 +157,11 @@ export function viewSvg(p: Pose, view: View, box = BOX): string {
     const A = P(a), B = P(b);
     parts.push({ d: (A[2] + B[2]) / 2, svg: (far) => `<line x1="${f(A[0])}" y1="${f(A[1])}" x2="${f(B[0])}" y2="${f(B[1])}" stroke="${colour}"${far ? ` stroke-opacity="0.4"` : ""} stroke-width="${w}" stroke-linecap="round"/>` });
   };
-  const disc = (c: V3, r: number, colour: string) => {
+  const disc = (c: V3, r: number, colour: string, ring = false) => {
     const C = P(c);
-    parts.push({ d: C[2] + 0.5, svg: (far) => `<circle cx="${f(C[0])}" cy="${f(C[1])}" r="${r}" fill="${colour}"${far ? ` fill-opacity="0.6"` : ""}/>` });
+    parts.push({ d: C[2] + 0.5, svg: (far) => ring
+      ? `<circle cx="${f(C[0])}" cy="${f(C[1])}" r="${r}" fill="none" stroke="${colour}" stroke-width="3"${far ? ` stroke-opacity="0.6"` : ""}/>`
+      : `<circle cx="${f(C[0])}" cy="${f(C[1])}" r="${r}" fill="${colour}"${far ? ` fill-opacity="0.6"` : ""}/>` });
   };
   for (const [a, b] of BONES) if (!(a === "neck" && b === "head")) line(p.j[a], p.j[b], NAVY, 6);
   const H = P(p.j.head);
@@ -169,7 +172,8 @@ export function viewSvg(p: Pose, view: View, box = BOX): string {
       const h = q.kind === "bar" ? q.half : 9, a = add(q.at, q.axis, -h), b = add(q.at, q.axis, h);
       line(a, b, GREY, 3);
       const ends = q.kind === "bar" ? [add(q.at, q.axis, -h + 6), add(q.at, q.axis, h - 6)] : [a, b];
-      for (const e of ends) disc(e, q.kind === "bar" ? 9 : 6, DARK);
+      // Barbell plates are drawn as rings, so they don't hide the figure behind them.
+      for (const e of ends) disc(e, q.kind === "bar" ? q.plate ?? 9 : 6, DARK, q.kind === "bar");
     }
   }
   parts.sort((a, b) => a.d - b.d);
