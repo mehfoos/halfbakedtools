@@ -5,6 +5,7 @@ Every number or classification the tool relies on, what it was checked against (
 
 | Item | Status | Checked against | Date |
 |---|---|---|---|
+| Browser engines: Playwright 1.65.1 engines (Firefox, and WebKit, the engine Safari uses, with iPhone 13 emulation), against the production build, 23 Nov 2026. Every page of the tool loads with no script errors and no sideways scrolling at desktop and phone sizes; suggestions appear; the "Show how" drawing in view animates, its Pause button stops it, and "Collapse all" closes every drawing | Checked (engines, not the browser apps or real phones) | Scripted run, results read by the agent | 23 Nov 2026 |
 | All 17 Compendium rows used (code, MET, description) in `web/catalogue.ts` | Checked | `compendium-2024-adult-activity-list.pdf` (text extracted and each code matched) | 15 Nov 2026 |
 | Fractional counting (indirect × 0.5 + direct) and the definitions of direct and indirect | Checked | `pelland-2024-dose-response-preprint-v2.pdf`, section 2.4 | 15 Nov 2026 |
 | Exercises marked `listed` follow Table 1A | Superseded 19 Nov 2026 | The per-exercise `listed` flag over-credited the table (see below) | 15 Nov 2026 |

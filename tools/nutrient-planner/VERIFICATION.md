@@ -162,3 +162,10 @@ Both open points were then resolved by the owner and rechecked: KFCDb vitamin D 
 (butter, milk and powders now show other tables' non-zero values), and blended energy is worked out from the blended
 parts where it stays close to a table's published energy (familiar foods compared before and after; 33 foods keep
 the published value). Record: `pipeline/blend/reviews/2026-11-20-spot-check.md`.
+
+## Behaviour in other browser engines
+
+Run on 2026-11-23 with Playwright 1.65.1's Firefox and WebKit (the engine Safari uses, with iPhone 13 emulation)
+against the production build: every page of the tool loads with no script errors and no sideways scrolling at desktop
+and phone sizes, and with the default settings "Find combinations" finishes in about 4 seconds and shows results, in
+both engines. These are engine builds, not the Safari and Firefox apps or real phones.

@@ -40,6 +40,11 @@ Run on 2026-11-16 against the production build in headless Chrome (desktop size)
 and checking the downloaded files with independent software (pypdf for PDFs, Pillow for images). Test files were
 small generated PDFs and images. **Not yet run:** Firefox, Safari, phones, large or complex real-world PDFs.
 
+Run again on 2026-11-23 in the Playwright 1.65.1 engines (Firefox, and WebKit, the engine Safari uses, with iPhone 13 emulation), against the production build, 23 Nov 2026: every PDF tools page loads with no script errors and no sideways scrolling at desktop
+and phone sizes, and Merge joins two generated one-page PDFs into a two-page file containing both pages' text, in both
+engines. The other tasks were not driven in these engines, and these are engine builds, not the Safari and Firefox
+apps or real phones.
+
 | Item | Result |
 |---|---|
 | Add 2 PDFs + 1 PNG; previews drawn | Pass |
