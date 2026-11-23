@@ -18,7 +18,8 @@ export function nameFor(ex: Exercise, have: ReadonlySet<Equipment>): string {
   return variantFor(ex, have)?.name ?? ex.name;
 }
 
-function variantFor(ex: Exercise, have: ReadonlySet<Equipment>) {
+/** The variant (name by equipment) the visitor will see, if the exercise has one. */
+export function variantFor(ex: Exercise, have: ReadonlySet<Equipment>) {
   return ex.variants?.find((v) => v.using.some((e) => have.has(e)));
 }
 
