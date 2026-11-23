@@ -57,6 +57,10 @@ function flatBench(seatY: number, z0: number, z1: number, x = 0): Prop[] {
 }
 /** A barbell, drawn shorter than a real one (about 120 units instead of about 200) to fit the view; plates of 45 cm. */
 const barbell = (at: V3): Prop => ({ kind: "bar", at, axis: [1, 0, 0], half: 62, plate: 20 });
+/** A machine handle or rope end in the hand: a short grey bar through the wrist, along `axis`. */
+const grip = (at: V3, axis: V3 = [0, 1, 0], half = 5): Prop => ({ kind: "line", a: add(at, axis, -half), b: add(at, axis, half), width: 4 });
+const cable = (a: V3, b: V3): Prop => ({ kind: "line", a, b, width: 2 });
+const lerp3 = (a: V3, b: V3, t: number): V3 => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 const mid = (a: V3, b: V3): V3 => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
 
 export const ANIMATIONS: Animation[] = [
@@ -509,6 +513,202 @@ export const ANIMATIONS: Animation[] = [
       "Lift the bar off the rack and hold it above your chest, arms straight",
       "Lower it slowly to your chest, elbows bending out to the sides, until they are just below the bench",
       "Press the bar straight back up",
+    ],
+  },
+  {
+    // ACE "Seated Leg Press": back and tailbone against the backrest; feet on the plate, toes forward, knees bent
+    // about 90° with the heels flat; hands lightly on the handles; push the plate away, heels on the plate, without
+    // locking the knees; return under control without the thighs pressing into the ribs. Backrest angle: this site's
+    // choice (15° back).
+    exercise: "legPress",
+    pose: (t) => {
+      const hipC: V3 = [0, 40, -6], torso = dir(195), knee = 90 - lerp(0, 80, t);
+      const reach = 2 * SEG.thigh * Math.sin(((180 - knee) / 2) * Math.PI / 180), ankleY = 46;
+      const az = hipC[2] + Math.sqrt(reach ** 2 - (ankleY - hipC[1]) ** 2);
+      const [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, torso);
+      const L = twoBone(lh, [SEG.hipW, ankleY, az], SEG.thigh, SEG.shin, [0, 1, 0]), R = twoBone(rh, [-SEG.hipW, ankleY, az], SEG.thigh, SEG.shin, [0, 1, 0]);
+      const LA = twoBone(ls, [22, 40, 0], SEG.upper, SEG.fore, [1, 0, -0.5]), RA = twoBone(rs, [-22, 40, 0], SEG.upper, SEG.fore, [-1, 0, -0.5]);
+      const pz = az + 3;
+      const machine: Prop[] = [
+        { kind: "line", a: [0, 36, -16], b: [0, 36, 18], width: 5 }, { kind: "line", a: [0, 36, -16], b: [0, 96, -32], width: 5 },
+        { kind: "line", a: [0, 36, 2], b: [0, 0, 2] }, { kind: "line", a: [-16, 36, 2], b: [16, 36, 2] },
+        { kind: "line", a: [0, 28, pz], b: [0, 78, pz], width: 5 }, { kind: "line", a: [-22, 53, pz], b: [22, 53, pz], width: 5 },
+      ];
+      return body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [UP, UP], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: machine });
+    },
+    cues: [
+      "Sit with your back and tailbone against the backrest; feet flat on the plate, toes forward, knees bent to about a right angle",
+      "Hold the handles lightly",
+      "Push the plate away, heels staying on it, without locking your knees",
+      "Return slowly, without letting your thighs press into your ribs",
+    ],
+  },
+  {
+    // ACE "Lying Hamstrings Curl": face down, knees in line with the machine's pivot, pads on the backs of the lower
+    // third of the lower legs (not on the heels), hands on the handles; bend the knees until they pass 90°, the lower
+    // legs are upright or the pads come close to the buttocks, without arching the back; return slowly. Drawn to 110°.
+    exercise: "legCurl",
+    pose: (t) => {
+      const k = lerp(0, 110, t), hipC: V3 = [0, 45, -2], torso = dir(90);
+      const shin = dir(-90 - k), [ls, rs] = shouldersOf(hipC, torso);
+      const LA = twoBone(ls, [20, 39, ls[2] + 20], SEG.upper, SEG.fore, [1, 0, 0]), RA = twoBone(rs, [-20, 39, rs[2] + 20], SEG.upper, SEG.fore, [-1, 0, 0]);
+      const p = body({ hipC, torso, head: dir(98), thigh: [dir(-90), dir(-90)], shin: [shin, shin], foot: [dir(-k), dir(-k)],
+        upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: flatBench(40, -40, 62) });
+      const pad = add(p.j.lknee, shin, SEG.shin * 0.72), pad2: V3 = [0, pad[1] + 4 * Math.cos(k * Math.PI / 180), pad[2] + 4 * Math.sin(k * Math.PI / 180)];
+      return { ...p, props: [...p.props, { kind: "line", a: [-14, pad2[1], pad2[2]], b: [14, pad2[1], pad2[2]], width: 9 }] };
+    },
+    cues: [
+      "Lie face down with your knees in line with the machine's pivot and the pads on the backs of your lower legs, above the heels",
+      "Hold the handles lightly and keep your back from arching",
+      "Bend your knees, bringing the pads towards your buttocks, until your lower legs are about upright or further",
+      "Pause, then lower slowly",
+    ],
+  },
+  {
+    // ACE "Seated Lat Pulldown": thighs under the pad; grip the bar with arms straight overhead; lean back slightly
+    // (no more than 30°; drawn at 20°); pull the bar down towards the top or middle of the chest, elbows driving down
+    // to the sides, stopping as it nears the chest; return until the elbows are straight. Grip width isn't given: drawn
+    // a little wider than the shoulders.
+    exercise: "latPulldown",
+    pose: (t) => {
+      const hipC: V3 = [0, 42, 0], torso = dir(200), [ls, rs] = shouldersOf(hipC, torso), [lh, rh] = hipsOf(hipC);
+      const neck = add(add(hipC, torso, SEG.lowBack), torso, SEG.upBack);
+      const hand = (s: V3, k: 1 | -1): V3 => lerp3([s[0] + 11 * k, s[1] + SEG.upper + SEG.fore - 2, s[2] + 6], [s[0] + 13 * k, neck[1] - 4, neck[2] + 12], t);
+      const LA = twoBone(ls, hand(ls, 1), SEG.upper, SEG.fore, [1, -1, 0]), RA = twoBone(rs, hand(rs, -1), SEG.upper, SEG.fore, [-1, -1, 0]);
+      const L = twoBone(lh, [SEG.hipW, 0, 40], SEG.thigh, SEG.shin, [0, 1, 0.3]), R = twoBone(rh, [-SEG.hipW, 0, 40], SEG.thigh, SEG.shin, [0, 1, 0.3]);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]],
+        props: [{ kind: "line", a: [0, 38, -14], b: [0, 38, 16], width: 5 }, { kind: "line", a: [0, 38, 0], b: [0, 0, 0] }, { kind: "line", a: [-14, 52, 28], b: [14, 52, 28], width: 7 }] });
+      const bar = mid(p.j.lwr, p.j.rwr);
+      return { ...p, props: [...p.props, { kind: "line", a: [-34, bar[1], bar[2]], b: [34, bar[1], bar[2]], width: 4 }, cable(bar, [0, 182, bar[2]])] };
+    },
+    cues: [
+      "Sit with your thighs under the pad and grip the bar with your arms straight overhead",
+      "Lean back slightly, no more than about 30 degrees",
+      "Pull the bar down towards the top or middle of your chest, driving your elbows down to your sides",
+      "Let the bar back up slowly until your arms are straight",
+    ],
+  },
+  {
+    // ACE "Seated Row" (cable): seated at a low pulley with a narrow handle, feet down, knees bent, back straight; lift
+    // the chest and pull the elbows back close to the ribs until the handle touches the stomach; pause; straighten the
+    // arms slowly.
+    exercise: "cableRow",
+    pose: (t) => {
+      const hipC: V3 = [0, 38, 0], torso = UP, [ls, rs] = shouldersOf(hipC, torso), [lh, rh] = hipsOf(hipC);
+      const hy = hipC[1] + 22, hand = (k: 1 | -1): V3 => lerp3([4 * k, hy, 52], [4 * k, hy, 11], t);
+      const LA = twoBone(ls, hand(1), SEG.upper, SEG.fore, [0.4, -0.3, -1]), RA = twoBone(rs, hand(-1), SEG.upper, SEG.fore, [-0.4, -0.3, -1]);
+      const L = twoBone(lh, [SEG.hipW, 0, 52], SEG.thigh, SEG.shin, [0, 1, 0]), R = twoBone(rh, [-SEG.hipW, 0, 52], SEG.thigh, SEG.shin, [0, 1, 0]);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]],
+        props: [{ kind: "line", a: [0, 34, -16], b: [0, 34, 16], width: 5 }, { kind: "line", a: [0, 34, 0], b: [0, 0, 0] }, { kind: "line", a: [0, 0, 92], b: [0, 70, 92], width: 5 }] });
+      const h = mid(p.j.lwr, p.j.rwr);
+      return { ...p, props: [...p.props, grip(h, [1, 0, 0], 6), cable(h, [0, hy, 92])] };
+    },
+    cues: [
+      "Sit facing the low pulley, feet down, knees bent, back straight, holding the narrow handle with straight arms",
+      "Lift your chest",
+      "Pull your elbows back, close to your ribs, until the handle touches your stomach",
+      "Pause, then straighten your arms slowly",
+    ],
+  },
+  {
+    // ACE "Seated Chest Press" (machine): back against the backrest; handles at mid-chest height and no further back
+    // than the front of the chest; press forward until the elbows are straight but not locked, shoulder blades on the
+    // backrest; return slowly. Handles drawn upright; elbows drawn a little out.
+    exercise: "chestPress",
+    pose: (t) => {
+      const seat = 36, hipC: V3 = [0, seat + 4, 0], [ls, rs] = shouldersOf(hipC, UP), y = ls[1] - 12;
+      const hand = (s: V3, k: 1 | -1): V3 => lerp3([s[0] + 6 * k, y, 8], [s[0] + 2 * k, y, Math.sqrt((SEG.upper + SEG.fore - 2) ** 2 - 144) - 1], t);
+      const LA = twoBone(ls, hand(ls, 1), SEG.upper, SEG.fore, [1, -0.6, 0]), RA = twoBone(rs, hand(rs, -1), SEG.upper, SEG.fore, [-1, -0.6, 0]);
+      const p = body({ hipC, torso: UP, thigh: [dir(90), dir(90)], shin: [DOWN, DOWN], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: benchWithBack(seat, -8, 30) });
+      return { ...p, props: [...p.props, grip(p.j.lwr), grip(p.j.rwr)] };
+    },
+    cues: [
+      "Sit with your back against the backrest, handles at mid-chest height and level with the front of your chest",
+      "Grip the handles with your wrists straight",
+      "Press forward until your elbows are straight but not locked, keeping your shoulder blades against the backrest",
+      "Return slowly",
+    ],
+  },
+  {
+    // ACE "Standing Chest Fly" (cable): pulleys slightly above shoulder height; a handle in each hand, step forward so
+    // the arms are out to the sides; elbows slightly bent, bring the hands together in front of the body; pause; return
+    // slowly. Drawn for the cable version (the linked page).
+    exercise: "pecFly",
+    pose: (t) => {
+      const p0 = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: [DOWN, DOWN], fore: [DOWN, DOWN] }));
+      const th = lerp(-8, 95, t) * Math.PI / 180, fr = th + 0.27;
+      const up: [V3, V3] = [[Math.cos(th), 0, Math.sin(th)], [-Math.cos(th), 0, Math.sin(th)]];
+      const fo: [V3, V3] = [[Math.cos(fr), 0, Math.sin(fr)], [-Math.cos(fr), 0, Math.sin(fr)]];
+      const p = body({ hipC: p0.j.hipC, torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: up, fore: fo });
+      const py = p.j.lsh[1] + 8;
+      return { ...p, props: [grip(p.j.lwr), grip(p.j.rwr), cable(p.j.lwr, [80, py, -14]), cable(p.j.rwr, [-80, py, -14]),
+        { kind: "line", a: [84, 0, -14], b: [84, py + 20, -14], width: 5 }, { kind: "line", a: [-84, 0, -14], b: [-84, py + 20, -14], width: 5 }] };
+    },
+    cues: [
+      "Set the pulleys slightly above shoulder height, take a handle in each hand and step forward so your arms are out to the sides",
+      "Keep a slight bend in your elbows",
+      "Bring your hands together in front of you and pause for a second",
+      "Return slowly to the start",
+    ],
+  },
+  {
+    // ACE "Seated Shoulder Press" (machine): back supported; handles level with or just above the shoulders, elbows a
+    // little forward ("4 and 8 o'clock"); press up until the elbows are straight but not locked; pull back down slowly.
+    exercise: "shoulderPressMachine",
+    pose: (t) => {
+      const seat = 36, hipC: V3 = [0, seat + 4, 0], [ls, rs] = shouldersOf(hipC, UP);
+      const hand = (s: V3, k: 1 | -1): V3 => lerp3([s[0] + 8 * k, s[1] + 6, 8], [s[0] + 3 * k, s[1] + SEG.upper + SEG.fore - 2, 4], t);
+      const LA = twoBone(ls, hand(ls, 1), SEG.upper, SEG.fore, [1, -0.6, 0.5]), RA = twoBone(rs, hand(rs, -1), SEG.upper, SEG.fore, [-1, -0.6, 0.5]);
+      const p = body({ hipC, torso: UP, thigh: [dir(90), dir(90)], shin: [DOWN, DOWN], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: benchWithBack(seat, -8, 30) });
+      return { ...p, props: [...p.props, grip(p.j.lwr, [0, 0, 1]), grip(p.j.rwr, [0, 0, 1])] };
+    },
+    cues: [
+      "Sit with your back supported, handles level with or just above your shoulders",
+      "Elbows slightly in front of your body",
+      "Press up until your elbows are straight but not locked",
+      "Lower the handles slowly",
+    ],
+  },
+  {
+    // ACE "Triceps Pushdowns" (cable): facing the machine, attachment above head height; feet hip-width or staggered;
+    // trunk upright; elbows at the sides, by the middle of the trunk; press the handle down until the elbows are
+    // straight; return slowly. Drawn for the cable version (the linked page), with a single handle.
+    exercise: "pushdown", using: ["machines"],
+    pose: (t) => {
+      const p0 = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: [DOWN, DOWN], fore: [DOWN, DOWN] }));
+      const fore = dir(lerp(115, 4, t)), upper = dir(6);
+      const p = body({ hipC: p0.j.hipC, torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: [upper, upper], fore: [fore, fore] });
+      const h = mid(p.j.lwr, p.j.rwr);
+      return { ...p, props: [grip(h, [1, 0, 0], 12), cable(h, [0, 180, 34]), { kind: "line", a: [0, 0, 40], b: [0, 184, 40], width: 5 }] };
+    },
+    cues: [
+      "Stand facing the cable machine with the attachment above head height, feet hip-width apart or one slightly ahead",
+      "Keep your body upright and your elbows at your sides",
+      "Press the handle down until your elbows are straight",
+      "Let it back up slowly, keeping your elbows still",
+    ],
+  },
+  {
+    // NSCA "Face Pull (Machine)": face a high pulley, rope held palms down; step back so there's tension with the arms
+    // straight in front of the face, elbows out to the sides; feet parallel, knees bent, trunk upright; first draw the
+    // shoulder blades back, then pull the rope towards the face, elbows out and bending; as the upper arms line up
+    // with the shoulders, turn them so the hands go up and back, until the middle of the rope is close to the face;
+    // return the same way. Drawn for the cable version (the linked page).
+    exercise: "facePull", using: ["machines"],
+    pose: (t) => {
+      const p0 = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(8), dir(8)], shin: [dir(-8), dir(-8)], upper: [DOWN, DOWN], fore: [DOWN, DOWN] }));
+      const hipC = p0.j.hipC, [ls, rs] = shouldersOf(hipC, UP), headY = ls[1] + SEG.neck + SEG.head;
+      const hand = (s: V3, k: 1 | -1): V3 => lerp3([s[0] * 0.3, headY - 2, Math.sqrt((SEG.upper + SEG.fore - 1) ** 2 - (headY - 2 - s[1]) ** 2 - (s[0] * 0.7) ** 2)], [s[0] * 0.9, headY + 6, 10], t);
+      const LA = twoBone(ls, hand(ls, 1), SEG.upper, SEG.fore, [1, -0.2, -0.6]), RA = twoBone(rs, hand(rs, -1), SEG.upper, SEG.fore, [-1, -0.2, -0.6]);
+      const p = body({ hipC, torso: UP, thigh: [dir(8), dir(8)], shin: [dir(-8), dir(-8)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      const h = mid(p.j.lwr, p.j.rwr), pulley: V3 = [0, 176, 90];
+      return { ...p, props: [{ kind: "line", a: p.j.lwr, b: h, width: 3 }, { kind: "line", a: p.j.rwr, b: h, width: 3 }, cable(h, pulley), { kind: "line", a: [0, 0, 94], b: [0, 184, 94], width: 5 }] };
+    },
+    cues: [
+      "Face a high pulley holding the rope palms down, arms straight in front of your face, elbows pointing out",
+      "Stand with feet side by side and knees slightly bent, body upright",
+      "Draw your shoulder blades back, then pull the rope towards your face with your elbows out",
+      "As your upper arms come level with your shoulders, turn your hands up and back; return slowly",
     ],
   },
 ];
