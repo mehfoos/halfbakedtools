@@ -146,7 +146,7 @@ export const ANIMATIONS: Animation[] = [
     exercise: "lunge",
     pose: (t) => {
       const stepT = Math.min(1, t * 1.6), lowT = Math.max(0, (t - 0.25) / 0.75);
-      const backToe: V3 = [-3, 0, -6], heel = lerp(0, 50, lowT) * Math.PI / 180;
+      const heel = lerp(0, 50, lowT) * Math.PI / 180;
       const backAnkle: V3 = [-3, 12 * Math.sin(heel), -6 - 12 * Math.cos(heel)];
       const front: V3 = [3, 6 * Math.sin(Math.PI * stepT) * (1 - lowT), lerp(-18, 52, stepT)];
       const shin = 10 * Math.PI / 180;
@@ -157,7 +157,6 @@ export const ANIMATIONS: Animation[] = [
       const L = twoBone(lh, front, SEG.thigh, SEG.shin, [0, 0, 1]);
       const R = twoBone(rh, backAnkle, SEG.thigh, SEG.shin, [0, -0.3, 1]);
       const lean = lerp(0, 10, lowT);
-      void backToe;
       return body({ hipC, torso: dir(180 - lean), thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(90), dir(90 - (heel * 180) / Math.PI)], upper: [DOWN, DOWN], fore: [DOWN, DOWN] });
     },
     cues: [
@@ -273,6 +272,56 @@ export const ANIMATIONS: Animation[] = [
       "Hold the weights at shoulder level, palms forward, about shoulder-width apart, elbows pointing a little forward",
       "Press up until your elbows are straight, without arching your lower back",
       "Lower slowly, pulling the weights down rather than letting them drop",
+    ],
+  },
+  {
+    // ACE "Crunch": on the back, knees bent, feet flat, heels 12–18 inches from the tailbone; hands behind the head,
+    // elbows pulled back; curl up until the upper back is off the mat (the lower back stays down), the head following
+    // with the chin slightly towards the chest; lower slowly. The curl is drawn at the waist, about 35°.
+    exercise: "crunch",
+    pose: (t) => {
+      const c = lerp(0, 35, t), hipC: V3 = [0, 5, 0], torso = dir(-90), chest = dir(-90 - c), head = dir(-90 - c - lerp(0, 15, t));
+      const [lh, rh] = hipsOf(hipC);
+      const L = twoBone(lh, [SEG.hipW, 0, 36], SEG.thigh, SEG.shin, [0, 1, 0]);
+      const R = twoBone(rh, [-SEG.hipW, 0, 36], SEG.thigh, SEG.shin, [0, 1, 0]);
+      const [ls, rs] = shouldersOf(hipC, torso, chest);
+      const neck = add(add(hipC, torso, SEG.lowBack), chest, SEG.upBack), hd = add(neck, head, SEG.neck + SEG.head);
+      const behind = add(hd, chest, -4);
+      const LA = twoBone(ls, add(behind, [5, 0, 0]), SEG.upper, SEG.fore, [1, 0.2, 0.3]);
+      const RA = twoBone(rs, add(behind, [-5, 0, 0]), SEG.upper, SEG.fore, [-1, 0.2, 0.3]);
+      return body({ hipC, torso, chest, head, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+    },
+    cues: [
+      "Lie on your back, knees bent, feet flat, heels about 12 to 18 inches from your tailbone",
+      "Hands behind your head, elbows pulled back, and keep them there",
+      "Curl up until your upper back lifts off the mat, letting your chin come slightly towards your chest",
+      "Lower slowly",
+    ],
+  },
+  {
+    // ACE "Standing Crunch" (cable): stand hip-width, knees slightly bent, hips straight, facing away from a cable
+    // pulley at its highest setting; rope ends by the ears, elbows tucked in front; roll the rib cage down against the
+    // cable and return slowly. Drawn as the upper trunk bending about 40° at the waist.
+    exercise: "cableCrunch",
+    pose: (t) => {
+      const c = lerp(0, 40, t), knee = 10;
+      const p0 = body({ hipC: [0, 80, 0], torso: UP, chest: dir(180 - c), head: dir(180 - c - lerp(0, 10, t)),
+        thigh: [dir(knee), dir(knee)], shin: [dir(-knee), dir(-knee)], upper: [DOWN, DOWN], fore: [DOWN, DOWN] });
+      const g = grounded(p0), { j } = g;
+      const chest = dir(180 - c), behind = add(j.head, chest, -2);
+      const LA = twoBone(j.lsh, add(behind, [7, 0, 2]), SEG.upper, SEG.fore, [0.3, -1, 1]);
+      const RA = twoBone(j.rsh, add(behind, [-7, 0, 2]), SEG.upper, SEG.fore, [-0.3, -1, 1]);
+      const p = body({ hipC: j.hipC, torso: UP, chest, head: dir(180 - c - lerp(0, 10, t)),
+        thigh: [dir(knee), dir(knee)], shin: [dir(-knee), dir(-knee)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      const mid: V3 = [0, 1, 2].map((i) => (p.j.lwr[i] + p.j.rwr[i]) / 2) as V3;
+      const pulley: V3 = [0, 168, -46];
+      return { ...p, props: [{ kind: "line", a: mid, b: pulley, width: 2 }, { kind: "line", a: [0, 0, -50], b: [0, 172, -50], width: 5 }] };
+    },
+    cues: [
+      "Stand facing away from a high cable pulley, feet hip-width apart, knees slightly bent",
+      "Hold the rope ends by your ears, elbows tucked in front of you",
+      "Pull your belly button in and roll your rib cage down towards your hips, against the cable",
+      "Return slowly to upright",
     ],
   },
 ];
