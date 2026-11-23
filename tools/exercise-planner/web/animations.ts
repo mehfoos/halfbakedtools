@@ -1879,6 +1879,91 @@ export const ANIMATIONS: Animation[] = [
       "Squeeze your glutes and hamstrings to stand back up; do all reps on one side, then switch",
     ],
   },
+  {
+    // Fitness Volt "Face Pulls with Resistance Bands" (Patrick Dale; a weaker source, marked so on the page): the
+    // band's middle round an anchor at eye height; an end in each hand, arms straight in front, palms down; step back to
+    // tension the band; brace, shoulders down and back; leading with the elbows, pull the hands to the sides of the
+    // head, elbows level with or slightly above the shoulders, turning the forearms up; straighten the arms and repeat.
+    exercise: "facePull", using: ["bands"],
+    pose: (t) => {
+      const p0 = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(6), dir(6)], shin: [dir(-6), dir(-6)], upper: [DOWN, DOWN], fore: [DOWN, DOWN] }));
+      const hipC = p0.j.hipC, [ls, rs] = shouldersOf(hipC, UP), headY = ls[1] + SEG.neck + SEG.head;
+      const hand = (s: V3): V3 => lerp3([s[0] * 0.4, s[1] + 6, s[2] + Math.sqrt((SEG.upper + SEG.fore - 1) ** 2 - 36 - (s[0] * 0.6) ** 2)], [s[0] * 1.05, headY, 4], t);
+      const LA = twoBone(ls, hand(ls), SEG.upper, SEG.fore, [1, 0.1, -0.6]), RA = twoBone(rs, hand(rs), SEG.upper, SEG.fore, [-1, 0.1, -0.6]);
+      const p = body({ hipC, torso: UP, thigh: [dir(6), dir(6)], shin: [dir(-6), dir(-6)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      const anchor: V3 = [0, headY - 4, 92];
+      return { ...p, props: [cable(p.j.lwr, anchor), cable(p.j.rwr, anchor), grip(p.j.lwr, [1, 0, 0]), grip(p.j.rwr, [1, 0, 0]), { kind: "line", a: [0, 0, 96], b: [0, 184, 96], width: 5 }] };
+    },
+    cues: [
+      "Loop the middle of the band round an anchor at eye height and hold one end in each hand, arms straight in front, palms down",
+      "Step back until the band is taut; brace and draw your shoulders down and back",
+      "Leading with your elbows, pull your hands to the sides of your head, elbows level with or a little above your shoulders",
+      "Straighten your arms and repeat",
+    ],
+  },
+  {
+    // Sworkit "Kettlebell Overhead Tricep Extensions" (a weaker source, marked so on the page): feet shoulder-width,
+    // core tight; the kettlebell in both hands, lifted straight overhead with the elbows by the ears; lower it behind
+    // the head by bending the elbows, under control. How far isn't given: drawn to a right angle at the elbows, as in
+    // the dumbbell drawing; the bell is drawn hanging from the handle.
+    exercise: "overheadExt", using: ["kettlebell"], box: 224,
+    pose: (t) => {
+      const bend = lerp(4, 90, t), inward = 30;
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(0, 6), dir(0, -6)], shin: [dir(0, 6), dir(0, -6)],
+        upper: [dir(178), dir(178)], fore: [dir(178 + bend, -inward), dir(178 + bend, inward)] }));
+      return { ...p, props: [{ kind: "kettlebell", at: mid(p.j.lwr, p.j.rwr), hang: DOWN }] };
+    },
+    cues: [
+      "Stand with your feet shoulder-width apart and tighten your core",
+      "Hold the kettlebell in both hands and lift it straight overhead, elbows by your ears",
+      "Bend your elbows to lower it behind your head, slowly and under control",
+      "Straighten your arms to lift it back overhead",
+    ],
+  },
+  {
+    // Sweat "Romanian Kettlebell Deadlift" (a weaker source, marked so on the page): kettlebell in both hands, palms to
+    // the body; feet hip- to shoulder-width; shoulder blades down and back, core braced; hinge from the hips, the bell
+    // travelling down the front of the thighs towards mid-shin, back flat, until a strong hamstring stretch (typically
+    // around mid-shin); drive through the heels to stand, the bell close to the legs. Drawn like the barbell drawing.
+    exercise: "rdl", using: ["kettlebell"],
+    pose: (t) => {
+      const lean = lerp(0, 72, t) * Math.PI / 180, hipZ = 6 - SEG.torso * Math.sin(lean);
+      const hipC: V3 = [0, Math.sqrt(73 ** 2 - hipZ ** 2), hipZ], torso: V3 = [0, Math.cos(lean), Math.sin(lean)];
+      const [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, torso);
+      const L = twoBone(lh, [SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD);
+      const toward = (s: V3, x: number): V3 => { const d: V3 = [x - s[0], -50, 0], n = Math.hypot(...d); return [d[0] / n, d[1] / n, d[2] / n]; };
+      const ul = toward(ls, 3), ur = toward(rs, -3);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [ul, ur], fore: [ul, ur] });
+      return { ...p, props: [{ kind: "kettlebell", at: mid(p.j.lwr, p.j.rwr), hang: DOWN }] };
+    },
+    cues: [
+      "Hold the kettlebell in both hands, palms facing you, feet hip- to shoulder-width apart, shoulder blades down and back",
+      "Hinge from your hips so the kettlebell travels down the front of your thighs, back flat",
+      "Stop when you feel a strong stretch in your hamstrings, usually around mid-shin",
+      "Drive through your heels to stand, keeping the kettlebell close to your legs",
+    ],
+  },
+  {
+    // Sweat "How To Do A Romanian Deadlift With Dumbbells" (a weaker source, marked so on the page): feet hip-width, a
+    // dumbbell in each hand in front of the thighs, palms to the body, arms straight; a soft knee bend that stays the
+    // same; push the hips back, the dumbbells close to the legs, until a strong hamstring stretch (for most people
+    // between just below the knee and mid-shin); drive the hips forward to stand tall without leaning back.
+    exercise: "rdl", using: ["dumbbells"],
+    pose: (t) => {
+      const lean = lerp(0, 70, t) * Math.PI / 180, hipZ = 6 - SEG.torso * Math.sin(lean);
+      const hipC: V3 = [0, Math.sqrt(73 ** 2 - hipZ ** 2), hipZ], torso: V3 = [0, Math.cos(lean), Math.sin(lean)];
+      const [lh, rh] = hipsOf(hipC);
+      const L = twoBone(lh, [SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [dir(0, -3), dir(0, 3)], fore: [dir(0, -3), dir(0, 3)] });
+      return dumbbellsAt(p, () => [1, 0, 0]);
+    },
+    cues: [
+      "Stand with your feet hip-width apart, a dumbbell in each hand in front of your thighs, palms facing you",
+      "Unlock your knees into a soft bend and keep that bend the whole way",
+      "Push your hips back, keeping the dumbbells close to your legs, until you feel a strong stretch in your hamstrings",
+      "Drive your hips forward to stand tall, without leaning back",
+    ],
+  },
 ];
 
 /** The animation for the version of an exercise the visitor will see, if there is one. */
