@@ -8,9 +8,10 @@
 export type V3 = [number, number, number];
 
 /** Segment lengths: every pose must keep these (tested). */
-export const SEG = { foot: 12, shin: 38, thigh: 38, torso: 46, neck: 6, head: 8, upper: 28, fore: 26, hipW: 8, shW: 15 } as const;
+export const SEG = { foot: 12, shin: 38, thigh: 38, torso: 46, lowBack: 20, upBack: 26, neck: 6, head: 8, upper: 28, fore: 26, hipW: 8, shW: 15 } as const;
+// The trunk bends at the waist: lowBack (hips to waist) + upBack (waist to neck) = torso.
 
-export const JOINTS = ["head", "neck", "lsh", "rsh", "lel", "rel", "lwr", "rwr", "hipC", "lhip", "rhip", "lknee", "rknee", "lankle", "rankle", "ltoe", "rtoe"] as const;
+export const JOINTS = ["head", "neck", "waist", "lsh", "rsh", "lel", "rel", "lwr", "rwr", "hipC", "lhip", "rhip", "lknee", "rknee", "lankle", "rankle", "ltoe", "rtoe"] as const;
 export type Joint = (typeof JOINTS)[number];
 
 /** Pairs of joints drawn as limbs, with the length each must keep. */
@@ -19,7 +20,7 @@ export const BONES: [Joint, Joint, number][] = [
   ["lankle", "lknee", SEG.shin], ["rankle", "rknee", SEG.shin],
   ["lknee", "lhip", SEG.thigh], ["rknee", "rhip", SEG.thigh],
   ["lhip", "rhip", 2 * SEG.hipW],
-  ["hipC", "neck", SEG.torso],
+  ["hipC", "waist", SEG.lowBack], ["waist", "neck", SEG.upBack],
   ["lsh", "rsh", 2 * SEG.shW],
   ["lsh", "lel", SEG.upper], ["rsh", "rel", SEG.upper],
   ["lel", "lwr", SEG.fore], ["rel", "rwr", SEG.fore],
@@ -61,7 +62,8 @@ export function yaw(v: V3, deg: number): V3 {
  */
 export function body(o: {
   hipC: V3;
-  torso: V3; // from the hip centre up to the neck
+  torso: V3; // from the hip centre up to the waist, and on to the neck unless `chest` is given
+  chest?: V3; // from the waist up to the neck, for a bent trunk (a crunch); defaults to `torso`
   head?: V3; // from the neck to the head; defaults to the torso direction
   thigh: [V3, V3]; // from each hip down to the knee
   shin: [V3, V3]; // from each knee down to the ankle
@@ -74,8 +76,9 @@ export function body(o: {
   j.hipC = o.hipC;
   j.lhip = add(o.hipC, [SEG.hipW, 0, 0]);
   j.rhip = add(o.hipC, [-SEG.hipW, 0, 0]);
-  j.neck = add(o.hipC, o.torso, SEG.torso);
-  j.head = add(j.neck, o.head ?? o.torso, SEG.neck + SEG.head);
+  j.waist = add(o.hipC, o.torso, SEG.lowBack);
+  j.neck = add(j.waist, o.chest ?? o.torso, SEG.upBack);
+  j.head = add(j.neck, o.head ?? o.chest ?? o.torso, SEG.neck + SEG.head);
   j.lsh = add(j.neck, [SEG.shW, 0, 0]);
   j.rsh = add(j.neck, [-SEG.shW, 0, 0]);
   const foot = o.foot ?? [[0, 0, 1], [0, 0, 1]];
@@ -106,8 +109,8 @@ export function twoBone(start: V3, end: V3, l1: number, l2: number, hint: V3): [
 }
 
 /** The shoulder positions body() will give for a hip centre and torso direction (for reaching with twoBone). */
-export const shouldersOf = (hipC: V3, torso: V3): [V3, V3] => {
-  const neck = add(hipC, torso, SEG.torso);
+export const shouldersOf = (hipC: V3, torso: V3, chest: V3 = torso): [V3, V3] => {
+  const neck = add(add(hipC, torso, SEG.lowBack), chest, SEG.upBack);
   return [add(neck, [SEG.shW, 0, 0]), add(neck, [-SEG.shW, 0, 0])];
 };
 export const hipsOf = (hipC: V3): [V3, V3] => [add(hipC, [SEG.hipW, 0, 0]), add(hipC, [-SEG.hipW, 0, 0])];
