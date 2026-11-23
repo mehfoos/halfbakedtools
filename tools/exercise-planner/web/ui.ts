@@ -2,7 +2,7 @@
 // planner (pure code in planner.ts) and draws the results. Nothing leaves the browser.
 import { AEROBIC, AEROBIC_LABEL, EQUIPMENT, EXERCISES, MUSCLES, PRESETS, assumedMuscles, isAssumed, isSupported, type Equipment, type Exercise, type Muscle, type Target } from "./catalogue.ts";
 import { caveat } from "@site/lib/caveats.ts";
-import { canDo, intensity, nameFor, ordered, studiedVersion, suggest, type Suggestion } from "./planner.ts";
+import { canDo, howToFor, intensity, nameFor, ordered, studiedVersion, suggest, type Suggestion } from "./planner.ts";
 import { chartSvg, fmt, type Axis } from "./chart.ts";
 import { ANIMATIONS, animationFor } from "./animations.ts";
 import { mountAnimations } from "./player.ts";
@@ -266,23 +266,24 @@ export function start(root: HTMLElement) {
     }
     const as = studiedVersion(e, have);
     const studied = as ? ` <span class="small muted sans">(classified from the ${esc(as)} version; this version is assumed to load the same muscles)</span>` : "";
+    const how = howToFor(e, have);
     return `<li><span class="ex-name">${esc(nameFor(e, have))}</span>${studied}
-      <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}${e.howTo ? ` · <a href="${esc(e.howTo.url)}" rel="noopener" target="_blank">How to do it<span class="sr-only"> (opens in a new tab)</span></a> <span class="muted">(${e.howTo.source}: ${esc(e.howTo.title)})</span>` : ""}</div>${aero}${showHow(e, have)}</li>`;
+      <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}${how ? ` · <a href="${esc(how.url)}" rel="noopener" target="_blank">How to do it<span class="sr-only"> (opens in a new tab)</span></a> <span class="muted">(${how.source}: ${esc(how.title)})</span>` : ""}</div>${aero}${showHow(e, have)}</li>`;
   }
 
   // A "Show how" animation, open by default (owner's decision, 23 Nov 2026), for exercise versions that have one.
   function showHow(e: Exercise, have: ReadonlySet<Equipment>) {
-    const a = animationFor(e, have);
-    if (!a || !e.howTo) return "";
+    const a = animationFor(e, have), how = howToFor(e, have);
+    if (!a || !how) return "";
     const n = esc(nameFor(e, have).toLowerCase());
     const view = (v: "side" | "front", label: string) =>
       `<figure><svg viewBox="0 0 ${a.box ?? BOX} ${a.box ?? BOX}" data-view="${v}" role="img" aria-label="${label} view of a figure doing a ${n}"></svg><figcaption>${label}</figcaption></figure>`;
     return `<details class="show-how" open><summary>Show how</summary><div class="details-body show-how-body">`
-      + caveat("illustration", `Not reviewed by a fitness professional. It shows the general movement only and may be wrong in detail. Before trying the exercise, follow the instructions on the linked ${e.howTo.source} page. <a href="${METHODS}#animations">About these drawings</a>.`)
+      + caveat("illustration", `Not reviewed by a fitness professional. It shows the general movement only and may be wrong in detail. Before trying the exercise, follow the instructions on the linked ${how.source} page. <a href="${METHODS}#animations">About these drawings</a>.`)
       + `<div class="anim" data-anim="${ANIMATIONS.indexOf(a)}">${view("side", "Side")}${view("front", "Front")}</div>`
       + `<p class="anim-controls"><button type="button" class="small" data-anim-toggle aria-pressed="false">Play</button></p>`
       + `<ul class="small sans cues">${a.cues.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>`
-      + `<p class="small muted sans">Cues summarised from the linked ${e.howTo.source} page.</p></div></details>`;
+      + `<p class="small muted sans">Cues summarised from the linked ${how.source} page.</p></div></details>`;
   }
 
   paint();

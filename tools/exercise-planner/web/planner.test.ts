@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { EXERCISES, EQUIPMENT, MUSCLES, PRESETS, assumedMuscles, isAssumed, isSupported, type Equipment, type Muscle } from "./catalogue.ts";
 import references from "../references.json" with { type: "json" };
 import { TABLE_1A, TABLE_1A_MUSCLES } from "./pelland-table-1a.ts";
-import { canDo, coverage, intensity, suggest, weights } from "./planner.ts";
+import { canDo, coverage, howToFor, intensity, suggest, weights } from "./planner.ts";
 
 const preset = (id: string) => PRESETS.find((p) => p.id === id)!.equipment;
 const base = { maxExercises: 4, count: 3, depth: 1, overlap: 0.5 };
@@ -295,8 +295,18 @@ test("how-to links point to individual pages of the chosen sources", () => {
     NASM: /^https:\/\/www\.nasm\.org\/resource-center\/exercise-library\/[a-z0-9-]+$/,
     NSCA: /^https:\/\/www\.nsca\.com\/education\/articles\/kinetic-select\/[a-z0-9-]+\/$/,
   };
-  for (const e of withLink) {
-    assert.match(e.howTo!.url, page[e.howTo!.source], e.id);
-    assert.ok(e.howTo!.title.length > 0, e.id);
+  const links = [...withLink.map((e) => ({ id: e.id, h: e.howTo! })),
+    ...EXERCISES.flatMap((e) => (e.variants ?? []).filter((v) => v.howTo).map((v) => ({ id: `${e.id} (${v.name})`, h: v.howTo! })))];
+  for (const { id, h } of links) {
+    assert.match(h.url, page[h.source], id);
+    assert.ok(h.title.length > 0, id);
   }
+});
+
+test("a version with its own how-to page links to it; other versions use the exercise's page", () => {
+  const ex = { ...EXERCISES.find((e) => e.id === "curl")!, variants: [
+    { using: ["dumbbells"], name: "D" }, { using: ["barbell"], name: "B", howTo: { source: "ACE", title: "Bar", url: "https://www.acefitness.org/resources/everyone/exercise-library/1/x/" } },
+  ] } as (typeof EXERCISES)[number];
+  assert.equal(howToFor(ex, new Set(["barbell"]))?.title, "Bar");
+  assert.equal(howToFor(ex, new Set(["dumbbells"])), ex.howTo);
 });

@@ -64,6 +64,8 @@ export const EQUIPMENT = [
   { id: "crossTrainer", label: "Cross-trainer (elliptical)", group: "cardio" },
   { id: "pool", label: "Swimming pool", group: "cardio" },
 ] as const;
+/** A page showing how to do an exercise (see `howTo` on Exercise). */
+export type HowTo = { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic" | "Concept2" | "Cleveland Clinic" | "Swim England" | "NHS"; title: string; url: string };
 export type Equipment = (typeof EQUIPMENT)[number]["id"];
 
 const ALL_EQUIPMENT = EQUIPMENT.map((e) => e.id) as Equipment[];
@@ -113,7 +115,7 @@ export type Exercise = {
    * Names to show by the equipment the visitor has: the first variant whose `using` includes an equipment item they
    * ticked. `name` is the fallback and what the exercise is called in the list of exercises to include.
    */
-  variants?: { using: Equipment[]; name: string }[];
+  variants?: { using: Equipment[]; name: string; /** A how-to page for this version, if it has its own; else the exercise's. */ howTo?: HowTo }[];
   /**
    * Set where a source classified only some versions: the equipment the studied version used and a plain-words name for
    * it. Other variants are shown as assumed to load the same muscles.
@@ -126,7 +128,7 @@ export type Exercise = {
    * isn't a reference and isn't archived. The page may show another version (equipment or stance) of the same movement;
    * its title says which.
    */
-  howTo?: { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic" | "Concept2" | "Cleveland Clinic" | "Swim England" | "NHS"; title: string; url: string };
+  howTo?: HowTo;
   /** A position held or carried, not repeated through a range. Pelland et al. analysed dynamic training only, so these are shown last. */
   hold?: true;
   /** Muscles that hold a position but don't move a joint through a range: shown, not counted. */

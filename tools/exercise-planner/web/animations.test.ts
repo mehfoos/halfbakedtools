@@ -12,7 +12,8 @@ test("every animation belongs to a catalogue exercise with a how-to link, and ma
   for (const a of ANIMATIONS) {
     const ex = EXERCISES.find((e) => e.id === a.exercise);
     assert.ok(ex, `${name(a)}: no such exercise`);
-    assert.ok(ex.howTo, `${name(a)}: animations are drawn from the how-to page, so the exercise needs one`);
+    const v = a.using && ex.variants?.find((x) => a.using!.some((e) => x.using.includes(e)));
+    assert.ok((v && v.howTo) || ex.howTo, `${name(a)}: animations are drawn from the how-to page, so the version needs one`);
     if (ex.variants) assert.ok(a.using && ex.variants.some((v) => a.using!.some((e) => v.using.includes(e))), `${name(a)}: say which variant it draws`);
     else assert.equal(a.using, undefined, `${name(a)}: the exercise has no variants`);
     assert.ok(a.cues.length >= 2, `${name(a)}: give the cues`);

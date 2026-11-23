@@ -23,6 +23,11 @@ export function variantFor(ex: Exercise, have: ReadonlySet<Equipment>) {
   return ex.variants?.find((v) => v.using.some((e) => have.has(e)));
 }
 
+/** The how-to page for the version of an exercise the visitor will see: the version's own, else the exercise's. */
+export function howToFor(ex: Exercise, have: ReadonlySet<Equipment>) {
+  return variantFor(ex, have)?.howTo ?? ex.howTo;
+}
+
 /** For a version a source didn't classify: the plain-words name of the version it did (else undefined). */
 export function studiedVersion(ex: Exercise, have: ReadonlySet<Equipment>): string | undefined {
   const v = variantFor(ex, have);
