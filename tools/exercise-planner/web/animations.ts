@@ -1329,10 +1329,11 @@ export const ANIMATIONS: Animation[] = [
     ],
   },
   {
-    // NASM "Squat Thrust Burpees": stand, feet hip-width; squat and place the hands on the floor just outside the
-    // feet; jump or step the feet back into a push-up position and do one push-up; jump the feet back towards the
-    // hands and jump up with the arms overhead; land softly with bent knees. Drawn with the feet jumping. The movement
-    // plays there and back, so the reverse half (push up, feet in, stand, jump) matches the page's order.
+    // ACE "Calorie-Burning 20-Minute HIIT Workout" (Stephanie Thielen, 2014), "Burpees": squat and put both hands on
+    // the floor; jump or walk back to a high plank and do one push-up; jump or walk the feet back to the squat and
+    // jump up with the arms overhead. Drawn with the feet jumping. The movement plays there and back, so the reverse
+    // half (push up, feet in, stand, jump) matches the page's order. (First drawn from NASM's "Squat Thrust Burpees",
+    // whose steps say the same; that page was replaced for its copy-paste errors.)
     exercise: "burpee", box: 224,
     pose: (t) => {
       const seg = (a: number, b: number) => Math.min(1, Math.max(0, (t - a) / (b - a)));
@@ -1362,10 +1363,10 @@ export const ANIMATIONS: Animation[] = [
       return body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(footP), dir(footP)], upper: [AL[0], AR[0]], fore: [AL[1], AR[1]] });
     },
     cues: [
-      "Stand with your feet hip-width apart",
-      "Squat down and put your hands on the floor just outside your feet",
-      "Jump or step your feet back into a push-up position and do one push-up",
-      "Jump your feet back towards your hands, then jump up with your arms overhead and land softly with bent knees",
+      "Stand tall",
+      "Squat down and put both hands on the floor",
+      "Jump or walk your feet back into a high plank and do one push-up",
+      "Jump or walk your feet back to the squat, then jump straight up with your arms overhead",
     ],
   },
   {

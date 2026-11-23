@@ -432,7 +432,7 @@ export const EXERCISES: Exercise[] = [
     met: [{ code: "18240", met: 5.8, label: "Swimming laps, freestyle, slow, recreational" },
       { code: "18230", met: 9.8, label: "Swimming laps, freestyle, fast, vigorous effort" }] }),
   X({ id: "burpee", name: "Burpees, jumping jacks and similar", kind: "intervals", needs: [["body"]],
-    howTo: { source: "NASM", title: "Squat Thrust Burpees", url: "https://www.nasm.org/resource-center/exercise-library/squat-thrust-burpees" },
+    howTo: { source: "ACE", title: "Calorie-Burning 20-Minute HIIT Workout (Burpees), by Stephanie Thielen", url: "https://www.acefitness.org/resources/everyone/blog/5228/calorie-burning-20-minute-hiit-workout/" },
     moves: "fast whole-body calisthenics", direct: [], indirect: [],
     met: [{ code: "02020", met: 7.5, label: "Calisthenics (e.g., pushups, sit ups, pull-ups, jumping jacks, burpees, battling ropes), vigorous effort" }] }),
 ];
