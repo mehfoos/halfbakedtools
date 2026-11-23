@@ -206,7 +206,7 @@ export const EXERCISES: Exercise[] = [
 
   // --- Bands ---
   X({ id: "bandRow", name: "Resistance-band row", kind: "strength", needs: [["bands"]],
-    howTo: { source: "ACE", title: "Standing Row (cable)", url: "https://www.acefitness.org/resources/everyone/exercise-library/335/standing-row/" },
+    howTo: { source: "ACE", title: "Resistance Tubing Workout (Seated row)", url: "https://www.acefitness.org/education-and-resources/lifestyle/blog/6693/resistance-tubing-workout/" },
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"] }),
   X({ id: "bandPullApart", name: "Band pull-apart", kind: "strength", needs: [["bands"]],
