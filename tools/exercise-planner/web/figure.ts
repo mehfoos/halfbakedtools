@@ -31,7 +31,9 @@ export const BONES: [Joint, Joint, number][] = [
 export type Prop =
   | { kind: "dumbbell"; at: V3; axis: V3 }
   | { kind: "bar"; at: V3; axis: V3; half: number; plate?: number }
-  | { kind: "line"; a: V3; b: V3; width?: number };
+  | { kind: "line"; a: V3; b: V3; width?: number }
+  // A kettlebell: the handle (across, left to right) at `at`, the bell hanging from it along `hang` (a unit direction).
+  | { kind: "kettlebell"; at: V3; hang: V3 };
 
 export type Pose = { j: Record<Joint, V3>; props: Prop[] };
 
@@ -136,6 +138,8 @@ export function project(p: V3, view: View, box = BOX): [number, number, number] 
   return view === "side" ? [box / 2 + p[2], fl - p[1], -p[0]] : [box / 2 + p[0], fl - p[1], p[2]];
 }
 
+/** A kettlebell's size: half the handle's width, the bell's radius, and how far the bell's centre hangs below the hand. */
+const KB = { handle: 5, r: 8, drop: 9 };
 const NAVY = "#000080", GREY = "#555", DARK = "#333";
 const f = (n: number) => Math.round(n * 10) / 10;
 
@@ -144,7 +148,10 @@ export function points(p: Pose): V3[] {
   const out: V3[] = JOINTS.map((k) => p.j[k]);
   for (const q of p.props) {
     if (q.kind === "line") out.push(q.a, q.b);
-    else {
+    else if (q.kind === "kettlebell") {
+      const c = add(q.at, q.hang, KB.drop);
+      out.push(add(q.at, [-KB.handle, 0, 0]), add(q.at, [KB.handle, 0, 0]), add(c, [KB.r, 0, 0]), add(c, [-KB.r, 0, 0]), add(c, [0, KB.r, 0]), add(c, [0, -KB.r, 0]), add(c, [0, 0, KB.r]), add(c, [0, 0, -KB.r]));
+    } else {
       const h = q.kind === "bar" ? q.half : 9, r = q.kind === "bar" ? q.plate ?? 9 : 6;
       for (const e of [add(q.at, q.axis, -h), add(q.at, q.axis, h)]) out.push(e, add(e, [0, r, 0]), add(e, [0, -r, 0])); // the plates' edges too
     }
@@ -171,7 +178,10 @@ export function viewSvg(p: Pose, view: View, box = BOX): string {
   parts.push({ d: H[2], svg: () => `<circle cx="${f(H[0])}" cy="${f(H[1])}" r="${SEG.head}" fill="${NAVY}"/>` });
   for (const q of p.props) {
     if (q.kind === "line") line(q.a, q.b, GREY, q.width ?? 4);
-    else {
+    else if (q.kind === "kettlebell") {
+      line(add(q.at, [-KB.handle, 0, 0]), add(q.at, [KB.handle, 0, 0]), GREY, 3);
+      disc(add(q.at, q.hang, KB.drop), KB.r, DARK);
+    } else {
       const h = q.kind === "bar" ? q.half : 9, a = add(q.at, q.axis, -h), b = add(q.at, q.axis, h);
       line(a, b, GREY, 3);
       const ends = q.kind === "bar" ? [add(q.at, q.axis, -h + 6), add(q.at, q.axis, h - 6)] : [a, b];
