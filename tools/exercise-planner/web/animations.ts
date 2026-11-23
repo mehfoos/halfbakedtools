@@ -63,6 +63,39 @@ const cable = (a: V3, b: V3): Prop => ({ kind: "line", a, b, width: 2 });
 const lerp3 = (a: V3, b: V3, t: number): V3 => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
 const mid = (a: V3, b: V3): V3 => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
 
+/** A forward lunge: step forward with the left leg and lower; `half` is half the starting gap between the feet. */
+function lungePose(t: number, half: number): Pose {
+      const stepT = Math.min(1, t * 1.6), lowT = Math.max(0, (t - 0.25) / 0.75);
+      const heel = lerp(0, 50, lowT) * Math.PI / 180;
+      const backAnkle: V3 = [-half, 12 * Math.sin(heel), -6 - 12 * Math.cos(heel)];
+      const front: V3 = [half, 6 * Math.sin(Math.PI * stepT) * (1 - lowT), lerp(-18, 52, stepT)];
+      const shin = 10 * Math.PI / 180;
+      const bottomHip: V3 = [0, SEG.shin * Math.cos(shin) + 2, 52 + SEG.shin * Math.sin(shin) - SEG.thigh];
+      const standHip: V3 = [0, SEG.shin + SEG.thigh - 0.5, -9];
+      const hipC: V3 = [0, lerp(standHip[1], bottomHip[1], lowT), lerp(standHip[2], bottomHip[2] + 4, t)];
+      const [lh, rh] = hipsOf(hipC);
+      const L = twoBone(lh, front, SEG.thigh, SEG.shin, [0, 0, 1]);
+      const R = twoBone(rh, backAnkle, SEG.thigh, SEG.shin, [0, -0.3, 1]);
+      const lean = lerp(0, 10, lowT);
+      return body({ hipC, torso: dir(180 - lean), thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(90), dir(90 - (heel * 180) / Math.PI)], upper: [DOWN, DOWN], fore: [DOWN, DOWN] });
+}
+
+/** A squat with the feet still: `depth` is the thigh's angle from straight down at the bottom (90 = parallel). */
+function squatPose(t: number, o: { depth: number; shin: number; lean: number; wide: number; toes?: number },
+  arms: (sh: [V3, V3], torso: V3, neck: V3) => [[V3, V3], [V3, V3]]): Pose {
+  const toes = o.toes ?? 10, lean = lerp(0, o.lean, t);
+  const leg = (s: 1 | -1) => ({
+    thigh: yaw(dir(lerp(0, o.depth, t), s * o.wide), s * toes),
+    shin: yaw(neg(dir(180 - lerp(0, o.shin, t), -s * o.wide)), s * toes),
+    foot: yaw(FWD, s * toes),
+  });
+  const L = leg(1), R = leg(-1), hipC: V3 = [0, 80, 0], torso = dir(180 - lean);
+  const neck = add(hipC, torso, SEG.torso), [u, f] = arms(shouldersOf(hipC, torso), torso, neck);
+  const p = body({ hipC, torso, head: dir(180 - lean * 0.6), thigh: [L.thigh, R.thigh], shin: [L.shin, R.shin], foot: [L.foot, R.foot], upper: u, fore: f });
+  return anchored(p, ["lankle", "rankle"], [0, 0, -6]);
+}
+const front = (torso: V3): V3 => [0, -torso[2], torso[1]]; // the way the chest faces, for a trunk leaning forward
+
 export const ANIMATIONS: Animation[] = [
   {
     // ACE "Seated Biceps Curl" (dumbbells): seated against a backrest, palms forward, elbows bend together to bring
@@ -161,21 +194,7 @@ export const ANIMATIONS: Animation[] = [
     // forward lean with a flat back; push off the front leg back to the start. The arms and the back knee aren't
     // described: drawn hanging and bending.
     exercise: "lunge",
-    pose: (t) => {
-      const stepT = Math.min(1, t * 1.6), lowT = Math.max(0, (t - 0.25) / 0.75);
-      const heel = lerp(0, 50, lowT) * Math.PI / 180;
-      const backAnkle: V3 = [-3, 12 * Math.sin(heel), -6 - 12 * Math.cos(heel)];
-      const front: V3 = [3, 6 * Math.sin(Math.PI * stepT) * (1 - lowT), lerp(-18, 52, stepT)];
-      const shin = 10 * Math.PI / 180;
-      const bottomHip: V3 = [0, SEG.shin * Math.cos(shin), 52 + SEG.shin * Math.sin(shin) - SEG.thigh];
-      const standHip: V3 = [0, SEG.shin + SEG.thigh - 0.5, -9];
-      const hipC: V3 = [0, lerp(standHip[1], bottomHip[1], lowT), lerp(standHip[2], bottomHip[2] + 4, t)];
-      const [lh, rh] = hipsOf(hipC);
-      const L = twoBone(lh, front, SEG.thigh, SEG.shin, [0, 0, 1]);
-      const R = twoBone(rh, backAnkle, SEG.thigh, SEG.shin, [0, -0.3, 1]);
-      const lean = lerp(0, 10, lowT);
-      return body({ hipC, torso: dir(180 - lean), thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(90), dir(90 - (heel * 180) / Math.PI)], upper: [DOWN, DOWN], fore: [DOWN, DOWN] });
-    },
+    pose: (t) => lungePose(t, 3),
     cues: [
       "Stand with your feet together",
       "Step forward, heel first, and lower your hips towards the floor until your front thigh is parallel with it",
@@ -798,6 +817,221 @@ export const ANIMATIONS: Animation[] = [
       "Keep your elbows close to your body",
       "Lower yourself by bending your elbows to a right angle or slightly less",
       "Push back up with your arms to the start",
+    ],
+  },
+  {
+    // ACE "Pull-ups": hang from the bar with the palms facing away, legs crossed; pull up with the elbows driving down
+    // to the sides until the chin is level with the bar or the hands; pause; lower until the arms are straight. Grip
+    // width isn't given: drawn a little wider than the shoulders.
+    exercise: "pullUp", box: 224,
+    pose: (t) => {
+      const barY = 196, rise = lerp(0, SEG.upper + SEG.fore - 10, t), neckY = barY - SEG.upper - SEG.fore + 1 + rise;
+      const hipC: V3 = [0, neckY - SEG.torso, 0], [ls, rs] = shouldersOf(hipC, UP);
+      const LA = twoBone(ls, [22, barY, 2], SEG.upper, SEG.fore, [1, -1, 0.2]), RA = twoBone(rs, [-22, barY, 2], SEG.upper, SEG.fore, [-1, -1, 0.2]);
+      const p = body({ hipC, torso: UP, thigh: [dir(14, -4), dir(14, 4)], shin: [dir(-30, -6), dir(-30, 6)], foot: [dir(60), dir(60)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      return { ...p, props: [{ kind: "line", a: [-44, barY, 2], b: [44, barY, 2], width: 4 }] };
+    },
+    cues: [
+      "Hang from the bar with your palms facing away and your arms straight; cross one leg over the other",
+      "Draw your shoulders back and down",
+      "Pull up, driving your elbows down towards your sides, until your chin is level with the bar or your hands",
+      "Pause, then lower slowly until your arms are straight",
+    ],
+  },
+  {
+    // NASM "Pike Push-Up": start in an inverted V (a "downward dog"), hands slightly wider than the shoulders; lower the
+    // head towards the floor by bending the elbows, about 45° from the body, until it nearly touches; press back up.
+    // How far the hips move isn't given: drawn moving forward a little as the head goes down.
+    exercise: "pikePushUp",
+    pose: (t) => {
+      const hands: [V3, V3] = [[18, 0, 40], [-18, 0, 40]], ankleY = 8, ankleZ = -36;
+      const hipTop: V3 = [0, 75, -26], hipLow: V3 = [0, 70, 0];
+      const hipC = lerp3(hipTop, hipLow, t);
+      const topDir: V3 = (() => { const d: V3 = [0, -hipTop[1], 40 - hipTop[2]], n = Math.hypot(...d); return [0, d[1] / n, d[2] / n]; })();
+      const lowDir: V3 = [0, -54 / 60, 26 / 60];
+      const torso: V3 = (() => { const d = lerp3(topDir, lowDir, t), n = Math.hypot(...d); return [0, d[1] / n, d[2] / n]; })();
+      const [ls, rs] = shouldersOf(hipC, torso), [lh, rh] = hipsOf(hipC);
+      const LA = twoBone(ls, hands[0], SEG.upper, SEG.fore, [0.7, 0.3, -0.7]), RA = twoBone(rs, hands[1], SEG.upper, SEG.fore, [-0.7, 0.3, -0.7]);
+      const L = twoBone(lh, [6, ankleY, ankleZ], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-6, ankleY, ankleZ], SEG.thigh, SEG.shin, FWD);
+      return body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(48), dir(48)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+    },
+    cues: [
+      "Start in an upside-down V: hands slightly wider than your shoulders, hips high",
+      "Bend your elbows, at about 45 degrees from your body, to lower your head towards the floor",
+      "Stop when your head nearly touches the floor",
+      "Press back up to the V",
+    ],
+  },
+  {
+    // ACE "Goblet Squat" (dumbbell): feet about shoulder-width; one dumbbell held upright in front of the chest, elbows
+    // close to the ribs, back straight; lower until the hips are below the knees; push the feet down to stand.
+    exercise: "gobletSquat", using: ["dumbbells"],
+    pose: (t) => {
+      const p = squatPose(t, { depth: 108, shin: 40, lean: 32, wide: 8 }, (sh, torso, neck) => {
+        const chest = add(add(neck, torso, -12), front(torso), 12);
+        const L = twoBone(sh[0], add(chest, [3, 0, 0]), SEG.upper, SEG.fore, [0.3, -1, 0.2]), R = twoBone(sh[1], add(chest, [-3, 0, 0]), SEG.upper, SEG.fore, [-0.3, -1, 0.2]);
+        return [[L[0], R[0]], [L[1], R[1]]];
+      });
+      const torso: V3 = (() => { const d: V3 = [0, p.j.neck[1] - p.j.hipC[1], p.j.neck[2] - p.j.hipC[2]], n = Math.hypot(...d); return [0, d[1] / n, d[2] / n]; })();
+      return { ...p, props: [{ kind: "dumbbell", at: mid(p.j.lwr, p.j.rwr), axis: torso }] };
+    },
+    cues: [
+      "Stand with your feet about shoulder-width apart, holding one dumbbell upright in front of your chest",
+      "Keep your elbows close to your ribs and your back straight",
+      "Lower into a squat until your hips are below your knees",
+      "Push both feet into the floor to stand back up",
+    ],
+  },
+  {
+    // ACE "Lunge" (dumbbells): feet hip-width, a dumbbell in each hand at the sides, palms facing in; step forward and
+    // lower the back knee towards the floor to a comfortable depth; push off the front foot to bring the feet back
+    // together. Drawn like the forward lunge, starting hip-width, with the depth at the front thigh about parallel.
+    exercise: "lungeDb",
+    pose: (t) => dumbbellsAt(lungePose(t, SEG.hipW), () => [0, 0, 1]),
+    cues: [
+      "Stand with your feet hip-width apart, a dumbbell in each hand at your sides, palms facing in",
+      "Keep your back straight and step forward with one leg",
+      "As the front foot lands, lower your back knee towards the floor, as far as is comfortable",
+      "Push off the front foot to return to the start",
+    ],
+  },
+  {
+    // ACE "Front Raise" (dumbbells): dumbbells in front of the thighs, palms facing the thighs, elbows straight or
+    // slightly bent; split stance or feet slightly wider than hip-width; raise until the arms are level with the
+    // shoulders, roughly parallel to the floor; past about 60–70° the inner ends tilt slightly up; lower slowly.
+    exercise: "frontRaise",
+    pose: (t) => {
+      const a = lerp(8, 90, t);
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(0, 4), dir(0, -4)], shin: [dir(0, 4), dir(0, -4)],
+        upper: [dir(a, 3), dir(a, -3)], fore: [dir(a - 6, 2), dir(a - 6, -2)] }));
+      const tilt = (a > 65 ? ((a - 65) / 25) * 15 : 0) * Math.PI / 180;
+      return dumbbellsAt(p, (s) => (s === "l" ? [Math.cos(tilt), -Math.sin(tilt), 0] : [Math.cos(tilt), Math.sin(tilt), 0]));
+    },
+    cues: [
+      "Stand with your feet slightly wider than hip-width, dumbbells in front of your thighs, palms facing them",
+      "Keep your elbows straight or slightly bent",
+      "Raise the weights in front of you until your arms are level with your shoulders",
+      "Lower slowly to the start",
+    ],
+  },
+  {
+    // ACE "Standing Shoulder Press" (barbell): bar resting across the front of the shoulders, hands about
+    // shoulder-width, palms up, elbows pointing forward; press the bar straight overhead; lower slowly to the shoulders.
+    exercise: "ohp", box: 224,
+    pose: (t) => {
+      const p0 = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: [DOWN, DOWN], fore: [DOWN, DOWN] }));
+      const hipC = p0.j.hipC, [ls, rs] = shouldersOf(hipC, UP), neck = add(hipC, UP, SEG.torso);
+      const bar = lerp3([0, neck[1] + 1, 10], [0, neck[1] + SEG.upper + SEG.fore - 2, 2], t);
+      const LA = twoBone(ls, [17, bar[1], bar[2]], SEG.upper, SEG.fore, [0.25, -0.6, 1]), RA = twoBone(rs, [-17, bar[1], bar[2]], SEG.upper, SEG.fore, [-0.25, -0.6, 1]);
+      const p = body({ hipC, torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      return { ...p, props: [barbell(mid(p.j.lwr, p.j.rwr))] };
+    },
+    cues: [
+      "Take the bar from a rack at about shoulder height, hands about shoulder-width apart, palms up",
+      "Rest it across the front of your shoulders with your elbows pointing forward, then step back, standing tall",
+      "Press the bar straight overhead",
+      "Lower it slowly back to your shoulders",
+    ],
+  },
+  {
+    // ACE "Elevated Glute Bridge" (dumbbells), the linked page for the hip thrust: upper back and shoulders across a
+    // bench, body at right angles to it; feet hip-width on the floor; a dumbbell in each hand resting on the hips; lower
+    // the tailbone towards the floor; press the feet down and squeeze the glutes to rise. Drawn for the dumbbell version
+    // (the linked page); the top is drawn with the trunk about level.
+    exercise: "hipThrust", using: ["dumbbells"],
+    pose: (t) => {
+      const benchY = 40, neck: V3 = [0, benchY + 6, -36], hy = lerp(benchY + 4, 14, t);
+      const hz = neck[2] + Math.sqrt(SEG.torso ** 2 - (neck[1] - hy) ** 2), hipC: V3 = [0, hy, hz];
+      const torso: V3 = [0, (neck[1] - hy) / SEG.torso, (neck[2] - hz) / SEG.torso];
+      const [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, torso);
+      const L = twoBone(lh, [SEG.hipW, 0, 46], SEG.thigh, SEG.shin, [0, 1, 0.3]), R = twoBone(rh, [-SEG.hipW, 0, 46], SEG.thigh, SEG.shin, [0, 1, 0.3]);
+      const LA = twoBone(ls, [13, hy + 7, hz - 2], SEG.upper, SEG.fore, [1, 1, 0]), RA = twoBone(rs, [-13, hy + 7, hz - 2], SEG.upper, SEG.fore, [-1, 1, 0]);
+      const bench: Prop[] = [{ kind: "line", a: [-40, benchY, neck[2]], b: [40, benchY, neck[2]], width: 5 }, { kind: "line", a: [0, benchY, neck[2] - 8], b: [0, benchY, neck[2] + 6], width: 5 },
+        { kind: "line", a: [-34, benchY, neck[2]], b: [-34, 0, neck[2]] }, { kind: "line", a: [34, benchY, neck[2]], b: [34, 0, neck[2]] }];
+      const p = body({ hipC, torso, head: dir(-90), thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: bench });
+      return dumbbellsAt(p, () => [1, 0, 0]);
+    },
+    cues: [
+      "Rest your upper back and shoulders across a bench, feet hip-width apart on the floor",
+      "Hold a dumbbell in each hand resting on your hips",
+      "Lower your tailbone slowly towards the floor",
+      "Press your feet into the floor and squeeze your glutes to rise back up",
+    ],
+  },
+  {
+    // ACE "Triceps Extension" (dumbbell): split stance; both hands round one dumbbell, pressed overhead with the upper
+    // arms upright and the elbows forward, shoulder-width apart; lower it behind the head without moving the upper
+    // arms until the elbows reach 90° (or the upper arms start to move); press it back up.
+    exercise: "overheadExt", using: ["dumbbells"], box: 224,
+    pose: (t) => {
+      const bend = lerp(4, 90, t), inward = 30;
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(8), dir(-8)], shin: [dir(8), dir(-8)],
+        upper: [dir(178), dir(178)], fore: [dir(178 + bend, -inward), dir(178 + bend, inward)] }));
+      return { ...p, props: [{ kind: "dumbbell", at: mid(p.j.lwr, p.j.rwr), axis: [0, 1, 0] }] };
+    },
+    cues: [
+      "Stand with one foot ahead of the other, holding one dumbbell overhead in both hands",
+      "Upper arms upright, elbows pointing forward and about shoulder-width apart",
+      "Lower the weight behind your head, without moving your upper arms, until your elbows are at a right angle",
+      "Press it back up overhead",
+    ],
+  },
+  {
+    // ACE "Farmer's Carry" (dumbbells): a dumbbell in each hand, firm grip, arms at the sides with the weights beside
+    // the hips; back straight; walk a set distance, turn and come back. Drawn walking on the spot. The page says
+    // "palms facing down", which doesn't fit weights held at the sides; drawn with the handles front to back.
+    exercise: "farmerCarry", using: ["dumbbells"],
+    pose: (t) => {
+      const swing = Math.cos(Math.PI * t) * 20, knee = (s: number) => Math.max(0, -s) * 1.2;
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(swing), dir(-swing)], shin: [dir(swing - knee(swing)), dir(-swing - knee(-swing))],
+        foot: [dir(90 - knee(swing) * 0.4), dir(90 - knee(-swing) * 0.4)], upper: [dir(0, 4), dir(0, -4)], fore: [dir(0, 3), dir(0, -3)] }));
+      return dumbbellsAt(p, () => [0, 0, 1]);
+    },
+    cues: [
+      "Hold a dumbbell in each hand with a firm grip, arms at your sides, weights beside your hips",
+      "Keep your back straight",
+      "Walk a set distance",
+      "Turn round and walk back",
+    ],
+  },
+  {
+    // ACE "Single-leg Romanian Deadlift" (no equipment): feet hip-width, back straight, knees slightly bent; push the
+    // hips back and lift one foot, straightening that leg behind; lean forward as far as is comfortable; stand back up,
+    // bringing the leg down. Hands "in any fashion for balance": drawn hanging. Drawn for the bodyweight version.
+    exercise: "singleLegRdl", using: ["body"],
+    pose: (t) => {
+      const L = lerp(0, 72, t) * Math.PI / 180, torso: V3 = [0, Math.cos(L), Math.sin(L)];
+      const ankle: V3 = [-SEG.hipW, 0, 0], hz = -18 * Math.sin(L), hipC: V3 = [0, Math.sqrt(74 ** 2 - hz ** 2), hz];
+      const [, rh] = hipsOf(hipC), R = twoBone(rh, ankle, SEG.thigh, SEG.shin, FWD);
+      const back: V3 = [0, -Math.cos(L), -Math.sin(L)], [lh] = hipsOf(hipC);
+      const LL = twoBone(lh, add(lh, back, 74), SEG.thigh, SEG.shin, FWD); // the lifted leg keeps the same slight bend
+      return body({ hipC, torso, thigh: [LL[0], R[0]], shin: [LL[1], R[1]], foot: [dir(90 - Math.max(0, (L * 180) / Math.PI - 14)), FWD], upper: [DOWN, DOWN], fore: [DOWN, DOWN] });
+    },
+    cues: [
+      "Stand with your feet hip-width apart, back straight and knees slightly bent",
+      "Push your hips back and lift one foot, straightening that leg behind you",
+      "Lean forward as far as is comfortable, keeping your back straight",
+      "Stand back up, bringing the raised leg back down; do all reps on one leg, then switch",
+    ],
+  },
+  {
+    // ACE "Back Squat" (barbell): bar across the top of the back behind the neck, hands wider than shoulder-width,
+    // chest up, shoulder blades squeezed; feet a little wider than shoulder-width; sit back with the back straight and
+    // chest up until the hips are below the knees; push the feet down and the hips forward to stand.
+    exercise: "backSquat",
+    pose: (t) => {
+      const p = squatPose(t, { depth: 106, shin: 38, lean: 42, wide: 9 }, (sh, torso, neck) => {
+        const bar = add(add(neck, front(torso), -5), torso, 2);
+        const L = twoBone(sh[0], add(bar, [28, 0, 0]), SEG.upper, SEG.fore, [0.4, -1, -0.5]), R = twoBone(sh[1], add(bar, [-28, 0, 0]), SEG.upper, SEG.fore, [-0.4, -1, -0.5]);
+        return [[L[0], R[0]], [L[1], R[1]]];
+      });
+      return { ...p, props: [barbell(mid(p.j.lwr, p.j.rwr))] };
+    },
+    cues: [
+      "Take the bar from a rack just below shoulder height onto the top of your back, hands wider than your shoulders",
+      "Step back and set your feet a little wider than shoulder-width; chest up, shoulder blades squeezed",
+      "Sit back into your hips, back straight, until your hips are below your knees",
+      "Press your feet into the floor and push your hips forward to stand",
     ],
   },
 ];
