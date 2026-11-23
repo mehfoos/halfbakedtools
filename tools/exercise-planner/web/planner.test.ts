@@ -282,11 +282,16 @@ test("reading order: big lifts, then smaller ones, then holds, then heart and lu
 
 test("how-to links point to individual pages of the chosen sources", () => {
   const withLink = EXERCISES.filter((e) => e.howTo);
-  assert.ok(withLink.length >= 47);
+  assert.ok(withLink.length >= 55);
   const page: Record<string, RegExp> = {
     // ACE's exercise library, or, where it has no page with instructions, an ACE article that gives them.
-    ACE: /^https:\/\/www\.acefitness\.org\/(resources\/everyone\/exercise-library\/\d+\/[a-z0-9-]+|resources\/everyone\/blog\/\d+\/[a-z0-9-]+|education-and-resources\/professional\/certified\/[a-z0-9-]+\/\d+\/[a-z0-9-]+|continuing-education\/certified\/[a-z0-9-]+\/\d+\/[a-z0-9-]+)\/$/,
-    "Mayo Clinic": /^https:\/\/www\.mayoclinic\.org\/healthy-lifestyle\/fitness\/multimedia\/[a-z0-9-]+\/vid-\d+$/,
+    ACE: /^https:\/\/www\.acefitness\.org\/(resources\/everyone\/exercise-library\/\d+\/[a-z0-9-]+|resources\/everyone\/blog\/\d+\/[a-z0-9-]+|resources\/pros\/expert-articles\/\d+\/[a-z0-9-]+|education-and-resources\/lifestyle\/blog\/\d+\/[a-z0-9-]+|education-and-resources\/professional\/certified\/[a-z0-9-]+\/\d+\/[a-z0-9-]+|continuing-education\/certified\/[a-z0-9-]+\/\d+\/[a-z0-9-]+)\/$/,
+    "Mayo Clinic": /^https:\/\/www\.mayoclinic\.org\/healthy-lifestyle\/fitness\/(multimedia\/[a-z0-9-]+\/vid-\d+|in-depth\/[a-z0-9-]+\/art-\d+)$/,
+    // For aerobic exercise, where the sources above have no how-to page: the makers' or national bodies' own guides.
+    Concept2: /^https:\/\/www\.concept2\.com\/training\/[a-z0-9-]+$/,
+    "Cleveland Clinic": /^https:\/\/health\.clevelandclinic\.org\/[a-z0-9-]+$/,
+    "Swim England": /^https:\/\/www\.swimming\.org\/justswim\/[a-z0-9-]+\/$/,
+    NHS: /^https:\/\/www\.[a-z]+\.nhs\.uk\/[a-z0-9\/-]+\/$/,
     NASM: /^https:\/\/www\.nasm\.org\/resource-center\/exercise-library\/[a-z0-9-]+$/,
     NSCA: /^https:\/\/www\.nsca\.com\/education\/articles\/kinetic-select\/[a-z0-9-]+\/$/,
   };

@@ -126,7 +126,7 @@ export type Exercise = {
    * isn't a reference and isn't archived. The page may show another version (equipment or stance) of the same movement;
    * its title says which.
    */
-  howTo?: { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic"; title: string; url: string };
+  howTo?: { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic" | "Concept2" | "Cleveland Clinic" | "Swim England" | "NHS"; title: string; url: string };
   /** A position held or carried, not repeated through a range. Pelland et al. analysed dynamic training only, so these are shown last. */
   hold?: true;
   /** Muscles that hold a position but don't move a joint through a range: shown, not counted. */
@@ -389,33 +389,41 @@ export const EXERCISES: Exercise[] = [
 
   // --- Aerobic ---
   X({ id: "walk", name: "Brisk walking", kind: "aerobic", needs: [["outdoors", "treadmill"]],
+    howTo: { source: "Mayo Clinic", title: "Walking: Trim your waistline, improve your health (Consider your technique)", url: "https://www.mayoclinic.org/healthy-lifestyle/fitness/in-depth/walking/art-20046261" },
     moves: "walking", direct: [], indirect: [],
     met: [{ code: "17200", met: 4.8, label: "Walking, 3.5 to 3.9 mph, level, brisk, firm surface, walking for exercise" }] }),
   X({ id: "run", name: "Running or jogging", kind: "aerobic", needs: [["outdoors", "treadmill"]],
+    howTo: { source: "ACE", title: "5 Tips for Optimizing Running Form", url: "https://www.acefitness.org/resources/pros/expert-articles/5415/5-tips-for-optimizing-running-form/" },
     moves: "running", direct: [], indirect: [],
     met: [{ code: "12020", met: 7.5, label: "Jogging, general, self-selected pace" },
       { code: "12050", met: 9.3, label: "Running, 6-6.3 mph (10 min/mile)" }] }),
   X({ id: "cycle", name: "Exercise bike", kind: "aerobic", needs: [["bike"]],
+    howTo: { source: "ACE", title: "Indoor Cycling: The Breakdown on Bike Set-Up", url: "https://www.acefitness.org/education-and-resources/lifestyle/blog/3414/indoor-cycling-the-breakdown-on-bike-set-up/" },
     moves: "cycling", direct: [], indirect: [],
     met: [{ code: "01216", met: 5.0, label: "Bicycling, stationary, 60 watts, light to moderate effort" },
       { code: "01200", met: 6.8, label: "Bicycling, stationary, general" }] }),
   X({ id: "row", name: "Rowing machine", kind: "aerobic", needs: [["rower"]],
+    howTo: { source: "Concept2", title: "Indoor Rowing Technique", url: "https://www.concept2.com/training/rowing-technique" },
     moves: "rowing", direct: [], indirect: [],
     met: [{ code: "02071", met: 5.0, label: "Rowing, stationary ergometer, general, <100 watts, moderate effort" },
       { code: "02070", met: 7.3, label: "Rowing, stationary ergometer, general, vigorous effort" }] }),
   X({ id: "elliptical", name: "Cross-trainer (elliptical)", kind: "aerobic", needs: [["crossTrainer"]],
+    howTo: { source: "Cleveland Clinic", title: "Treadmill or Elliptical? Which Is Better for You? (What to know about ellipticals)", url: "https://health.clevelandclinic.org/treadmill-or-elliptical-how-to-decide-whats-your-best-workout" },
     moves: "elliptical stepping", direct: [], indirect: [],
     met: [{ code: "02048", met: 5.0, label: "Elliptical trainer, moderate effort" },
       { code: "02049", met: 9.0, label: "Elliptical trainer, vigorous effort" }] }),
   X({ id: "skip", name: "Skipping (jumping rope)", kind: "aerobic", needs: [["rope"]],
+    howTo: { source: "ACE", title: "6 Exercise Swaps That Will Kick up the Intensity of Your Workout (swap 6: jumping rope)", url: "https://www.acefitness.org/resources/pros/expert-articles/5326/6-exercise-swaps-that-will-kick-up-the-intensity-of-your-workout/" },
     moves: "skipping", direct: [], indirect: [],
     met: [{ code: "15552", met: 8.3, label: "Rope jumping, slow pace, < 100 skips/min, 2 foot skip, rhythm bounce" },
       { code: "15551", met: 11.8, label: "Rope jumping, moderate pace, general, 100 to 120 skips/min, 2 foot skip, plain bounce" }] }),
   X({ id: "stairs", name: "Stair climbing", kind: "aerobic", needs: [["stairs"]],
+    howTo: { source: "NHS", title: "Strength and balance exercise programme for falls prevention (Stair practice), South Tees Hospitals", url: "https://www.southtees.nhs.uk/resources/strength-and-balance-exercise-programme-for-falls-prevention/" },
     moves: "climbing stairs", direct: [], indirect: [],
     met: [{ code: "17133", met: 4.5, label: "Stair climbing, slow pace" },
       { code: "17131", met: 6.8, label: "Stair climbing, general" }] }),
   X({ id: "swim", name: "Swimming (front crawl)", kind: "aerobic", needs: [["pool"]],
+    howTo: { source: "Swim England", title: "Tips for getting front crawl right", url: "https://www.swimming.org/justswim/tips-for-getting-front-crawl-right/" },
     moves: "swimming", direct: [], indirect: [],
     met: [{ code: "18240", met: 5.8, label: "Swimming laps, freestyle, slow, recreational" },
       { code: "18230", met: 9.8, label: "Swimming laps, freestyle, fast, vigorous effort" }] }),
