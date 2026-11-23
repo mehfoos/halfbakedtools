@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { EXERCISES, type Equipment } from "./catalogue.ts";
-import { ANIMATIONS, animationFor, phase, PERIOD } from "./animations.ts";
+import { ANIMATIONS, animationFor, phase, PERIOD, positionAt } from "./animations.ts";
 import { BONES, BOX, floorOf, JOINTS, dist, points, project, viewSvg } from "./figure.ts";
 
 const STEPS = Array.from({ length: 21 }, (_, i) => i / 20);
@@ -44,6 +44,16 @@ test("the movement starts at rest, reaches the far end halfway, and repeats", ()
   assert.equal(phase(0), 0);
   assert.ok(Math.abs(phase(PERIOD / 2) - 1) < 1e-9);
   assert.ok(Math.abs(phase(PERIOD)) < 1e-9);
+});
+
+test("a loop ends where it starts, and plays once round per period", () => {
+  for (const a of ANIMATIONS.filter((x) => x.loop)) {
+    const p0 = a.pose(0), p1 = a.pose(1);
+    for (const k of JOINTS) assert.ok(dist(p0.j[k], p1.j[k]) < 1e-6, `${name(a)}: ${k} jumps at the end of the loop`);
+  }
+  const loop = { exercise: "x", loop: true, pose: ANIMATIONS[0].pose, cues: [] }, back = { ...loop, loop: false };
+  assert.equal(positionAt(loop, PERIOD / 4), 0.25);
+  assert.equal(positionAt(back, PERIOD / 2), phase(PERIOD / 2));
 });
 
 test("the animation shown follows the equipment the visitor has", () => {

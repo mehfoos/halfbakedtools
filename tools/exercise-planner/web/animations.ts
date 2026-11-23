@@ -11,8 +11,13 @@ export type Animation = {
   exercise: string;
   /** For an exercise with variants: the equipment of the variant drawn (matched against the visitor's variant). */
   using?: Equipment[];
-  /** The movement, given the position t in it: 0 at the start, 1 at the far end. */
+  /**
+   * The movement, given the position t in it: 0 at the start, 1 at the far end. For a `loop`, t runs from 0 to 1
+   * once round the cycle and pose(1) is the same as pose(0).
+   */
   pose: (t: number) => Pose;
+  /** A movement that goes round in one direction (pedalling, strides, a swimming stroke) rather than there and back. */
+  loop?: boolean;
   /** The size of each view's square, if the default (BOX) is too small, as for poses lying full length. */
   box?: number;
   /** Short cues in plain words, summarised from the linked page. */
@@ -1045,3 +1050,5 @@ export function animationFor(ex: Exercise, have: ReadonlySet<Equipment>): Animat
 /** Where in the movement to be at a moment, as 0 → 1 → 0 over one repetition of `period` milliseconds. */
 export const PERIOD = 3200;
 export const phase = (ms: number) => 0.5 - 0.5 * Math.cos((2 * Math.PI * (ms % PERIOD)) / PERIOD);
+/** Where an animation is at a moment: there and back for most, once round per period for a loop. */
+export const positionAt = (a: Animation, ms: number) => a.loop ? (ms % PERIOD) / PERIOD : phase(ms);

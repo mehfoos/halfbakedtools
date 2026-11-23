@@ -1,6 +1,6 @@
 // Browser code for the "Show how" animations: only one plays at a time, the one most in view (or the one the
 // visitor last pressed Play on), and none plays by itself if the visitor's device asks for reduced motion.
-import { ANIMATIONS, phase, PERIOD } from "./animations.ts";
+import { ANIMATIONS, PERIOD, positionAt } from "./animations.ts";
 import { viewSvg } from "./figure.ts";
 
 type Item = { el: HTMLElement; anim: (typeof ANIMATIONS)[number]; stopped: boolean; ratio: number; at: number };
@@ -18,7 +18,7 @@ export function mountAnimations(root: HTMLElement) {
   let preferred: Item | undefined, active: Item | undefined, raf = 0, last = 0;
 
   const draw = (it: Item) => {
-    const p = it.anim.pose(phase(it.at));
+    const p = it.anim.pose(positionAt(it.anim, it.at));
     for (const svg of it.el.querySelectorAll<SVGSVGElement>("svg[data-view]")) svg.innerHTML = viewSvg(p, svg.dataset.view as "side" | "front", it.anim.box);
   };
   const open = (it: Item) => !it.el.closest("details:not([open])");
