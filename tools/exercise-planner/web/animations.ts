@@ -46,6 +46,19 @@ function benchWithBack(seatY: number, backZ: number, frontZ: number): Prop[] {
   ];
 }
 
+/** A flat bench seen along its length, from z0 to z1, with its top at seatY. */
+function flatBench(seatY: number, z0: number, z1: number, x = 0): Prop[] {
+  return [
+    { kind: "line", a: [x, seatY, z0], b: [x, seatY, z1], width: 5 },
+    { kind: "line", a: [x - 12, seatY, (z0 + z1) / 2], b: [x + 12, seatY, (z0 + z1) / 2] },
+    { kind: "line", a: [x, seatY, z0 + 4], b: [x, 0, z0 + 4] },
+    { kind: "line", a: [x, seatY, z1 - 4], b: [x, 0, z1 - 4] },
+  ];
+}
+/** A barbell, drawn shorter than a real one (about 120 units instead of about 200) to fit the view; plates of 45 cm. */
+const barbell = (at: V3): Prop => ({ kind: "bar", at, axis: [1, 0, 0], half: 62, plate: 20 });
+const mid = (a: V3, b: V3): V3 => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
+
 export const ANIMATIONS: Animation[] = [
   {
     // ACE "Seated Biceps Curl" (dumbbells): seated against a backrest, palms forward, elbows bend together to bring
@@ -322,6 +335,180 @@ export const ANIMATIONS: Animation[] = [
       "Hold the rope ends by your ears, elbows tucked in front of you",
       "Pull your belly button in and roll your rib cage down towards your hips, against the cable",
       "Return slowly to upright",
+    ],
+  },
+  {
+    // ACE "Single-arm Row" (dumbbell): left knee and left hand on a bench, hand under the shoulder, knee under the hip,
+    // right foot on the floor; back flat; the right arm hangs towards the floor, then pulls the dumbbell up, bending
+    // the elbow and drawing the upper arm back, until it can't go further without twisting; lower slowly. The palm's
+    // direction isn't given: drawn facing in. Drawn rowing with the right arm.
+    exercise: "dbRow", using: ["dumbbells"],
+    pose: (t) => {
+      const benchY = 40, hipC: V3 = [0, benchY + 2 + SEG.thigh, -12], torso = dir(98);
+      const [ls, rs] = shouldersOf(hipC, torso), [, rh] = hipsOf(hipC);
+      const LA = twoBone(ls, [SEG.shW, benchY + 1, ls[2]], SEG.upper, SEG.fore, [1, 0, -0.3]);
+      const hang: V3 = [rs[0], rs[1] - SEG.upper - SEG.fore + 1, rs[2]], top: V3 = [rs[0] - 2, rs[1] - 16, rs[2] - 14];
+      const RA = twoBone(rs, [lerp(hang[0], top[0], t), lerp(hang[1], top[1], t), lerp(hang[2], top[2], t)], SEG.upper, SEG.fore, [0, 1, -1]);
+      const RL = twoBone(rh, [-14, 0, -10], SEG.thigh, SEG.shin, [0, 0, 1]);
+      const p = body({ hipC, torso, head: dir(95), thigh: [DOWN, RL[0]], shin: [dir(-90), RL[1]], foot: [dir(-170), FWD],
+        upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: flatBench(benchY, -62, 40, 8) });
+      return { ...p, props: [...p.props, { kind: "dumbbell", at: p.j.rwr, axis: [0, 0, 1] }] };
+    },
+    cues: [
+      "Left knee and left hand on a bench, hand under your shoulder and knee under your hip; right foot on the floor",
+      "Back flat and head in line, the weight hanging from your straight right arm",
+      "Pull the weight up by bending the elbow and drawing your upper arm back, without twisting your body",
+      "Lower slowly, keeping your back flat",
+    ],
+  },
+  {
+    // ACE "Romanian Deadlift" (barbell): hold the bar on the front of the thighs, slight knee bend, straight back;
+    // push the hips back, lowering the bar towards the floor until there's tension along the back of the legs; stand by
+    // pushing the heels down and pulling the knees back, the bar close to the body. How far is a feeling, not a
+    // position: drawn to a trunk lean of 70°.
+    exercise: "rdl", using: ["barbell"],
+    pose: (t) => {
+      const lean = lerp(0, 70, t) * Math.PI / 180, hipZ = 6 - SEG.torso * Math.sin(lean);
+      const hipC: V3 = [0, Math.sqrt(73 ** 2 - hipZ ** 2), hipZ], torso: V3 = [0, Math.cos(lean), Math.sin(lean)];
+      const [lh, rh] = hipsOf(hipC);
+      const L = twoBone(lh, [SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [DOWN, DOWN], fore: [DOWN, DOWN] });
+      return { ...p, props: [barbell(mid(p.j.lwr, p.j.rwr))] };
+    },
+    cues: [
+      "Hold the bar against the front of your thighs, knees slightly bent, back straight",
+      "Push your hips back, lowering the bar towards the floor, until you feel tension along the backs of your legs",
+      "Keep the bar close to your body and your back straight",
+      "Push your heels into the floor and bring your hips forward to stand",
+    ],
+  },
+  {
+    // ACE "Deadlift" (barbell): feet about shoulder-width, toes slightly out, shins almost touching the bar; sit back
+    // slightly, straight back, chest up; grip; push the hips forward to stand tall with straight legs; return by sending
+    // the hips back and bending the knees, back straight. Starts at the floor, so t = 0 is the bottom here.
+    exercise: "deadlift", using: ["barbell"],
+    pose: (t) => {
+      const u = 1 - t, lean = lerp(0, 55, u) * Math.PI / 180;
+      const hipY = lerp(SEG.shin + SEG.thigh - 0.5, 52, u), hipZ = lerp(0, 7 - SEG.torso * Math.sin(55 * Math.PI / 180), u);
+      const hipC: V3 = [0, hipY, hipZ], torso: V3 = [0, Math.cos(lean), Math.sin(lean)];
+      const toes = 10, [lh, rh] = hipsOf(hipC);
+      const L = twoBone(lh, [13, 0, 0], SEG.thigh, SEG.shin, yaw(FWD, toes)), R = twoBone(rh, [-13, 0, 0], SEG.thigh, SEG.shin, yaw(FWD, -toes));
+      const [ls, rs] = shouldersOf(hipC, torso);
+      const barY = Math.max(20, ls[1] - SEG.upper - SEG.fore);
+      const LA = twoBone(ls, [ls[0] + 2, barY, ls[2]], SEG.upper, SEG.fore, [1, 0, 0]), RA = twoBone(rs, [rs[0] - 2, barY, rs[2]], SEG.upper, SEG.fore, [-1, 0, 0]);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [yaw(FWD, toes), yaw(FWD, -toes)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      return { ...p, props: [barbell(mid(p.j.lwr, p.j.rwr))] };
+    },
+    cues: [
+      "Feet about shoulder-width apart, toes turned slightly out, shins almost touching the bar",
+      "Sit back slightly with a straight back and your chest up, and grip the bar",
+      "Press your feet into the floor and push your hips forward to stand tall, legs straight",
+      "Return by sending your hips back and bending your knees, keeping your back straight",
+    ],
+  },
+  {
+    // ACE "Chest Press" (dumbbells): on the back on a flat bench, feet on the floor; dumbbells pressed up to straight
+    // elbows, at or just below eye level, palms facing forward (towards the feet); lowered together towards the
+    // mid-chest, touching lightly; elbows either close to the sides or flared out (drawn flared).
+    exercise: "dbBench",
+    pose: (t) => {
+      const benchY = 38, hipC: V3 = [0, benchY + 6, 0], torso = dir(-90);
+      const [ls, rs] = shouldersOf(hipC, torso), [lh, rh] = hipsOf(hipC);
+      const top = (s: V3, k: 1 | -1): V3 => [s[0], s[1] + SEG.upper + SEG.fore - 1, s[2] - 4], low = (s: V3, k: 1 | -1): V3 => [s[0] + 7 * k, s[1] + 9, s[2] + 10];
+      const at = (s: V3, k: 1 | -1): V3 => { const a = top(s, k), b = low(s, k); return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]; };
+      const LA = twoBone(ls, at(ls, 1), SEG.upper, SEG.fore, [1, -0.6, 0]), RA = twoBone(rs, at(rs, -1), SEG.upper, SEG.fore, [-1, -0.6, 0]);
+      const L = twoBone(lh, [12, 0, 44], SEG.thigh, SEG.shin, [0, 1, 1]), R = twoBone(rh, [-12, 0, 44], SEG.thigh, SEG.shin, [0, 1, 1]);
+      const p = body({ hipC, torso, head: dir(-90), thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: flatBench(benchY, -72, 14) });
+      return dumbbellsAt(p, () => [1, 0, 0]);
+    },
+    cues: [
+      "Lie on a flat bench, feet flat on the floor; head, shoulders and hips on the bench",
+      "Press the weights up until your elbows are straight, at or just below eye level, palms facing your feet",
+      "Lower them slowly together towards the middle of your chest, touching lightly without bouncing",
+      "Press back up",
+    ],
+  },
+  {
+    // ACE "Lying Chest Fly" (dumbbells): on a flat bench; dumbbells pressed up shoulder-width apart, arms turned so the
+    // palms face in, elbows slightly bent throughout; lowered together in a wide arc until level with the shoulders or
+    // chest; raised along the same arc.
+    exercise: "dbFly",
+    pose: (t) => {
+      const benchY = 38, hipC: V3 = [0, benchY + 6, 0], torso = dir(-90);
+      const [lh, rh] = hipsOf(hipC), a = lerp(4, 84, t), bend = 14;
+      const L = twoBone(lh, [12, 0, 44], SEG.thigh, SEG.shin, [0, 1, 1]), R = twoBone(rh, [-12, 0, 44], SEG.thigh, SEG.shin, [0, 1, 1]);
+      const p = body({ hipC, torso, head: dir(-90), thigh: [L[0], R[0]], shin: [L[1], R[1]],
+        upper: [dir(180, a), dir(180, -a)], fore: [dir(180, Math.max(a - bend, -4)), dir(180, -Math.max(a - bend, -4))], props: flatBench(benchY, -72, 14) });
+      return dumbbellsAt(p, () => [0, 0, 1]); // palms facing in: the handles run head to foot
+    },
+    cues: [
+      "Lie on a flat bench, feet on the floor, weights pressed up above your chest with palms facing each other",
+      "Keep a slight bend in your elbows throughout",
+      "Lower the weights out to the sides in a wide arc until they are level with your shoulders or chest",
+      "Bring them back up along the same arc",
+    ],
+  },
+  {
+    // ACE "Standing Shrug" (dumbbells): split stance; dumbbells beside the thighs, palms facing the body, elbows
+    // straight; shrug the shoulders up without rolling them or bending the elbows; lower slowly. The height of the shrug
+    // isn't given: drawn as 7 units.
+    exercise: "shrug", using: ["dumbbells"],
+    pose: (t) => {
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, shrug: lerp(0, 7, t),
+        thigh: [dir(8), dir(-8)], shin: [dir(8), dir(-8)], upper: [dir(0, 3), dir(0, -3)], fore: [dir(0, 3), dir(0, -3)] }));
+      return dumbbellsAt(p, () => [0, 0, 1]);
+    },
+    cues: [
+      "Stand with one foot a little ahead of the other, weights beside your thighs, palms facing you, arms straight",
+      "Shrug your shoulders straight up towards your ears",
+      "Don't roll your shoulders or bend your elbows",
+      "Lower slowly",
+    ],
+  },
+  {
+    // ACE "Bent-over Row" (barbell): palms-down grip; bend forward at the hips, back straight, knees slightly bent;
+    // arms straight below; pull the bar towards the belly button, back flat; lower slowly. The trunk angle isn't given:
+    // drawn at 60° from upright.
+    exercise: "bbRow",
+    pose: (t) => {
+      const lean = 60 * Math.PI / 180, hipZ = 4 - SEG.torso * Math.sin(lean);
+      const hipC: V3 = [0, Math.sqrt(72 ** 2 - hipZ ** 2), hipZ], torso: V3 = [0, Math.cos(lean), Math.sin(lean)];
+      const [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, torso);
+      const L = twoBone(lh, [SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD);
+      const waist = add(hipC, torso, SEG.lowBack), belly = add(waist, [0, -Math.sin(lean), Math.cos(lean)], 7);
+      const hand = (s: V3): V3 => { const hang: V3 = [s[0], s[1] - SEG.upper - SEG.fore + 1, s[2]], b: V3 = [s[0] * 1.1, belly[1] - 4, belly[2]];
+        return [lerp(hang[0], b[0], t), lerp(hang[1], b[1], t), lerp(hang[2], b[2], t)]; };
+      const LA = twoBone(ls, hand(ls), SEG.upper, SEG.fore, [0.4, 1, -1]), RA = twoBone(rs, hand(rs), SEG.upper, SEG.fore, [-0.4, 1, -1]);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      return { ...p, props: [barbell(mid(p.j.lwr, p.j.rwr))] };
+    },
+    cues: [
+      "Grip the bar palms down; bend forward at the hips with a straight back and slightly bent knees",
+      "Let the bar hang until your elbows are straight",
+      "Pull the bar towards your belly button, keeping your back flat",
+      "Lower slowly",
+    ],
+  },
+  {
+    // ACE "Chest Press" (barbell): on the back on a flat bench, hands slightly wider than shoulder-width; lift the bar
+    // off the rack; lower it to the chest, elbows bending out to the sides, stopping when the elbows are just below the
+    // bench; press straight up.
+    exercise: "benchPress",
+    pose: (t) => {
+      const benchY = 38, hipC: V3 = [0, benchY + 6, 0], torso = dir(-90);
+      const [ls, rs] = shouldersOf(hipC, torso), [lh, rh] = hipsOf(hipC);
+      const hand = (s: V3, k: 1 | -1): V3 => [s[0] + 7 * k, lerp(s[1] + SEG.upper + SEG.fore - 2, s[1] + 11, t), lerp(s[2], s[2] + 8, t)];
+      const LA = twoBone(ls, hand(ls, 1), SEG.upper, SEG.fore, [1, -0.7, 0]), RA = twoBone(rs, hand(rs, -1), SEG.upper, SEG.fore, [-1, -0.7, 0]);
+      const L = twoBone(lh, [12, 0, 44], SEG.thigh, SEG.shin, [0, 1, 1]), R = twoBone(rh, [-12, 0, 44], SEG.thigh, SEG.shin, [0, 1, 1]);
+      const rack: Prop[] = [-1, 1].map((k): Prop => ({ kind: "line", a: [k * 50, 0, -70], b: [k * 50, 112, -70] }));
+      const p = body({ hipC, torso, head: dir(-90), thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: [...flatBench(benchY, -72, 14), ...rack] });
+      return { ...p, props: [...p.props, barbell(mid(p.j.lwr, p.j.rwr))] };
+    },
+    cues: [
+      "Lie on a flat bench, feet pressed into the floor; grip the bar slightly wider than shoulder-width",
+      "Lift the bar off the rack and hold it above your chest, arms straight",
+      "Lower it slowly to your chest, elbows bending out to the sides, until they are just below the bench",
+      "Press the bar straight back up",
     ],
   },
 ];
