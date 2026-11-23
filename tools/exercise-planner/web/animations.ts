@@ -1641,6 +1641,180 @@ export const ANIMATIONS: Animation[] = [
       "Take your elbows back as far as they go with your spine neutral, then return slowly",
     ],
   },
+  {
+    // ExRx.net "45° Hyperextension (hands behind neck)" (read through search-result excerpts; the site blocks the
+    // agent's page reader): thighs face down on the pad, heels hooked under the brace, hands behind the neck or at the
+    // sides of the head; raise the upper body until the hips and waist are straight; lower by bending the hips and
+    // waist until a mild stretch is felt or the trunk is about at right angles to the legs. The page notes that
+    // starting with the arms lower is easier. Drawn from the top (t = 0); the bench is simplified.
+    exercise: "backExtension",
+    pose: (t) => {
+      const ankle: V3 = [0, 12, -40], leg: V3 = [0, Math.SQRT1_2, Math.SQRT1_2], hipC = add(ankle, leg, SEG.shin + SEG.thigh);
+      const torso = dir(lerp(135, 60, t)), chest = dir(lerp(135, 35, t)), down: V3 = [-leg[0], -leg[1], -leg[2]];
+      const [ls, rs] = shouldersOf(hipC, torso, chest), neck = add(add(hipC, torso, SEG.lowBack), chest, SEG.upBack);
+      const behind = add(add(neck, front(chest), -6), chest, 4);
+      const LA = twoBone(ls, add(behind, [4, 0, 0]), SEG.upper, SEG.fore, [1, 0, 0]), RA = twoBone(rs, add(behind, [-4, 0, 0]), SEG.upper, SEG.fore, [-1, 0, 0]);
+      const under: V3 = [0, -Math.SQRT1_2 * 5, Math.SQRT1_2 * 5];
+      const padA = add(add(hipC, down, 6), under), padB = add(add(hipC, down, 34), under);
+      const props: Prop[] = [
+        { kind: "line", a: padA, b: padB, width: 6 },
+        { kind: "line", a: [-14, padA[1], padA[2]], b: [14, padA[1], padA[2]], width: 4 },
+        { kind: "line", a: padB, b: [0, 0, padB[2]] },
+        { kind: "line", a: [0, 7, -44], b: [0, 7, -34], width: 5 },
+        { kind: "line", a: [0, 7, -38], b: [0, 0, -38] },
+        { kind: "line", a: [0, 1, -50], b: [0, 1, padB[2] + 6] },
+      ];
+      return body({ hipC, torso, chest, head: chest, thigh: [down, down], shin: [down, down], foot: [dir(45), dir(45)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props });
+    },
+    cues: [
+      "Lie face down on the 45° bench with your thighs on the pad and your heels hooked under the brace",
+      "Put your hands behind your neck or at the sides of your head (arms lower, such as hands behind the hips, is easier)",
+      "Lower your upper body by bending at the hips and waist until you feel a mild stretch, or your trunk is about at right angles to your legs",
+      "Raise your upper body until your hips and waist are straight; don't bounce at the bottom",
+    ],
+  },
+  {
+    // ExRx.net "Weighted Hanging Leg-Hip Raise", done with no added weight as the page allows (search-result excerpts
+    // only): hang from a high bar; raise the legs by bending the hips and knees until the hips are fully bent, then keep
+    // raising the knees towards the shoulders by bending the waist (curling the pelvis up); return until the waist,
+    // hips and knees are straight. Grip width as in the pull-up drawing; how far the pelvis curls is this site's choice.
+    exercise: "hangingKneeRaise", box: 224,
+    pose: (t) => {
+      const barY = 196, a = Math.min(1, t / 0.6), b = Math.max(0, (t - 0.6) / 0.4);
+      const neck: V3 = [0, barY - SEG.upper - SEG.fore + 1, 0];
+      const torso = dir(lerp(180, 230, b)), chest = dir(lerp(180, 192, b));
+      const waist = add(neck, chest, -SEG.upBack), hipC = add(waist, torso, -SEG.lowBack), [ls, rs] = shouldersOf(hipC, torso, chest);
+      const LA = twoBone(ls, [22, barY, 2], SEG.upper, SEG.fore, [1, -1, 0.2]), RA = twoBone(rs, [-22, barY, 2], SEG.upper, SEG.fore, [-1, -1, 0.2]);
+      const th = lerp(4, 112, a) + lerp(0, 40, b), sh = lerp(-4, 4, a) + lerp(0, 30, b);
+      return body({ hipC, torso, chest, thigh: [dir(th, 2), dir(th, -2)], shin: [dir(sh, 2), dir(sh, -2)], foot: [dir(sh + 50), dir(sh + 50)],
+        upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: [{ kind: "line", a: [-44, barY, 2], b: [44, barY, 2], width: 4 }] });
+    },
+    cues: [
+      "Hang from a high bar with your arms straight",
+      "Bend your hips and knees to raise your legs until your hips are fully bent",
+      "Keep raising your knees towards your shoulders by curling your pelvis up",
+      "Lower until your waist, hips and knees are straight again, without swinging",
+    ],
+  },
+  {
+    // ExRx.net "Barbell Hip Thrust" (search-result excerpts only): sit on the floor with the long side of a bench behind
+    // the back; roll the bar back over the hips; upper back on the bench; feet on the floor about shoulder-width, knees
+    // bent; grip the bar to each side; raise the bar by straightening the hips; lower and repeat. The page suggests a
+    // bench of 40 to 46 cm, with the trunk at about 45° at the start. Drawn from the bottom (t = 0).
+    exercise: "hipThrust", using: ["barbell"],
+    pose: (t) => {
+      const benchY = 38, neck: V3 = [0, benchY + 6, -36], hy = lerp(12, benchY + 2, t);
+      const hz = neck[2] + Math.sqrt(SEG.torso ** 2 - (neck[1] - hy) ** 2), hipC: V3 = [0, hy, hz];
+      const torso: V3 = [0, (neck[1] - hy) / SEG.torso, (neck[2] - hz) / SEG.torso];
+      const [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, torso), bar: V3 = [0, hy + 10, hz];
+      const L = twoBone(lh, [13, 0, 44], SEG.thigh, SEG.shin, [0, 1, 0.3]), R = twoBone(rh, [-13, 0, 44], SEG.thigh, SEG.shin, [0, 1, 0.3]);
+      const LA = twoBone(ls, add(bar, [24, 0, 0]), SEG.upper, SEG.fore, [1, 1, 0]), RA = twoBone(rs, add(bar, [-24, 0, 0]), SEG.upper, SEG.fore, [-1, 1, 0]);
+      const bench: Prop[] = [{ kind: "line", a: [-40, benchY, neck[2] - 2], b: [40, benchY, neck[2] - 2], width: 5 }, { kind: "line", a: [0, benchY, neck[2] - 10], b: [0, benchY, neck[2] + 4], width: 5 },
+        { kind: "line", a: [-34, benchY, neck[2] - 2], b: [-34, 0, neck[2] - 2] }, { kind: "line", a: [34, benchY, neck[2] - 2], b: [34, 0, neck[2] - 2] }];
+      return body({ hipC, torso, head: dir(-90), thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: [...bench, barbell(bar)] });
+    },
+    cues: [
+      "Sit on the floor with the long side of a low bench behind your back and roll the bar over your hips",
+      "Rest your upper back on the bench, feet on the floor about shoulder-width apart, knees bent, hands on the bar to each side",
+      "Raise the bar by straightening your hips",
+      "Lower and repeat",
+    ],
+  },
+  {
+    // ExRx.net "Cable Triceps Extension (with rope)" (search-result excerpts only): from a low pulley, grip the rope
+    // ends; face away from the pulley, feet staggered; rope behind the head, elbows up overhead; straighten the arms
+    // overhead; lower until the forearms are against the upper arms; let the cable keep the arms pulled back. Drawn to
+    // 140° of elbow bend (the head stops a full fold); the pulley's distance is this site's choice.
+    exercise: "overheadExt", using: ["machines"], box: 224,
+    pose: (t) => {
+      const bend = lerp(4, 140, t), hipC: V3 = [0, 75.5, 0], [lh, rh] = hipsOf(hipC);
+      const L = twoBone(lh, [SEG.hipW, 0, 10], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-SEG.hipW, 0, -14], SEG.thigh, SEG.shin, FWD);
+      const p = body({ hipC, torso: UP, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [dir(178, 6), dir(178, -6)], fore: [dir(178 + bend, -18), dir(178 + bend, 18)] });
+      const knot = add(mid(p.j.lwr, p.j.rwr), [0, -8, -3]), pulley: V3 = [0, 8, -70];
+      return { ...p, props: [{ kind: "line", a: [0, 0, -74], b: [0, 60, -74], width: 6 }, cable(p.j.lwr, knot), cable(p.j.rwr, knot), cable(knot, pulley)] };
+    },
+    cues: [
+      "Hold the rope from a low pulley and turn to face away from it, feet staggered",
+      "Hold the rope behind your head with your elbows up overhead",
+      "Straighten your arms overhead",
+      "Lower until your forearms are against your upper arms, letting the cable keep your arms back",
+    ],
+  },
+  {
+    // ExRx.net "Lever Standing Calf Raise" (search-result excerpts only): shoulders under the padded lever, toes and
+    // balls of the feet on the calf block with the arches and heels off; grip the handles; stand straight; raise the
+    // heels as high as possible; lower until the calves are stretched; knees straight. The 35° rise and 20° drop are
+    // this site's choices; the machine is simplified.
+    exercise: "calfRaise", using: ["machines"],
+    pose: (t) => {
+      const blockY = 10, toeZ = 8, rise = lerp(-20, 35, t) * Math.PI / 180, foot: V3 = [0, -Math.sin(rise), Math.cos(rise)];
+      const ankle: V3 = [0, blockY + SEG.foot * Math.sin(rise), toeZ - SEG.foot * Math.cos(rise)], hipC: V3 = [0, ankle[1] + SEG.shin + SEG.thigh, ankle[2]];
+      const [ls, rs] = shouldersOf(hipC, UP), padY = ls[1] + 4;
+      const LA = twoBone(ls, [21, padY, ls[2] + 4], SEG.upper, SEG.fore, [1, -1, 0]), RA = twoBone(rs, [-21, padY, rs[2] + 4], SEG.upper, SEG.fore, [-1, -1, 0]);
+      const props: Prop[] = [
+        { kind: "line", a: [0, blockY, toeZ - 14], b: [0, blockY, toeZ + 4], width: 6 },
+        { kind: "line", a: [-16, blockY, toeZ - 4], b: [16, blockY, toeZ - 4], width: 4 },
+        { kind: "line", a: [0, blockY, toeZ - 4], b: [0, 0, toeZ - 4] },
+        { kind: "line", a: [-22, padY, ls[2]], b: [22, padY, ls[2]], width: 6 },
+        { kind: "line", a: [0, padY, ls[2]], b: [0, padY, -34] },
+        { kind: "line", a: [0, 0, -34], b: [0, 175, -34], width: 5 },
+      ];
+      return body({ hipC, torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], foot: [foot, foot], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props });
+    },
+    cues: [
+      "Put your shoulders under the padded lever and the balls of your feet on the block, heels hanging off",
+      "Hold the handles and stand up straight",
+      "Raise your heels as high as you can, knees straight",
+      "Lower your heels until your calves are stretched",
+    ],
+  },
+  {
+    // ExRx.net "Dumbbell Standing Calf Raise" (search-result excerpts only): a dumbbell in one hand at the side; toes and
+    // balls of the feet on a calf block (a step that won't tip over will do) with the arches and heels off; the other
+    // hand on a support; raise the heels as high as possible; lower until the calves are stretched; knees straight.
+    exercise: "calfRaise", using: ["dumbbells"],
+    pose: (t) => {
+      const blockY = 10, toeZ = 8, rise = lerp(-20, 35, t) * Math.PI / 180, foot: V3 = [0, -Math.sin(rise), Math.cos(rise)];
+      const ankle: V3 = [0, blockY + SEG.foot * Math.sin(rise), toeZ - SEG.foot * Math.cos(rise)], hipC: V3 = [0, ankle[1] + SEG.shin + SEG.thigh, ankle[2]];
+      const [, rs] = shouldersOf(hipC, UP), support: V3 = [-30, 100, 14];
+      const RA = twoBone(rs, support, SEG.upper, SEG.fore, [-1, -1, 0]);
+      const props: Prop[] = [
+        { kind: "line", a: [0, blockY, toeZ - 14], b: [0, blockY, toeZ + 4], width: 6 },
+        { kind: "line", a: [-16, blockY, toeZ - 4], b: [16, blockY, toeZ - 4], width: 4 },
+        { kind: "line", a: [0, blockY, toeZ - 4], b: [0, 0, toeZ - 4] },
+        { kind: "line", a: [-34, 0, 14], b: [-34, 104, 14], width: 5 },
+      ];
+      const p = body({ hipC, torso: UP, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], foot: [foot, foot], upper: [dir(0, 6), RA[0]], fore: [dir(0, 5), RA[1]], props });
+      return { ...p, props: [...p.props, { kind: "dumbbell", at: p.j.lwr, axis: [0, 0, 1] }] };
+    },
+    cues: [
+      "Hold a dumbbell in one hand at your side and put the balls of your feet on a block or a step that won't tip, heels off",
+      "Hold a support with your other hand for balance",
+      "Raise your heels as high as you can, knees straight",
+      "Lower your heels until your calves are stretched",
+    ],
+  },
+  {
+    // ExRx.net "Lever Shrug" (search-result excerpts only): stand holding the lever bar with a shoulder-width overhand
+    // or mixed grip; raise the shoulders as high as possible; lower and repeat. The machine is drawn as a bar on two
+    // lever arms; the rise is drawn as 7 units, as for the other shrugs.
+    exercise: "shrug", using: ["machines"],
+    pose: (t) => {
+      const p = grounded(body({ hipC: [0, 80, 0], torso: UP, shrug: lerp(0, 7, t), thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: [dir(5), dir(5)], fore: [dir(8), dir(8)] }));
+      const c = mid(p.j.lwr, p.j.rwr);
+      const props: Prop[] = [
+        { kind: "line", a: add(c, [-24, 0, 0]), b: add(c, [24, 0, 0]), width: 4 },
+        { kind: "line", a: add(c, [24, 0, 0]), b: [24, 30, -40] }, { kind: "line", a: add(c, [-24, 0, 0]), b: [-24, 30, -40] },
+        { kind: "line", a: [-24, 30, -40], b: [-24, 0, -40] }, { kind: "line", a: [24, 30, -40], b: [24, 0, -40] },
+      ];
+      return { ...p, props };
+    },
+    cues: [
+      "Stand holding the machine's bar with your hands shoulder-width apart",
+      "Raise your shoulders as high as you can",
+      "Lower and repeat",
+    ],
+  },
 ];
 
 /** The animation for the version of an exercise the visitor will see, if there is one. */
