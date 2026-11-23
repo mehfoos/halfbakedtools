@@ -711,6 +711,95 @@ export const ANIMATIONS: Animation[] = [
       "As your upper arms come level with your shoulders, turn your hands up and back; return slowly",
     ],
   },
+  {
+    // Mayo Clinic video "Knee extension with weight machine" (transcript): seated, pad on the tops of the ankles, about
+    // 90° between thighs and lower legs; raise the lower legs slowly until the knees are nearly straight, not locked;
+    // return slowly all the way to the start. Back support and the handles are drawn as on a typical machine.
+    exercise: "legExtension",
+    pose: (t) => {
+      const seat = 40, hipC: V3 = [0, seat + 4, 0], shin = dir(lerp(0, 78, t));
+      const [ls, rs] = shouldersOf(hipC, UP);
+      const LA = twoBone(ls, [22, seat + 2, 6], SEG.upper, SEG.fore, [1, 0, -0.4]), RA = twoBone(rs, [-22, seat + 2, 6], SEG.upper, SEG.fore, [-1, 0, -0.4]);
+      const p = body({ hipC, torso: UP, thigh: [dir(90), dir(90)], shin: [shin, shin], foot: [dir(lerp(90, 168, t)), dir(lerp(90, 168, t))],
+        upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: benchWithBack(seat, -8, 36) });
+      const k = lerp(0, 78, t), pad = add(add(p.j.lknee, shin, SEG.shin - 4), dir(k + 90), 4); // just in front of the ankles
+      return { ...p, props: [...p.props, { kind: "line", a: [-14, pad[1], pad[2]], b: [14, pad[1], pad[2]], width: 9 }] };
+    },
+    cues: [
+      "Sit on the machine with the pad on the tops of your ankles and your knees bent to about a right angle",
+      "Slowly raise your lower legs until your knees are nearly straight, without locking them",
+      "Lower slowly all the way back to the start",
+      "Keep the movement smooth; moving the pad higher up the lower legs reduces strain on the knees",
+    ],
+  },
+  {
+    // ACE-sponsored study "What Is the Best Back Exercise?", the inverted row as performed: bar on a rack at about
+    // waist height, grip wider than the shoulders; hang underneath with the body straight, heels on the floor, arms
+    // straight; bend the elbows, pulling the chest towards the bar with the shoulder blades drawn back; pause; lower
+    // slowly. How close the chest comes isn't given: drawn to about 12 units below the bar.
+    exercise: "invertedRow", box: 224,
+    pose: (t) => {
+      const barY = 80, barZ = 40, heel: V3 = [0, 4, -80];
+      const shY = lerp(barY - SEG.upper - SEG.fore + 2, barY - 13, t), len = SEG.shin + SEG.thigh + SEG.torso;
+      const th = Math.asin((shY - heel[1]) / len), b: V3 = [0, Math.sin(th), Math.cos(th)], down: V3 = [0, -b[1], -b[2]];
+      const hipC = add(heel, b, SEG.shin + SEG.thigh), [ls, rs] = shouldersOf(hipC, b);
+      const LA = twoBone(ls, [24, barY, barZ], SEG.upper, SEG.fore, [0.6, -1, -0.3]), RA = twoBone(rs, [-24, barY, barZ], SEG.upper, SEG.fore, [-0.6, -1, -0.3]);
+      const toes: V3 = [0, Math.cos(th), -Math.sin(th)];
+      const p = body({ hipC, torso: b, thigh: [down, down], shin: [down, down], foot: [toes, toes], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]] });
+      const rack: Prop[] = [-48, 48].map((x): Prop => ({ kind: "line", a: [x, 0, barZ + 8], b: [x, barY + 12, barZ + 8], width: 5 }));
+      return { ...p, props: [...rack, { kind: "line", a: [-48, barY, barZ], b: [48, barY, barZ], width: 4 }] };
+    },
+    cues: [
+      "Set a bar at about waist height and grip it wider than your shoulders",
+      "Hang underneath with your body straight, heels on the floor and arms straight",
+      "Bend your elbows to pull your chest towards the bar, drawing your shoulder blades back",
+      "Pause at the top, then lower slowly until your arms are straight",
+    ],
+  },
+  {
+    // ACE blog "10-minute Shoulder Workout" (Sabrena Jo): stand with the feet under the hips, knees slightly bent; hold
+    // a band with the hands in front of the shoulders, palms up; pull the hands apart by squeezing the backs of the
+    // shoulders and shoulder blades; pause; reverse slowly. How far apart isn't given: drawn to the arms out to the
+    // sides, 10° short of straight out.
+    exercise: "bandPullApart",
+    pose: (t) => {
+      const p0 = grounded(body({ hipC: [0, 80, 0], torso: UP, thigh: [dir(6), dir(6)], shin: [dir(-6), dir(-6)], upper: [DOWN, DOWN], fore: [DOWN, DOWN] }));
+      const a = lerp(80, 10, t) * Math.PI / 180;
+      const L: V3 = [Math.cos(a), 0, Math.sin(a)], R: V3 = [-Math.cos(a), 0, Math.sin(a)];
+      const p = body({ hipC: p0.j.hipC, torso: UP, thigh: [dir(6), dir(6)], shin: [dir(-6), dir(-6)], upper: [L, R], fore: [L, R] });
+      return { ...p, props: [{ kind: "line", a: p.j.lwr, b: p.j.rwr, width: 3 }] };
+    },
+    cues: [
+      "Stand with your feet under your hips and knees slightly bent",
+      "Hold a band with your hands in front of your shoulders, palms up, arms straight",
+      "Pull your hands apart by squeezing the backs of your shoulders and your shoulder blades together",
+      "Pause, then slowly return",
+    ],
+  },
+  {
+    // ACE CERTIFIED "Total-body Sprint/Body-weight Circuit" (Jason R. Karp), triceps dips: back to a bench, hands on
+    // its edge with the arms nearly straight, legs straight out in front; elbows close to the body; lower by bending the
+    // elbows to 90° or slightly less; push back up. The hips move down near the bench as the legs pivot on the heels.
+    exercise: "benchDip",
+    pose: (t) => {
+      const benchY = 42, handZ = -12, heelZ = 60, hy = lerp(48, 34, t);
+      const hipC: V3 = [0, hy, heelZ - Math.sqrt((SEG.shin + SEG.thigh) ** 2 - hy ** 2)];
+      const leg: V3 = (() => { const d: V3 = [0, -hy, heelZ - hipC[2]], n = Math.hypot(...d); return [0, d[1] / n, d[2] / n]; })();
+      const [ls, rs] = shouldersOf(hipC, UP);
+      const LA = twoBone(ls, [16, benchY, handZ], SEG.upper, SEG.fore, [0.15, 0, -1]), RA = twoBone(rs, [-16, benchY, handZ], SEG.upper, SEG.fore, [-0.15, 0, -1]);
+      const bench: Prop[] = [
+        { kind: "line", a: [-44, benchY, handZ - 6], b: [44, benchY, handZ - 6], width: 5 }, { kind: "line", a: [0, benchY, handZ], b: [0, benchY, handZ - 26], width: 5 },
+        { kind: "line", a: [-38, benchY, handZ - 6], b: [-38, 0, handZ - 6] }, { kind: "line", a: [38, benchY, handZ - 6], b: [38, 0, handZ - 6] },
+      ];
+      return body({ hipC, torso: UP, thigh: [leg, leg], shin: [leg, leg], foot: [dir(150), dir(150)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: bench });
+    },
+    cues: [
+      "Stand with your back to a bench, then lower yourself and hold its edge with your arms nearly straight, legs straight out in front",
+      "Keep your elbows close to your body",
+      "Lower yourself by bending your elbows to a right angle or slightly less",
+      "Push back up with your arms to the start",
+    ],
+  },
 ];
 
 /** The animation for the version of an exercise the visitor will see, if there is one. */
