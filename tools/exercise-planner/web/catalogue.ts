@@ -126,7 +126,7 @@ export type Exercise = {
    * isn't a reference and isn't archived. The page may show another version (equipment or stance) of the same movement;
    * its title says which.
    */
-  howTo?: { source: "ACE" | "NASM" | "NSCA"; title: string; url: string };
+  howTo?: { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic"; title: string; url: string };
   /** A position held or carried, not repeated through a range. Pelland et al. analysed dynamic training only, so these are shown last. */
   hold?: true;
   /** Muscles that hold a position but don't move a joint through a range: shown, not counted. */
@@ -149,6 +149,7 @@ export const EXERCISES: Exercise[] = [
     moves: "shoulder adduction and extension (elbows down and back); elbow flexion",
     direct: ["lats"], indirect: ["biceps", "upperBack"], steadies: ["forearms"] }),
   X({ id: "invertedRow", name: "Inverted row (under a bar or sturdy table)", kind: "strength", needs: [["pullupBar", "table", "rack", "machines"]],
+    howTo: { source: "ACE", title: "What Is the Best Back Exercise? (ACE-sponsored study; the inverted row as performed)", url: "https://www.acefitness.org/education-and-resources/professional/certified/april-2018/6959/ace-sponsored-research-what-is-the-best-back-exercise/" },
     moves: "shoulder extension and shoulder-blade retraction (pulling the chest to the bar); elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["forearms", "glutes"] }),
   X({ id: "squatBw", name: "Bodyweight squat", kind: "strength", needs: [["body"]],
@@ -183,7 +184,7 @@ export const EXERCISES: Exercise[] = [
     moves: "hip flexion (by the iliopsoas) with trunk flexion (by the abs): curl the pelvis up towards the ribs as the knees rise",
     direct: ["abs"], indirect: [], steadies: ["forearms"] }),
   X({ id: "benchDip", name: "Bench dip", kind: "strength", needs: [["chair", "bench"]],
-    howTo: { source: "NASM", title: "Bench Dips", url: "https://www.nasm.org/resource-center/exercise-library/bench-dips" },
+    howTo: { source: "ACE", title: "Total-body Sprint/Body-weight Circuit (Triceps Dips), by Jason R. Karp", url: "https://www.acefitness.org/continuing-education/certified/innovative-workouts-special-issue/7023/total-body-sprint-body-weight-circuit-to-improve-muscular-endurance/" },
     moves: "elbow extension, and shoulder flexion as you push up (the shoulders extend as you lower; hands on a bench behind you)",
     direct: ["triceps"], indirect: ["chest", "frontDelts"] }),
   X({ id: "calfRaise", name: "Standing calf raise", kind: "strength", needs: [["body", "stairs", "dumbbells", "machines"]],
@@ -207,6 +208,7 @@ export const EXERCISES: Exercise[] = [
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"] }),
   X({ id: "bandPullApart", name: "Band pull-apart", kind: "strength", needs: [["bands"]],
+    howTo: { source: "ACE", title: "10-minute Shoulder Workout (Banded Pull-apart), by Sabrena Jo", url: "https://www.acefitness.org/resources/everyone/blog/5606/10-minute-shoulder-workout/" },
     moves: "shoulder horizontal abduction (arms apart) and shoulder-blade retraction",
     direct: ["upperBack"], indirect: ["rearDelts"] }),
 
@@ -327,7 +329,7 @@ export const EXERCISES: Exercise[] = [
     moves: "knee extension; hip extension",
     direct: ["quads", "glutes"], indirect: [] }),
   X({ id: "legExtension", name: "Leg extension", kind: "strength", needs: [["machines"]],
-    howTo: { source: "ACE", title: "Seated Leg Extension", url: "https://www.acefitness.org/resources/everyone/exercise-library/183/seated-leg-extension/" },
+    howTo: { source: "Mayo Clinic", title: "Video: Knee extension with weight machine", url: "https://www.mayoclinic.org/healthy-lifestyle/fitness/multimedia/knee-extension/vid-20084686" },
     sources: { quads: "Leg Extension" },
     moves: "knee extension",
     direct: ["quads"], indirect: [] }),

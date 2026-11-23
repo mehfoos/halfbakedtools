@@ -280,11 +280,13 @@ test("reading order: big lifts, then smaller ones, then holds, then heart and lu
   assert.deepEqual(o, ["benchPress", "curl", "plank", "farmerCarry", "walk", "kbSwing"]);
 });
 
-test("how-to links point to individual pages of the chosen exercise libraries", () => {
+test("how-to links point to individual pages of the chosen sources", () => {
   const withLink = EXERCISES.filter((e) => e.howTo);
-  assert.ok(withLink.length >= 45);
+  assert.ok(withLink.length >= 47);
   const page: Record<string, RegExp> = {
-    ACE: /^https:\/\/www\.acefitness\.org\/resources\/everyone\/exercise-library\/\d+\/[a-z0-9-]+\/$/,
+    // ACE's exercise library, or, where it has no page with instructions, an ACE article that gives them.
+    ACE: /^https:\/\/www\.acefitness\.org\/(resources\/everyone\/exercise-library\/\d+\/[a-z0-9-]+|resources\/everyone\/blog\/\d+\/[a-z0-9-]+|education-and-resources\/professional\/certified\/[a-z0-9-]+\/\d+\/[a-z0-9-]+|continuing-education\/certified\/[a-z0-9-]+\/\d+\/[a-z0-9-]+)\/$/,
+    "Mayo Clinic": /^https:\/\/www\.mayoclinic\.org\/healthy-lifestyle\/fitness\/multimedia\/[a-z0-9-]+\/vid-\d+$/,
     NASM: /^https:\/\/www\.nasm\.org\/resource-center\/exercise-library\/[a-z0-9-]+$/,
     NSCA: /^https:\/\/www\.nsca\.com\/education\/articles\/kinetic-select\/[a-z0-9-]+\/$/,
   };
