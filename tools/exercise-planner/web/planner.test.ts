@@ -282,7 +282,7 @@ test("reading order: big lifts, then smaller ones, then holds, then heart and lu
 
 test("how-to links point to individual pages of the chosen sources", () => {
   const withLink = EXERCISES.filter((e) => e.howTo);
-  assert.ok(withLink.length >= 55);
+  assert.ok(withLink.length >= 57);
   const page: Record<string, RegExp> = {
     // ACE's exercise library, or, where it has no page with instructions, an ACE article that gives them.
     ACE: /^https:\/\/www\.acefitness\.org\/(resources\/everyone\/exercise-library\/\d+\/[a-z0-9-]+|resources\/everyone\/blog\/\d+\/[a-z0-9-]+|resources\/pros\/expert-articles\/\d+\/[a-z0-9-]+|education-and-resources\/lifestyle\/blog\/\d+\/[a-z0-9-]+|education-and-resources\/professional\/certified\/[a-z0-9-]+\/\d+\/[a-z0-9-]+|continuing-education\/certified\/[a-z0-9-]+\/\d+\/[a-z0-9-]+)\/$/,
@@ -292,6 +292,8 @@ test("how-to links point to individual pages of the chosen sources", () => {
     "Cleveland Clinic": /^https:\/\/health\.clevelandclinic\.org\/[a-z0-9-]+$/,
     "Swim England": /^https:\/\/www\.swimming\.org\/justswim\/[a-z0-9-]+\/$/,
     NHS: /^https:\/\/www\.[a-z]+\.nhs\.uk\/[a-z0-9\/-]+\/$/,
+    // Where none of the above has a usable page (owner's decision, 23 Nov 2026).
+    "ExRx.net": /^https:\/\/exrx\.net\/WeightExercises\/[A-Za-z]+\/[A-Za-z0-9]+$/,
     NASM: /^https:\/\/www\.nasm\.org\/resource-center\/exercise-library\/[a-z0-9-]+$/,
     NSCA: /^https:\/\/www\.nsca\.com\/education\/articles\/kinetic-select\/[a-z0-9-]+\/$/,
   };

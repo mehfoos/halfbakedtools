@@ -65,7 +65,7 @@ export const EQUIPMENT = [
   { id: "pool", label: "Swimming pool", group: "cardio" },
 ] as const;
 /** A page showing how to do an exercise (see `howTo` on Exercise). */
-export type HowTo = { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic" | "Concept2" | "Cleveland Clinic" | "Swim England" | "NHS"; title: string; url: string };
+export type HowTo = { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic" | "Concept2" | "Cleveland Clinic" | "Swim England" | "NHS" | "ExRx.net"; title: string; url: string };
 export type Equipment = (typeof EQUIPMENT)[number]["id"];
 
 const ALL_EQUIPMENT = EQUIPMENT.map((e) => e.id) as Equipment[];
@@ -183,6 +183,7 @@ export const EXERCISES: Exercise[] = [
     moves: "trunk flexion (curling the ribs towards the hips)",
     direct: ["abs"], indirect: [] }),
   X({ id: "hangingKneeRaise", name: "Hanging knee raise, curling the pelvis up", kind: "strength", needs: [["pullupBar"]],
+    howTo: { source: "ExRx.net", title: "Weighted Hanging Leg-Hip Raise (can be done with no weight)", url: "https://exrx.net/WeightExercises/RectusAbdominis/WtHangingLegHipRaise" },
     moves: "hip flexion (by the iliopsoas) with trunk flexion (by the abs): curl the pelvis up towards the ribs as the knees rise",
     direct: ["abs"], indirect: [], steadies: ["forearms"] }),
   X({ id: "benchDip", name: "Bench dip", kind: "strength", needs: [["chair", "bench"]],
@@ -191,7 +192,7 @@ export const EXERCISES: Exercise[] = [
     direct: ["triceps"], indirect: ["chest", "frontDelts"] }),
   X({ id: "calfRaise", name: "Standing calf raise", kind: "strength", needs: [["body", "stairs", "dumbbells", "machines"]],
     howTo: { source: "ACE", title: "Standing Calf Raises - Wall", url: "https://www.acefitness.org/resources/everyone/exercise-library/73/standing-calf-raises-wall/" },
-    variants: [{ using: ["machines"], name: "Standing calf raise machine" }, { using: ["dumbbells"], name: "Dumbbell standing calf raise" }, { using: ["body", "stairs"], name: "Standing calf raise (bodyweight, off the edge of a step if you have one)" }],
+    variants: [{ using: ["machines"], name: "Standing calf raise machine" , howTo: { source: "ExRx.net", title: "Lever Standing Calf Raise", url: "https://exrx.net/WeightExercises/Gastrocnemius/LVStandingCalfRaise" } }, { using: ["dumbbells"], name: "Dumbbell standing calf raise" , howTo: { source: "ExRx.net", title: "Dumbbell Standing Calf Raise", url: "https://exrx.net/WeightExercises/Gastrocnemius/DBStandingCalfRaise" } }, { using: ["body", "stairs"], name: "Standing calf raise (bodyweight, off the edge of a step if you have one)" }],
     evidence: { calves: ["kinoshita-2023"] },
     moves: "ankle plantar flexion (rising onto the toes)",
     direct: ["calves"], indirect: [] }),
@@ -260,7 +261,7 @@ export const EXERCISES: Exercise[] = [
     direct: ["biceps"], indirect: [], steadies: ["forearms"] }),
   X({ id: "overheadExt", name: "Overhead triceps extension", kind: "strength", needs: [["dumbbells", "kettlebell", "bands", "machines"]],
     howTo: { source: "ACE", title: "Triceps Extension", url: "https://www.acefitness.org/resources/everyone/exercise-library/74/triceps-extension/" },
-    variants: [{ using: ["dumbbells"], name: "Dumbbell overhead triceps extension" }, { using: ["kettlebell"], name: "Kettlebell overhead triceps extension" }, { using: ["bands"], name: "Resistance-band overhead triceps extension" , howTo: { source: "ACE", title: "Build Your Triceps Workout (Resistance Band Overhead Extension), by Stephanie Thielen", url: "https://www.acefitness.org/resources/everyone/blog/5699/build-your-triceps-workout/" } }, { using: ["machines"], name: "Cable overhead triceps extension" }],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell overhead triceps extension" }, { using: ["kettlebell"], name: "Kettlebell overhead triceps extension" }, { using: ["bands"], name: "Resistance-band overhead triceps extension" , howTo: { source: "ACE", title: "Build Your Triceps Workout (Resistance Band Overhead Extension), by Stephanie Thielen", url: "https://www.acefitness.org/resources/everyone/blog/5699/build-your-triceps-workout/" } }, { using: ["machines"], name: "Cable overhead triceps extension" , howTo: { source: "ExRx.net", title: "Cable Triceps Extension (with rope)", url: "https://exrx.net/WeightExercises/Triceps/CBStandingTricepsExtensionRope" } }],
     studied: { with: ["dumbbells"], as: "dumbbell" },
     sources: { triceps: "Overhead Dumbbell Extensions" },
     moves: "elbow extension with the arm overhead",
@@ -317,7 +318,7 @@ export const EXERCISES: Exercise[] = [
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["lowerBack", "hamstrings"] }),
   X({ id: "hipThrust", name: "Hip thrust", kind: "strength", needs: [["barbell", "dumbbells"], ["bench", "chair"]],
     howTo: { source: "ACE", title: "Elevated Glute Bridge (dumbbells)", url: "https://www.acefitness.org/resources/everyone/exercise-library/367/elevated-glute-bridge/" },
-    variants: [{ using: ["barbell"], name: "Barbell hip thrust" }, { using: ["dumbbells"], name: "Dumbbell hip thrust" }],
+    variants: [{ using: ["barbell"], name: "Barbell hip thrust" , howTo: { source: "ExRx.net", title: "Barbell Hip Thrust", url: "https://exrx.net/WeightExercises/GluteusMaximus/BBHipThrust" } }, { using: ["dumbbells"], name: "Dumbbell hip thrust" }],
     evidence: { glutes: ["plotkin-2023", "krause-neto-2025"] },
     moves: "hip extension (back on a bench, lifting the hips)",
     // Hamstrings not counted: no meaningful growth after 9 weeks of hip thrust training (Plotkin et al. 2023).
@@ -377,10 +378,11 @@ export const EXERCISES: Exercise[] = [
     direct: ["upperBack", "rearDelts"], indirect: [] }),
   X({ id: "shrug", name: "Shrug", kind: "strength", needs: [["dumbbells", "barbell", "machines"]],
     howTo: { source: "ACE", title: "Standing Shrug", url: "https://www.acefitness.org/resources/everyone/exercise-library/75/standing-shrug/" },
-    variants: [{ using: ["dumbbells"], name: "Dumbbell shrug" }, { using: ["barbell"], name: "Barbell shrug" , howTo: { source: "ACE", title: "Shrug (barbell)", url: "https://www.acefitness.org/resources/everyone/exercise-library/72/shrug/" } }, { using: ["machines"], name: "Shrug machine" }],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell shrug" }, { using: ["barbell"], name: "Barbell shrug" , howTo: { source: "ACE", title: "Shrug (barbell)", url: "https://www.acefitness.org/resources/everyone/exercise-library/72/shrug/" } }, { using: ["machines"], name: "Shrug machine" , howTo: { source: "ExRx.net", title: "Lever Shrug", url: "https://exrx.net/WeightExercises/TrapeziusUpper/LVShrug" } }],
     moves: "shoulder-blade elevation (shoulders up towards the ears), done by the trapezius; the rhomboids retract the shoulder blades instead",
     direct: ["upperBack"], indirect: [], steadies: ["forearms"] }),
   X({ id: "backExtension", name: "Back extension (45° bench or machine)", kind: "strength", needs: [["machines"]],
+    howTo: { source: "ExRx.net", title: "45° Hyperextension (hands behind neck)", url: "https://exrx.net/WeightExercises/ErectorSpinae/BW45HyperextensionNeck" },
     evidence: { hamstrings: ["bourne-2017"] },
     moves: "spine extension; hip extension",
     direct: ["lowerBack"], indirect: ["glutes", "hamstrings"] }),
