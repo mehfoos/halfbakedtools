@@ -144,7 +144,10 @@ export function points(p: Pose): V3[] {
   const out: V3[] = JOINTS.map((k) => p.j[k]);
   for (const q of p.props) {
     if (q.kind === "line") out.push(q.a, q.b);
-    else { const h = q.kind === "bar" ? q.half : 9; out.push(add(q.at, q.axis, -h), add(q.at, q.axis, h)); }
+    else {
+      const h = q.kind === "bar" ? q.half : 9, r = q.kind === "bar" ? q.plate ?? 9 : 6;
+      for (const e of [add(q.at, q.axis, -h), add(q.at, q.axis, h)]) out.push(e, add(e, [0, r, 0]), add(e, [0, -r, 0])); // the plates' edges too
+    }
   }
   return out;
 }
