@@ -101,6 +101,51 @@ function squatPose(t: number, o: { depth: number; shin: number; lean: number; wi
 }
 const front = (torso: V3): V3 => [0, -torso[2], torso[1]]; // the way the chest faces, for a trunk leaning forward
 
+const frac = (x: number) => x - Math.floor(x);
+const TAU = 2 * Math.PI;
+
+/**
+ * Walking or running on the spot (as on a treadmill): `u` is the left leg's place in its stride, 0 → 1 (the right
+ * is half a stride behind). Each foot is on the floor for `stance` of the stride, sliding back from `land` to
+ * `push` (forward distances from the hips), then swings forward, lifted by `lift`.
+ */
+function stride(u: number, o: { hipY: number; land: number; push: number; stance: number; lift: number; kick: number; lean: number; bob: number; arm: number; elbow: number }): Pose {
+  const foot = (v: number): { at: V3; pitch: number } => {
+    if (v < o.stance) {
+      const s = v / o.stance, z = lerp(o.land, o.push, s);
+      const heel = Math.max(0, (s - 0.7) / 0.3) * 30; // the heel comes up as the foot pushes off, toes still down
+      return { at: [0, SEG.foot * Math.sin((heel * Math.PI) / 180), z + SEG.foot * (1 - Math.cos((heel * Math.PI) / 180))], pitch: 90 - heel };
+    }
+    const s = (v - o.stance) / (1 - o.stance), forward = 0.5 - 0.5 * Math.cos(Math.PI * s);
+    // On the way forward the foot first rises behind (the heel towards the seat when running), then reaches forward.
+    // It leaves the floor as the push-off ended (heel up 30°, toes down), so the pose doesn't jump.
+    const off = SEG.foot * Math.sin(Math.PI / 6), offZ = o.push + SEG.foot * (1 - Math.cos(Math.PI / 6));
+    return { at: [0, off * (1 - s) + o.lift * Math.sin(Math.PI * s) + o.kick * Math.sin(Math.PI * Math.min(1, s * 1.6)) * (1 - s), lerp(offZ, o.land, forward)], pitch: lerp(60, 90, s) };
+  };
+  const L = foot(frac(u)), R = foot(frac(u + 0.5));
+  // Hips at their lowest just after each foot lands, highest mid-stride.
+  const hipC: V3 = [0, o.hipY + o.bob * Math.sin(TAU * 2 * u - Math.PI / 2), 0], [lh, rh] = hipsOf(hipC);
+  const legL = twoBone(lh, add(L.at, [SEG.hipW, 0, 0]), SEG.thigh, SEG.shin, FWD), legR = twoBone(rh, add(R.at, [-SEG.hipW, 0, 0]), SEG.thigh, SEG.shin, FWD);
+  // Each arm swings with the opposite leg, from the shoulder, forward and back.
+  const swing = (s: 1 | -1) => -s * o.arm * Math.cos(TAU * u);
+  const arm = (s: 1 | -1) => ({ upper: dir(swing(s), s * 4), fore: dir(swing(s) + o.elbow, s * 2) });
+  const a = arm(1), b = arm(-1);
+  return body({ hipC, torso: dir(180 - o.lean), head: dir(180 - o.lean * 0.5), thigh: [legL[0], legR[0]], shin: [legL[1], legR[1]],
+    foot: [dir(L.pitch), dir(R.pitch)], upper: [a.upper, b.upper], fore: [a.fore, b.fore] });
+}
+
+/** Clip a line to a rectangle in (z, y) (for equipment that runs off the edge of the view, like a staircase). */
+function clipped(a: V3, b: V3, zMin: number, zMax: number, yMin: number, yMax: number): Prop[] {
+  let t0 = 0, t1 = 1;
+  const d: V3 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+  for (const [p, q] of [[-d[2], a[2] - zMin], [d[2], zMax - a[2]], [-d[1], a[1] - yMin], [d[1], yMax - a[1]]]) {
+    if (p === 0) { if (q < 0) return []; continue; }
+    const r = q / p;
+    if (p < 0) t0 = Math.max(t0, r); else t1 = Math.min(t1, r);
+  }
+  return t0 < t1 ? [{ kind: "line", a: add(a, d, t0), b: add(a, d, t1) }] : [];
+}
+
 export const ANIMATIONS: Animation[] = [
   {
     // ACE "Seated Biceps Curl" (dumbbells): seated against a backrest, palms forward, elbows bend together to bring
@@ -1037,6 +1082,290 @@ export const ANIMATIONS: Animation[] = [
       "Step back and set your feet a little wider than shoulder-width; chest up, shoulder blades squeezed",
       "Sit back into your hips, back straight, until your hips are below your knees",
       "Press your feet into the floor and push your hips forward to stand",
+    ],
+  },
+  {
+    // Mayo Clinic "Walking: Trim your waistline, improve your health": head up, looking forward; neck, shoulders and
+    // back relaxed; arms swinging freely with a slight bend in the elbows; stomach a little tight, back straight;
+    // rolling each foot from heel to toe. Drawn on the spot, as on a treadmill, three strides per loop.
+    exercise: "walk", loop: true,
+    pose: (t) => stride(frac(3 * t), { hipY: 72, land: 20, push: -20, stance: 0.6, lift: 6, kick: 0, lean: 0, bob: 1.5, arm: 18, elbow: 20 }),
+    cues: [
+      "Keep your head up and look forward, not down",
+      "Relax your neck, shoulders and back",
+      "Swing your arms freely with a slight bend in your elbows",
+      "Keep your back straight and roll each foot from heel to toe",
+    ],
+  },
+  {
+    // ACE "5 Tips for Optimizing Running Form" (Nicole Thompson, 2024): the foot lands directly under the hips (no
+    // overstriding); arms bent at about 90°, swinging forward and back from the shoulder without crossing the body's
+    // midline; a slight forward lean from the ankles, not the waist; cadence often around 180 steps a minute. Drawn
+    // on the spot with the trunk nearly upright and the feet landing just ahead of the hips; four strides per loop.
+    exercise: "run", loop: true,
+    pose: (t) => stride(frac(4 * t), { hipY: 66, land: 6, push: -30, stance: 0.4, lift: 10, kick: 28, lean: 3, bob: 3, arm: 30, elbow: 90 }),
+    cues: [
+      "Land with your foot under your hips rather than reaching out in front",
+      "Keep your elbows bent at about a right angle, swinging forward and back without crossing your body",
+      "Lean slightly forward from your ankles, not your waist",
+      "Take short, quick steps",
+    ],
+  },
+  {
+    // ACE "Indoor Cycling: The Breakdown on Bike Set-Up" (read through search excerpts; the page itself could not be
+    // opened here): saddle height so the leg is as long as possible with the pedal at the bottom while staying
+    // comfortable in the saddle; the knee lined up over the pedal. Riding position, the slight lean and the hand
+    // position on the bars are this site's choices. Four turns of the pedals per loop.
+    exercise: "cycle", loop: true,
+    pose: (t) => {
+      const C: V3 = [0, 34.7, 16], r = 17, hipC: V3 = [0, 90, 0], torso = dir(155), a = TAU * frac(4 * t);
+      const pedal = (s: 1 | -1, th: number): V3 => [s * 10, C[1] + r * Math.cos(th), C[2] + r * Math.sin(th)];
+      const P = [pedal(1, a), pedal(-1, a + Math.PI)];
+      const [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, torso);
+      const L = twoBone(lh, add(P[0], [0, 3, -6]), SEG.thigh, SEG.shin, [0, 0.3, 1]), R = twoBone(rh, add(P[1], [0, 3, -6]), SEG.thigh, SEG.shin, [0, 0.3, 1]);
+      const bars: [V3, V3] = [[17, 113, 58], [-17, 113, 58]];
+      const AL = twoBone(ls, bars[0], SEG.upper, SEG.fore, [0.5, -1, 0]), AR = twoBone(rs, bars[1], SEG.upper, SEG.fore, [-0.5, -1, 0]);
+      const props: Prop[] = [
+        { kind: "line", a: [0, 86, -8], b: [0, 86, 6], width: 5 },
+        { kind: "line", a: [0, 86, -1], b: C },
+        { kind: "line", a: [0, 2, -30], b: [0, 2, 70] },
+        { kind: "line", a: [-22, 2, -25], b: [22, 2, -25] },
+        { kind: "line", a: [-22, 2, 64], b: [22, 2, 64] },
+        { kind: "line", a: [0, 2, -22], b: C },
+        { kind: "line", a: [0, 2, 62], b: [0, 113, 56] },
+        { kind: "line", a: [-19, 113, 58], b: [19, 113, 58] },
+        ...P.map((p): Prop => ({ kind: "line", a: C, b: [0, p[1], p[2]], width: 3 })),
+        ...P.map((p): Prop => ({ kind: "line", a: [Math.sign(p[0]) * 5, p[1], p[2]], b: [Math.sign(p[0]) * 14, p[1], p[2]], width: 3 })),
+      ];
+      return body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(80), dir(80)], upper: [AL[0], AR[0]], fore: [AL[1], AR[1]], props });
+    },
+    cues: [
+      "Set the saddle so your leg is almost straight with the pedal at the bottom, while you still sit comfortably",
+      "Line your knee up over the pedal",
+      "Pedal in smooth circles",
+    ],
+  },
+  {
+    // Concept2 "Indoor Rowing Technique". Catch: arms straight, shoulders level, leaning forward from the hips with the
+    // shoulders in front of the hips, shins vertical. Drive: legs first, then the back swings through vertical, then
+    // the arms pull; hands move in a straight line. Finish: leaning back slightly, legs extended, handle lightly below
+    // the ribs. Recovery: the reverse (arms, then lean forward, then knees bend once the hands have passed them).
+    // Drawn with the drive and recovery taking equal time, though the page's drills suggest a slower recovery.
+    exercise: "row",
+    pose: (t) => {
+      const ease = (x: number) => 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, Math.max(0, x)));
+      const legs = ease(t / 0.5), back = ease((t - 0.3) / 0.45), arms = ease((t - 0.65) / 0.35);
+      const hipC: V3 = [0, 25, lerp(-4.7, -53, legs)], torso = dir(lerp(150, 195, back)), [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, torso);
+      const L = twoBone(lh, [9, 14, 22], SEG.thigh, SEG.shin, [0, 1, 0]), R = twoBone(rh, [-9, 14, 22], SEG.thigh, SEG.shin, [0, 1, 0]);
+      const H = 50, dy = Math.min(53.9, Math.abs(ls[1] - H)), reach = ls[2] + Math.sqrt(53.9 ** 2 - dy ** 2);
+      const ribs = add(hipC, torso, 28), hz = lerp(reach, ribs[2] + 5, arms);
+      const AL = twoBone(ls, [10, H, hz], SEG.upper, SEG.fore, [0.6, -0.3, -1]), AR = twoBone(rs, [-10, H, hz], SEG.upper, SEG.fore, [-0.6, -0.3, -1]);
+      const props: Prop[] = [
+        { kind: "line", a: [0, 10, -82], b: [0, 10, 80] },
+        { kind: "line", a: [0, 21, hipC[2] - 7], b: [0, 21, hipC[2] + 7], width: 5 },
+        { kind: "line", a: [0, 10, 18], b: [0, 27, 32] },
+        { kind: "line", a: [-14, 18, 26], b: [14, 18, 26] },
+        { kind: "line", a: [0, 4, 82], b: [0, 58, 82], width: 6 },
+        { kind: "line", a: [0, H, hz], b: [0, H, 80], width: 2 },
+        { kind: "line", a: [-14, H, hz], b: [14, H, hz] },
+      ];
+      return body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(140), dir(140)], upper: [AL[0], AR[0]], fore: [AL[1], AR[1]], props });
+    },
+    cues: [
+      "Start at the catch: arms straight, leaning forward from the hips, shins vertical",
+      "Push with your legs first, then swing your back past upright, then pull the handle to just below your ribs",
+      "Return in reverse: arms out, lean forward from the hips, then bend your knees once your hands pass them",
+      "Keep your shoulders low and relaxed and your hands moving in a straight line",
+    ],
+  },
+  {
+    // Cleveland Clinic "Treadmill or Elliptical?" (Katie Lawton, 2022): feet on the pedals about shoulder-width apart,
+    // moving in an oval like riding a bike while standing; hands on the handles, moving the arms towards and away from
+    // the body as the feet move. The page doesn't describe posture: drawn upright, and with each arm moving with the
+    // opposite leg as in walking, both this site's choices. The machine itself is simplified. Three cycles per loop.
+    exercise: "elliptical", loop: true,
+    pose: (t) => {
+      const a = TAU * frac(3 * t), hipC: V3 = [0, 82, -4], [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, UP);
+      const pedal = (s: 1 | -1, th: number): V3 => [s * 10, 18 + 8 * Math.cos(th), -4 + 22 * Math.sin(th)];
+      const P = [pedal(1, a), pedal(-1, a + Math.PI)];
+      const L = twoBone(lh, P[0], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, P[1], SEG.thigh, SEG.shin, FWD);
+      const hand = (s: 1 | -1, th: number): V3 => { const al = (18 * Math.sin(th) * Math.PI) / 180; return [s * 20, 75 + 38 * Math.cos(al), 30 - 38 * Math.sin(al)]; };
+      const Hn = [hand(1, a), hand(-1, a + Math.PI)];
+      const AL = twoBone(ls, Hn[0], SEG.upper, SEG.fore, [0.3, -1, -0.3]), AR = twoBone(rs, Hn[1], SEG.upper, SEG.fore, [-0.3, -1, -0.3]);
+      const props: Prop[] = [
+        { kind: "line", a: [0, 2, -50], b: [0, 2, 55] },
+        { kind: "line", a: [-22, 2, -44], b: [22, 2, -44] },
+        { kind: "line", a: [-22, 2, 48], b: [22, 2, 48] },
+        { kind: "line", a: [0, 2, 46], b: [0, 96, 40], width: 5 },
+        { kind: "line", a: [-20, 75, 30], b: [20, 75, 30] },
+        ...P.map((p): Prop => ({ kind: "line", a: [p[0], p[1] - 1, p[2] - 4], b: [p[0], p[1] - 1, p[2] + 15], width: 5 })),
+        ...Hn.map((h): Prop => ({ kind: "line", a: [h[0], 75, 30], b: add(h, [0, 6 * (h[1] - 75) / 38, 6 * (h[2] - 30) / 38]), width: 4 })),
+      ];
+      return body({ hipC, torso: UP, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [AL[0], AR[0]], fore: [AL[1], AR[1]], props });
+    },
+    cues: [
+      "Hold the handles and step onto the pedals, feet about shoulder-width apart",
+      "Move your feet round in the machine's oval path",
+      "Push and pull the handles, moving your arms towards and away from your body in time with your feet",
+    ],
+  },
+  {
+    // ACE "6 Exercise Swaps That Will Kick up the Intensity of Your Workout" (Stephanie Thielen, 2015), swap 6: a rope
+    // that reaches the shoulders when folded in half; handles in each hand, forearms at least a foot from the body;
+    // arms still, turning the rope with the hands and wrists; jumping off the balls of the feet, the motion in the
+    // ankles rather than the knees. Four turns of the rope per loop, one small jump for each.
+    exercise: "skip", loop: true,
+    pose: (t) => {
+      const u = frac(4 * t), lift = 3 + 3 * Math.cos(TAU * u);
+      const ankleY = lift + SEG.foot * Math.cos((50 * Math.PI) / 180), ankleZ = 8 - SEG.foot * Math.sin((50 * Math.PI) / 180);
+      const hipC: V3 = [0, ankleY + 74, -1], [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, UP);
+      const L = twoBone(lh, [SEG.hipW, ankleY, ankleZ], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-SEG.hipW, ankleY, ankleZ], SEG.thigh, SEG.shin, FWD);
+      const w: V3 = [0, 2 * Math.sin(TAU * u), 2 * Math.cos(TAU * u)];
+      const hands: [V3, V3] = [add([26, hipC[1] + 2, 10], w), add([-26, hipC[1] + 2, 10], w)];
+      const AL = twoBone(ls, hands[0], SEG.upper, SEG.fore, [0.2, -1, -0.4]), AR = twoBone(rs, hands[1], SEG.upper, SEG.fore, [-0.2, -1, -0.4]);
+      const loopAt = (x: number): V3 => [x, 81 - 80.5 * Math.cos(TAU * u), -1 - 28 * Math.sin(TAU * u)];
+      const rope: V3[] = Array.from({ length: 13 }, (_, i) => {
+        const s = i / 12, x = lerp(hands[1][0], hands[0][0], s), k = Math.sin(Math.PI * s) ** 0.6;
+        return lerp3(lerp3(hands[1], hands[0], s), loopAt(x), k);
+      });
+      const props: Prop[] = rope.slice(1).map((p, i): Prop => ({ kind: "line", a: rope[i], b: p, width: 2 }));
+      return body({ hipC, torso: UP, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(50), dir(50)], upper: [AL[0], AR[0]], fore: [AL[1], AR[1]], props });
+    },
+    cues: [
+      "Choose a rope that reaches your shoulders when folded in half",
+      "Hold a handle in each hand with your forearms about a foot from your body",
+      "Keep your arms still and turn the rope with your hands and wrists",
+      "Jump just high enough to clear the rope, pushing off the balls of your feet and moving mostly at the ankles",
+    ],
+  },
+  {
+    // NHS South Tees Hospitals "Strength and balance exercise programme for falls prevention" (South Tees Falls Team,
+    // 2023), "Stair practice": hold the handrail without pulling too much with the arms; go up and down the stairs;
+    // if taking one step at a time, lead with the stronger leg going up and the weaker leg coming down; place the foot
+    // fully on each step; look down with the eyes only, without leaning forward. Drawn going up, one foot per step,
+    // with the stairs moving down past the figure so it stays in view; two strides per loop.
+    exercise: "stairs", loop: true,
+    pose: (t) => {
+      const u = frac(2 * t), rise = 16, going = 25;
+      const foot = (v: number): V3 => {
+        if (v < 0.5) return [0, 40 - 32 * v, 10 - 50 * v];
+        const s = (v - 0.5) / 0.5;
+        return [0, lerp(24, 40, s) + 12 * Math.sin(Math.PI * s), lerp(-15, 10, 0.5 - 0.5 * Math.cos(Math.PI * s))];
+      };
+      const FL = foot(u), FR = foot(frac(u + 0.5));
+      const hipC: V3 = [0, 95, -2], [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, UP);
+      const L = twoBone(lh, add(FL, [SEG.hipW, 0, 0]), SEG.thigh, SEG.shin, FWD), R = twoBone(rh, add(FR, [-SEG.hipW, 0, 0]), SEG.thigh, SEG.shin, FWD);
+      const railY = (z: number) => 40 + (rise / going) * (z - 29) + 76;
+      const AR = twoBone(rs, [-26, railY(8), 8], SEG.upper, SEG.fore, [-0.3, -1, -0.5]);
+      const sw = 10 * Math.sin(TAU * u);
+      const props: Prop[] = [];
+      for (let k = -8; k <= 8; k++) {
+        const m = k - 2 * u, y = 40 + rise * m, z0 = 4 + going * m;
+        props.push(...clipped([0, y, z0], [0, y, z0 + going], -90, 90, 0, 180), ...clipped([0, y - rise, z0], [0, y, z0], -90, 90, 0, 180));
+        if (y >= 0 && Math.abs(z0 + going / 2) <= 40) props.push({ kind: "line", a: [-22, y, z0 + going / 2], b: [22, y, z0 + going / 2], width: 2 });
+      }
+      props.push(...clipped([-26, railY(-90), -90], [-26, railY(90), 90], -90, 90, 0, 180).map((q) => ({ ...q, width: 3 })));
+      return body({ hipC, torso: UP, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [dir(sw, 4), AR[0]], fore: [dir(sw + 15, 2), AR[1]], props });
+    },
+    cues: [
+      "Hold the handrail, but try not to pull yourself up with your arms",
+      "Place your whole foot on each step",
+      "Look down with your eyes only, without leaning forward",
+      "If going one step at a time, lead with your stronger leg going up and your weaker leg coming down",
+    ],
+  },
+  {
+    // Swim England "Tips for getting front crawl right": float face down, body stretched long; legs long, toes
+    // pointed, kicking up and down fast and continuously with loose ankles; one arm pulls under the body to the thigh,
+    // comes out and sweeps over the water to enter in front of the head, the arms moving continuously so one enters as
+    // the other leaves at the thigh; breathe by turning the head to the side, one ear in the water. The head turn for
+    // breathing isn't drawn; the shoulders' roll and the six kicks per stroke cycle are this site's choices.
+    exercise: "swim", loop: true, box: 240,
+    pose: (t) => {
+      const hipC: V3 = [0, 70, -14], kick = (s: number) => 6 * Math.sin(TAU * 3 * t + (s > 0 ? 0 : Math.PI));
+      const p = body({ hipC, torso: FWD, head: FWD, thigh: [dir(-90 + kick(1)), dir(-90 + kick(-1))], shin: [dir(-90 + 1.6 * kick(1)), dir(-90 + 1.6 * kick(-1))],
+        foot: [dir(-90), dir(-90)], upper: [DOWN, DOWN], fore: [DOWN, DOWN] });
+      const roll = (20 * Math.sin(TAU * t) * Math.PI) / 180, neck = p.j.neck;
+      const arm = (side: 1 | -1, phi: number) => {
+        let up: number, fore: number, out: number;
+        if (phi < 0.5) { const s = phi / 0.5; up = 90 - 180 * s; fore = up * (1 - 0.5 * Math.sin(Math.PI * s)); out = -10 * Math.sin(Math.PI * s); }
+        else { const s = (phi - 0.5) / 0.5; up = -90 - 180 * s; fore = up - 150 * Math.sin(Math.PI * s); out = 20 * Math.sin(Math.PI * s); }
+        const sh = add(neck, [side * SEG.shW * Math.cos(roll), -side * SEG.shW * Math.sin(roll), 0]);
+        const el = add(sh, dir(up, side * out), SEG.upper);
+        return { sh, el, wr: add(el, dir(fore, side * out), SEG.fore) };
+      };
+      const l = arm(1, frac(t)), r = arm(-1, frac(t + 0.5));
+      const j = { ...p.j, lsh: l.sh, lel: l.el, lwr: l.wr, rsh: r.sh, rel: r.el, rwr: r.wr };
+      return { j, props: [{ kind: "line", a: [0, 74, -114], b: [0, 74, 114], width: 2 }, { kind: "line", a: [-60, 74, 0], b: [60, 74, 0], width: 2 }] };
+    },
+    cues: [
+      "Float face down with your body stretched out long",
+      "Kick your legs up and down continuously, legs long and toes pointed, ankles loose",
+      "Pull one arm under your body to your thigh, then sweep it over the water to enter in front of your head",
+      "Turn your head to the side to breathe in, keeping one ear in the water; breathe out with your face in the water",
+    ],
+  },
+  {
+    // ACE "Swing" (kettlebell; read through search excerpts): feet shoulder-width apart, knees slightly bent, both
+    // hands on the handle, palms down; back straight, sit back into the hips to swing the kettlebell back between the
+    // legs under the hips; lift the chest, push the hips forward and straighten the knees to swing it up in front, the
+    // power coming from the legs and hips, not the shoulders; let it rise to chest height, then back down.
+    exercise: "kbSwing",
+    pose: (t) => {
+      const hipC: V3 = [0, lerp(72, 75, t), lerp(-14, -1, t)], torso = dir(lerp(120, 180, t)), [lh, rh] = hipsOf(hipC);
+      const L = twoBone(lh, [12, 0, 0], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-12, 0, 0], SEG.thigh, SEG.shin, FWD);
+      const neck = add(hipC, torso, SEG.torso), [ls, rs] = shouldersOf(hipC, torso), aim = add(neck, dir(lerp(-40, 80, t)), 53);
+      const toward = (sh: V3, x: number): V3 => { const d: V3 = [aim[0] + x - sh[0], aim[1] - sh[1], aim[2] - sh[2]], n = Math.hypot(...d); return [d[0] / n, d[1] / n, d[2] / n]; };
+      const ul = toward(ls, 3), ur = toward(rs, -3);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [ul, ur], fore: [ul, ur] });
+      const hang: V3 = [0, (ul[1] + ur[1]) / 2, (ul[2] + ur[2]) / 2], n = Math.hypot(...hang);
+      return { ...p, props: [{ kind: "kettlebell", at: mid(p.j.lwr, p.j.rwr), hang: [0, hang[1] / n, hang[2] / n] }] };
+    },
+    cues: [
+      "Stand with your feet shoulder-width apart, knees slightly bent, both hands on the handle, palms down",
+      "Keep your back straight and sit back into your hips to swing the kettlebell back between your legs",
+      "Lift your chest and push your hips forward to swing it up in front; the power comes from your hips, not your shoulders",
+      "Let it rise to chest height, then swing it back down for the next one",
+    ],
+  },
+  {
+    // NASM "Squat Thrust Burpees": stand, feet hip-width; squat and place the hands on the floor just outside the
+    // feet; jump or step the feet back into a push-up position and do one push-up; jump the feet back towards the
+    // hands and jump up with the arms overhead; land softly with bent knees. Drawn with the feet jumping. The movement
+    // plays there and back, so the reverse half (push up, feet in, stand, jump) matches the page's order.
+    exercise: "burpee", box: 224,
+    pose: (t) => {
+      const seg = (a: number, b: number) => Math.min(1, Math.max(0, (t - a) / (b - a)));
+      const ease = (x: number) => 0.5 - 0.5 * Math.cos(Math.PI * x);
+      const jump = ease(seg(0, 0.15)), down = ease(seg(0.15, 0.38)), back = ease(seg(0.38, 0.58)), push = ease(seg(0.58, 1));
+      const hands: [V3, V3] = [[16, 0, 55], [-16, 0, 55]];
+      // The push-up position, as in the push-up drawing: body straight from the ankles, shoulders `sh` above the floor.
+      const sh = lerp(53, 16, push), ankleP: V3 = [0, 12, -58], ang = Math.asin((sh - ankleP[1]) / (SEG.shin + SEG.thigh + SEG.torso));
+      const plankHip = add(ankleP, [0, Math.sin(ang), Math.cos(ang)], SEG.shin + SEG.thigh);
+      let hipC: V3, tp: number, ankleY: number, ankleZ: number, footP: number;
+      if (t < 0.38) {
+        hipC = [0, lerp(lerp(87.5, 75.5, jump), 30, down), lerp(35, 15, down)];
+        tp = lerp(180, 120, down); ankleY = lerp(12, 0, jump); ankleZ = 35; footP = lerp(30, 90, jump);
+      } else {
+        const sq: V3 = [0, 30, 15], hop = 10 * Math.sin(Math.PI * back);
+        hipC = add(lerp3(sq, plankHip, back), [0, hop, 0]);
+        tp = lerp(120, 90 + (ang * 180) / Math.PI, back);
+        ankleY = lerp(0, 12, back) + hop; ankleZ = lerp(35, -58, back); footP = lerp(90, 15, back);
+      }
+      const torso = dir(tp), [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, torso);
+      const L = twoBone(lh, [SEG.hipW, ankleY, ankleZ], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-SEG.hipW, ankleY, ankleZ], SEG.thigh, SEG.shin, FWD);
+      let target: [V3, V3];
+      if (t < 0.15) { const a = lerp(180, 0, jump); target = [add(ls, dir(a, 4), 53.9), add(rs, dir(a, -4), 53.9)]; }
+      else if (t < 0.38) target = [lerp3(add(ls, DOWN, 53.9), hands[0], down), lerp3(add(rs, DOWN, 53.9), hands[1], down)];
+      else target = hands;
+      const AL = twoBone(ls, target[0], SEG.upper, SEG.fore, [1, 0.6, 0]), AR = twoBone(rs, target[1], SEG.upper, SEG.fore, [-1, 0.6, 0]);
+      return body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(footP), dir(footP)], upper: [AL[0], AR[0]], fore: [AL[1], AR[1]] });
+    },
+    cues: [
+      "Stand with your feet hip-width apart",
+      "Squat down and put your hands on the floor just outside your feet",
+      "Jump or step your feet back into a push-up position and do one push-up",
+      "Jump your feet back towards your hands, then jump up with your arms overhead and land softly with bent knees",
     ],
   },
 ];
