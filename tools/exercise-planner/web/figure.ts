@@ -89,6 +89,29 @@ export function body(o: {
   return { j, props: o.props ?? [] };
 }
 
+const sub = (a: V3, b: V3): V3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const dot = (a: V3, b: V3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const unit = (v: V3): V3 => { const n = Math.hypot(...v) || 1; return [v[0] / n, v[1] / n, v[2] / n]; };
+
+/**
+ * Two segments (lengths l1, l2) from `start` reaching towards `end`, bending towards `hint`: returns the direction
+ * of each segment, for body(). If `end` is out of reach the limb straightens towards it.
+ */
+export function twoBone(start: V3, end: V3, l1: number, l2: number, hint: V3): [V3, V3] {
+  const d = sub(end, start), D = Math.min(Math.hypot(...d), l1 + l2 - 1e-6), u = unit(d);
+  const h = unit(sub(hint, [u[0] * dot(hint, u), u[1] * dot(hint, u), u[2] * dot(hint, u)]));
+  const a = (l1 * l1 + D * D - l2 * l2) / (2 * D), up = Math.sqrt(Math.max(0, l1 * l1 - a * a));
+  const mid = add(add(start, u, a), h, up);
+  return [unit(sub(mid, start)), unit(sub(add(start, u, D), mid))];
+}
+
+/** The shoulder positions body() will give for a hip centre and torso direction (for reaching with twoBone). */
+export const shouldersOf = (hipC: V3, torso: V3): [V3, V3] => {
+  const neck = add(hipC, torso, SEG.torso);
+  return [add(neck, [SEG.shW, 0, 0]), add(neck, [-SEG.shW, 0, 0])];
+};
+export const hipsOf = (hipC: V3): [V3, V3] => [add(hipC, [SEG.hipW, 0, 0]), add(hipC, [-SEG.hipW, 0, 0])];
+
 /** Move a pose so its lowest point (joints only) rests on the floor. */
 export function grounded(p: Pose): Pose {
   const low = Math.min(...JOINTS.map((k) => p.j[k][1]));
@@ -100,12 +123,13 @@ export function grounded(p: Pose): Pose {
 
 // --- Drawing ---
 export type View = "side" | "front";
-export const BOX = 200; // each view is a BOX × BOX square
-export const FLOOR = 188; // the floor's height on screen
+export const BOX = 200; // each view is a BOX × BOX square by default; a longer pose can use a bigger box
+export const floorOf = (box: number) => box - 12; // the floor's height on screen
 
 /** Screen x, screen y and nearness (bigger = nearer the viewer). The side view is seen from the figure's right. */
-export function project(p: V3, view: View): [number, number, number] {
-  return view === "side" ? [BOX / 2 + p[2], FLOOR - p[1], -p[0]] : [BOX / 2 + p[0], FLOOR - p[1], p[2]];
+export function project(p: V3, view: View, box = BOX): [number, number, number] {
+  const fl = floorOf(box);
+  return view === "side" ? [box / 2 + p[2], fl - p[1], -p[0]] : [box / 2 + p[0], fl - p[1], p[2]];
 }
 
 const NAVY = "#000080", GREY = "#555", DARK = "#333";
@@ -122,8 +146,8 @@ export function points(p: Pose): V3[] {
 }
 
 /** The inside of one view's <svg>: far limbs (in the side view) pale, drawn nearest last. */
-export function viewSvg(p: Pose, view: View): string {
-  const P = (v: V3) => project(v, view);
+export function viewSvg(p: Pose, view: View, box = BOX): string {
+  const P = (v: V3) => project(v, view, box);
   const parts: { d: number; svg: (far: boolean) => string }[] = [];
   const line = (a: V3, b: V3, colour: string, w: number) => {
     const A = P(a), B = P(b);
@@ -147,5 +171,5 @@ export function viewSvg(p: Pose, view: View): string {
   }
   parts.sort((a, b) => a.d - b.d);
   const far = (d: number) => view === "side" && d < -2;
-  return `<line x1="6" y1="${FLOOR + 1}" x2="${BOX - 6}" y2="${FLOOR + 1}" stroke="#c9c5a8" stroke-width="2"/>` + parts.map((x) => x.svg(far(x.d))).join("");
+  return `<line x1="6" y1="${floorOf(box) + 1}" x2="${box - 6}" y2="${floorOf(box) + 1}" stroke="#c9c5a8" stroke-width="2"/>` + parts.map((x) => x.svg(far(x.d))).join("");
 }

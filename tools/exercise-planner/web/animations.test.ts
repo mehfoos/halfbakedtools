@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { EXERCISES, type Equipment } from "./catalogue.ts";
 import { ANIMATIONS, animationFor, phase, PERIOD } from "./animations.ts";
-import { BONES, BOX, FLOOR, JOINTS, dist, points, project, viewSvg } from "./figure.ts";
+import { BONES, BOX, floorOf, JOINTS, dist, points, project, viewSvg } from "./figure.ts";
 
 const STEPS = Array.from({ length: 21 }, (_, i) => i / 20);
 const name = (a: (typeof ANIMATIONS)[number]) => `${a.exercise}${a.using ? ` (${a.using.join(", ")})` : ""}`;
@@ -33,10 +33,10 @@ test("nothing goes through the floor, and everything stays inside both views", (
     const p = a.pose(t);
     for (const k of JOINTS) assert.ok(p.j[k][1] >= -0.5, `${name(a)} at ${t}: ${k} below the floor`);
     for (const v of ["side", "front"] as const) for (const pt of points(p)) {
-      const [x, y] = project(pt, v);
-      assert.ok(x >= 4 && x <= BOX - 4 && y >= 4 && y <= FLOOR + 2, `${name(a)} at ${t}: a point is outside the ${v} view (${x.toFixed(0)}, ${y.toFixed(0)})`);
+      const box = a.box ?? BOX, [x, y] = project(pt, v, box);
+      assert.ok(x >= 4 && x <= box - 4 && y >= 4 && y <= floorOf(box) + 2, `${name(a)} at ${t}: a point is outside the ${v} view (${x.toFixed(0)}, ${y.toFixed(0)})`);
     }
-    assert.ok(!/NaN|undefined/.test(viewSvg(p, "side") + viewSvg(p, "front")), `${name(a)} at ${t}: bad drawing`);
+    assert.ok(!/NaN|undefined/.test(viewSvg(p, "side", a.box) + viewSvg(p, "front", a.box)), `${name(a)} at ${t}: bad drawing`);
   }
 });
 

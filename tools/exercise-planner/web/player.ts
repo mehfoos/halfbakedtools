@@ -19,7 +19,7 @@ export function mountAnimations(root: HTMLElement) {
 
   const draw = (it: Item) => {
     const p = it.anim.pose(phase(it.at));
-    for (const svg of it.el.querySelectorAll<SVGSVGElement>("svg[data-view]")) svg.innerHTML = viewSvg(p, svg.dataset.view as "side" | "front");
+    for (const svg of it.el.querySelectorAll<SVGSVGElement>("svg[data-view]")) svg.innerHTML = viewSvg(p, svg.dataset.view as "side" | "front", it.anim.box);
   };
   const open = (it: Item) => !it.el.closest("details:not([open])");
   const label = () => {

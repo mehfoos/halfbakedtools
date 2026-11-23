@@ -6,6 +6,7 @@ import { canDo, intensity, nameFor, ordered, studiedVersion, suggest, type Sugge
 import { chartSvg, fmt, type Axis } from "./chart.ts";
 import { ANIMATIONS, animationFor } from "./animations.ts";
 import { mountAnimations } from "./player.ts";
+import { BOX } from "./figure.ts";
 
 type State = { targets: Target[]; equipment: Equipment[]; bodyweight: boolean; max: number; count: number; overlap: number; depth: number; excluded: string[] };
 
@@ -275,7 +276,7 @@ export function start(root: HTMLElement) {
     if (!a || !e.howTo) return "";
     const n = esc(nameFor(e, have).toLowerCase());
     const view = (v: "side" | "front", label: string) =>
-      `<figure><svg viewBox="0 0 200 200" data-view="${v}" role="img" aria-label="${label} view of a figure doing a ${n}"></svg><figcaption>${label}</figcaption></figure>`;
+      `<figure><svg viewBox="0 0 ${a.box ?? BOX} ${a.box ?? BOX}" data-view="${v}" role="img" aria-label="${label} view of a figure doing a ${n}"></svg><figcaption>${label}</figcaption></figure>`;
     return `<details class="show-how" open><summary>Show how</summary><div class="details-body show-how-body">`
       + caveat("illustration", `Not reviewed by a fitness professional. It shows the general movement only and may be wrong in detail. Before trying the exercise, follow the instructions on the linked ${e.howTo.source} page. <a href="${METHODS}#animations">About these drawings</a>.`)
       + `<div class="anim" data-anim="${ANIMATIONS.indexOf(a)}">${view("side", "Side")}${view("front", "Front")}</div>`
