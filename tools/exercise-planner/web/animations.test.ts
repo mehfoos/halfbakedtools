@@ -62,8 +62,8 @@ test("the animation shown follows the equipment the visitor has", () => {
   const has = (...e: Equipment[]) => new Set<Equipment>(e);
   assert.equal(animationFor(curl, has("dumbbells"))?.using?.[0], "dumbbells");
   assert.equal(animationFor(curl, has("barbell"))?.using?.[0], "barbell");
-  const push = EXERCISES.find((e) => e.id === "pushdown")!;
-  assert.equal(animationFor(push, has("bands")), undefined, "no band pushdown drawn yet, so none is shown rather than the cable one");
+  const face = EXERCISES.find((e) => e.id === "facePull")!;
+  assert.equal(animationFor(face, has("bands")), undefined, "no band face pull drawn yet, so none is shown rather than the cable one");
   const squat = EXERCISES.find((e) => e.id === "squatBw")!;
   assert.ok(animationFor(squat, has("body")));
 });

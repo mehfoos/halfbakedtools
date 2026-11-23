@@ -1815,6 +1815,69 @@ export const ANIMATIONS: Animation[] = [
       "Lower and repeat",
     ],
   },
+  {
+    // Bodylastics "Resistance Band Triceps Pushdown": band in a door anchor at the top of the door; stand facing the
+    // door 3 to 4 feet away, back flat, chest up, a slight forward bend at the waist; upper arms in line with the body,
+    // elbows tight to the sides, hands at chest height about 8 inches apart, palms in; push the hands down until they
+    // are just below the hips and the arms are straight; let them rise under control to chest height; elbows fixed.
+    exercise: "pushdown", using: ["bands"], box: 224,
+    pose: (t) => {
+      const hipC: V3 = [0, 75.5, 0], torso = dir(170), f = lerp(125, -10, t);
+      const p = grounded(body({ hipC, torso, thigh: [DOWN, DOWN], shin: [DOWN, DOWN], upper: [dir(-10, 3), dir(-10, -3)], fore: [dir(f, -6), dir(f, 6)] }));
+      const anchor: V3 = [0, 196, 92];
+      return { ...p, props: [{ kind: "line", a: [0, 0, 96], b: [0, 205, 96], width: 3 }, cable(p.j.lwr, anchor), cable(p.j.rwr, anchor), grip(p.j.lwr), grip(p.j.rwr)] };
+    },
+    cues: [
+      "Fix the band in a door anchor at the top of the door and stand facing it, 3 to 4 feet away",
+      "Keep your back flat and chest up with a slight forward bend, elbows tight to your sides, hands at chest height, palms in",
+      "Push your hands down until they are just below your hips and your arms are straight",
+      "Let your hands rise under control back to chest height, keeping your elbows fixed",
+    ],
+  },
+  {
+    // Physitrack "Kettlebell single arm bent over row": hinge over at the waist holding a kettlebell in one hand, the
+    // other hand on a bench for support; back aligned, shoulder blades slid back and down; pull the kettlebell up
+    // towards the side of the rib cage; lower to the start. Feet and lean aren't given: drawn standing, feet
+    // hip-width, knees slightly bent, the trunk 75° forward; the bench's position is this site's choice.
+    exercise: "dbRow", using: ["kettlebell"],
+    pose: (t) => {
+      const hipC: V3 = [0, 72, -8], torso = dir(105), [lh, rh] = hipsOf(hipC), [ls, rs] = shouldersOf(hipC, torso);
+      const L = twoBone(lh, [SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD), R = twoBone(rh, [-SEG.hipW, 0, 0], SEG.thigh, SEG.shin, FWD);
+      const LA = twoBone(ls, [16, 40, 40], SEG.upper, SEG.fore, [0.5, 0, 1]);
+      const low = add(rs, DOWN, 53.6), ribs = add(add(add(hipC, torso, 24), [-15, 0, 0]), front(torso), 4);
+      const RA = twoBone(rs, lerp3(low, ribs, t), SEG.upper, SEG.fore, [-0.2, 0.6, -1]);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]], props: flatBench(40, 22, 72, 16) });
+      return { ...p, props: [...p.props, { kind: "kettlebell", at: p.j.rwr, hang: DOWN }] };
+    },
+    cues: [
+      "Hinge over at the waist holding a kettlebell in one hand, the other hand on a bench for support",
+      "Keep your back aligned and slide your shoulder blades back and down",
+      "Pull the kettlebell up towards the side of your rib cage",
+      "Lower it back to the start; do all reps on one side, then switch",
+    ],
+  },
+  {
+    // Physitrack "Kettlebell stiff leg deadlift - single arm, single leg": knees slightly bent, kettlebell in one hand;
+    // hinge forward at the waist and fully extend the opposite leg to the rear, lowering the kettlebell towards the
+    // shin; back straight, body not rotating; squeeze the glutes and hamstrings to stand. Drawn on the right leg with
+    // the kettlebell in the right hand (the leg opposite the hand goes back), to the same 72° lean as the other drawings.
+    exercise: "singleLegRdl", using: ["kettlebell"],
+    pose: (t) => {
+      const L = lerp(0, 72, t) * Math.PI / 180, torso: V3 = [0, Math.cos(L), Math.sin(L)];
+      const ankle: V3 = [-SEG.hipW, 0, 0], hz = -18 * Math.sin(L), hipC: V3 = [0, Math.sqrt(74 ** 2 - hz ** 2), hz];
+      const [lh, rh] = hipsOf(hipC), R = twoBone(rh, ankle, SEG.thigh, SEG.shin, FWD);
+      const back: V3 = [0, -Math.cos(L), -Math.sin(L)], LL = twoBone(lh, add(lh, back, 74), SEG.thigh, SEG.shin, FWD);
+      const [, rs] = shouldersOf(hipC, torso), aim: V3 = [-SEG.hipW - rs[0], -50, 6], n = Math.hypot(...aim), arm: V3 = [aim[0] / n, aim[1] / n, aim[2] / n];
+      const p = body({ hipC, torso, thigh: [LL[0], R[0]], shin: [LL[1], R[1]], foot: [dir(90 - Math.max(0, (L * 180) / Math.PI - 14)), FWD], upper: [DOWN, arm], fore: [DOWN, arm] });
+      return { ...p, props: [{ kind: "kettlebell", at: p.j.rwr, hang: DOWN }] };
+    },
+    cues: [
+      "Stand with your knees slightly bent, holding a kettlebell in one hand",
+      "Hinge forward at the waist and stretch the other leg straight out behind you, lowering the kettlebell towards your shin",
+      "Keep your back straight and don't let your body twist",
+      "Squeeze your glutes and hamstrings to stand back up; do all reps on one side, then switch",
+    ],
+  },
 ];
 
 /** The animation for the version of an exercise the visitor will see, if there is one. */
