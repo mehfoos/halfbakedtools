@@ -32,6 +32,10 @@
     "illustration": {
       "label": "First-pass illustration",
       "meaning": "Drawn by this site as a rough guide; not reviewed by a professional in the field"
+    },
+    "weakSource": {
+      "label": "Weaker source",
+      "meaning": "From a fitness app, magazine or shop page rather than a professional body; used only because no better source was found"
     }
   }
 }

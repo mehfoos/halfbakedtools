@@ -11,6 +11,7 @@ export const KINDS = {
   translated: { label: "Translated", meaning: "A name or text translated by this site, not by the publisher" },
   borrowed: { label: "Borrowed", meaning: "The source took this from another source, so it isn't independent" },
   illustration: { label: "First-pass illustration", meaning: "Drawn by this site as a rough guide; not reviewed by a professional in the field" },
+  weakSource: { label: "Weaker source", meaning: "From a fitness app, magazine or shop page rather than a professional body; used only because no better source was found" },
 } as const;
 
 export type CaveatKind = keyof typeof KINDS;
