@@ -297,13 +297,19 @@ test("how-to links point to individual pages of the chosen sources", () => {
     // For versions nothing above covers (owner, 23 Nov 2026): a physiotherapy exercise platform and a band maker.
     Physitrack: /^https:\/\/us\.physitrack\.com\/home-exercise-video\/[a-z0-9-]+$/,
     Bodylastics: /^https:\/\/bodylastics\.com\/exercises\/resistance-bands\/[a-z]+\/[a-z0-9-]+$/,
+    // Weaker sources (app or magazine pages), only where nothing better was found (owner, 23 Nov 2026); always marked weak.
+    "Fitness Volt": /^https:\/\/fitnessvolt\.com\/[a-z0-9-]+\/$/,
+    Sweat: /^https:\/\/sweat\.com\/(exercises|blogs\/fitness)\/[a-z0-9-]+$/,
+    Sworkit: /^https:\/\/sworkit\.com\/exercise\/[a-z0-9-]+$/,
     NASM: /^https:\/\/www\.nasm\.org\/resource-center\/exercise-library\/[a-z0-9-]+$/,
     NSCA: /^https:\/\/www\.nsca\.com\/education\/articles\/kinetic-select\/[a-z0-9-]+\/$/,
   };
   const links = [...withLink.map((e) => ({ id: e.id, h: e.howTo! })),
     ...EXERCISES.flatMap((e) => (e.variants ?? []).filter((v) => v.howTo).map((v) => ({ id: `${e.id} (${v.name})`, h: v.howTo! })))];
+  const weaker = ["Fitness Volt", "Sweat", "Sworkit"];
   for (const { id, h } of links) {
     assert.match(h.url, page[h.source], id);
+    assert.equal(!!h.weak, weaker.includes(h.source), `${id}: pages from ${weaker.join(", ")} are marked weak, others aren't`);
     assert.ok(h.title.length > 0, id);
   }
 });

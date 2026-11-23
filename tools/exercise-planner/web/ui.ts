@@ -268,7 +268,7 @@ export function start(root: HTMLElement) {
     const studied = as ? ` <span class="small muted sans">(classified from the ${esc(as)} version; this version is assumed to load the same muscles)</span>` : "";
     const how = howToFor(e, have);
     return `<li><span class="ex-name">${esc(nameFor(e, have))}</span>${studied}
-      <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}${how ? ` · <a href="${esc(how.url)}" rel="noopener" target="_blank">How to do it<span class="sr-only"> (opens in a new tab)</span></a> <span class="muted">(${how.source}: ${esc(how.title)})</span>` : ""}</div>${aero}${showHow(e, have)}</li>`;
+      <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}${how ? ` · <a href="${esc(how.url)}" rel="noopener" target="_blank">How to do it<span class="sr-only"> (opens in a new tab)</span></a> <span class="muted">(${how.source}: ${esc(how.title)})</span>${how.weak ? " " + caveat("weakSource", `${how.source} is a fitness app or magazine site, not a professional body; no page from one was found for this version. Check its instructions with a qualified trainer.`) : ""}` : ""}</div>${aero}${showHow(e, have)}</li>`;
   }
 
   // A "Show how" animation, open by default (owner's decision, 23 Nov 2026), for exercise versions that have one.
@@ -280,6 +280,7 @@ export function start(root: HTMLElement) {
       `<figure><svg viewBox="0 0 ${a.box ?? BOX} ${a.box ?? BOX}" data-view="${v}" role="img" aria-label="${label} view of a figure doing a ${n}"></svg><figcaption>${label}</figcaption></figure>`;
     return `<details class="show-how" open><summary>Show how</summary><div class="details-body show-how-body">`
       + caveat("illustration", `Not reviewed by a fitness professional. It shows the general movement only and may be wrong in detail. Before trying the exercise, follow the instructions on the linked ${how.source} page. <a href="${METHODS}#animations">About these drawings</a>.`)
+      + (how.weak ? caveat("weakSource", `Drawn from a ${how.source} page, a weaker source than the others used here (a fitness app or magazine site, not a professional body).`) : "")
       + `<div class="anim" data-anim="${ANIMATIONS.indexOf(a)}">${view("side", "Side")}${view("front", "Front")}</div>`
       + `<p class="anim-controls"><button type="button" class="small" data-anim-toggle aria-pressed="false">Play</button></p>`
       + `<ul class="small sans cues">${a.cues.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>`

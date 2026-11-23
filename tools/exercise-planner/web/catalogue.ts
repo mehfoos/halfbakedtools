@@ -65,7 +65,12 @@ export const EQUIPMENT = [
   { id: "pool", label: "Swimming pool", group: "cardio" },
 ] as const;
 /** A page showing how to do an exercise (see `howTo` on Exercise). */
-export type HowTo = { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic" | "Concept2" | "Cleveland Clinic" | "Swim England" | "NHS" | "ExRx.net" | "Physitrack" | "Bodylastics"; title: string; url: string };
+export type HowTo = {
+  source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic" | "Concept2" | "Cleveland Clinic" | "Swim England" | "NHS" | "ExRx.net" | "Physitrack" | "Bodylastics" | "Fitness Volt" | "Sweat" | "Sworkit";
+  title: string; url: string;
+  /** A fitness app, magazine or shop page rather than a professional body, used only where nothing better was found: shown with a "Weaker source" caveat. */
+  weak?: true;
+};
 export type Equipment = (typeof EQUIPMENT)[number]["id"];
 
 const ALL_EQUIPMENT = EQUIPMENT.map((e) => e.id) as Equipment[];
@@ -261,14 +266,14 @@ export const EXERCISES: Exercise[] = [
     direct: ["biceps"], indirect: [], steadies: ["forearms"] }),
   X({ id: "overheadExt", name: "Overhead triceps extension", kind: "strength", needs: [["dumbbells", "kettlebell", "bands", "machines"]],
     howTo: { source: "ACE", title: "Triceps Extension", url: "https://www.acefitness.org/resources/everyone/exercise-library/74/triceps-extension/" },
-    variants: [{ using: ["dumbbells"], name: "Dumbbell overhead triceps extension" }, { using: ["kettlebell"], name: "Kettlebell overhead triceps extension" }, { using: ["bands"], name: "Resistance-band overhead triceps extension" , howTo: { source: "ACE", title: "Build Your Triceps Workout (Resistance Band Overhead Extension), by Stephanie Thielen", url: "https://www.acefitness.org/resources/everyone/blog/5699/build-your-triceps-workout/" } }, { using: ["machines"], name: "Cable overhead triceps extension" , howTo: { source: "ExRx.net", title: "Cable Triceps Extension (with rope)", url: "https://exrx.net/WeightExercises/Triceps/CBStandingTricepsExtensionRope" } }],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell overhead triceps extension" }, { using: ["kettlebell"], name: "Kettlebell overhead triceps extension" , howTo: { source: "Sworkit", title: "Kettlebell Overhead Tricep Extensions", url: "https://sworkit.com/exercise/kettlebell-overhead-tricep-extensions", weak: true } }, { using: ["bands"], name: "Resistance-band overhead triceps extension" , howTo: { source: "ACE", title: "Build Your Triceps Workout (Resistance Band Overhead Extension), by Stephanie Thielen", url: "https://www.acefitness.org/resources/everyone/blog/5699/build-your-triceps-workout/" } }, { using: ["machines"], name: "Cable overhead triceps extension" , howTo: { source: "ExRx.net", title: "Cable Triceps Extension (with rope)", url: "https://exrx.net/WeightExercises/Triceps/CBStandingTricepsExtensionRope" } }],
     studied: { with: ["dumbbells"], as: "dumbbell" },
     sources: { triceps: "Overhead Dumbbell Extensions" },
     moves: "elbow extension with the arm overhead",
     direct: ["triceps"], indirect: [] }),
   X({ id: "rdl", name: "Romanian deadlift", kind: "strength", needs: [["dumbbells", "kettlebell", "barbell"]],
     howTo: { source: "ACE", title: "Romanian Deadlift", url: "https://www.acefitness.org/resources/everyone/exercise-library/317/romanian-deadlift/" },
-    variants: [{ using: ["dumbbells"], name: "Dumbbell Romanian deadlift" }, { using: ["kettlebell"], name: "Kettlebell Romanian deadlift" }, { using: ["barbell"], name: "Barbell Romanian deadlift" }],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell Romanian deadlift" , howTo: { source: "Sweat", title: "How To Do A Romanian Deadlift With Dumbbells", url: "https://sweat.com/blogs/fitness/how-to-dumbbell-romanian-deadlift", weak: true } }, { using: ["kettlebell"], name: "Kettlebell Romanian deadlift" , howTo: { source: "Sweat", title: "Romanian Kettlebell Deadlift", url: "https://sweat.com/exercises/romanian-kettlebell-deadlift", weak: true } }, { using: ["barbell"], name: "Barbell Romanian deadlift" }],
     evidence: { hamstrings: ["morin-2025"] },
     moves: "hip extension with nearly straight knees (hinging at the hips)",
     direct: ["hamstrings", "glutes"], indirect: [], steadies: ["lowerBack", "forearms", "upperBack"] }),
@@ -373,7 +378,7 @@ export const EXERCISES: Exercise[] = [
     direct: ["triceps"], indirect: [] }),
   X({ id: "facePull", name: "Face pull", kind: "strength", needs: [["machines", "bands"]],
     howTo: { source: "NSCA", title: "Face Pull (Machine), from the NSCA's Exercise Technique Manual", url: "https://www.nsca.com/education/articles/kinetic-select/face-pull-machine/" },
-    variants: [{ using: ["machines"], name: "Cable face pull" }, { using: ["bands"], name: "Resistance-band face pull" }],
+    variants: [{ using: ["machines"], name: "Cable face pull" }, { using: ["bands"], name: "Resistance-band face pull" , howTo: { source: "Fitness Volt", title: "Face Pulls with Resistance Bands, by Patrick Dale", url: "https://fitnessvolt.com/resistance-band-face-pulls/", weak: true } }],
     moves: "shoulder horizontal abduction and external rotation; shoulder-blade retraction",
     direct: ["upperBack", "rearDelts"], indirect: [] }),
   X({ id: "shrug", name: "Shrug", kind: "strength", needs: [["dumbbells", "barbell", "machines"]],
