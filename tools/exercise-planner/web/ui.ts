@@ -4,6 +4,8 @@ import { AEROBIC, AEROBIC_LABEL, EQUIPMENT, EXERCISES, MUSCLES, PRESETS, assumed
 import { caveat } from "@site/lib/caveats.ts";
 import { canDo, intensity, nameFor, ordered, studiedVersion, suggest, type Suggestion } from "./planner.ts";
 import { chartSvg, fmt, type Axis } from "./chart.ts";
+import { ANIMATIONS, animationFor } from "./animations.ts";
+import { mountAnimations } from "./player.ts";
 
 type State = { targets: Target[]; equipment: Equipment[]; bodyweight: boolean; max: number; count: number; overlap: number; depth: number; excluded: string[] };
 
@@ -126,6 +128,7 @@ export function start(root: HTMLElement) {
       state.equipment = p.equipment.filter((e) => e !== "body");
       if (p.equipment.includes("body")) state.bodyweight = true; // "No equipment" means bodyweight exercises
     }
+    else if (b.dataset.showHow) { for (const d of root.querySelectorAll<HTMLDetailsElement>("details.show-how")) d.open = b.dataset.showHow === "open"; return; }
     else if (b.id === "includeAll") state.excluded = [];
     else if (b.id === "reset") state = { ...DEFAULTS, targets: [...DEFAULTS.targets], equipment: [...DEFAULTS.equipment], excluded: [] };
     else return;
@@ -163,6 +166,7 @@ export function start(root: HTMLElement) {
     const out = $("results");
     const summary = $("resultSummary");
     summary.textContent = "";
+    $("showHowAll").hidden = true;
     if (!state.targets.length) { out.innerHTML = `<p class="notice info">Choose at least one muscle group, or heart and lungs, to get suggestions.</p>`; return; }
     if (!have.size) { out.innerHTML = `<p class="notice info">Choose the equipment you have (step 2), or tick <strong>Include bodyweight exercises</strong>.</p>`; return; }
     const r = suggest({ targets: state.targets, equipment: [...have], excluded: state.excluded, maxExercises: state.max, count: state.count, depth: state.depth, overlap: state.overlap });
@@ -187,6 +191,8 @@ export function start(root: HTMLElement) {
         r.suggestions.map((s, i) => `<tr><th scope="row"><a href="#option-${i + 1}">Option ${i + 1}</a></th><td>${s.exercises.length}</td><td>${state.targets.length - s.missing.length} of ${state.targets.length}</td><td>${s.missing.length ? esc(list(s.missing.map(label))) : "none"}</td></tr>`).join("")}</tbody></table>` : "";
     out.innerHTML = notes.map((n) => `<p class="notice info small">${n}</p>`).join("") + table
       + r.suggestions.map((s, i) => i === 0 ? card(s, i) : `<details class="option-fold" id="option-${i + 1}"><summary>Option ${i + 1}: ${s.exercises.length} exercise${s.exercises.length > 1 ? "s" : ""}, covers ${state.targets.length - s.missing.length} of ${state.targets.length}</summary>${card(s, i, true)}</details>`).join("");
+    $("showHowAll").hidden = !out.querySelector("details.show-how");
+    mountAnimations(out);
   }
 
   function card(s: Suggestion, i: number, folded = false) {
@@ -260,7 +266,22 @@ export function start(root: HTMLElement) {
     const as = studiedVersion(e, have);
     const studied = as ? ` <span class="small muted sans">(classified from the ${esc(as)} version; this version is assumed to load the same muscles)</span>` : "";
     return `<li><span class="ex-name">${esc(nameFor(e, have))}</span>${studied}
-      <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}${e.howTo ? ` · <a href="${esc(e.howTo.url)}" rel="noopener" target="_blank">How to do it<span class="sr-only"> (opens in a new tab)</span></a> <span class="muted">(${e.howTo.source}: ${esc(e.howTo.title)})</span>` : ""}</div>${aero}</li>`;
+      <div class="small sans">${parts.join(" · ")}</div><div class="small muted sans">Movement: ${esc(e.moves)}${e.howTo ? ` · <a href="${esc(e.howTo.url)}" rel="noopener" target="_blank">How to do it<span class="sr-only"> (opens in a new tab)</span></a> <span class="muted">(${e.howTo.source}: ${esc(e.howTo.title)})</span>` : ""}</div>${aero}${showHow(e, have)}</li>`;
+  }
+
+  // A "Show how" animation, open by default (owner's decision, 23 Nov 2026), for exercise versions that have one.
+  function showHow(e: Exercise, have: ReadonlySet<Equipment>) {
+    const a = animationFor(e, have);
+    if (!a || !e.howTo) return "";
+    const n = esc(nameFor(e, have).toLowerCase());
+    const view = (v: "side" | "front", label: string) =>
+      `<figure><svg viewBox="0 0 200 200" data-view="${v}" role="img" aria-label="${label} view of a figure doing a ${n}"></svg><figcaption>${label}</figcaption></figure>`;
+    return `<details class="show-how" open><summary>Show how</summary><div class="details-body show-how-body">`
+      + caveat("illustration", `Not reviewed by a fitness professional. It shows the general movement only and may be wrong in detail. Before trying the exercise, follow the instructions on the linked ${e.howTo.source} page. <a href="${METHODS}#animations">About these drawings</a>.`)
+      + `<div class="anim" data-anim="${ANIMATIONS.indexOf(a)}">${view("side", "Side")}${view("front", "Front")}</div>`
+      + `<p class="anim-controls"><button type="button" class="small" data-anim-toggle aria-pressed="false">Play</button></p>`
+      + `<ul class="small sans cues">${a.cues.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>`
+      + `<p class="small muted sans">Cues summarised from the linked ${e.howTo.source} page.</p></div></details>`;
   }
 
   paint();

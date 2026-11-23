@@ -71,6 +71,7 @@ const base = import.meta.env.BASE_URL;
     <section class="panel" aria-labelledby="h-results">
       <h2 id="h-results">3. Suggestions</h2>
       <p class="small sans" id="resultSummary" role="status"></p>
+      <p class="small sans" id="showHowAll" hidden>"Show how" drawings: <button type="button" class="small" data-show-how="open">Expand all</button> <button type="button" class="small" data-show-how="close">Collapse all</button></p>
       <p class="small sans">
         Each muscle gets <strong>1 set</strong> from a set of an exercise that trains it directly, and <strong>½ set</strong>
         from one that trains it indirectly: the counting method with the strongest evidence in a 2026 analysis of training
@@ -110,6 +111,13 @@ const base = import.meta.env.BASE_URL;
     #planner .chart-table th, #planner .chart-table td { text-align: left; padding: 2px 14px 2px 0; }
     #planner h4 { margin: 12px 0 2px; }
     #planner .jump { margin: 4px 0 12px; }
+    #planner .show-how { margin: 6px 0 2px; }
+    #planner .anim { display: flex; gap: 8px; margin: 6px 0 2px; }
+    #planner .anim figure { margin: 0; flex: 1; max-width: 200px; }
+    #planner .anim svg { width: 100%; height: auto; aspect-ratio: 1; display: block; background: #fff; border: 1px solid var(--beige-deep); border-radius: 6px; }
+    #planner .anim figcaption { font-family: var(--sans); font-size: 0.8rem; text-align: center; color: #555; }
+    #planner .anim-controls { margin: 4px 0; }
+    #planner .cues { margin: 4px 0; padding-left: 1.2em; }
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   </style>
   <script>
