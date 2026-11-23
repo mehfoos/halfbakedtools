@@ -65,7 +65,7 @@ export const EQUIPMENT = [
   { id: "pool", label: "Swimming pool", group: "cardio" },
 ] as const;
 /** A page showing how to do an exercise (see `howTo` on Exercise). */
-export type HowTo = { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic" | "Concept2" | "Cleveland Clinic" | "Swim England" | "NHS" | "ExRx.net"; title: string; url: string };
+export type HowTo = { source: "ACE" | "NASM" | "NSCA" | "Mayo Clinic" | "Concept2" | "Cleveland Clinic" | "Swim England" | "NHS" | "ExRx.net" | "Physitrack" | "Bodylastics"; title: string; url: string };
 export type Equipment = (typeof EQUIPMENT)[number]["id"];
 
 const ALL_EQUIPMENT = EQUIPMENT.map((e) => e.id) as Equipment[];
@@ -170,7 +170,7 @@ export const EXERCISES: Exercise[] = [
     direct: ["glutes"], indirect: [] }),
   X({ id: "singleLegRdl", name: "Single-leg Romanian deadlift", kind: "strength", needs: [["body", "dumbbells", "kettlebell"]],
     howTo: { source: "ACE", title: "Single-leg Romanian Deadlift", url: "https://www.acefitness.org/resources/everyone/exercise-library/329/single-leg-romanian-deadlift/" },
-    variants: [{ using: ["dumbbells"], name: "Dumbbell single-leg Romanian deadlift" , howTo: { source: "ACE", title: "Single-arm, Single-leg Romanian Dead Lift (dumbbell)", url: "https://www.acefitness.org/resources/everyone/exercise-library/127/single-arm-single-leg-romanian-dead-lift/" } }, { using: ["kettlebell"], name: "Kettlebell single-leg Romanian deadlift" }, { using: ["body"], name: "Single-leg Romanian deadlift (bodyweight)" }],
+    variants: [{ using: ["dumbbells"], name: "Dumbbell single-leg Romanian deadlift" , howTo: { source: "ACE", title: "Single-arm, Single-leg Romanian Dead Lift (dumbbell)", url: "https://www.acefitness.org/resources/everyone/exercise-library/127/single-arm-single-leg-romanian-dead-lift/" } }, { using: ["kettlebell"], name: "Kettlebell single-leg Romanian deadlift" , howTo: { source: "Physitrack", title: "Kettlebell stiff leg deadlift - single arm, single leg", url: "https://us.physitrack.com/home-exercise-video/kettlebell-stiff-leg-deadlift" } }, { using: ["body"], name: "Single-leg Romanian deadlift (bodyweight)" }],
     moves: "hip extension with a nearly straight knee, on one leg (hinging at the hip)",
     direct: ["hamstrings", "glutes"], indirect: [], steadies: ["lowerBack"] }),
   X({ id: "plank", name: "Plank", kind: "strength", needs: [["body"]],
@@ -237,7 +237,7 @@ export const EXERCISES: Exercise[] = [
     direct: ["chest"], indirect: ["triceps", "frontDelts"] }),
   X({ id: "dbRow", name: "One-arm row", kind: "strength", needs: [["dumbbells", "kettlebell"]],
     howTo: { source: "ACE", title: "Single-arm Row", url: "https://www.acefitness.org/resources/everyone/exercise-library/126/single-arm-row/" },
-    variants: [{ using: ["dumbbells"], name: "One-arm dumbbell row" }, { using: ["kettlebell"], name: "One-arm kettlebell row" }],
+    variants: [{ using: ["dumbbells"], name: "One-arm dumbbell row" }, { using: ["kettlebell"], name: "One-arm kettlebell row" , howTo: { source: "Physitrack", title: "Kettlebell single arm bent over row", url: "https://us.physitrack.com/home-exercise-video/kettlebell-single-arm-bent-over-row" } }],
     moves: "shoulder extension and shoulder-blade retraction; elbow flexion",
     direct: ["lats"], indirect: ["upperBack", "biceps", "rearDelts"], steadies: ["lowerBack"] }),
   X({ id: "dbPress", name: "Shoulder press (dumbbell or kettlebell)", kind: "strength", needs: [["dumbbells", "kettlebell"]],
@@ -367,7 +367,7 @@ export const EXERCISES: Exercise[] = [
     direct: ["frontDelts"], indirect: ["triceps", "sideDelts", "upperBack"] }),
   X({ id: "pushdown", name: "Triceps pushdown", kind: "strength", needs: [["machines", "bands"]],
     howTo: { source: "ACE", title: "Triceps Pushdowns", url: "https://www.acefitness.org/resources/everyone/exercise-library/185/triceps-pushdowns/" },
-    variants: [{ using: ["machines"], name: "Cable triceps pushdown" }, { using: ["bands"], name: "Resistance-band triceps pushdown" }],
+    variants: [{ using: ["machines"], name: "Cable triceps pushdown" }, { using: ["bands"], name: "Resistance-band triceps pushdown" , howTo: { source: "Bodylastics", title: "Resistance Band Triceps Pushdown", url: "https://bodylastics.com/exercises/resistance-bands/triceps/tricep-pushdown" } }],
     sources: { triceps: "Tricep Push-Down" },
     moves: "elbow extension",
     direct: ["triceps"], indirect: [] }),

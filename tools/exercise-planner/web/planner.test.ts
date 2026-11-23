@@ -294,6 +294,9 @@ test("how-to links point to individual pages of the chosen sources", () => {
     NHS: /^https:\/\/www\.[a-z]+\.nhs\.uk\/[a-z0-9\/-]+\/$/,
     // Where none of the above has a usable page (owner's decision, 23 Nov 2026).
     "ExRx.net": /^https:\/\/exrx\.net\/WeightExercises\/[A-Za-z]+\/[A-Za-z0-9]+$/,
+    // For versions nothing above covers (owner, 23 Nov 2026): a physiotherapy exercise platform and a band maker.
+    Physitrack: /^https:\/\/us\.physitrack\.com\/home-exercise-video\/[a-z0-9-]+$/,
+    Bodylastics: /^https:\/\/bodylastics\.com\/exercises\/resistance-bands\/[a-z]+\/[a-z0-9-]+$/,
     NASM: /^https:\/\/www\.nasm\.org\/resource-center\/exercise-library\/[a-z0-9-]+$/,
     NSCA: /^https:\/\/www\.nsca\.com\/education\/articles\/kinetic-select\/[a-z0-9-]+\/$/,
   };
