@@ -1617,6 +1617,30 @@ export const ANIMATIONS: Animation[] = [
       "Press it back up until the arm is straight; do all reps on one side, then switch",
     ],
   },
+  {
+    // ACE "Resistance Tubing Workout" (Seated row; read through search-result excerpts only, the page itself could not
+    // be opened): sit on the floor; the tubing wrapped round an anchor close to the ground, a handle in each hand; sit
+    // back so the band is taut with the arms straight forward; legs extended, knees slightly bent; pull the handles so
+    // the elbows form right angles, squeezing the shoulder blades together; elbows back as far as they go, spine
+    // neutral. The anchor's distance and height are this site's choices.
+    exercise: "bandRow",
+    pose: (t) => {
+      const hipC: V3 = [0, 8, -10], torso = UP, [ls, rs] = shouldersOf(hipC, torso), [lh, rh] = hipsOf(hipC);
+      const hy = 40, hand = (k: 1 | -1): V3 => lerp3([9 * k, hy, 42], [11 * k, hy, 12], t);
+      const LA = twoBone(ls, hand(1), SEG.upper, SEG.fore, [0.4, -0.4, -1]), RA = twoBone(rs, hand(-1), SEG.upper, SEG.fore, [-0.4, -0.4, -1]);
+      const L = twoBone(lh, [SEG.hipW, 2, 63], SEG.thigh, SEG.shin, [0, 1, 0]), R = twoBone(rh, [-SEG.hipW, 2, 63], SEG.thigh, SEG.shin, [0, 1, 0]);
+      const p = body({ hipC, torso, thigh: [L[0], R[0]], shin: [L[1], R[1]], foot: [dir(170), dir(170)], upper: [LA[0], RA[0]], fore: [LA[1], RA[1]],
+        props: [{ kind: "line", a: [0, 0, 94], b: [0, 30, 94], width: 6 }] });
+      const anchor: V3 = [0, 12, 94];
+      return { ...p, props: [...p.props, cable(p.j.lwr, anchor), cable(p.j.rwr, anchor), grip(p.j.lwr), grip(p.j.rwr)] };
+    },
+    cues: [
+      "Sit on the floor with your legs out in front, knees slightly bent, and the band anchored low in front of you",
+      "Hold a handle in each hand and sit back until the band is taut with your arms straight forward",
+      "Pull the handles back until your elbows are bent to a right angle, squeezing your shoulder blades together",
+      "Take your elbows back as far as they go with your spine neutral, then return slowly",
+    ],
+  },
 ];
 
 /** The animation for the version of an exercise the visitor will see, if there is one. */
