@@ -5,12 +5,17 @@
 // turns and resizes with its page. Two conversions are needed: base view <-> the PDF's own coordinates, which
 // start at the bottom-left of the unrotated page (for saving), and base view <-> the turned view on screen.
 
+import { wrapText } from "./textpdf.ts";
+
 export type FontKey = "sans" | "serif" | "mono" | "noto" | "own";   // "noto": the shipped Noto Sans fonts (noto.ts); "own": a font file the visitor chose (ownfont.ts)
 export const FONT_KEYS: FontKey[] = ["sans", "serif", "mono", "noto", "own"];
 /** x, y: top-left corner. rotate: degrees clockwise about that corner. */
-export type TextMark = { type: "text"; x: number; y: number; rotate: number; text: string; size: number; color: string; font: FontKey; bold: boolean; opacity?: number };
+/** Added text. With `w` it sits in a box that wide and wraps to it; `h` is the box's height (the text may run below it).
+ *  Without `w` it has no box: lines break only where the text has line breaks. */
+export type TextMark = { type: "text"; x: number; y: number; rotate: number; text: string; size: number; color: string; font: FontKey; bold: boolean; opacity?: number; w?: number; h?: number };
 /** src: id of an image source in the session. w, h: size on the page in points. */
-export type ImageMark = { type: "image"; x: number; y: number; rotate: number; w: number; h: number; src: string; opacity?: number };
+/** An added picture. `stretch`: its corner square changes width and height separately (otherwise it keeps the shape). */
+export type ImageMark = { type: "image"; x: number; y: number; rotate: number; w: number; h: number; src: string; opacity?: number; stretch?: boolean };
 /** A rectangle, ellipse or straight line in the box x, y, w, h. `fill` is "" for none; `width` is the outline's thickness in
  *  points (0 = no outline). A line runs from the box's top-left to bottom-right corner, or from bottom-left to top-right when `flip`. */
 export type ShapeMark = { type: "shape"; shape: "rect" | "ellipse" | "line"; x: number; y: number; rotate: number; w: number; h: number; color: string; fill: string; width: number; flip?: boolean; opacity?: number };
@@ -64,12 +69,14 @@ export function turn(dx: number, dy: number, deg: number): { dx: number; dy: num
   return { dx: dx * c - dy * s, dy: dx * s + dy * c };
 }
 
-/** Width and height of a text mark's box, its lines, and how far below the top of a line its baseline sits. */
-export function textBox(m: TextMark, font: Measurer): { w: number; h: number; ascent: number; lines: string[] } {
-  const lines = m.text.split("\n");
+/** Width and height of a text mark's box, its lines (wrapped to the box's width if it has one), how far below the
+ *  top of a line its baseline sits, and whether the lines run below a box of set height. */
+export function textBox(m: TextMark, font: Measurer): { w: number; h: number; ascent: number; lines: string[]; over: boolean } {
+  const lines = m.w ? wrapText(m.text, (s) => font.widthOfTextAtSize(s, m.size), m.w) : m.text.split("\n");
+  const tall = lines.length * m.size * LINE_HEIGHT;
   return {
-    w: Math.max(1, ...lines.map((l) => font.widthOfTextAtSize(l, m.size))),
-    h: lines.length * m.size * LINE_HEIGHT, ascent: font.heightAtSize(m.size, { descender: false }), lines,
+    w: m.w ?? Math.max(1, ...lines.map((l) => font.widthOfTextAtSize(l, m.size))),
+    h: m.h ?? tall, ascent: font.heightAtSize(m.size, { descender: false }), lines, over: m.h !== undefined && tall > m.h + 0.01,
   };
 }
 
@@ -141,11 +148,14 @@ export function cleanMark(v: unknown, isImageSource: (id: string) => boolean): M
   if (m.type === "text") {
     if (typeof m.text !== "string" || m.text.length > 20000 || !finite(m.size, SIZE_MIN, SIZE_MAX) || typeof m.color !== "string" || !/^#[0-9a-f]{6}$/i.test(m.color)
       || !FONT_KEYS.includes(m.font as FontKey) || typeof m.bold !== "boolean") return null;
-    return { type: "text", x: m.x, y: m.y, rotate: m.rotate, text: m.text, size: m.size, color: m.color, font: m.font as FontKey, bold: m.bold, ...see };
+    if (m.w !== undefined && !finite(m.w, 1, FAR)) return null;
+    if (m.h !== undefined && (m.w === undefined || !finite(m.h, 1, FAR))) return null;
+    const box = m.w === undefined ? {} : { w: m.w as number, ...(m.h === undefined ? {} : { h: m.h as number }) };
+    return { type: "text", x: m.x, y: m.y, rotate: m.rotate, text: m.text, size: m.size, color: m.color, font: m.font as FontKey, bold: m.bold, ...see, ...box };
   }
   if (m.type === "image") {
-    if (!finite(m.w, 1, FAR) || !finite(m.h, 1, FAR) || typeof m.src !== "string" || !isImageSource(m.src)) return null;
-    return { type: "image", x: m.x, y: m.y, rotate: m.rotate, w: m.w, h: m.h, src: m.src, ...see };
+    if (!finite(m.w, 1, FAR) || !finite(m.h, 1, FAR) || typeof m.src !== "string" || !isImageSource(m.src) || (m.stretch !== undefined && typeof m.stretch !== "boolean")) return null;
+    return { type: "image", x: m.x, y: m.y, rotate: m.rotate, w: m.w, h: m.h, src: m.src, ...see, ...(m.stretch ? { stretch: true } : {}) };
   }
   const hex = (c: unknown): c is string => typeof c === "string" && /^#[0-9a-f]{6}$/i.test(c);
   if (m.type === "shape") {

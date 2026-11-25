@@ -586,3 +586,15 @@ the arrow keys nudge and Delete removes; Sign PDF saves a drawn signature on a p
 
 Not checked: real phones (iOS Safari and Android Chrome); pinch-zoom; screen readers.
 
+### Edit PDF: text boxes and stretching pictures (2026-11-25)
+
+Same set-up (headless Chrome, computer and phone sizes). A 61-letter sentence on page 1: it wrapped at the page
+edge as typed (box 322 px wide on the computer); dragging the corner square 60% to the left made the box 129 px wide
+and the text rewrapped to five lines with its size unchanged (15 points); dragging it shorter left the height at what
+the text needs (no warning); dragging it 60 px taller kept that height, and typing four times the text then showed
+the "runs below its box" warning, which "Fit the box to the text" cleared. A picture with "Keep proportions" unticked
+stretched from 2.5 : 1 to 1.52 : 1 and returned to 2.5 : 1 when ticked again. The saved page matched the editor's
+drawing line for line. On the phone the page now scrolls so the chosen addition's corner square stays above the
+settings sheet (before, it could end up under the sheet, out of reach). Unit tests: wrapping, a box that is
+overrun, words longer than the box, and saved settings with a box or a stretched picture (274 pass).
+

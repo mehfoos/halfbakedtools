@@ -900,6 +900,10 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         return { id: r.id, width: item.handle.width, height: item.handle.height };
       } catch (e) { console.error(e); say(`"${file.name}" couldn't be read as a picture.`, "bad"); return null; }
     },
+    pictureRatio(id) {
+      const s = session.sources.find((x) => x.id === id), h = s && loaded.get(s.sha256)?.handle;
+      return h && h.kind === "image" && h.width > 0 ? h.height / h.width : null;
+    },
     onClose: () => render(),
   }) : null;
 

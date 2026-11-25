@@ -1,7 +1,7 @@
 // The single-page editor for adding text and pictures ("marks") to a page. Browser-only.
 // What is shown is the real thing: after every change the page is rebuilt as a PDF, exactly as it will be saved,
 // and drawn. The boxes laid over it are only handles for selecting, dragging and resizing.
-import { baseToView, viewToBase, turn, textBox, SIZE_MIN, SIZE_MAX, type Mark, type TextMark, type ShapeMark, type RedactMark, type Quarter, type Measurer } from "./marks.ts";
+import { baseToView, viewToBase, turn, textBox, SIZE_MIN, SIZE_MAX, LINE_HEIGHT, type Mark, type TextMark, type ShapeMark, type RedactMark, type Quarter, type Measurer } from "./marks.ts";
 import type { PageItem } from "./session.ts";
 
 export type EditorHost = {
@@ -17,6 +17,8 @@ export type EditorHost = {
   /** Replaces the page's marks. `quiet` = part of the same edit as the last call (one Undo step). */
   setMarks(i: number, marks: Mark[], quiet?: boolean): void;
   addPicture(file: File): Promise<{ id: string; width: number; height: number } | null>;
+  /** Height over width of an added picture as stored, or null if unknown. */
+  pictureRatio(id: string): number | null;
   onClose(): void;
   say(text: string, kind?: "info" | "bad" | "warn"): void;
 };
@@ -78,16 +80,14 @@ export function createEditor(host: EditorHost) {
   }
 
   let focusText = false;
-  let shownFor = -1;                                           // the addition whose settings were last opened
   function showProps() {
     const m = marks()[chosen];
     props.hidden = !m;
     host.root.classList.toggle("sheet", !!m);
-    if (!m) { shownFor = -1; return; }
-    const opened = shownFor !== chosen; shownFor = chosen;
-    if (opened && window.matchMedia("(max-width: 760px)").matches) requestAnimationFrame(() => {   // on a phone the settings cover the bottom of the screen: keep the addition above them
+    if (!m) return;
+    if (!drag && window.matchMedia("(max-width: 760px)").matches) requestAnimationFrame(() => {   // on a phone the settings cover the bottom of the screen: keep the addition and its corner square above them
       const box = layer.querySelector<HTMLElement>(`.mark[data-k="${chosen}"]`)?.getBoundingClientRect(), sheet = props.getBoundingClientRect();
-      if (box && box.bottom > sheet.top - 8) window.scrollBy({ top: box.bottom - sheet.top + 24 });
+      if (box && box.bottom + 16 > sheet.top) window.scrollBy({ top: Math.min(box.bottom + 24 - sheet.top, Math.max(0, box.top - 110)) });
     });
     const isText = m.type === "text";
     host.root.querySelectorAll<HTMLElement>("#markProps [data-for]").forEach((e) => (e.hidden = !(e.dataset.for ?? "").split(" ").includes(m.type)));
@@ -104,8 +104,11 @@ export function createEditor(host: EditorHost) {
         q<HTMLInputElement>("mFlip")!.checked = !!m.flip;
       }
     }
+    const over = q("mOver"); if (over) over.hidden = !(isText && textBox(m, host.font(m)).over);
+    if (m.type === "image") { const k = q<HTMLInputElement>("mKeep"); if (k) k.checked = !m.stretch; }
     if (isText) {
       set("mText", m.text);
+      const wrap = q<HTMLInputElement>("mWrap"); if (wrap) wrap.checked = m.w !== undefined;
       if (focusText) { focusText = false; const t = $<HTMLTextAreaElement>("mText"); t.focus({ preventScroll: true }); t.select(); }
       set("mSize", String(m.size)); set("mColor", m.color); set("mFont", m.font);
       $<HTMLInputElement>("mBold").checked = m.bold;
@@ -135,12 +138,12 @@ export function createEditor(host: EditorHost) {
     if (!drag) return;
     const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0, m = marks()[drag.k]; if (!m) return;
     if (Math.abs(dx) + Math.abs(dy) > 2) drag.moved = true;
-    if (drag.grip && m.type === "text") {        // a text's corner square changes its size
-      const d = turn(dx, dy, -(m.rotate + turned())), z = cssPerPoint(), s = sizeOf(m), k = textScale(m, s.w, d.dx / z);
-      drag.box.style.width = `${s.w * k * z}px`; drag.box.style.height = `${s.h * k * z}px`;
+    if (drag.grip && m.type === "text") {        // a text's corner square sizes its box; the text wraps to it when dropped
+      const d = turn(dx, dy, -(m.rotate + turned())), z = cssPerPoint(), b = textBoxAfter(m, d.dx / z, d.dy / z);
+      drag.box.style.width = `${b.w * z}px`; drag.box.style.height = `${b.shown * z}px`;
     } else if (drag.grip && m.type !== "text") {
       const d = turn(dx, dy, -(m.rotate + turned())), z = cssPerPoint();
-      const w = Math.max(least(m), m.w + d.dx / z), h = m.type === "image" ? (w * m.h) / m.w : Math.max(least(m), m.h + d.dy / z);
+      const w = Math.max(least(m), m.w + d.dx / z), h = m.type === "image" && !m.stretch ? (w * m.h) / m.w : Math.max(least(m), m.h + d.dy / z);
       drag.box.style.width = `${w * z}px`; drag.box.style.height = `${h * z}px`;
     } else drag.box.style.translate = `${dx}px ${dy}px`;
   });
@@ -151,10 +154,10 @@ export function createEditor(host: EditorHost) {
     const z = cssPerPoint();
     if (d.grip && m.type === "text") {
       const t = turn(dx, dy, -(m.rotate + turned()));
-      update({ size: Math.round(m.size * textScale(m, sizeOf(m).w, t.dx / z) * 2) / 2 });
+      const b = textBoxAfter(m, t.dx / z, t.dy / z); update({ w: b.w, h: b.h });
     } else if (d.grip && m.type !== "text") {
       const t = turn(dx, dy, -(m.rotate + turned())), w = Math.max(least(m), m.w + t.dx / z);
-      update({ w, h: m.type === "image" ? (w * m.h) / m.w : Math.max(least(m), m.h + t.dy / z) });
+      update({ w, h: m.type === "image" && !m.stretch ? (w * m.h) / m.w : Math.max(least(m), m.h + t.dy / z) });
     }
     else { const b = turn(dx / z, dy / z, -turned()); update({ x: m.x + b.dx, y: m.y + b.dy }); }
     requestAnimationFrame(() => layer.querySelector<HTMLElement>(`.mark[data-k="${d.k}"]`)?.focus({ preventScroll: true }));
@@ -170,10 +173,22 @@ export function createEditor(host: EditorHost) {
   });
 
   /** How much a drag of `dx` points on a text's corner square scales it, keeping its size within the allowed range. */
-  function textScale(m: TextMark, w: number, dx: number) {
-    const k = Math.max(0.05, (w + dx) / Math.max(1, w));
-    return Math.min(SIZE_MAX / m.size, Math.max(SIZE_MIN / m.size, k));
+  /** Text without a box that would run past the page's right edge (level text only) gets a box ending 1/4 inch
+   *  before the edge, so it wraps there instead of running off the page. */
+  function edgeWrap(m: TextMark): { w?: number } {
+    if (m.w !== undefined || ((m.rotate + turned()) % 360 + 360) % 360 !== 0) return {};
+    const at = baseToView(m.x, m.y, base.w, base.h, turned()), room = view().w - at.x - 18;
+    return sizeOf(m).w > view().w - at.x && room >= m.size ? { w: Math.round(room * 10) / 10 } : {};
   }
+  /** A text's box after its corner square is dragged by `dx`, `dy` points (as the text reads): at least one letter
+   *  wide. It is never made shorter than the text needs at the new width: a height is kept only when dragged taller
+   *  than that (otherwise the box fits the text, and grows as it is typed). Text without a box gets one. */
+  function textBoxAfter(m: TextMark, dx: number, dy: number): { w: number; h: number | undefined; shown: number } {
+    const s = sizeOf(m), r = (v: number) => Math.round(v * 10) / 10, w = r(Math.max(m.size, s.w + dx));
+    const need = textBox({ ...m, w, h: undefined }, host.font(m)).h, want = s.h + dy;
+    return want > need + 0.5 ? { w, h: r(want), shown: want } : { w, h: undefined, shown: need };
+  }
+
 
   /** Where a new addition `w` × `h` points (as the page is shown) goes: in the middle of the part of the page that
    *  is on screen, so it appears where you are looking even when zoomed in or scrolled down a long page; moved down
@@ -327,8 +342,13 @@ export function createEditor(host: EditorHost) {
         if (id === "mFlip") update({ flip: $<HTMLInputElement>("mFlip").checked || undefined }, quiet);
       }
     }
+    if (m.type === "image" && id === "mKeep") {
+      const keep = $<HTMLInputElement>("mKeep").checked, ratio = host.pictureRatio(m.src) ?? m.h / m.w;
+      update(keep ? { stretch: undefined, h: Math.round(m.w * ratio * 10) / 10 } : { stretch: true });   // ticked again: back to the picture's own shape
+    }
     if (m.type !== "text") return;
-    if (id === "mText") update({ text: $<HTMLTextAreaElement>("mText").value }, quiet);
+    if (id === "mWrap") { const s = sizeOf(m); update($<HTMLInputElement>("mWrap").checked ? { w: Math.round(s.w * 10) / 10, h: undefined } : { w: undefined, h: undefined }); }
+    if (id === "mText") update({ text: $<HTMLTextAreaElement>("mText").value, ...edgeWrap({ ...m, text: $<HTMLTextAreaElement>("mText").value }) }, quiet);
     if (id === "mSize") { const v = num("mSize", SIZE_MIN, SIZE_MAX); if (v !== null) update({ size: v }, quiet); }
     if (id === "mColor") update({ color: $<HTMLInputElement>("mColor").value }, quiet);
     if (id === "mFont") update({ font: $<HTMLSelectElement>("mFont").value as TextMark["font"] }, quiet);
@@ -336,6 +356,7 @@ export function createEditor(host: EditorHost) {
   });
   props.addEventListener("focusout", () => { typing = false; });
   $("mDelete").addEventListener("click", remove);
+  q("mFit")?.addEventListener("click", () => update({ h: undefined }));
   q("mDone")?.addEventListener("click", () => { chosen = -1; typing = false; drawHandles(); showProps(); });
 
   // ----- zoom: makes the page wider than the screen (it then scrolls), and draws it sharper -----

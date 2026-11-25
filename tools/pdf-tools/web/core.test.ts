@@ -331,7 +331,7 @@ test("marks: base view and turned view convert both ways", () => {
 const FONT = { widthOfTextAtSize: (t: string, s: number) => t.length * s * 0.5, heightAtSize: (s: number) => s * 0.7 };
 const T: TextMark = { type: "text", x: 20, y: 30, rotate: 0, text: "ab\nabcd", size: 10, color: "#ff0000", font: "sans", bold: false };
 test("marks: text is laid out line by line from its top-left corner", () => {
-  assert.deepEqual(textBox(T, FONT), { w: 20, h: 24, ascent: 7, lines: ["ab", "abcd"] });
+  assert.deepEqual(textBox(T, FONT), { w: 20, h: 24, ascent: 7, lines: ["ab", "abcd"], over: false });
   const p = placeText(T, FONT, BOX, 0);
   assert.equal(p.angle, 0);
   assert.deepEqual(p.lines, [{ text: "ab", x: 20, y: 300 - 37 }, { text: "abcd", x: 20, y: 300 - 49 }]);
@@ -339,6 +339,25 @@ test("marks: text is laid out line by line from its top-left corner", () => {
   assert.equal(r.angle, 90); near(r.lines[0].x, 37); near(r.lines[0].y, 20);
   const s = placeText({ ...T, text: "ab", rotate: 90 }, FONT, BOX, 0); // text turned clockwise on screen
   assert.equal(s.angle, -90); near(s.lines[0].x, 20 - 7); near(s.lines[0].y, 300 - 30);
+});
+test("marks: text in a box wraps to its width; a box of set height may be overrun, and says so", () => {
+  const W: TextMark = { ...T, text: "one two three\nfour", w: 40 };   // 5 points a letter: 8 letters to a line
+  const b = textBox(W, FONT);
+  assert.deepEqual(b.lines, ["one two", "three", "four"]); assert.equal(b.w, 40); assert.equal(b.h, 36); assert.equal(b.over, false);
+  assert.deepEqual(placeText(W, FONT, BOX, 0).lines.map((l) => [l.text, l.y]), [["one two", 263], ["three", 251], ["four", 239]]);
+  assert.equal(textBox({ ...W, h: 50 }, FONT).h, 50, "a taller box keeps its height"); assert.equal(textBox({ ...W, h: 50 }, FONT).over, false);
+  assert.equal(textBox({ ...W, h: 20 }, FONT).over, true, "three lines don't fit in 20 points");
+  assert.deepEqual(textBox({ ...W, text: "abcdefghijkl" }, FONT).lines, ["abcdefgh", "ijkl"], "a word longer than the box is broken");
+});
+test("marks: saved settings keep a text's box and a stretched picture, and refuse damaged ones", () => {
+  assert.deepEqual(cleanMark({ ...T, w: 40, h: 30 }, () => true), { ...T, w: 40, h: 30 });
+  assert.deepEqual(cleanMark({ ...T, w: 40 }, () => true), { ...T, w: 40 });
+  assert.equal(cleanMark({ ...T, h: 30 }, () => true), null, "a height without a width");
+  assert.equal(cleanMark({ ...T, w: -5 }, () => true), null);
+  const I = { type: "image", x: 1, y: 2, rotate: 0, w: 50, h: 40, src: "f2" };
+  assert.deepEqual(cleanMark({ ...I, stretch: true }, () => true), { ...I, stretch: true });
+  assert.deepEqual(cleanMark({ ...I, stretch: false }, () => true), I);
+  assert.equal(cleanMark({ ...I, stretch: "yes" }, () => true), null);
 });
 test("marks: a picture is placed by its bottom-left corner", () => {
   const I: ImageMark = { type: "image", x: 10, y: 20, rotate: 0, w: 50, h: 40, src: "f2" };

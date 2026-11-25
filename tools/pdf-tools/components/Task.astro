@@ -151,6 +151,9 @@ const policy = import.meta.env.PROD ? CSP : "";
         <div id="markProps" class="sans opts props" data-part="marks redact" hidden>
           <p data-for="text"><label for="mText">Text</label><br /><textarea id="mText" rows="3"></textarea></p>
           <p id="mWarn" class="notice small" hidden></p>
+          <p data-for="text"><label><input id="mWrap" type="checkbox" /> Wrap in a box</label><br /><span class="small muted">Drag the corner square to change the box's width and height; the text wraps to the width. The letter size stays as set below.</span></p>
+          <p id="mOver" class="notice small" hidden>The text runs below its box. It still shows, and is saved, in full. <button type="button" class="small" id="mFit">Fit the box to the text</button></p>
+          <p data-for="image"><label><input id="mKeep" type="checkbox" /> Keep proportions</label><br /><span class="small muted">Untick to stretch the picture: its corner square then changes width and height separately.</span></p>
           <p data-for="text"><label class="field">Size <input id="mSize" type="number" min="4" max="400" step="1" inputmode="decimal" /> points</label></p>
           <p data-for="text"><label class="field">Font
             <select id="mFont"><option value="sans">Plain (Helvetica)</option><option value="serif">Book (Times)</option><option value="mono">Typewriter (Courier)</option><option value="noto">Noto Sans (many alphabets)</option><option value="own">Your own font…</option></select></label></p>
