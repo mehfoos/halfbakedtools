@@ -598,3 +598,10 @@ drawing line for line. On the phone the page now scrolls so the chosen addition'
 settings sheet (before, it could end up under the sheet, out of reach). Unit tests: wrapping, a box that is
 overrun, words longer than the box, and saved settings with a box or a stretched picture (274 pass).
 
+### Edit PDF: lining text up (2026-11-25)
+
+Phone size, headless Chrome: three wrapped texts set to left, centre and right; the saved page (rendered with
+pdftoppm) showed each as set, the wrapped second lines centred and right-aligned under the first. Unit test:
+line positions for each setting with a box, without one, and turned 90°; saved settings keep centre and right and
+refuse anything else (275 pass).
+

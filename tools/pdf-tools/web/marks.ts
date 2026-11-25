@@ -12,7 +12,9 @@ export const FONT_KEYS: FontKey[] = ["sans", "serif", "mono", "noto", "own"];
 /** x, y: top-left corner. rotate: degrees clockwise about that corner. */
 /** Added text. With `w` it sits in a box that wide and wraps to it; `h` is the box's height (the text may run below it).
  *  Without `w` it has no box: lines break only where the text has line breaks. */
-export type TextMark = { type: "text"; x: number; y: number; rotate: number; text: string; size: number; color: string; font: FontKey; bold: boolean; opacity?: number; w?: number; h?: number };
+export type TextMark = { type: "text"; x: number; y: number; rotate: number; text: string; size: number; color: string; font: FontKey; bold: boolean; opacity?: number; w?: number; h?: number; align?: Align };
+/** How lines sit across a text's box (or, without a box, across its widest line). Absent means left. */
+export type Align = "left" | "center" | "right";
 /** src: id of an image source in the session. w, h: size on the page in points. */
 /** An added picture. `stretch`: its corner square changes width and height separately (otherwise it keeps the shape). */
 export type ImageMark = { type: "image"; x: number; y: number; rotate: number; w: number; h: number; src: string; opacity?: number; stretch?: boolean };
@@ -87,7 +89,8 @@ export function placeText(m: TextMark, font: Measurer, box: Box, rotation: Quart
   return {
     angle: rotation - m.rotate,
     lines: t.lines.map((text, i) => {
-      const o = turn(0, t.ascent + i * m.size * LINE_HEIGHT, m.rotate);   // start of this line's baseline, as displayed
+      const k = m.align === "center" ? 0.5 : m.align === "right" ? 1 : 0, dx = k ? (t.w - font.widthOfTextAtSize(text, m.size)) * k : 0;
+      const o = turn(dx, t.ascent + i * m.size * LINE_HEIGHT, m.rotate);   // start of this line's baseline, as displayed
       return { text, ...toUser(m.x + o.dx, m.y + o.dy, box, rotation) };
     }),
   };
@@ -151,6 +154,8 @@ export function cleanMark(v: unknown, isImageSource: (id: string) => boolean): M
     if (m.w !== undefined && !finite(m.w, 1, FAR)) return null;
     if (m.h !== undefined && (m.w === undefined || !finite(m.h, 1, FAR))) return null;
     const box = m.w === undefined ? {} : { w: m.w as number, ...(m.h === undefined ? {} : { h: m.h as number }) };
+    if (m.align !== undefined && m.align !== "left" && m.align !== "center" && m.align !== "right") return null;
+    if (m.align === "center" || m.align === "right") Object.assign(box, { align: m.align });
     return { type: "text", x: m.x, y: m.y, rotate: m.rotate, text: m.text, size: m.size, color: m.color, font: m.font as FontKey, bold: m.bold, ...see, ...box };
   }
   if (m.type === "image") {

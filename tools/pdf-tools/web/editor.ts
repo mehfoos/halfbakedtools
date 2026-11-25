@@ -110,6 +110,7 @@ export function createEditor(host: EditorHost) {
       set("mText", m.text);
       const wrap = q<HTMLInputElement>("mWrap"); if (wrap) wrap.checked = m.w !== undefined;
       if (focusText) { focusText = false; const t = $<HTMLTextAreaElement>("mText"); t.focus({ preventScroll: true }); t.select(); }
+      set("mAlign", m.align ?? "left");
       set("mSize", String(m.size)); set("mColor", m.color); set("mFont", m.font);
       $<HTMLInputElement>("mBold").checked = m.bold;
       const bad = host.cantDraw(m), warn = $("mWarn");
@@ -352,6 +353,7 @@ export function createEditor(host: EditorHost) {
     if (id === "mSize") { const v = num("mSize", SIZE_MIN, SIZE_MAX); if (v !== null) update({ size: v }, quiet); }
     if (id === "mColor") update({ color: $<HTMLInputElement>("mColor").value }, quiet);
     if (id === "mFont") update({ font: $<HTMLSelectElement>("mFont").value as TextMark["font"] }, quiet);
+    if (id === "mAlign") { const v = $<HTMLSelectElement>("mAlign").value; update({ align: v === "center" || v === "right" ? v : undefined }, quiet); }
     if (id === "mBold") update({ bold: $<HTMLInputElement>("mBold").checked }, quiet);
   });
   props.addEventListener("focusout", () => { typing = false; });

@@ -349,6 +349,19 @@ test("marks: text in a box wraps to its width; a box of set height may be overru
   assert.equal(textBox({ ...W, h: 20 }, FONT).over, true, "three lines don't fit in 20 points");
   assert.deepEqual(textBox({ ...W, text: "abcdefghijkl" }, FONT).lines, ["abcdefgh", "ijkl"], "a word longer than the box is broken");
 });
+test("marks: text lines up left, centre or right across its box, or across its widest line without one", () => {
+  const W: TextMark = { ...T, text: "one two three\nfour", w: 40 };   // lines 35, 25, 20 points wide in a 40-point box
+  const xs = (m: TextMark) => placeText(m, FONT, BOX, 0).lines.map((l) => l.x);
+  assert.deepEqual(xs(W), [20, 20, 20]);
+  assert.deepEqual(xs({ ...W, align: "center" }), [22.5, 27.5, 30]);
+  assert.deepEqual(xs({ ...W, align: "right" }), [25, 35, 40]);
+  assert.deepEqual(xs({ ...T, align: "right" }), [30, 20], "no box: across the widest line (ab, abcd)");
+  const r = placeText({ ...W, text: "ab", align: "right", rotate: 90 }, FONT, BOX, 0).lines[0];   // turned text: the offset turns with it
+  near(r.x, 20 - 7); near(r.y, 300 - 30 - 30);
+  assert.deepEqual(cleanMark({ ...W, align: "center" }, () => true), { ...W, align: "center" });
+  assert.deepEqual(cleanMark({ ...W, align: "left" }, () => true), W, "left is the default and isn't stored");
+  assert.equal(cleanMark({ ...W, align: "justify" }, () => true), null);
+});
 test("marks: saved settings keep a text's box and a stretched picture, and refuse damaged ones", () => {
   assert.deepEqual(cleanMark({ ...T, w: 40, h: 30 }, () => true), { ...T, w: 40, h: 30 });
   assert.deepEqual(cleanMark({ ...T, w: 40 }, () => true), { ...T, w: 40 });

@@ -39,7 +39,7 @@ Their tool list was read from https://www.ilovepdf.com/ on 2026-11-16. Status of
 | Rotate PDF | Done | |
 | JPG to PDF | Done as "Images to PDF" | Theirs also offers orientation and margins: chunk 6 |
 | PDF to JPG | Done | Theirs can also pull out the pictures stored in a PDF: chunk 6 |
-| Edit PDF | Partly | Text, pictures, rectangles, ellipses, lines, highlights and freehand drawing done (chunk 5, 2026-11-19); tick, cross, date, signature, zoom, text resize and phone layout, and keeping the file's form fields and bookmarks (2026-11-25). Text boxes that wrap and stretchable pictures (2026-11-25). Still missing: changing or removing what is already on a page; thumbnails that show additions; text alignment (centre, right) in a box |
+| Edit PDF | Partly | Text, pictures, rectangles, ellipses, lines, highlights and freehand drawing done (chunk 5, 2026-11-19); tick, cross, date, signature, zoom, text resize and phone layout, and keeping the file's form fields and bookmarks (2026-11-25). Text boxes that wrap and stretchable pictures (2026-11-25). Still missing: changing or removing what is already on a page; thumbnails that show additions; justified text |
 | Unlock PDF, Protect PDF | **Done 2026-11-16** (chunk 1) | `protect()` in `web/build.ts`; both are per-file tasks. Possible follow-up: offer protection as a last step in the all-in-one workspace |
 | Page numbers | **Done 2026-11-17** (chunk 2a) | `web/stamps.ts`; live preview in `ui.ts` (`drawPreview`) |
 | Watermark | **Done 2026-11-17** (chunk 2b), text only | `watermarkMarks` in `web/stamps.ts`. Follow-ups: a picture (logo) watermark, as a fingerprinted source like placed pictures; a choice of pages; drawing behind the page's content |
