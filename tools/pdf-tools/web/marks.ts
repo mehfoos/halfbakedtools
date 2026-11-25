@@ -43,6 +43,12 @@ export function toUser(vx: number, vy: number, box: Box, rotation: Quarter): { x
   return { x: box.x + p.x, y: box.y + p.y };
 }
 
+/** The reverse of toUser: a point in PDF user space -> the page as shown (y downwards from its top-left). */
+export function toView(ux: number, uy: number, box: Box, rotation: Quarter): { x: number; y: number } {
+  const W = box.width, H = box.height, x = ux - box.x, y = uy - box.y;
+  return rotation === 0 ? { x, y: H - y } : rotation === 90 ? { x: y, y: x } : rotation === 180 ? { x: W - x, y } : { x: H - y, y: W - x };
+}
+
 /** A point in the base view -> the same point after the page is turned clockwise by `turned` (base size w x h). */
 export function baseToView(x: number, y: number, w: number, h: number, turned: Quarter): { x: number; y: number } {
   return turned === 0 ? { x, y } : turned === 90 ? { x: h - y, y: x } : turned === 180 ? { x: w - x, y: h - y } : { x: y, y: w - x };

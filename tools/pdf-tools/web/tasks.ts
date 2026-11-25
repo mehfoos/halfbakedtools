@@ -7,7 +7,7 @@ export const GROUPS = ["Optimise", "Organise", "Convert to PDF", "Convert from P
 export type Group = (typeof GROUPS)[number];
 
 /** Toolbar and option groups a task can show. */
-export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "forms" | "ocr" | "preview" | "redact" | "pdfa";
+export type Part = "select" | "move" | "turn" | "duplicate" | "remove" | "selectText" | "moveTo" | "scale" | "split" | "imageDpi" | "compress" | "marks" | "protect" | "numbers" | "watermark" | "crop" | "sign" | "shapes" | "imagePage" | "extractPics" | "compare" | "forms" | "ocr" | "preview" | "redact" | "pdfa" | "fill";   // fill: the tick, cross, date and signature buttons of the page editor
 
 export type Task = {
   slug: string;                 // page name: /tools/pdf-tools/<slug>/
@@ -57,8 +57,8 @@ export const TASKS: Task[] = [
     parts: ["select", "scale"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "resized", tag: "⤢" , selectAll: true },
 
   { slug: "edit", name: "Edit PDF", blurb: "Add text, pictures, shapes, highlights and freehand drawing to pages: fill in a form, add a note, a date, a signature picture or a logo.", group: "Edit", accept: "both",
-    pick: "Select PDF file", hint: "Press ＋ Text, ＋ Picture, a shape, Highlight or Draw, then drag it into place. This adds to pages; it can't yet change or remove what is already on them.",
-    parts: ["marks", "shapes"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "edited", tag: "✎" },
+    pick: "Select PDF file", hint: "Press ＋ Text, a tick, the date, ＋ Picture, a shape, Highlight or Draw, then drag it into place. This adds to pages; it can't yet change or remove what is already on them.",
+    parts: ["marks", "shapes", "fill"], formats: ["pdf"], which: "all", action: "Save PDF", suffix: "edited", tag: "✎" },
   { slug: "crop", name: "Crop PDF", blurb: "Trim the margins off pages: drag the edges of the page, or type the margins. Cut-off parts are hidden, not deleted.", group: "Edit", accept: "pdf",
     pick: "Select PDF files", hint: "Drag the edges of the box on the page, or type the margins. Everything outside the box is hidden when the PDF is opened, but is still stored in the file.",
     parts: ["crop"], formats: ["pdf"], which: "all", action: "Crop PDF", perFile: true, suffix: "cropped", tag: "▢" },
@@ -84,10 +84,10 @@ export const TASKS: Task[] = [
   { slug: "text-to-pdf", name: "Text to PDF", blurb: "Turn plain text into a PDF: type or paste it, or open a text file. No formatting, just the words laid out on pages.", group: "Convert to PDF", accept: "pdf",
     pick: "Open a text file", hint: "", parts: [], formats: ["pdf"], which: "all", action: "Save as PDF", suffix: "text", tag: "TXT" },
   { slug: "fill-forms", name: "Fill in PDF forms", blurb: "Type into the fillable fields of a PDF form, tick its boxes, choose from its lists, and save the filled copy.", group: "Edit", accept: "pdf",
-    pick: "Select a PDF form", hint: "Works on forms with fillable fields. A form that is only a picture or lines on a page (a scan, for example) has no fields to fill, and the page will say so.",
+    pick: "Select a PDF form", hint: "Fill in the fields listed here, or tap or click a field on the form to go to it; the form is redrawn as you go. This needs fillable fields: for a scan, or a form that is only lines and boxes, use Edit PDF.",
     parts: ["forms"], formats: ["pdf"], which: "all", action: "Save filled form", suffix: "filled", tag: "☑" },
   { slug: "sign", name: "Sign PDF", blurb: "Draw your signature and place it on a page. It is a picture of your handwriting, not a digital signature.", group: "Security", accept: "pdf",
-    pick: "Select PDF file", hint: "Press Draw signature, draw it, press Use, then drag it into place and resize it by its corner square. This adds a picture of your handwriting; it is not a cryptographic (digital) signature.",
+    pick: "Select PDF file", hint: "Press ✍ Signature, draw it, press Use, then drag it into place and resize it by its corner square. This adds a picture of your handwriting; it is not a cryptographic (digital) signature.",
     parts: ["marks", "sign"], formats: ["pdf"], which: "all", action: "Save signed PDF", suffix: "signed", tag: "✍" },
   { slug: "unlock", name: "Unlock PDF", blurb: "Save a copy of a password-protected PDF that opens without the password. You need to know the password.", group: "Security", accept: "pdf",
     pick: "Select PDF files", hint: "You'll be asked for each file's password when you add it. Only unlock files you have the right to change.",

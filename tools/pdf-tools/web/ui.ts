@@ -12,7 +12,7 @@ import {
   type Session, type PageItem, type Edit, type OutputFormat, type SplitMode, type Rotation, type SourceRef,
 } from "./session.ts";
 import { parsePageList, formatRanges } from "./ranges.ts";
-import { makeBuilder, inspectPdf, protect, fontSet, faceSet, type SourceData } from "./build.ts";
+import { makeBuilder, addMarksInPlace, inspectPdf, protect, fontSet, faceSet, type SourceData } from "./build.ts";
 import { standardFace, type Face } from "./face.ts";
 import { fontFaces, prepareOwnFont, embedOwnFont, type OwnFont } from "./ownfont.ts";
 import { notoFace, notoLibrary, notoMissing, notoFilesFor, needsCjk, loadCjkIndex, type HanStyle, type ArabicStyle } from "./noto.ts";
@@ -299,7 +299,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
           el("span", { className: "thumb" }, ok ? img : el("span", { className: "small" }, "File not added yet")),
           el("span", { className: "cap" }, box, el("strong", {}, ` ${i + 1}`)),
           el("span", { className: "from small muted" }, `${s.name}${s.kind === "pdf" ? `, p. ${p.page + 1}` : ""}`),
-          notes ? el("span", { className: "from small" }, notes) : ""));
+          notes ? el("span", { className: "note small" }, notes) : ""));
       tile.dataset.i = String(i);
       if (ok && can("marks")) { const b = el("button", { type: "button", className: "small edit" }, added ? "Edit additions" : "Add text or picture"); b.dataset.edit = String(i); tile.append(b); }
       if (ok && can("redact")) { const b = el("button", { type: "button", className: "small edit" }, added ? "Check areas" : "Mark areas"); b.dataset.edit = String(i); tile.append(b); }
@@ -338,35 +338,102 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
   window.addEventListener("resize", () => { clearTimeout(sizing); sizing = window.setTimeout(() => { if (pageTask && session.pages.length) { const first = screen * per(); measure(); drawGrid(); showPage(first); } }, 200); });
 
   // ---------- Fill in PDF forms ----------
-  const formState = { sha: "", info: [] as FieldInfo[], values: {} as Values, token: 0 };
+  const formState = { sha: "", info: [] as FieldInfo[], values: {} as Values, token: 0, page: 0, pages: 0, focus: "", drawn: 0 };
+  /** The fonts filled-in text is drawn with. `strict`: an error if "your own font" is chosen but none was given. */
+  function formFonts(strict: boolean): FormFonts {
+    let choice = ($<HTMLSelectElement>("formFont").value || "auto") as FormFont;
+    if (choice === "own" && !ownFont) { if (strict) throw new Error("Choose your font file first, under “Fonts for other alphabets”."); choice = "auto"; }
+    return { choice, faces: (doc) => { const fs = faceSet(doc, ownFont ?? undefined, loadNoto, han(), undefined, arabic()); return (k) => fs(k, false); } };
+  }
   async function renderFields() {
     const box = root.querySelector<HTMLElement>("#formFields"); if (!box) return;
     const first = session.sources.find((s) => loaded.get(s.sha256)?.data.kind === "pdf");
-    if (!first) { formState.sha = ""; box.replaceChildren(); return; }
+    if (!first) { formState.sha = ""; box.replaceChildren(); $("formView").hidden = true; return; }
     if (formState.sha === first.sha256) return;
     formState.sha = first.sha256; const mine = ++formState.token; box.replaceChildren(el("p", { className: "small muted" }, "Reading the form…"));
     const d = loaded.get(first.sha256)!.data; if (d.kind !== "pdf") return;
     let info: FieldInfo[]; try { info = await listFields(d.bytes, d.password); } catch { if (mine === formState.token) box.replaceChildren(el("p", { className: "small" }, "Couldn't read this file's form fields.")); return; }
     if (mine !== formState.token) return;
-    formState.info = info; formState.values = Object.fromEntries(info.map((f) => [f.name, f.value]));
-    if (!info.length) { box.replaceChildren(el("p", { className: "notice warn small" }, "This PDF has no fillable fields. If it only looks like a form (lines or boxes on the page, or a scan), there is nothing here to fill in; the Edit PDF page can add text on top of it instead.")); return; }
-    box.replaceChildren(el("p", { className: "small muted" }, `${info.length} ${info.length === 1 ? "field" : "fields"} found in ${first.name}.`), ...info.map((f) => {
+    formState.info = info; formState.values = Object.fromEntries(info.map((f) => [f.name, f.value])); formState.page = 0; formState.pages = first.pages; formState.focus = "";
+    root.querySelectorAll<HTMLElement>(".fieldsonly").forEach((e) => (e.hidden = !info.length));
+    $("formView").hidden = !info.length;
+    if (!info.length) { box.replaceChildren(el("p", { className: "notice small" }, "This PDF has no fillable fields (it may be a scan, or a form made only of lines and boxes). To fill it in, open it in ", el("a", { href: "../edit/" }, "Edit PDF"), ", which puts text, ticks, the date, a signature, pictures or handwriting anywhere on the page, on a phone too.")); return; }
+    const where = (f: FieldInfo) => (f.spots?.length ? `page ${f.spots[0].page + 1}` : "not on a page");
+    box.replaceChildren(el("p", { className: "small muted" }, `${info.length} ${info.length === 1 ? "field" : "fields"} found in ${first.name}, listed in reading order.`), ...info.map((f) => {
       let input: HTMLElement;
+      const changed = () => { void drawForm(400); };
       if (f.kind === "text") {
         input = f.multiline ? el("textarea", { rows: 3, dir: "auto" }) : el("input", { type: "text", dir: "auto" }); (input as HTMLInputElement).value = String(f.value); if (f.maxLength) (input as HTMLInputElement).maxLength = f.maxLength;
-        input.addEventListener("input", () => { formState.values[f.name] = (input as HTMLInputElement).value; });
+        input.addEventListener("input", () => { formState.values[f.name] = (input as HTMLInputElement).value; changed(); });
       } else if (f.kind === "check") {
-        input = el("input", { type: "checkbox" }); (input as HTMLInputElement).checked = f.value === true; input.addEventListener("change", () => { formState.values[f.name] = (input as HTMLInputElement).checked; });
+        input = el("input", { type: "checkbox" }); (input as HTMLInputElement).checked = f.value === true; input.addEventListener("change", () => { formState.values[f.name] = (input as HTMLInputElement).checked; changed(); });
       } else if (f.kind === "radio" || f.kind === "choice" || f.kind === "list") {
         const sel1 = el("select", {}, ...(f.kind === "list" ? [] : [el("option", { value: "" }, "(none chosen)")]), ...f.options.map((o) => el("option", { value: o }, o))) as HTMLSelectElement;
-        if (f.kind === "list") { sel1.multiple = true; [...sel1.options].forEach((o) => { o.selected = (f.value as string[]).includes(o.value); }); sel1.addEventListener("change", () => { formState.values[f.name] = [...sel1.selectedOptions].map((o) => o.value); }); }
-        else { sel1.value = String(f.value); sel1.addEventListener("change", () => { formState.values[f.name] = sel1.value; }); }
+        if (f.kind === "list") { sel1.multiple = true; [...sel1.options].forEach((o) => { o.selected = (f.value as string[]).includes(o.value); }); sel1.addEventListener("change", () => { formState.values[f.name] = [...sel1.selectedOptions].map((o) => o.value); changed(); }); }
+        else { sel1.value = String(f.value); sel1.addEventListener("change", () => { formState.values[f.name] = sel1.value; changed(); }); }
         input = sel1;
-      } else return el("p", { className: "small muted" }, el("strong", {}, f.name), ` — ${f.note ?? ""}`);
+      } else return el("p", { className: "small muted" }, el("strong", {}, f.label ?? f.name), ` (${where(f)}) — ${f.note ?? ""}`);
       if (f.readOnly) (input as HTMLInputElement).disabled = true;
-      const label = el("label", { className: "ff" }, el("span", {}, `${f.name}${f.readOnly ? " (read only)" : ""}${f.kind === "radio" ? " (choose one)" : ""}`), input);
+      input.dataset.field = f.name;
+      input.addEventListener("focus", () => showField(f.name, false));
+      const title = `${f.label ?? f.name}${f.readOnly ? " (read only)" : ""}${f.kind === "radio" ? " (choose one)" : ""}`;
+      const label = el("label", { className: "ff" }, el("span", {}, title, el("span", { className: "tech" }, ` · ${where(f)}${f.label ? ` · ${f.name}` : ""}`)), input);
+      label.dataset.field = f.name;
       return label;
     }));
+    void drawForm(0);
+  }
+
+  // The form drawn as it will be saved, with a box over each field: choosing a box goes to that field in the list.
+  let formTimer = 0;
+  function drawForm(wait: number) {
+    clearTimeout(formTimer);
+    return new Promise<void>((done) => { formTimer = window.setTimeout(() => { void drawFormNow().finally(done); }, wait); });
+  }
+  async function drawFormNow() {
+    const s = session.sources.find((x) => x.sha256 === formState.sha), d = s && loaded.get(s.sha256)?.data;
+    if (!s || !d || d.kind !== "pdf" || !formState.info.length) return;
+    const mine = ++formState.drawn, stage = $("fvStage"), page = formState.page;
+    $("fvWhere").textContent = `Page ${page + 1} of ${formState.pages}`;
+    $<HTMLButtonElement>("fvPrev").disabled = page <= 0; $<HTMLButtonElement>("fvNext").disabled = page >= formState.pages - 1;
+    try {
+      const r = await fillForm(d.bytes, d.password, formState.values, false, formFonts(false));
+      if (mine !== formState.drawn) return;
+      const doc = await openPdf(r.bytes, vendor);
+      try {
+        const size = await pageSize({ kind: "pdf", doc }, page, 72), z = (stage.clientWidth * Math.min(2, window.devicePixelRatio || 1)) / size.w;
+        const canvas = await drawPage({ kind: "pdf", doc }, page, 0, { pxPerPoint: z, pxPerImagePx: z });
+        if (mine !== formState.drawn) return;
+        stage.querySelector("canvas")?.replaceWith(canvas);
+        const css = stage.clientWidth / size.w;
+        $("fvLayer").replaceChildren(...formState.info.flatMap((f) => (f.spots ?? []).filter((sp) => sp.page === page).map((sp) => {
+          const b = el("button", { type: "button", className: `fvfield${f.name === formState.focus ? " on" : ""}` });
+          b.dataset.field = f.name; b.setAttribute("aria-label", `Fill in: ${f.label ?? f.name}`);
+          Object.assign(b.style, { left: `${sp.x * css}px`, top: `${sp.y * css}px`, width: `${Math.max(sp.w * css, 6)}px`, height: `${Math.max(sp.h * css, 6)}px` });
+          return b;
+        })));
+      } finally { closePdf(doc); }
+    } catch (e) { console.error(e); if (mine === formState.drawn) say("The form couldn't be drawn here; the fields can still be filled in and saved.", "warn"); }
+  }
+  /** Marks field `name` as the one being filled: outlined on the page (turning to its page) and in the list. */
+  function showField(name: string, goToInput: boolean) {
+    const f = formState.info.find((x) => x.name === name); if (!f) return;
+    formState.focus = name;
+    root.querySelectorAll<HTMLElement>("#formFields label.ff").forEach((l) => l.classList.toggle("on", l.dataset.field === name));
+    root.querySelectorAll<HTMLElement>(".fvfield").forEach((b) => b.classList.toggle("on", b.dataset.field === name));
+    const sp = f.spots?.[0];
+    if (sp && sp.page !== formState.page) { formState.page = sp.page; void drawForm(0); }
+    if (goToInput) {
+      const input = root.querySelector<HTMLElement>(`#formFields [data-field="${CSS.escape(name)}"]:is(input, textarea, select)`);
+      input?.scrollIntoView({ block: "center", behavior: "smooth" }); input?.focus({ preventScroll: true });
+    }
+  }
+  if (can("forms")) {
+    $("fvLayer").addEventListener("click", (e) => { const b = (e.target as Element).closest<HTMLElement>(".fvfield"); if (b?.dataset.field) showField(b.dataset.field, true); });
+    $("fvPrev").addEventListener("click", () => { if (formState.page > 0) { formState.page--; void drawForm(0); } });
+    $("fvNext").addEventListener("click", () => { if (formState.page < formState.pages - 1) { formState.page++; void drawForm(0); } });
+    $("formFont").addEventListener("change", () => void drawForm(0));
+    let fvResize = 0; window.addEventListener("resize", () => { clearTimeout(fvResize); fvResize = window.setTimeout(() => { if (formState.info.length) void drawForm(0); }, 250); });
   }
   async function saveOcr() {
     if (busy || !ask.hidden) return;
@@ -574,10 +641,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     await renderFields(); if (!formState.info.length) return say("This PDF has no fillable fields to save.", "bad");
     const d = loaded.get(s.sha256)!.data; if (d.kind !== "pdf") return;
     await work("Filling the form…", async () => {
-      const choice = ($<HTMLSelectElement>("formFont").value || "auto") as FormFont;
-      if (choice === "own" && !ownFont) throw new Error("Choose your font file first, under “Fonts for other alphabets”.");
-      const fonts: FormFonts = { choice, faces: (doc) => { const fs = faceSet(doc, ownFont ?? undefined, loadNoto, han(), undefined, arabic()); return (k) => fs(k, false); } };
-      const r = await fillForm(d.bytes, d.password, formState.values, $<HTMLInputElement>("formFlatten").checked, fonts), name = perFileName(s);
+      const r = await fillForm(d.bytes, d.password, formState.values, $<HTMLInputElement>("formFlatten").checked, formFonts(true)), name = perFileName(s);
       if (!r.changed && !$<HTMLInputElement>("formFlatten").checked) throw new Error(`You haven't changed any field yet.${r.problems.length ? ` ${r.problems.join("; ")}.` : ""}`);
       if (!(await consent([name]))) return say("Nothing was saved. Change the file name and try again.");
       download(name, new Blob([r.bytes as BlobPart], { type: "application/pdf" }));
@@ -839,7 +903,7 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     onClose: () => render(),
   }) : null;
 
-  const pad = can("sign") && editor ? createSignPad(root, (png) => { void editor.placePicture(new File([png], "signature.png", { type: "image/png" }), 1 / 4); }, say) : null;
+  const pad = (can("sign") || can("fill")) && editor ? createSignPad(root, (png) => { void editor.placePicture(new File([png], "signature.png", { type: "image/png" }), 1 / 4); }, say) : null;
   root.querySelector("#edSign")?.addEventListener("click", () => pad?.open());
 
   // ---------- output options ----------
@@ -1141,6 +1205,21 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
     });
   }
 
+  /**
+   * Edit PDF and Sign PDF: when the pages to save are all the pages of one PDF, in order and otherwise unchanged,
+   * the additions are drawn onto that PDF itself rather than onto copied pages, so everything else it holds (form
+   * fields, bookmarks, links, its title) is kept. Null when that is not the case.
+   */
+  function inPlace(pp: PageItem[]) {
+    if (!can("marks") || can("redact") || !pp.length) return null;
+    const o = session.output, s = src(pp[0].src), d = loaded.get(s.sha256)?.data;
+    if (!d || d.kind !== "pdf" || pp.length !== s.pages || isCropped(o.crop) || o.numbers.on || o.watermark.on) return null;
+    if (!pp.every((p, i) => p.src === s.id && p.page === i && !p.rotate && p.scale === 1)) return null;
+    const marks = new Map<number, Mark[]>();
+    pp.forEach((p, i) => { if (p.marks?.length) marks.set(i, p.marks); });
+    return { bytes: d.bytes, password: d.password, marks };
+  }
+
   async function save(which: "all" | "selected") {
     readOptions(); clearResult(); if (task.slug === "extract-images") return saveExtracted();
     if (task.slug === "compare") return saveCompare();
@@ -1175,7 +1254,8 @@ export function start(root: HTMLElement, vendor: string, taskSlug: string) {
         const reader = async (pdf: Uint8Array) => { const d = await openPdf(pdf, vendor); try { return await drawPage({ kind: "pdf", doc: d }, 0, 0, { pxPerPoint: 1, pxPerImagePx: 1 }); } finally { closePdf(d); } };
         const make = async (pp: PageItem[], label: string): Promise<{ bytes: Uint8Array; stats?: CompressStats; fit?: Fit }> => {
           if (c.mode === "flatten") return { bytes: await flatten(pp, c, (i) => progress(`${label}: drawing page ${i + 1} of ${pp.length}…`)) };
-          let built = await build(pp);
+          const same = inPlace(pp);
+          let built = same ? await addMarksInPlace(same.bytes, same.password, same.marks, data, { ...(ownFont ? { ownFont } : {}), ...(ownBold ? { ownBold } : {}), noto: loadNoto, han: han(), arabic: arabic() }) : await build(pp);
           if (password) built = await protect(built, password);   // last step: nothing rewrites the file afterwards
           if (c.mode === "none") return { bytes: built };
           if (c.mode === "target") {

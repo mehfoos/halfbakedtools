@@ -6,12 +6,20 @@ import {
   PDFDocument, StandardFonts, PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown, PDFOptionList, PDFButton, PDFSignature, PDFName, PDFBool, PDFDict,
   PDFOperator, PDFRef, TextAlignment, layoutMultilineText, layoutSinglelineText, drawRectangle, rotateInPlace, adjustDimsForRotation, reduceRotation,
   componentsToColor, degrees, rgb, pushGraphicsState, popGraphicsState, moveTo, lineTo, closePath, clip, endPath, beginMarkedContent, endMarkedContent,
-  type PDFField, type PDFWidgetAnnotation, type Color,
+  PDFString, PDFHexString, type PDFField, type PDFWidgetAnnotation, type Color,
 } from "@cantoo/pdf-lib";
+import { toView, type Quarter } from "./marks.ts";
 import type { Face, DrawTarget, Rgb } from "./face.ts";
 
 export type FieldKind = "text" | "check" | "radio" | "choice" | "list" | "other";
-export type FieldInfo = { name: string; kind: FieldKind; value: string | boolean | string[]; options: string[]; multiline: boolean; maxLength?: number; readOnly: boolean; note?: string };
+/** Where a field's box is: page index, and its place on the page as shown (points from the top-left). */
+export type Spot = { page: number; x: number; y: number; w: number; h: number };
+export type FieldInfo = {
+  name: string; kind: FieldKind; value: string | boolean | string[]; options: string[]; multiline: boolean; maxLength?: number; readOnly: boolean; note?: string;
+  /** The field's description for people (its tooltip, "TU"), if the form gives one. */
+  label?: string;
+  spots?: Spot[];
+};
 export type Values = Record<string, string | boolean | string[]>;
 
 export function fieldInfo(f: PDFField): FieldInfo {
@@ -24,9 +32,32 @@ export function fieldInfo(f: PDFField): FieldInfo {
   return { ...base, kind: "other", value: "", note: f instanceof PDFSignature ? "A signature field. It is not filled by this tool." : f instanceof PDFButton ? "A button, which does nothing here." : "A kind of field this tool does not fill." };
 }
 
+/** The form's fields in reading order: by the page and place of each one's first box (top to bottom, then left to
+ *  right), fields with no box on a page last, in the order the form stores them. */
 export async function listFields(bytes: Uint8Array, password?: string): Promise<FieldInfo[]> {
-  const doc = await PDFDocument.load(bytes, password === undefined ? {} : { password });
-  return doc.getForm().getFields().map(fieldInfo);
+  const doc = await PDFDocument.load(bytes, password === undefined ? {} : { password }), pages = doc.getPages();
+  const annotPage = new Map<string, number>();
+  pages.forEach((p, i) => p.node.Annots()?.asArray().forEach((r) => { if (r instanceof PDFRef) annotPage.set(r.toString(), i); }));
+  const pageOf = (w: PDFWidgetAnnotation) => {
+    const ref = w.P(), i = ref ? pages.findIndex((p) => p.ref === ref) : -1;
+    if (i >= 0) return i;
+    const own = doc.context.getObjectRef(w.dict);
+    return own ? annotPage.get(own.toString()) ?? -1 : -1;
+  };
+  const list = doc.getForm().getFields().map((f, order) => {
+    const info = fieldInfo(f), tu = f.acroField.dict.lookup(PDFName.of("TU"));
+    const label = tu instanceof PDFString || tu instanceof PDFHexString ? tu.decodeText().replace(/\s+/g, " ").trim() : "";
+    const spots: Spot[] = [];
+    for (const w of f.acroField.getWidgets()) {
+      const i = pageOf(w); if (i < 0) continue;
+      const pg = pages[i], box = pg.getCropBox(), rot = ((((pg.getRotation().angle % 360) + 360) % 360) as Quarter), r = w.getRectangle();
+      const a = toView(r.x, r.y, box, rot), b = toView(r.x + r.width, r.y + r.height, box, rot);
+      spots.push({ page: i, x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(a.x - b.x), h: Math.abs(a.y - b.y) });
+    }
+    return { info: { ...info, spots, ...(label && label !== info.name ? { label } : {}) }, order };
+  });
+  const key = (x: { info: FieldInfo; order: number }) => { const s = x.info.spots?.[0]; return s ? [s.page, Math.round(s.y / 4), s.x, x.order] : [Infinity, 0, 0, x.order]; };
+  return list.sort((a, b) => { const p = key(a), q = key(b); for (let i = 0; i < 4; i++) if (p[i] !== q[i]) return p[i] - q[i]; return 0; }).map((x) => x.info);
 }
 
 /**

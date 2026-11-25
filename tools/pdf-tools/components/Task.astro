@@ -38,11 +38,19 @@ const policy = import.meta.env.PROD ? CSP : "";
         <p class="crumbline sans small"><a href={home}>All PDF tools</a> › <strong>{task.name}</strong> <span class="summary-note" id="selNote"></span></p>
         <div id="editor" data-part="marks redact" hidden>
           <div class="bar sans" role="toolbar" aria-label="Editing">
-            <button type="button" class="small" id="edBack">◀ All pages</button>
-            <button type="button" class="small" id="edPrev" aria-label="Previous page">‹</button>
-            <span id="edWhere" class="small"></span>
-            <button type="button" class="small" id="edNext" aria-label="Next page">›</button>
+            <div class="nav">
+              <button type="button" class="small" id="edBack">◀ All pages</button>
+              <button type="button" class="small" id="edPrev" aria-label="Previous page">‹</button>
+              <span id="edWhere" class="small"></span>
+              <button type="button" class="small" id="edNext" aria-label="Next page">›</button>
+              <span class="zoom"><button type="button" class="small" id="edZoomOut" aria-label="Zoom out">−</button><span id="edZoomNote" class="small" aria-live="polite">100%</span><button type="button" class="small" id="edZoomIn" aria-label="Zoom in">＋</button></span>
+              <button type="button" class="small" data-act="undo" id="edUndo">Undo</button>
+            </div>
+            <div class="tools">
             <button type="button" class="small add" id="edText" data-part="marks">＋ Text</button>
+            <button type="button" class="small add" id="edTick" data-part="fill">✓ Tick</button>
+            <button type="button" class="small add" id="edCross" data-part="fill">✗ Cross</button>
+            <button type="button" class="small add" id="edDate" data-part="fill">Date</button>
             <label class="button small add" for="stampPicker" data-part="marks">＋ Picture</label>
             <button type="button" class="small add" id="edArea" data-part="redact" aria-pressed="false">▮ Mark areas</button>
             <span id="areaBar" class="small" data-part="redact" hidden>Drag over what to remove. Press the button again to stop.</span>
@@ -50,13 +58,13 @@ const policy = import.meta.env.PROD ? CSP : "";
             <button type="button" class="small add" id="edEllipse" data-part="shapes">◯ Ellipse</button>
             <button type="button" class="small add" id="edLine" data-part="shapes">╱ Line</button>
             <button type="button" class="small add" id="edHi" data-part="shapes">▬ Highlight</button>
+            <button type="button" class="small add" id="edSign" data-part="sign fill">✍ Signature</button>
             <button type="button" class="small add" id="edDraw" data-part="shapes" aria-pressed="false">✎ Draw</button>
-            <span id="penBar" class="small" data-part="shapes" hidden>Pen <input id="penColor" type="color" value="#c00000" aria-label="Pen colour" />
+            </div>
+            <span id="penBar" class="small hintbar" data-part="shapes" hidden>Pen <input id="penColor" type="color" value="#c00000" aria-label="Pen colour" />
               <select id="penWidth" aria-label="Pen width"><option value="1.5">Thin</option><option value="3" selected>Medium</option><option value="6">Thick</option></select> Drag on the page to draw.</span>
-            <button type="button" class="small add" id="edSign" data-part="sign">✍ Draw signature</button>
-            <button type="button" class="small" data-act="undo" id="edUndo">Undo</button>
           </div>
-          <div id="sigPad" class="sigpad sans" data-part="sign" hidden>
+          <div id="sigPad" class="sigpad sans" data-part="sign fill" hidden>
             <p class="small"><strong>Draw your signature</strong> with your mouse, finger or pen.</p>
             <canvas id="sigCanvas" aria-label="Signature drawing area"></canvas>
             <p class="row small">
@@ -71,9 +79,19 @@ const policy = import.meta.env.PROD ? CSP : "";
             </p>
             <p class="small muted">Your drawing stays in this page. It is not sent anywhere and is not remembered when you leave.</p>
           </div>
-          <div id="edStage" class="stage"><canvas></canvas><div id="edLayer" class="layer"></div></div>
-          <p class="small muted sans" data-part="marks">Drag an addition to move it; drag a picture's corner square to resize it. With one selected, the arrow keys nudge it and Delete removes it. What you see is the page exactly as it will be saved.</p>
+          <div id="edScroll" class="scroller"><div id="edStage" class="stage"><canvas></canvas><div id="edLayer" class="layer"></div></div></div>
+          <p class="small muted sans" data-part="fill">Everything added here is drawn onto the page for good: it shows the same in every PDF reader and can't be changed afterwards by whoever receives the file, so keep the original if you may need to change it. This also fills in scanned forms and forms without fillable fields. Use ＋ and − beside the page number to zoom in on small boxes.</p>
+          <p class="small muted sans" data-part="marks">Drag an addition to move it; drag its corner square to resize it. With one selected, the arrow keys nudge it and Delete removes it. What you see is the page exactly as it will be saved.</p>
           <p class="small muted sans" data-part="redact">Areas are shown see-through here so you can check what each one covers; they are saved solid black. Drag an area to move it, or its corner square to resize it; with one selected, the arrow keys nudge it and Delete removes it.</p>
+        </div>
+        <div id="formView" class="formview" data-part="forms" hidden>
+          <div class="row sans small cropnav">
+            <button type="button" class="small" id="fvPrev" aria-label="Previous page">‹</button>
+            <span id="fvWhere"></span>
+            <button type="button" class="small" id="fvNext" aria-label="Next page">›</button>
+          </div>
+          <div id="fvStage" class="stage"><canvas></canvas><div id="fvLayer" class="layer"></div></div>
+          <p class="small sans muted">The form as it will be saved, updated as you fill it in. Tap or click a field on the page to fill it in; the field you are filling is outlined.</p>
         </div>
         <div id="cropper" class="cropper" data-part="crop" hidden>
           <div class="row sans small cropnav">
@@ -145,7 +163,7 @@ const policy = import.meta.env.PROD ? CSP : "";
           <p data-for="shape ink"><label class="field">Strength <input id="mOpacity" type="range" min="5" max="100" step="5" /> <span id="mOpacityNote" class="small"></span></label><br /><span class="small muted">Fainter lets more of the page show through.</span></p>
           <p data-for="redact" class="small">An area to remove<span id="mTerm"></span>.</p>
           <p data-for="text image shape ink"><label class="field">Turn by <input id="mRotate" type="number" min="-360" max="360" step="1" inputmode="numeric" />°</label> <span class="small muted">clockwise</span></p>
-          <p><button type="button" class="small" id="mDelete">Remove this addition</button></p>
+          <p class="row"><button type="button" class="small add" id="mDone">Done</button> <button type="button" class="small" id="mDelete">Remove this addition</button></p>
         </div>
 
         <details id="ownFontBox" class="sans opts" data-part="marks numbers watermark forms">
@@ -318,9 +336,9 @@ const policy = import.meta.env.PROD ? CSP : "";
           </div>
           <div id="optForms" data-part="forms">
             <div id="formFields" class="formfields"></div>
-            <p><label><input id="formFlatten" type="checkbox" /> Make the filled-in values permanent (the fields can no longer be edited, and they can't be filled again)</label></p>
-            <p><label class="field">Font for filled-in text <select id="formFont"><option value="auto">Automatic: Helvetica for Western European text, Noto Sans for other alphabets</option><option value="noto">Noto Sans (many alphabets) for all text</option><option value="own">Your own font (choose it under “Fonts for other alphabets”)</option></select></label></p>
-            <p class="small muted">Only the first PDF added is used. Fields are listed in the order the form stores them. Western European text is drawn in Helvetica, as the PDF library this site uses draws form fields (not always the font the form names). Text in other alphabets is drawn in Noto Sans, or in your own font, shaped and laid out like the other fields; the file is then marked so viewers show it as drawn instead of redrawing it in the form's own font. If such a field is edited later in another program, that program may redraw it in the form's own font, which may lack those letters; making the values permanent avoids this. A field whose text the chosen font can't show is left as it was and named in the message. Signature fields are not filled. Only the fields you change are changed.</p>
+            <p class="fieldsonly"><label><input id="formFlatten" type="checkbox" /> Make the filled-in values permanent (the fields can no longer be edited, and they can't be filled again)</label></p>
+            <p class="fieldsonly"><label class="field">Font for filled-in text <select id="formFont"><option value="auto">Automatic: Helvetica for Western European text, Noto Sans for other alphabets</option><option value="noto">Noto Sans (many alphabets) for all text</option><option value="own">Your own font (choose it under “Fonts for other alphabets”)</option></select></label></p>
+            <p class="small muted fieldsonly">Only the first PDF added is used. Fields are listed in the order the form stores them. Western European text is drawn in Helvetica, as the PDF library this site uses draws form fields (not always the font the form names). Text in other alphabets is drawn in Noto Sans, or in your own font, shaped and laid out like the other fields; the file is then marked so viewers show it as drawn instead of redrawing it in the form's own font. If such a field is edited later in another program, that program may redraw it in the form's own font, which may lack those letters; making the values permanent avoids this. A field whose text the chosen font can't show is left as it was and named in the message. Signature fields are not filled. Only the fields you change are changed.</p>
           </div>
           <div id="optCompare" data-part="compare">
             <p class="small muted">The first file you added is the original and the second is the changed version. The result lists, page by page, the words only in the original (struck through) and the words only in the changed version (underlined), and can show the two pages next to each other. It reads text, so scanned pages and pictures show no differences, and a page that has been re-laid-out shows many.</p>
@@ -425,6 +443,12 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .crumbline { margin: 0 0 6px; }
     #pdftools .bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 8px; padding: 6px 0; position: sticky; top: 0; background: #fdfdf6; z-index: 2; border-bottom: 1px solid var(--line-soft); }
     #pdftools .bar .add { background: var(--navy); color: #fff; }
+    #pdftools .bar .nav, #pdftools .bar .tools { display: contents; }
+    #pdftools .bar .zoom { display: inline-flex; align-items: center; gap: 2px; }
+    #pdftools .bar .zoom #edZoomNote { min-width: 3.2em; text-align: center; }
+    #pdftools .bar .hintbar { flex-basis: 100%; }
+    #pdftools .bar .add[aria-pressed="true"] { background: var(--link-hover); box-shadow: inset 0 0 0 2px #fff; }
+    #pdftools .scroller { overflow: auto; max-width: 100%; }
     #pdftools .bar .add:hover { background: var(--link-hover); }
     #pdftools .grid { list-style: none; padding: 0; margin: 10px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
     #pdftools .bar .pagerrow { flex-basis: 100%; margin: 0; }
@@ -445,6 +469,7 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .thumb { width: 112px; height: 112px; display: flex; align-items: center; justify-content: center; text-align: center; background: var(--beige); }
     #pdftools .thumb img { max-width: 100%; max-height: 100%; box-shadow: 0 0 0 1px #999; background: #fff; transition: transform 0.15s; }
     #pdftools .from { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #pdftools .tile .note { max-width: 100%; text-align: center; overflow-wrap: anywhere; }
     #pdftools .files { list-style: none; padding: 0; margin: 0; }
     #pdftools .files li { padding: 4px 0; border-bottom: 1px solid var(--line-soft); overflow-wrap: anywhere; }
     #pdftools .files li.missing { background: var(--warn-soft); padding-left: 6px; }
@@ -453,6 +478,8 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .side-title { font-size: 1.5rem; margin: 0 0 0.4em; text-align: center; border-bottom: 1px solid var(--line-soft); padding-bottom: 0.4em; }
     #pdftools .opts p { margin: 0 0 0.7em; }
     #pdftools .field input, #pdftools .field select { margin: 2px 4px; font: inherit; padding: 3px 5px; max-width: 100%; }
+    #pdftools .field { display: inline-block; max-width: 100%; }
+    #pdftools select { max-width: 100%; }
     #pdftools .field input[type="number"] { width: 5em; }
     #pdftools .go { display: flex; flex-direction: column; gap: 8px; margin: 12px -14px 0; padding: 10px 14px; position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--line-soft); z-index: 3; }
     #pdftools .go .big { width: 100%; }
@@ -473,6 +500,9 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .result .pair.zoom canvas { cursor: zoom-out; }
     #pdftools .result figcaption { font-size: 0.8rem; text-align: center; }
     #pdftools .stage { position: relative; line-height: 0; box-shadow: 0 0 0 1px #999; background: #fff; touch-action: none; }
+    /* the page editor: a finger on the page still scrolls and zooms; only the additions and the drawing tools take it */
+    #pdftools #edStage { touch-action: pan-x pan-y pinch-zoom; }
+    #pdftools #edStage .mark { touch-action: none; }
     #pdftools .stage canvas { width: 100%; height: auto; display: block; }
     #pdftools .layer { position: absolute; inset: 0; overflow: hidden; }
     #pdftools .mark { position: absolute; transform-origin: 0 0; outline: 1px dashed rgba(0, 0, 128, 0.45); cursor: move; box-sizing: border-box; }
@@ -491,6 +521,13 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .layer.drawing .mark { pointer-events: none; }
     #pdftools .layer svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
     #pdftools .cropper { max-width: 520px; margin: 0 auto 14px; }
+    #pdftools .formview { max-width: 640px; margin: 0 auto 14px; }
+    #pdftools #fvStage { touch-action: auto; }
+    #pdftools .fvfield { position: absolute; box-sizing: border-box; border: 1px dashed rgba(0, 0, 128, 0.5); background: rgba(0, 60, 200, 0.06); cursor: pointer; padding: 0; min-width: 0; min-height: 0; }
+    #pdftools .fvfield:hover, #pdftools .fvfield:focus-visible { border: 2px solid var(--link-hover); }
+    #pdftools .fvfield.on { border: 2px solid var(--navy); background: rgba(255, 200, 0, 0.25); }
+    #pdftools .formfields label.ff.on > span { color: var(--navy); font-weight: 700; }
+    #pdftools .formfields .tech { font-size: 0.75rem; color: var(--muted, #666); overflow-wrap: anywhere; }
     #pdftools .cropnav { justify-content: center; align-items: center; margin-bottom: 6px; }
     #pdftools .crbox { position: absolute; box-sizing: border-box; border: 2px solid var(--navy); box-shadow: 0 0 0 9999px rgba(0, 0, 40, 0.45); cursor: move; touch-action: none; }
     #pdftools .ch { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; background: #fff; border: 2px solid var(--navy); box-sizing: border-box; touch-action: none; }
@@ -505,11 +542,27 @@ const policy = import.meta.env.PROD ? CSP : "";
     #pdftools .ask p { margin: 0 0 0.5em; }
     #pdftools .row { display: flex; flex-wrap: wrap; gap: 8px; }
     @media (max-width: 760px) {
-      #pdftools .work { grid-template-columns: 1fr; }
+      #pdftools .work { grid-template-columns: minmax(0, 1fr); }
+      #pdftools .main, #pdftools .side { min-width: 0; }
       /* On a phone the action button stays at the bottom of the screen, whatever is scrolled. */
       #pdftools .go { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; padding: 8px 16px; background: #fff; border-top: 1px solid var(--line); z-index: 5; }
       #pdftools .work { padding-bottom: 130px; }
+      /* the page editor's tools stay at the top of the screen, in one row that scrolls sideways */
+      #pdftools #editor .bar { position: sticky; top: 0; flex-wrap: wrap; }
+      #pdftools #editor .bar .nav { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; flex-basis: 100%; }
+      #pdftools #editor .bar .nav button { padding-left: 8px; padding-right: 8px; }
+      #pdftools #editor .wide { display: none; }
+      #pdftools .bar .zoom #edZoomNote { min-width: 2.6em; }
+      #pdftools #editor .bar .tools { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; flex-basis: 100%; padding-bottom: 2px; scrollbar-width: thin; }
+      #pdftools #editor .bar .tools > * { flex: none; }
       #pdftools .bar { position: static; }
+      #pdftools .grip { width: 26px; height: 26px; right: -13px; bottom: -13px; }
+      /* small additions get a larger area to catch a finger */
+      #pdftools #edStage .mark::before { content: ""; position: absolute; inset: -10px; }
+      #pdftools #editor .bar button, #pdftools #editor .bar .button { min-height: 40px; }
+      /* the settings for the chosen addition open as a sheet at the bottom of the screen, over the save button */
+      #pdftools .props:not([hidden]) { position: fixed; left: 0; right: 0; bottom: 0; max-height: 48vh; overflow: auto; z-index: 7; margin: 0; border-radius: 10px 10px 0 0; box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25); }
+      #pdftools.sheet .work { padding-bottom: 52vh; }
       #pdftools .big { font-size: 1.1rem; padding: 12px 20px; }
     }
   </style>

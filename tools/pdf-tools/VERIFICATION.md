@@ -552,3 +552,37 @@ pictures are mostly CMYK, JPEG 2000 or JBIG2, which are still left as they are.
 - Unit test: an estimate 20% low still lands within 7% under the limit in at most four full tries; an unreachable
   limit makes the strongest setting and reports that nothing fits.
 - Files with eight pictures or fewer are searched in full, as before.
+
+### Edit PDF and Fill in PDF forms review (2026-11-25)
+
+Headless Chrome (system Chrome through Playwright), as a computer (1280 × 900) and as a phone (390 × 844, touch,
+scale 2), on generated files: three pages with one turned 90°, a scanned form (a picture only), a photo, a two-field
+form and an eight-field, two-page form (text, multi-line, radio, drop-down, list, read-only, tick box; tooltips on
+three). Touch was sent through Chrome's DevTools protocol.
+
+Found and fixed:
+
+- Phone: the Fill in PDF forms page was 588 px wide on a 390 px screen (a long drop-down); now 390. Edit PDF's page
+  editor also widened the page once its tools were put in one row; fixed by letting the grid column shrink.
+- Phone: a finger dragged on the page in Edit PDF didn't scroll it (the whole page took touches). Now it scrolls
+  (scrollY 0 → 415 for a 300 px drag); dragging an addition with a finger moves it (40, 60 px as sent) and Undo puts
+  it back; drawing with a finger draws (the page didn't move during the stroke).
+- ＋ Text didn't put the cursor in the Text box (the box was shown only after the page was redrawn); typing a space
+  then pressed ＋ Text again. Now the Text box has the cursor.
+- Text couldn't be resized by dragging; now its corner square scales its size (15 → 31 points for a 40 px drag),
+  and Undo returns it to the size before the drag.
+- New additions were all placed at the same top-left spot; now each lands where the page is on screen, clear of the
+  others (checked at 200% zoom: the new text was fully on screen).
+- A filled form saved from Edit PDF was no longer fillable (no form fields left; pypdf read none). Now its fields
+  and values are kept (pypdf: name "Ada", agree "/Yes") when the whole file is saved.
+- Page tiles cut off "1 addition (not shown in this small preview)"; it now wraps.
+- Fill in PDF forms: fields are now in reading order with their tooltips, and the form is drawn beside them;
+  clicking a field's box on the drawing puts the cursor in its control, and choosing a field on page 2 turns the
+  drawing to page 2 with that field outlined. Saved file: 4 fields changed as set.
+
+Checked unchanged: saved pages match the editor's drawing (text turned 15°, bold, picture, highlight, ellipse, line,
+tick, cross, date, freehand line), including on the page turned 90°; pictures keep their proportions when resized;
+the arrow keys nudge and Delete removes; Sign PDF saves a drawn signature on a phone. `npm test`: 272 pass.
+
+Not checked: real phones (iOS Safari and Android Chrome); pinch-zoom; screen readers.
+

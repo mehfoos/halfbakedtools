@@ -3,7 +3,7 @@
 // only the page order, rotation and size change.
 import { imageLayout, NO_IMAGE_LAYOUT, type ImageLayout } from "./layout.ts";
 import { cropBoxFor, isCropped, appliesTo, type CropOptions } from "./crop.ts";
-import { PDFDocument, PDFName, PDFDict, PDFArray, PDFPage as Page, PDFObjectCopier, StandardFonts, degrees, rgb, type PDFFont, type PDFPage, type PDFRef, type PDFObject } from "@cantoo/pdf-lib";
+import { PDFDocument, PDFName, PDFDict, PDFArray, PDFPage as Page, PDFObjectCopier, StandardFonts, degrees, rgb, type PDFFont, type PDFImage, type PDFPage, type PDFRef, type PDFObject } from "@cantoo/pdf-lib";
 import { standardFace, type Face } from "./face.ts";
 import { embedOwnFont, type OwnFont } from "./ownfont.ts";
 import { notoFace, notoLibrary, type NotoLoader, type HanStyle, type ArabicStyle } from "./noto.ts";
@@ -153,33 +153,7 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
     };
     const faces = faceSet(out, opts.ownFont, opts.noto, opts.han, opts.ownBold, opts.arabic);
     const prepared = async (font: FontKey, bold: boolean, text: string) => { const f = await faces(font, bold); await f.prepare?.(text); return f; };
-    async function drawMarks(page: PDFPage, marks: Mark[]) {
-      const box = page.getCropBox(), rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
-      for (const m of marks) {
-        if (m.type === "text") {
-          const face = await faces(m.font, m.bold); await face.prepare?.(m.text);
-          const bad = face.missing(m.text.replace(/\n/g, ""));
-          if (bad.length) throw new Error(m.font === "own"
-            ? `Your font has no letters for: ${bad.slice(0, 12).join(" ")}. Choose a font that covers them.`
-            : m.font === "noto" ? `The Noto fonts on this site have no letters for: ${bad.slice(0, 12).join(" ")}. For these, choose \u201cYour own font\u201d.`
-            : `Added text contains characters the built-in fonts can't write: ${bad.slice(0, 12).join(" ")}. They cover Western European letters, digits and common punctuation; for other alphabets choose \u201cYour own font\u201d.`);
-          const placed = placeText(m, face, box, rotation), c = parseColor(m.color);
-          for (const l of placed.lines) if (l.text) face.draw(page, l.text, { x: l.x, y: l.y, size: m.size, color: c, rotate: placed.angle, opacity: m.opacity ?? 1 });
-        } else if (m.type === "shape" || m.type === "ink") {
-          const at = placeBox(m, box, rotation), c = parseColor(m.color), f = m.type === "shape" && m.fill ? parseColor(m.fill) : null;
-          const line = m.type === "ink" || m.shape === "line", op = m.opacity ?? 1;
-          if (m.type === "shape" && !m.width && !f) continue;
-          page.drawSvgPath(shapePath(m), {
-            x: at.x, y: at.y, rotate: degrees(at.angle),
-            ...(f && !line ? { color: rgb(f.r, f.g, f.b), opacity: op } : {}),
-            ...(m.width > 0 ? { borderColor: rgb(c.r, c.g, c.b), borderWidth: m.width, borderOpacity: op, borderLineCap: 1 /* round */ } : {}),
-          });
-        } else if (m.type === "image") {
-          const at = placeImage(m, box, rotation);
-          page.drawImage(await picture(m.src), { x: at.x, y: at.y, width: at.width, height: at.height, rotate: degrees(at.angle), opacity: m.opacity ?? 1 });
-        }
-      }
-    }
+    const drawMarks = marksDrawer(faces, picture);
     let glyphless: PDFRef | undefined;
     for (const [i, p] of pages.entries()) {
       const d = data.get(p.src)!;
@@ -225,6 +199,56 @@ export function makeBuilder(data: Map<string, SourceData>, opts: BuildOptions) {
     }
     return out.save();
   };
+}
+
+/** Draws marks (added text, pictures, shapes, freehand lines) onto a page, placed on the page as the file shows it. */
+export function marksDrawer(faces: ReturnType<typeof faceSet>, picture: (id: string) => Promise<PDFImage>) {
+  return async function drawMarks(page: PDFPage, marks: Mark[]) {
+      const box = page.getCropBox(), rotation = ((((page.getRotation().angle % 360) + 360) % 360) as Quarter);
+      for (const m of marks) {
+        if (m.type === "text") {
+          const face = await faces(m.font, m.bold); await face.prepare?.(m.text);
+          const bad = face.missing(m.text.replace(/\n/g, ""));
+          if (bad.length) throw new Error(m.font === "own"
+            ? `Your font has no letters for: ${bad.slice(0, 12).join(" ")}. Choose a font that covers them.`
+            : m.font === "noto" ? `The Noto fonts on this site have no letters for: ${bad.slice(0, 12).join(" ")}. For these, choose \u201cYour own font\u201d.`
+            : `Added text contains characters the built-in fonts can't write: ${bad.slice(0, 12).join(" ")}. They cover Western European letters, digits and common punctuation; for other alphabets choose \u201cYour own font\u201d.`);
+          const placed = placeText(m, face, box, rotation), c = parseColor(m.color);
+          for (const l of placed.lines) if (l.text) face.draw(page, l.text, { x: l.x, y: l.y, size: m.size, color: c, rotate: placed.angle, opacity: m.opacity ?? 1 });
+        } else if (m.type === "shape" || m.type === "ink") {
+          const at = placeBox(m, box, rotation), c = parseColor(m.color), f = m.type === "shape" && m.fill ? parseColor(m.fill) : null;
+          const line = m.type === "ink" || m.shape === "line", op = m.opacity ?? 1;
+          if (m.type === "shape" && !m.width && !f) continue;
+          page.drawSvgPath(shapePath(m), {
+            x: at.x, y: at.y, rotate: degrees(at.angle),
+            ...(f && !line ? { color: rgb(f.r, f.g, f.b), opacity: op } : {}),
+            ...(m.width > 0 ? { borderColor: rgb(c.r, c.g, c.b), borderWidth: m.width, borderOpacity: op, borderLineCap: 1 /* round */ } : {}),
+          });
+        } else if (m.type === "image") {
+          const at = placeImage(m, box, rotation);
+          page.drawImage(await picture(m.src), { x: at.x, y: at.y, width: at.width, height: at.height, rotate: degrees(at.angle), opacity: m.opacity ?? 1 });
+        }
+      }
+    }
+}
+
+/**
+ * Fill in PDF forms: draws the marks onto the pages of the PDF itself, in place, so everything else in the file (its
+ * form fields among it) stays as it is. `marks` by page index; pictures come from `data`.
+ */
+export async function addMarksInPlace(bytes: Uint8Array, password: string | undefined, marks: Map<number, Mark[]>, data: Map<string, SourceData>, opts: Pick<BuildOptions, "ownFont" | "ownBold" | "noto" | "han" | "arabic">): Promise<Uint8Array> {
+  const doc = await PDFDocument.load(bytes, password === undefined ? {} : { password });
+  const embedded = new Map<string, Promise<PDFImage>>();
+  const picture = (id: string) => {
+    const d = data.get(id);
+    if (!d || d.kind !== "image") throw new Error("A picture placed on a page hasn't been added yet.");
+    let img = embedded.get(id);
+    if (!img) embedded.set(id, (img = d.type === "png" ? doc.embedPng(d.bytes) : doc.embedJpg(d.bytes)));
+    return img;
+  };
+  const draw = marksDrawer(faceSet(doc, opts.ownFont, opts.noto, opts.han, opts.ownBold, opts.arabic), picture), pages = doc.getPages();
+  for (const [i, m] of marks) { const pg = pages[i]; if (pg && m.length) await draw(pg, m.filter((x) => x.type !== "redact")); }
+  return doc.save();
 }
 
 /** A copy of the PDF that can only be opened with `password` (AES-256, the library's default and strongest

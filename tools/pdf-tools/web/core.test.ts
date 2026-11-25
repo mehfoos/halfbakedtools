@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { PDFDocument, PDFName, StandardFonts, degrees } from "@cantoo/pdf-lib";
+import { PDFDocument, PDFName, StandardFonts, degrees, PDFOperator, PDFOperatorNames, PDFNumber, PDFArray as PArr } from "@cantoo/pdf-lib";
 import { parseRanges, parsePageList, formatRanges } from "./ranges.ts";
 import {
   emptySession, addSource, removeSource, nudge, moveTo, duplicate, remove, rotate, setScale, planFiles, safeName,
@@ -825,6 +825,55 @@ test("forms: fields are listed with their kinds and filled values come out; flat
   const flat = await fillForm(bytes, undefined, { name: "Ada" }, true); assert.equal((await listFields(flat.bytes)).length, 0);
   const bad = await fillForm(bytes, undefined, { name: "日本" }, false); assert.equal(bad.changed, 0); assert.match(bad.problems[0], /"name".*character/);
   assert.equal((await fillForm(bytes, undefined, { name: "" }, false)).changed, 0, "an unchanged field is not counted");
+});
+
+import { toView } from "./marks.ts";
+test("forms: field boxes are placed on the page as shown, whatever its turn, and listed in reading order with their descriptions", async () => {
+  const box = { x: 10, y: 20, width: 300, height: 500 };
+  for (const r of [0, 90, 180, 270] as const) for (const [vx, vy] of [[0, 0], [37, 11], [120, 260]]) {
+    const u = toUser(vx, vy, box, r), v = toView(u.x, u.y, box, r);
+    assert.ok(Math.abs(v.x - vx) < 1e-9 && Math.abs(v.y - vy) < 1e-9, `turn ${r}`);
+  }
+  const doc = await PDFDocument.create(), form = doc.getForm(), p1 = doc.addPage([300, 400]), p2 = doc.addPage([300, 400]);
+  p2.setRotation(degrees(90));
+  form.createTextField("z_last").addToPage(p2, { x: 10, y: 10, width: 50, height: 20 });
+  form.createTextField("b_right").addToPage(p1, { x: 200, y: 350, width: 50, height: 20 });
+  const tf = form.createTextField("c_lower"); tf.addToPage(p1, { x: 10, y: 100, width: 50, height: 20 });
+  tf.acroField.dict.set(PDFName.of("TU"), PDFHexString.fromText("Your  postcode"));
+  form.createTextField("a_left").addToPage(p1, { x: 10, y: 351, width: 50, height: 20 });
+  const info = await listFields(await doc.save());
+  assert.deepEqual(info.map((f) => f.name), ["a_left", "b_right", "c_lower", "z_last"], "top to bottom, left to right, page by page");
+  assert.equal(info[2].label, "Your postcode"); assert.equal(info[0].label, undefined);
+  assert.deepEqual(info[1].spots, [{ page: 0, x: 199.5, y: 29.5, w: 51, h: 21 }], "(the library adds half the border width around the box)");
+  assert.deepEqual(info[3].spots, [{ page: 1, x: 9.5, y: 9.5, w: 21, h: 51 }], "on a page turned a quarter, the box is turned too");
+});
+import { addMarksInPlace } from "./build.ts";
+import { today } from "./editor.ts";
+test("edit: additions drawn onto the PDF itself keep its form fields, and a page's own drawing can't move them", async () => {
+  const doc = await PDFDocument.create(), page = doc.addPage([300, 300]), form = doc.getForm();
+  form.createTextField("name").addToPage(page, { x: 10, y: 250, width: 150, height: 20 });
+  const p2 = doc.addPage([200, 400]);
+  p2.pushOperators(PDFOperator.of(PDFOperatorNames.ConcatTransformationMatrix, [0.5, 0, 0, 0.5, 0, 0].map((n) => PDFNumber.of(n))));   // left in force, as some files do
+  const filled = (await fillForm(await doc.save(), undefined, { name: "Ada" }, false)).bytes;
+  const tick: Mark = { type: "ink", x: 20, y: 40, rotate: 0, w: 12, h: 12, strokes: [[0, 0.55, 0.36, 1, 1, 0]], color: "#000000", width: 1.5 };
+  const text: Mark = { type: "text", x: 30, y: 60, rotate: 0, text: "Signed in York", size: 12, color: "#000000", font: "sans", bold: false };
+  const contents = (d: PDFDocument, i: number) => { const c = d.getPages()[i].node.Contents(); return c instanceof PArr ? c.asArray().map((r) => new TextDecoder().decode(decodePDFRawStream(d.context.lookup(r) as PDFRawStream).decode()).trim()) : c ? ["(one stream)"] : []; };
+  const before = await PDFDocument.load(filled);
+  const out = await addMarksInPlace(filled, undefined, new Map([[1, [tick, text]]]), new Map(), {});
+  const after = await PDFDocument.load(out);
+  assert.deepEqual(Object.fromEntries((await listFields(out)).map((x) => [x.name, x.value])), { name: "Ada" }, "the field and its value are kept");
+  assert.equal(after.getPageCount(), 2);
+  assert.deepEqual(contents(after, 0), contents(before, 0), "a page with nothing added is left alone");
+  const c1 = contents(after, 1);
+  assert.equal(c1[0], "q", "the page's own drawing is wrapped, so a transform it leaves in force doesn't apply to the additions");
+  assert.ok(c1.indexOf("Q") > 0 && c1.indexOf("Q") < c1.length - 1 && /TJ|Tj/.test(c1[c1.length - 1]), "the additions come after it");
+  await assert.rejects(addMarksInPlace(filled, undefined, new Map([[0, [{ type: "image", x: 0, y: 0, rotate: 0, w: 10, h: 10, src: "missing" }]]]), new Map(), {}), /picture/);
+});
+test("forms: today's date is written with the digits every font here has", () => {
+  const d = new Date(2026, 10, 25);
+  assert.equal(today(d, "en-GB"), "25/11/2026");
+  assert.equal(today(d, "en-US"), "11/25/2026");
+  for (const l of ["ar-EG", "fa-IR", "he-IL", "hi-IN"]) assert.match(today(d, l), /^[0-9\/.\- ]+$/, l);
 });
 
 // ---- OCR text layer ----
