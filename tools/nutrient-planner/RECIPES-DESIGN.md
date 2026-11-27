@@ -51,11 +51,22 @@ a hand calculation for the first ten. The methods page gets a section and a Chan
 ## Effort (estimate)
 Version 1 with 30 recipes: a few days, most of it writing and mapping recipes. Version 2: about a week more.
 
-## Decisions for the owner
-1. Own recipes only, or also adapted Wikibooks recipes (CC BY-SA files)?
-2. Pilot size (30 proposed) and which kinds of meal first.
-3. Ingredient weights raw or cooked by default (cooked proposed, to avoid cooking factors).
-4. Allergen wording: show "contains" from ingredients only, with a note that brands vary.
+## Owner's answers (27 Nov 2026, 23:05)
+- **Sources:** any openly licensed or factual recipe source may be used, linked and cited. No copy goes in the
+  repository or the `source-archive` release: a recipe gives no numbers in a visitor's result (the nutrients come from
+  the food tables), so AGENTS.md principle 3 already doesn't call for one. The owner's private copy (Google Drive,
+  recorded by file name and SHA-256) still applies, as for every source.
+- **Pilot:** start small. The aim is a Planner tick box, "only foods that make up recipes": the day is then one or
+  more recipes (several meals) that together use the suggested foods. This is version 2 above, and needs a larger
+  library than the pilot.
+- **Weights:** as cooked by default, unless the recipe says raw; the table entry must match the state the recipe uses.
+- **Allergens:** list the ingredients; no separate allergen claim. Cooking doesn't make an allergen safe, so the
+  state doesn't change this. Ingredients that are themselves made of several foods (bread, pesto, stock) are listed
+  with a note to check the packet, because their allergens aren't in the name.
+
+## Still open
+1. With the tick box on, may a day also hold a few loose foods outside recipes (a banana, a glass of milk)?
+2. Which meals first (breakfasts, lunches, dinners), and the pilot size (about 30 proposed).
 
 ## References
 [1] Wikibooks, "Wikibooks:Copyrights". https://en.wikibooks.org/wiki/Wikibooks:COPY
