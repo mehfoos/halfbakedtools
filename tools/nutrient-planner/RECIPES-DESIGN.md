@@ -64,9 +64,15 @@ Version 1 with 30 recipes: a few days, most of it writing and mapping recipes. V
   state doesn't change this. Ingredients that are themselves made of several foods (bread, pesto, stock) are listed
   with a note to check the packet, because their allergens aren't in the name.
 
-## Still open
-1. With the tick box on, may a day also hold a few loose foods outside recipes (a banana, a glass of milk)?
-2. Which meals first (breakfasts, lunches, dinners), and the pilot size (about 30 proposed).
+- **Loose foods:** with the tick box on, a day may also hold loose foods outside recipes (a glass of milk).
+- **Pilot:** 30 recipes, 10 each of breakfasts, lunches and dinners, written in that order.
+
+## Growing the library
+1. **Pilot, 30:** format, mapping, "ideas using these foods" panel; owner approves a preview.
+2. **About 100:** enough for the tick box to find days for the default settings of each standard; the build reports
+   how often it finds one for each diet (omnivore, vegetarian, vegan), and recipes are added where it fails.
+3. **Beyond:** add recipes where the report shows gaps (diets, foods the Planner often picks that no recipe uses);
+   each batch committed and checked on its own.
 
 ## References
 [1] Wikibooks, "Wikibooks:Copyrights". https://en.wikibooks.org/wiki/Wikibooks:COPY
