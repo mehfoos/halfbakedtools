@@ -28,7 +28,9 @@ any branch. Anything committed stays in the repository's history for good. The t
 
 **Web pages** are saved as one file that opens as the full page, with its text, pictures and layout: MHTML (`.mht`,
 from Chrome's or Edge's *Save page as… > Webpage, Single File*, or headless Chrome's page snapshot) or a
-self-contained HTML file (for example from the SingleFile browser extension).
+self-contained HTML file (for example from the SingleFile browser extension). `node scripts/snapshot_pages.mjs LIST.tsv
+OUT_DIR` saves a list of pages as MHTML with headless Chrome, outside the repository, and writes each file's SHA-256
+to a `manifest.json`; pages that refuse (403, 429, a "just a moment" check) are reported, not retried.
 
 ### Adding a public copy
 
