@@ -736,6 +736,18 @@ test("extract: JPEGs are copied byte for byte; tiny pictures are counted, not sa
   })), undefined, 32);
   assert.equal(out.pictures.length, 1); assert.equal(out.pictures[0].kind, "jpeg"); assert.deepEqual([...out.pictures[0].bytes], [...jpegBytes]); assert.equal(out.tiny, 1);
 });
+test("extract: a JPEG wrapped in ASCII85 (as ReportLab stores it) is unwrapped and copied out byte for byte", async () => {
+  const jpegBytes = Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4, 5, 0xff, 0xd9]);
+  // ASCII85 of the bytes above, ending with the "~>" end marker.
+  const a85 = (b: Uint8Array) => { let o = ""; for (let i = 0; i < b.length; i += 4) { const c = [...b.subarray(i, i + 4)]; const n = c.length; while (c.length < 4) c.push(0);
+    let v = ((c[0] << 24) | (c[1] << 16) | (c[2] << 8) | c[3]) >>> 0; const t: string[] = []; for (let k = 0; k < 5; k++) { t.unshift(String.fromCharCode(33 + (v % 85))); v = Math.floor(v / 85); }
+    o += t.slice(0, n + 1).join(""); } return new TextEncoder().encode(o + "~>"); };
+  const out = await extractPictures(await savedWith((d) => ({
+    J: rawPicture(d, { Width: 64, Height: 48, BitsPerComponent: 8, ColorSpace: N.of("DeviceRGB"), Filter: d.context.obj([N.of("ASCII85Decode"), N.of("DCTDecode")]) }, a85(jpegBytes)),
+  })), undefined, 32);
+  assert.equal(out.pictures.length, 1); assert.equal(out.pictures[0].kind, "jpeg"); assert.deepEqual([...out.pictures[0].bytes], [...jpegBytes]);
+  assert.deepEqual(out.skipped, []);
+});
 test("extract: 1-bit gray and palette pictures are expanded; unsupported kinds are reported by name", async () => {
   const out = await extractPictures(await savedWith((d) => ({
     G: rawPicture(d, { Width: 40, Height: 40, BitsPerComponent: 1, ColorSpace: N.of("DeviceGray") }, new Uint8Array(200).fill(0b10100000)),   // the picture's first pixels: 1 0 1 0 0 0 ...

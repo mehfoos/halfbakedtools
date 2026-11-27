@@ -85,6 +85,15 @@ function unpack(data: Uint8Array, w: number, h: number, sp: Space, invert: boole
 }
 
 function decodeFlate(s: PDFRawStream): Uint8Array | string { try { return decodePDFRawStream(s).decode(); } catch { return "damaged picture data"; } }
+/** Filters that only pack or spell out the bytes, which pdf-lib can undo. */
+const WRAPPERS = ["FlateDecode", "Fl", "ASCIIHexDecode", "AHx", "ASCII85Decode", "A85", "LZWDecode", "LZW"];
+/** The bytes after undoing a stream's first `n` filters (all of them wrappers), leaving the last one in place. */
+function unwrap(s: PDFRawStream, n: number): Uint8Array | string {
+  const d = s.dict.clone(s.dict.context), f = s.dict.lookup(PDFName.of("Filter")), p = s.dict.lookup(PDFName.of("DecodeParms"));
+  d.set(PDFName.of("Filter"), s.dict.context.obj((f as PDFArray).asArray().slice(0, n)));
+  if (p instanceof PDFArray) d.set(PDFName.of("DecodeParms"), s.dict.context.obj(p.asArray().slice(0, n))); else d.delete(PDFName.of("DecodeParms"));
+  return decodeFlate(PDFRawStream.of(d, s.getContents()));
+}
 
 /** Every picture stored on the pages of this PDF. `minSide`: pictures smaller than this (in either direction) are counted, not saved. */
 export async function extractPictures(bytes: Uint8Array, password: string | undefined, minSide = 32): Promise<Extracted> {
@@ -105,13 +114,18 @@ export async function extractPictures(bytes: Uint8Array, password: string | unde
       const mask = d.lookup(PDFName.of("ImageMask")); if (mask instanceof PDFBool && mask.asBoolean()) { skip("black-and-white stencil masks", key); continue; }
       const f = filters(d), last = f[f.length - 1];
       const done = (kind: Picture["kind"], data: Uint8Array, note?: string) => seen.set(key, { page: pi + 1, pages: [pi + 1], width: w, height: h, kind, bytes: data, note });
-      if (f.length === 1 && (last === "DCTDecode" || last === "DCT")) {
+      // A JPEG (or JPEG 2000) can be wrapped in text or packing filters, as ReportLab does with ASCII85: those are
+      // undone so the picture inside is still copied out as stored.
+      const jpeg = last === "DCTDecode" || last === "DCT", jp2 = last === "JPXDecode";
+      if ((jpeg || jp2) && f.slice(0, -1).every((x) => WRAPPERS.includes(x))) {
+        const inner = f.length === 1 ? obj.getContents() : unwrap(obj, f.length - 1);
+        if (typeof inner === "string") { skip(inner, key); continue; }
+        if (jp2) { done("jp2", inner, "JPEG 2000 file: many programs can open it, most web browsers cannot"); continue; }
         const cs = space(d, 8);
         if (typeof cs === "string") { skip(`JPEG pictures in ${cs}`, key); continue; }
-        done("jpeg", obj.getContents()); continue;
+        done("jpeg", inner); continue;
       }
-      if (f.length === 1 && last === "JPXDecode") { done("jp2", obj.getContents(), "JPEG 2000 file: many programs can open it, most web browsers cannot"); continue; }
-      if (f.length && f.some((x) => !["FlateDecode", "Fl", "ASCIIHexDecode", "AHx", "ASCII85Decode", "A85", "LZWDecode", "LZW"].includes(x))) { skip(`pictures stored as ${last ?? "unknown"}`, key); continue; }
+      if (f.length && f.some((x) => !WRAPPERS.includes(x))) { skip(`pictures stored as ${f.join("+")}`, key); continue; }
       const bits = num(d.lookup(PDFName.of("BitsPerComponent"))) ?? 8, sp = space(d, bits);
       if (typeof sp === "string") { skip(`pictures in ${sp}`, key); continue; }
       const raw = f.length ? decodeFlate(obj) : obj.getContents();
