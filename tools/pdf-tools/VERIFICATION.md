@@ -42,8 +42,28 @@ small generated PDFs and images. **Not yet run:** Firefox, Safari, phones, large
 
 Run again on 2026-11-23 in the Playwright 1.65.1 engines (Firefox, and WebKit, the engine Safari uses, with iPhone 13 emulation), against the production build, 23 Nov 2026: every PDF tools page loads with no script errors and no sideways scrolling at desktop
 and phone sizes, and Merge joins two generated one-page PDFs into a two-page file containing both pages' text, in both
-engines. The other tasks were not driven in these engines, and these are engine builds, not the Safari and Firefox
-apps or real phones.
+engines. These are engine builds, not the Safari and Firefox apps or real phones.
+
+Run again on 2026-11-27 in the same two engines and settings, driving every other task with a script and checking
+each downloaded file with independent software (pypdf, qpdf, pdftotext, Pillow). Results were the same in both
+engines:
+
+- Split (zip of two files), Extract pages, Remove pages, Organise, Rotate (90° after "Turn right"), Crop (20 mm gives
+  a crop box of 57, 57, 539, 785), Resize (50% gives 298 × 421 points), Page numbers, Watermark, Compress (1.15 MB to
+  about 0.55 MB), Repair (two pages from a damaged file), Compare (text report): correct output.
+- PDF to JPG and PNG (1240 × 1754 at 150 dpi), Word, Excel, PowerPoint (two slides), text, Markdown, HTML: correct
+  output. PDF to PDF/A refuses a file whose fonts are not embedded, as designed; in "pictures" mode the output
+  carries the PDF/A marker.
+- Images to PDF (two pages), Text to PDF, Unlock (password typed in), Protect (opens only with the password), Fill
+  forms (text field and tick box filled), OCR (text recognised), Edit (added text present), Sign (drawn signature
+  present on page 1), Redact (the searched word is covered by black boxes and gone from the page's text; the boxes
+  also cover the neighbouring punctuation, which errs towards removing too much).
+- Extract pictures **failed** at first: a JPEG stored behind a second filter (ASCII85, as ReportLab writes it) was
+  skipped. Fixed on 2026-11-27 (a regression test was added); after the fix the picture comes out byte for byte the
+  same as the original in both engines.
+
+On a phone-sized screen, the panel for a selected text, picture or signature covers the Save button until "Done" is
+pressed; this is how that panel is meant to work. The workspace page (several tasks in turn) was not driven.
 
 | Item | Result |
 |---|---|
