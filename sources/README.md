@@ -54,7 +54,10 @@ automated downloads but open in the owner's Chrome count as reachable (owner, 28
    name) into the tool's folder, and check the size matches. The connector can't move or delete what Drive for
    desktop uploaded, so the `_inbox` copy stays.
 4. **Record it**: put the SHA-256 in place of `"pending"`, and commit `references.json`.
-5. **Tell the owner** which `_inbox` files are filed and can be deleted.
+5. **Tell the owner** which `_inbox` files are filed and can be deleted. The rule: a file in `_inbox` can be
+   deleted once a file of the same name is in a tool's folder (or `shared`). When the owner asks what can be
+   deleted, list `_inbox` with the connector, check each name against the folders, and answer in two groups: safe
+   to delete (filed) and keep (not filed yet).
 
 Never write the private folder's name, link or ID in the repository. Never replace or delete a copy that's already
 filed; ask the owner. The connector can rename, move and trash files it created itself (most of the folder), but not
