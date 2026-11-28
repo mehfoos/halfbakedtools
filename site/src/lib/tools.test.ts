@@ -40,7 +40,7 @@ for (const slug of folders) {
     const refsPath = join(dir, "references.json");
     if (!existsSync(refsPath)) return;
     type Ref = { id: string; url: string; accessed?: string | null; archive: { asset?: string; release?: string }[];
-      noPublicCopy?: { why: string; note: string }; ownerCopy?: { file: string; sha256?: string; pending?: boolean }[] | string };
+      noPublicCopy?: { why: string; note: string }; ownerCopy?: { file: string; sha256?: string; pending?: boolean; folder?: string }[] | string };
     const refs = json(refsPath).sources as Ref[];
     const ids = refs.map((r) => r.id);
     assert.equal(new Set(ids).size, ids.length, "duplicate reference ids");
@@ -61,6 +61,7 @@ for (const slug of folders) {
       if (Array.isArray(r.ownerCopy)) for (const c of r.ownerCopy) {
         assert.ok(c.file && !/[\/\\]|drive\.google|docs\.google/i.test(c.file), `${r.id}: ownerCopy gives a file name only, never a location`);
         if (c.sha256) assert.match(c.sha256, /^[0-9a-f]{64}$/, `${r.id}: ${c.file} sha256`);
+        assert.ok(c.folder === undefined || c.folder === "shared", `${r.id}: ${c.file} "folder" can only be "shared"`);
         assert.ok(!registry.has(c.file) || !r.noPublicCopy || r.noPublicCopy.why !== "licence",
           `${r.id}: ${c.file} can't be redistributed, so it must not be in sources/archive.json`);
       }

@@ -14,7 +14,10 @@ import { site } from "../site.config.ts";
 // archive entries: asset = a file of the "source-archive" release (sources/archive.json); release = a link to another
 // release asset (older USDA snapshots).
 type Archive = { label?: string; asset?: string; release?: string; fetch?: string | string[]; render?: boolean };
-export type OwnerCopy = { file: string; sha256?: string; label?: string; fetch?: string; pending?: boolean };
+// folder: "shared" for a source several tools cite (otherwise the tool's own folder); manual: why it needs a browser.
+export type OwnerCopy = {
+  file: string; sha256?: string; label?: string; fetch?: string; pending?: boolean; folder?: "shared"; manual?: string;
+};
 export type NoPublicCopy = { why: "not-data" | "licence" | "easy-to-get"; note: string };
 export type Source = {
   id: string; pre: string; title: string; style: "quoted" | "italic"; post: string; url: string;
