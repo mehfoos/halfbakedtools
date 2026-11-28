@@ -13,7 +13,7 @@ Every source cited on the site has three layers (principle 3 in [`AGENTS.md`](..
    result come from the source, its licence allows redistribution, and the tool is a health tool or the source is
    hard to obtain again. Otherwise `references.json` says why there is none (`noPublicCopy`).
 
-**Owner's copies:** saved by the sync below, under the same file name as in `archive.json` where there is a public
+**Owner's copies:** saved as described below, under the same file name as in `archive.json` where there is a public
 copy; the owner saves what nothing else can reach.
 
 **Further-reading links** (for example an exercise how-to page) only help a reader do something; nothing on the site
@@ -32,27 +32,33 @@ self-contained HTML file (for example from the SingleFile browser extension). `n
 OUT_DIR` saves a list of pages as MHTML with headless Chrome, outside the repository, and writes each file's SHA-256
 to a `manifest.json`; pages that refuse (403, 429, a "just a moment" check) are reported, not retried.
 
-### Syncing owner's copies (from 28 Nov 2026)
+### Saving owner's copies (from 28 Nov 2026)
 
-Editors don't save owner's copies themselves; they list them, and a sync saves them.
+Editors save owner's copies from their chat, through the owner's Chrome, with the owner's MacBook awake and Chrome
+(university profile, with the Claude in Chrome extension) and Google Drive for desktop running. Chrome saves
+downloads into the private folder's `_inbox`, which Drive for desktop uploads within seconds. Pages that block
+automated downloads but open in the owner's Chrome count as reachable (owner, 28 Nov 2026).
 
-1. **List each copy** in the tool's `references.json` as `"ownerCopy": [{"file": "<prefix>_<name>.mht", "pending":
-   true}]`. Optional: `"fetch"` when the file to download isn't at `url` (for example a direct PDF link);
-   `"folder": "shared"` for a source several tools cite (otherwise it goes in the tool's own folder); `"manual":
-   "<why>"` for a page that can only be opened in a browser.
-2. **Run the sync** in a Claude Code session on the owner's archive environment, which holds the Drive login (never
-   anywhere else): `python3 -I scripts/sync_owner_copies.py --tool <slug>` reports what is missing and changes
-   nothing; add `--apply` to save, upload and verify the missing copies and record each SHA-256 in place of
-   `"pending"`; `--verify` re-checks copies already saved. Commit the updated `references.json` to `main`.
-3. **"manual" copies** are saved through the owner's Chrome with the Claude in Chrome extension, which counts as
-   reachable (owner, 28 Nov 2026): the editor downloads the file under its exact `file` name, and Chrome (university
-   profile) saves it into the private folder's `_inbox`, which Google Drive for desktop uploads. The next sync with
-   `--apply` copies it from `_inbox` to its place and records its SHA-256; it then reports the `_inbox` copy as
-   "already saved" for the owner to remove.
+1. **List each copy** in the tool's `references.json`: `"ownerCopy": [{"file": "<prefix>_<name>.html", "pending":
+   true}]`. Optional: `"fetch"` when the file isn't at `url` (for example a direct PDF link); `"folder": "shared"`
+   for a source several tools cite (otherwise it goes in the tool's own folder).
+2. **Save it in Chrome**, in a new tab: a web page with `scripts/browser_snapshot.js` (one self-contained HTML file:
+   pictures, styles and fonts embedded, scripts removed); a file (PDF, spreadsheet, ...) by opening its address and
+   running `scripts/browser_save_file.js`. Both save under the exact `file` name and return its SHA-256.
+3. **File it**: when it appears in `_inbox`, copy it with the Google Drive connector (`copy_file`, title = the file
+   name) into the tool's folder, and check the size matches. The connector can't move or delete what Drive for
+   desktop uploaded, so the `_inbox` copy stays.
+4. **Record it**: put the SHA-256 in place of `"pending"`, and commit `references.json`.
+5. **Tell the owner** which `_inbox` files are filed and can be deleted.
 
-The sync never deletes, moves or replaces anything in the folder: copies that differ from the recorded SHA-256, and
-files that nothing lists, are reported for the owner to decide. The SHA-256 recorded is that of the copy the sync
-saved, which may differ slightly from the page an editor read earlier.
+Never write the private folder's name, link or ID in the repository. Never replace or delete a copy that's already
+filed; ask the owner. The connector can rename, move and trash files it created itself (most of the folder), but not
+files the owner added by hand; check a file's capabilities first.
+
+**Bulk check (optional):** `scripts/sync_owner_copies.py` compares every listed copy with the folder and, with
+`--verify`, downloads each to check its SHA-256; with `--apply` it also saves missing copies itself and files
+`_inbox` copies. It needs the rclone login, so it runs only in a Claude Code session on the owner's `hbt-archive`
+environment (never in a Project chat).
 
 ### Adding a public copy
 

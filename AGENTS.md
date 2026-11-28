@@ -27,8 +27,9 @@ Its value is that people can check the work, so it is honest about what it does 
    again; otherwise the reference says why not. **Never commit reference files** (PDFs, spreadsheets, datasets, zips,
    saved web pages) on any branch: they stay in the history for good. If a download is blocked, ask the owner; never
    work around it (a page the owner's Chrome opens through the Claude in Chrome extension counts as reachable).
-   Owner's copies are listed in `references.json` and saved by `scripts/sync_owner_copies.py`, run only in the
-   owner's archive environment. How to do all this: `sources/README.md`. Each tool's methods page records its method well enough
+   Owner's copies are saved through the owner's Chrome into the private folder's `_inbox` and filed with the Drive
+   connector (`scripts/browser_snapshot.js`, `scripts/browser_save_file.js`). How to do all this:
+   `sources/README.md`. Each tool's methods page records its method well enough
    to reproduce any result by hand, and is updated in the same commit as any change to the method.
 4. **Private.** Nothing a visitor enters or opens leaves their browser. No cookies, analytics, accounts, third-party
    scripts, fonts or embeds; libraries are served from this site. Settings live in the page address and can be
