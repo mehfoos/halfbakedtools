@@ -44,9 +44,11 @@ Editors don't save owner's copies themselves; they list them, and a sync saves t
    anywhere else): `python3 -I scripts/sync_owner_copies.py --tool <slug>` reports what is missing and changes
    nothing; add `--apply` to save, upload and verify the missing copies and record each SHA-256 in place of
    `"pending"`; `--verify` re-checks copies already saved. Commit the updated `references.json` to `main`.
-3. **"manual" copies** are captured in the owner's Chrome through the Claude in Chrome extension, which counts as
-   reachable (owner, 28 Nov 2026), and handed to the owner to put in the folder; the next sync records their
-   SHA-256.
+3. **"manual" copies** are saved through the owner's Chrome with the Claude in Chrome extension, which counts as
+   reachable (owner, 28 Nov 2026): the editor downloads the file under its exact `file` name, and Chrome (university
+   profile) saves it into the private folder's `_inbox`, which Google Drive for desktop uploads. The next sync with
+   `--apply` copies it from `_inbox` to its place and records its SHA-256; it then reports the `_inbox` copy as
+   "already saved" for the owner to remove.
 
 The sync never deletes, moves or replaces anything in the folder: copies that differ from the recorded SHA-256, and
 files that nothing lists, are reported for the owner to decide. The SHA-256 recorded is that of the copy the sync

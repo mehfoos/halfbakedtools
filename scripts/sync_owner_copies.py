@@ -15,7 +15,8 @@ Usage: python3 -I scripts/sync_owner_copies.py [--tool SLUG ...] [--apply] [--ve
   --verify   Also download every copy that has a SHA-256 recorded and compare it (report only).
 
 Where each copy goes: "<folder>/<file>", where folder is the entry's "folder" (e.g. "shared") or the tool's slug.
-A copy marked "manual" (a page that needs a browser) is never downloaded here: it is listed for the editor or owner.
+A copy marked "manual" (a page that needs a browser) is never downloaded here: it is saved through the owner's Chrome
+into "_inbox/<file>" (Google Drive for desktop uploads it), and --apply copies it from there to its place.
 Files named in sources/archive.json (the public release) also count as listed; --verify checks them against it.
 
 Safety: never deletes, moves, renames or replaces anything in Drive (uploads use rclone's --immutable and only go
@@ -35,6 +36,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 RCLONE = os.environ.get("HBT_RCLONE", "rclone")  # tests point this at a stand-in
 REMOTE = "hbt:"
+INBOX = "_inbox"  # where the owner's Chrome saves downloads (Google Drive for desktop syncs it)
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
       "Chrome/131.0.0.0 Safari/537.36")
 
@@ -119,7 +121,7 @@ def main():
 
     tools = load_tools(a.tool)
     in_drive = drive_files()
-    wanted, report, problems = set(), [], 0
+    wanted, report, problems, used_inbox = set(), [], 0, set()
     tmp = Path(tempfile.mkdtemp(prefix="hbt-sync-"))
     try:
         for slug, (ref, data) in tools.items():
@@ -157,7 +159,26 @@ def main():
                             changed = True
                             report.append(("recorded", f"{path} {h}"))
                         continue
-                    # Missing from Drive.
+                    # Missing from Drive. A copy saved through the owner's Chrome lands in _inbox under its file name.
+                    inbox = f"{INBOX}/{c['file']}"
+                    if inbox in in_drive:
+                        used_inbox.add(inbox)
+                        if not a.apply:
+                            report.append(("in _inbox", f"{inbox} -> {path}"))
+                            continue
+                        rclone("copyto", "--immutable", REMOTE + inbox, REMOTE + path)
+                        local = work / c["file"]
+                        rclone("copyto", REMOTE + path, str(local))
+                        h = sha256(local)
+                        if c.get("sha256") and c["sha256"] != h:
+                            problems += 1
+                            report.append(("DIFFERS", f"{path}: copied from _inbox, {h} isn't the recorded {c['sha256']}"))
+                            continue
+                        c["sha256"] = h
+                        c.pop("pending", None)
+                        changed = True
+                        report.append(("saved from _inbox", f"{path} {h}; {inbox} can now be removed"))
+                        continue
                     if c.get("manual"):
                         report.append(("needs browser", f"{path}: {c['manual']}"))
                         continue
@@ -195,6 +216,14 @@ def main():
                   json.loads((ROOT / "sources/archive.json").read_text(encoding="utf-8"))["files"]}
         scope = {f"{slug}/" for slug in tools} | ({"shared/"} if not a.tool else set())
         for path in sorted(in_drive):
+            if path.startswith(INBOX + "/"):
+                if path in used_inbox:
+                    continue
+                if path.rsplit("/", 1)[-1] in {w.rsplit("/", 1)[-1] for w in wanted}:
+                    report.append(("in _inbox, already saved", f"{path}: can be removed"))
+                elif not a.tool:
+                    report.append(("in _inbox, not listed", path))
+                continue
             if path in wanted or not any(path.startswith(p) for p in scope):
                 continue
             name = path.rsplit("/", 1)[-1]
