@@ -227,6 +227,8 @@ def main():
             if path in wanted or not any(path.startswith(p) for p in scope):
                 continue
             name = path.rsplit("/", 1)[-1]
+            if name.endswith(".screens.pdf") and path[: -len(".screens.pdf")] + ".html" in wanted:
+                continue  # screenshots kept beside a page's HTML copy, as a visual check (not a listed copy)
             if name not in public:
                 report.append(("in Drive, not listed", path))
             elif a.verify and public[name]:

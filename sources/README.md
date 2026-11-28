@@ -45,6 +45,11 @@ automated downloads but open in the owner's Chrome count as reachable (owner, 28
 2. **Save it in Chrome**, in a new tab: a web page with `scripts/browser_snapshot.js` (one self-contained HTML file:
    pictures, styles and fonts embedded, scripts removed); a file (PDF, spreadsheet, ...) by opening its address and
    running `scripts/browser_save_file.js`. Both save under the exact `file` name and return its SHA-256.
+   **For a web page, also keep screenshots** (from 28 Nov 2026, new copies only), so a person can check the HTML
+   copy for missing fonts or unexpected changes: scroll the live page one window-height at a time, screenshot each
+   position (with the mouse moved off the page), join them with `python3 -I scripts/screens_to_pdf.py
+   <name>.screens.pdf SHOT:SCROLL_Y ...`, and upload that file with the Drive connector's `create_file` (it stays
+   under about 3 MB) next to the HTML copy. It isn't listed in `references.json`.
 3. **File it**: when it appears in `_inbox`, copy it with the Google Drive connector (`copy_file`, title = the file
    name) into the tool's folder, and check the size matches. The connector can't move or delete what Drive for
    desktop uploaded, so the `_inbox` copy stays.
