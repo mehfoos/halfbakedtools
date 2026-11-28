@@ -246,7 +246,8 @@
         {
           "file": "morin-2024-medrxiv-preprint-v1.pdf",
           "label": "Preprint (PDF)",
-          "fetch": "https://www.medrxiv.org/content/10.1101/2024.12.17.24319207v1.full.pdf"
+          "fetch": "https://www.medrxiv.org/content/10.1101/2024.12.17.24319207v1.full.pdf",
+          "sha256": "9b6ab1bebbc064959a6bda7d6f5156ba5de4229efde2e44f9f9af2274db312cb"
         }
       ]
     },
