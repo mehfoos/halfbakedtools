@@ -13,8 +13,8 @@ Every source cited on the site has three layers (principle 3 in [`AGENTS.md`](..
    result come from the source, its licence allows redistribution, and the tool is a health tool or the source is
    hard to obtain again. Otherwise `references.json` says why there is none (`noPublicCopy`).
 
-**Owner's copies:** editors may save them to the private folder directly, under the same file name as in
-`archive.json` where there is a public copy; the owner saves what an editor can't reach.
+**Owner's copies:** saved by the sync below, under the same file name as in `archive.json` where there is a public
+copy; the owner saves what nothing else can reach.
 
 **Further-reading links** (for example an exercise how-to page) only help a reader do something; nothing on the site
 relies on them. They aren't references: they aren't numbered or copied, and their source is named next to the link.
@@ -31,6 +31,26 @@ from Chrome's or Edge's *Save page as… > Webpage, Single File*, or headless Ch
 self-contained HTML file (for example from the SingleFile browser extension). `node scripts/snapshot_pages.mjs LIST.tsv
 OUT_DIR` saves a list of pages as MHTML with headless Chrome, outside the repository, and writes each file's SHA-256
 to a `manifest.json`; pages that refuse (403, 429, a "just a moment" check) are reported, not retried.
+
+### Syncing owner's copies (from 28 Nov 2026)
+
+Editors don't save owner's copies themselves; they list them, and a sync saves them.
+
+1. **List each copy** in the tool's `references.json` as `"ownerCopy": [{"file": "<prefix>_<name>.mht", "pending":
+   true}]`. Optional: `"fetch"` when the file to download isn't at `url` (for example a direct PDF link);
+   `"folder": "shared"` for a source several tools cite (otherwise it goes in the tool's own folder); `"manual":
+   "<why>"` for a page that can only be opened in a browser.
+2. **Run the sync** in a Claude Code session on the owner's archive environment, which holds the Drive login (never
+   anywhere else): `python3 -I scripts/sync_owner_copies.py --tool <slug>` reports what is missing and changes
+   nothing; add `--apply` to save, upload and verify the missing copies and record each SHA-256 in place of
+   `"pending"`; `--verify` re-checks copies already saved. Commit the updated `references.json` to `main`.
+3. **"manual" copies** are captured in the owner's Chrome through the Claude in Chrome extension, which counts as
+   reachable (owner, 28 Nov 2026), and handed to the owner to put in the folder; the next sync records their
+   SHA-256.
+
+The sync never deletes, moves or replaces anything in the folder: copies that differ from the recorded SHA-256, and
+files that nothing lists, are reported for the owner to decide. The SHA-256 recorded is that of the copy the sync
+saved, which may differ slightly from the page an editor read earlier.
 
 ### Adding a public copy
 
