@@ -16,6 +16,7 @@ Usage: python3 -I scripts/sync_owner_copies.py [--tool SLUG ...] [--apply] [--ve
 
 Where each copy goes: "<folder>/<file>", where folder is the entry's "folder" (e.g. "shared") or the tool's slug.
 A copy marked "manual" (a page that needs a browser) is never downloaded here: it is listed for the editor or owner.
+Files named in sources/archive.json (the public release) also count as listed; --verify checks them against it.
 
 Safety: never deletes, moves, renames or replaces anything in Drive (uploads use rclone's --immutable and only go
 to paths the listing showed as empty). Never prints rclone's settings. Downloads go to a temporary directory outside
@@ -188,13 +189,26 @@ def main():
                     changed = True
             if changed:
                 ref.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        # Files of the public release (sources/archive.json) also count as listed: the owner keeps them under the
+        # same names (for example the raw HTML of a page whose PDF print is the ownerCopy).
+        public = {f["file"]: f.get("sha256") for f in
+                  json.loads((ROOT / "sources/archive.json").read_text(encoding="utf-8"))["files"]}
+        scope = {f"{slug}/" for slug in tools} | ({"shared/"} if not a.tool else set())
+        for path in sorted(in_drive):
+            if path in wanted or not any(path.startswith(p) for p in scope):
+                continue
+            name = path.rsplit("/", 1)[-1]
+            if name not in public:
+                report.append(("in Drive, not listed", path))
+            elif a.verify and public[name]:
+                local = tmp / "public.bin"
+                rclone("copyto", REMOTE + path, str(local))
+                h = sha256(local)
+                if h != public[name]:
+                    problems += 1
+                    report.append(("DIFFERS", f"{path}: Drive {h}, sources/archive.json {public[name]}"))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
-
-    scope = {f"{slug}/" for slug in tools} | ({"shared/"} if not a.tool else set())
-    for path in sorted(in_drive):
-        if path not in wanted and any(path.startswith(p) for p in scope):
-            report.append(("in Drive, not listed", path))
 
     for kind, text in report:
         print(f"{kind:22} {text}")
